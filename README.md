@@ -4,6 +4,7 @@ Custom Elementor widgets for avixdigital.com. Tested on WordPress 7.1 + Elemento
 
 | Widget | What it is |
 | --- | --- |
+| **Hero Banner** | The homepage welcome: parallax background with rounded glass pixels and a pixel trail under the cursor, a headline with the tilted orange highlight and round icon, and the Avix pixel character sitting on the headline, waving hello and chilling. |
 | **Selected Work Stack** | Sticky scroll stack of case studies. Each card slides over the last one, which tilts back and dims. Includes a live `01 — 03` progress readout and an optional cursor bubble. |
 | **Testimonial Stack** | Review slider where each new card drops onto a pile. Real reviews, verifiable Fiverr/Upwork badges, autoplay with a progress bar. |
 | **Site Footer** | Rounded footer in dark or light style: big CTA with a tilted pill, brand + socials, two link columns, direct contact with copy-to-clipboard, partner badges. |
@@ -16,9 +17,27 @@ No jQuery, GSAP or other libraries. Assets load only on pages that use the widge
 
 1. WordPress → Plugins → Add New → Upload → `dist/avix-elementor-widgets.zip` → Activate.
 2. In Elementor, search **Avix** or open the **Avix Digital** category.
-3. Put both widgets in a **full-width container with 0 padding**. Each widget handles its own content width (1200px) and side spacing.
+3. Put each widget in a **full-width container with 0 padding**. Each widget handles its own content width (1200px) and side spacing.
 
-`preview/selected-work-and-numbers.html` is a standalone copy of the rendered output, handy for sharing or quick checks.
+The files in `preview/` are standalone copies of the rendered output (e.g. `preview/hero.html`), handy for sharing or quick checks.
+
+## Hero Banner
+
+Replaces the HTML hero. Every text, link, image, icon and colour is editable, and text fields take dynamic tags.
+
+- **Headline** is plain text with two shortcuts: `[words]` get the tilted orange highlight and `{icon}` places the round icon (built-in line icons or any Elementor icon). Enter starts a new line. Default: `Leading [Creative]` / `Web Design {icon} Agency.`
+- **Pixel avatar**: the Avix character drops onto the headline (on "Leading" by default), waves and says hi in a speech bubble, then chills: legs swinging, watching the cursor.
+  - Hover or tap it for the next greeting; hovering or focusing the button makes it say the button line ("Good choice! 🙌").
+  - **Greetings** are one per line. The first plays on arrival, the rest follow every 12 s (adjustable, 0 = off) while the banner is on screen, each said once, then it just chills.
+  - It sits on the letter tops, whether they're capitals or lowercase, and turns dark on the orange highlight so it stays visible. Pick the word, position, size and height under **Pixel Avatar**.
+  - The bubble sits beside its head in the gap under the badge, so it never covers the headline or the badge, and flips sides near the screen edge. Its text is drawn with CSS, so greetings never become part of the H1 that search engines read.
+- **Floating cursor tags** sit just outside the first and last line of the headline. A tag that doesn't fit is hidden rather than cut off (e.g. on 1280px laptops). Wide screens only.
+- **Welcome badge**: Avix mark, a pulsing "available" dot, any Elementor icon, or none; optional link.
+- **Buttons**: the main CTA plus an optional quieter second link (e.g. "See our work" → `#work`).
+- **Trust dock**: add, remove or reorder items, each with an icon and an optional proof link (your Fiverr or partner profile).
+- **Background**: a real `<img>` with responsive sizes that loads first, since it's the biggest thing on the first screen. Turn off **Load image first** if the banner isn't at the top of the page. Focus point, overlay colours, slow zoom, glass pixels, pixel trail (square size, radius, strength), mouse parallax and the entrance animation are all switchable.
+- **Performance**: effects share one animation loop that stops when nothing moves, and everything, CSS animations included, pauses once the banner is scrolled past or the tab is hidden. Measured in Chrome against the HTML version: script time while idle 5.5 → 0.04 ms per second; after scrolling past, 0.
+- Reduced-motion visitors get a still banner (the avatar still says hi). The entrance doesn't replay on every change in the Elementor editor. On phones the tags hide, the dock stacks, glass blur is dropped (costly on phone GPUs) and a tap sends a small pixel ripple.
 
 ## Selected Work Stack
 
@@ -80,12 +99,11 @@ The widgets default to the brand system: Space Grotesk for display, Inter for te
 ```
 avix-elementor-widgets/
 ├── avix-elementor-widgets.php          bootstrap: checks Elementor, registers category, widgets, assets
-├── includes/widgets/
-│   ├── class-selected-work.php
-│   └── class-impact-numbers.php
+├── includes/widgets/class-<slug>.php   one class per widget: hero, selected-work, impact-numbers,
+│                                       testimonial-stack, site-footer, process-timeline
 └── assets/
-    ├── css/selected-work.css, impact-numbers.css
-    └── js/selected-work.js, impact-numbers.js
+    ├── css/<slug>.css
+    └── js/<slug>.js
 ```
 
 To add the next section (logos, CEO quote, pricing, marquee, reviews): add a widget class under `includes/widgets/`, its CSS/JS under `assets/` with the same slug, and one line in the `$widgets` list in `avix-elementor-widgets.php`.

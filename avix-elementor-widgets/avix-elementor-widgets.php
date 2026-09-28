@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Avix Digital Elementor Widgets
  * Plugin URI:        https://avixdigital.com
- * Description:       Custom Elementor widgets for avixdigital.com: Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer and Process Timeline.
- * Version:           1.0.0
+ * Description:       Custom Elementor widgets for avixdigital.com: Hero Banner, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer and Process Timeline.
+ * Version:           1.1.0
  * Author:            Avix Digital
  * Author URI:        https://avixdigital.com
  * Text Domain:       avix-widgets
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AVIX_EW_VERSION', '1.0.0' );
+define( 'AVIX_EW_VERSION', '1.1.0' );
 define( 'AVIX_EW_FILE', __FILE__ );
 define( 'AVIX_EW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AVIX_EW_URL', plugin_dir_url( __FILE__ ) );
@@ -36,6 +36,7 @@ final class Avix_Elementor_Widgets {
 	 * @var array<string, array{0:string,1:string}>
 	 */
 	private static $widgets = array(
+		'hero'              => array( 'includes/widgets/class-hero.php', '\AvixWidgets\Widgets\Hero' ),
 		'selected-work'     => array( 'includes/widgets/class-selected-work.php', '\AvixWidgets\Widgets\Selected_Work' ),
 		'impact-numbers'    => array( 'includes/widgets/class-impact-numbers.php', '\AvixWidgets\Widgets\Impact_Numbers' ),
 		'testimonial-stack' => array( 'includes/widgets/class-testimonial-stack.php', '\AvixWidgets\Widgets\Testimonial_Stack' ),
