@@ -873,6 +873,10 @@ class Process_Timeline extends Widget_Base {
 				'@type' => 'Person',
 				'name'  => $name,
 			);
+			// Same @id as the Compare & CEO Quote widget, so one person = one entity.
+			if ( '' !== sanitize_title( $name ) ) {
+				$person['@id'] = home_url( '/#person-' . sanitize_title( $name ) );
+			}
 			if ( '' !== $m['role'] ) {
 				$person['jobTitle'] = wp_strip_all_tags( $m['role'] );
 			}

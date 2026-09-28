@@ -96,6 +96,24 @@
 	border-left: 1px solid var(--ft-line);
 }
 
+/*
+ * Matched to the site header: JS measures where the header's content starts
+ * and ends and the footer's text lines up with it (lines sit one column
+ * padding outside). Until then, and if no header is found, it stays boxed.
+ */
+.avix-ft.is-matched .avix-ft__frame,
+.avix-ft.is-matched .avix-ft__lines {
+	width: auto;
+	margin-right: max(0px, calc(var(--ft-match-r, 0px) - var(--ft-col-pad)));
+	margin-left: max(0px, calc(var(--ft-match-l, 0px) - var(--ft-col-pad)));
+}
+
+.avix-ft.is-matched .avix-ft__lines {
+	right: 0;
+	left: 0;
+	transform: none;
+}
+
 .avix-ft--no-lines .avix-ft__lines {
 	display: none;
 }
@@ -165,7 +183,19 @@
 	height: var(--ft-buddy-h);
 	transform: translateX(-50%);
 	transform-origin: 50% 100%;
-	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--ft-accent) 70%, transparent));
+}
+
+/* Breathing glow: an opacity-only pulse runs on the compositor, unlike an
+   animated filter, which repaints every frame. */
+.avix-ft__buddy::before {
+	position: absolute;
+	inset: -60% -85%;
+	z-index: -1;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--ft-accent) 55%, transparent) 0%, color-mix(in srgb, var(--ft-accent) 18%, transparent) 55%, transparent 100%);
+	opacity: 0.25;
+	pointer-events: none;
+	content: "";
 	animation: avix-ft-glow 2.4s ease-in-out infinite alternate;
 }
 
@@ -176,6 +206,7 @@
 	overflow: visible;
 	fill: var(--ft-accent);
 	shape-rendering: crispEdges;
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--ft-accent) 70%, transparent));
 }
 
 .avix-ft__buddy rect {
@@ -215,9 +246,7 @@
 }
 
 .avix-ft.is-armed .avix-ft__buddy.is-landed {
-	animation:
-		avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both,
-		avix-ft-glow 2.4s ease-in-out 900ms infinite alternate;
+	animation: avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both;
 }
 
 @keyframes avix-ft-leg {
@@ -239,8 +268,8 @@
 }
 
 @keyframes avix-ft-glow {
-	from { filter: drop-shadow(0 0 7px color-mix(in srgb, var(--ft-accent) 55%, transparent)); }
-	to { filter: drop-shadow(0 0 16px color-mix(in srgb, var(--ft-accent) 95%, transparent)); }
+	from { opacity: 0.25; }
+	to { opacity: var(--ft-halo, 0.7); }
 }
 
 @keyframes avix-ft-land {
@@ -251,20 +280,20 @@
 	100% { opacity: 1; transform: translate(-50%, 0) scale(1, 1); }
 }
 
+/* Softer glow on the light card. */
 .avix-ft--light .avix-ft__buddy {
-	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--ft-accent) 40%, transparent));
-	animation-name: avix-ft-glow-soft;
+	--ft-halo: 0.4;
 }
 
-.avix-ft--light.is-armed .avix-ft__buddy.is-landed {
-	animation:
-		avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both,
-		avix-ft-glow-soft 2.4s ease-in-out 900ms infinite alternate;
+.avix-ft--light .avix-ft__buddy svg {
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--ft-accent) 40%, transparent));
 }
 
-@keyframes avix-ft-glow-soft {
-	from { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--ft-accent) 30%, transparent)); }
-	to { filter: drop-shadow(0 0 11px color-mix(in srgb, var(--ft-accent) 55%, transparent)); }
+/* Nothing loops while the footer is off screen. */
+.avix-ft.is-offscreen *,
+.avix-ft.is-offscreen *::before,
+.avix-ft.is-offscreen *::after {
+	animation-play-state: paused !important;
 }
 
 .avix-ft .avix-ft__pill {
@@ -913,9 +942,14 @@
 	}
 
 	.avix-ft__buddy,
+	.avix-ft__buddy::before,
 	.avix-ft__buddy rect,
 	.avix-ft.is-armed .avix-ft__buddy {
 		opacity: 1;
 		animation: none !important;
+	}
+
+	.avix-ft__buddy::before {
+		opacity: 0.25;
 	}
 }

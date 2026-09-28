@@ -11,6 +11,7 @@ Custom Elementor widgets for avixdigital.com. Tested on WordPress 7.1 + Elemento
 | **Site Footer** | Rounded footer in dark or light style: big CTA with a tilted pill, brand + socials, two link columns, direct contact with copy-to-clipboard, partner badges. |
 | **Process Timeline** | "Our Methodology" section: a line draws itself as you scroll, the Avix pixel character walks it, lights up each step and sits down at the end of the line. A team row under the title puts real faces next to the process. |
 | **FAQ & Quote** | Minimal FAQ accordion for just above the footer, with FAQPage structured data and a small "Request a quote" card the pixel character sits on. |
+| **Compare & CEO Quote** | "Same budget. Better outcome.": a compact typical-agency-vs-Avix face-off and the CEO quote card. Pixel Akib flies between them on rocket boots, zaps the old habits, cheers the Avix side and perches on the real photo. |
 | **Impact Numbers** | "Numbers behind the work": minimal centered pill + 3 numbers with hairline dividers and a count-up. An optional editorial layout adds a heading and rules. Light, warm-grey or dark theme. |
 
 No jQuery, GSAP or other libraries. Assets load only on pages that use the widget: about 9 KB gzipped for the stack, 4 KB for the numbers.
@@ -98,6 +99,8 @@ Replaces the HTML services section.
 - **Partner badges**: Meta, Google, Shopify and WordPress by default. Add a **Proof link** to each (your public partner directory profile) so visitors can verify it, and use **Zoom** for images with lots of empty space.
 - `{year}` in the copyright updates itself every January.
 - To use it site-wide: place it in your footer template (ThemeREX Layouts or Elementor Theme Builder) inside a full-width container with no padding.
+- **Width matches the header** (Style → Card → *Content width*, default *Match the site header*): the footer measures where your header's logo starts and its last button ends, and lines its own logo and right-hand content up with them, at every screen size. It re-checks on resize and when the footer scrolls into view (for headers that shrink on scroll). The header is found by *Header selector* (`#avix-smart-header` by default), with common theme headers as a fallback; if none is found it uses *Max width*. Choose *Fixed max width* for the old boxed look.
+- **Performance** (1.4.0): the character's glow pulses on the GPU instead of repainting every frame, and its loops pause off screen. Idle main-thread time while the footer is visible: about 36 → under 1 ms per second, on every page.
 
 ## Process Timeline
 
@@ -124,6 +127,22 @@ Replaces the HTML services section.
 - **Pixel character** sits on the card's top edge, legs dangling over it, glancing around; it waves when the card is hovered or the button is focused. It pops in the first time the section is seen. Still for reduced-motion visitors.
 - Default questions are general agency questions (pricing, timelines, Shopify Plus/Webflow, migrations, support). Edit them to match how you actually work.
 
+## Compare & CEO Quote
+
+- Replaces the CEO quote section and adds a compact comparison above it. Title takes `[accent]` words and line breaks (default `Same budget.` / `[Better outcome.]`).
+- **Comparison** (Content → Comparison): column names and rows, each row one typical-agency habit facing your answer. On wide screens the two sides face each other across a centre seam with a VS badge; on phones each row stacks (struck-through habit, then the Avix line) and the seam becomes a rail on the left.
+- **Pixel Akib** (Content → Pixel Akib), the same pixel alter ego that says "Hi, I'm Akib" in the hero, now in cream rocket boots:
+  - Sits on the VS badge, legs swinging, watching the cursor.
+  - The first time the comparison is seen it flies to the first row, zaps it and comes back to explain: "Hover a row. I'll fix it." (or "Tap a row" on touch screens).
+  - Hover (or tap) any row: it rockets over on a spring (boots firing, body tilting and stretching, exhaust sparks), blasts the typical-agency habit (beam, sparks, the line gets struck through) then turns and cheers the Avix side as its ✓ pops. Fixed rows stay fixed.
+  - Fix every row and it celebrates: a flip, a burst of pixels and "All fixed. Same budget, zero compromises."
+  - Scroll down to the quote and it flies down to sit on your photo: "That's me! The high-res version." Scroll back up and it returns to the badge.
+  - Click it (or focus it and press Enter) for a line; every fourth click it does a flip. All lines are editable.
+- **CEO quote**: photo, quote (with `[accent]` words), name, role and an optional profile link (LinkedIn/About). Animated GIFs are shown as uploaded: WordPress's resized copies of a GIF are usually still images, so the widget never swaps them in.
+- **Tip: use a video instead of the GIF.** Add an MP4/WebM of the same loop under *Looping video*: it's typically 5–10× smaller than a GIF, only downloads and plays while on screen, and uses the photo as its poster.
+- **SEO & accessibility**: rows are a real list, and each reads as "The typical agency: … Avix Digital: …" to screen readers and search engines. The quote is a `figure` with `blockquote` and `cite`. Person structured data for the CEO shares its `@id` with the Process Timeline team row, so search engines see one person. The character is a labelled button; its lines are announced politely. Without JavaScript everything is visible and the character stays hidden.
+- **Performance**: one spring animation loop that only runs while it moves, no scroll-driven work except a cheap check of where the quote is, idle fidgets driven by a timer twice a second instead of CSS loops (measured: 1–3 ms per second of main-thread time while visible), and everything pauses off screen. Reduced-motion visitors get instant moves, no flight, no tour.
+
 ## Fonts & colours
 
 The widgets default to the brand system: Space Grotesk for display, Inter for text, `#FB6007` accent, `#1A1A1A` ink, and a darker `#C64700` for small orange text so it stays readable on white. The live site already loads both fonts. Every colour and font can be overridden in each widget's Style tab.
@@ -135,7 +154,8 @@ avix-elementor-widgets/
 ├── avix-elementor-widgets.php          bootstrap: checks Elementor, registers category, widgets, assets
 ├── includes/trait-media.php            shared helper: matches URL-only images to the media library
 ├── includes/widgets/class-<slug>.php   one class per widget: hero, services, selected-work,
-│                                       impact-numbers, testimonial-stack, site-footer, process-timeline, faq
+│                                       impact-numbers, testimonial-stack, site-footer, process-timeline, faq,
+│                                       compare-quote
 └── assets/
     ├── css/<slug>.css
     └── js/<slug>.js

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Avix Digital · Site Footer (preview)</title>
-<!-- Standalone preview of the Elementor widget output: dark style, then light style. The live site already loads these fonts. -->
+<!-- Standalone preview of the Elementor widget output: dark style, then light style. The live site already loads these fonts. No site header here, so the footer uses its fixed max width. -->
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -44,6 +44,7 @@ body { margin: 0; background: #fff; }
 
 	container: avix-ft / inline-size;
 	display: block;
+	box-sizing: border-box;
 	width: 100%;
 	padding: 0 16px 16px;
 	font-family: var(--ft-font-body);
@@ -105,6 +106,24 @@ body { margin: 0; background: #fff; }
 
 .avix-ft__lines span {
 	border-left: 1px solid var(--ft-line);
+}
+
+/*
+ * Matched to the site header: JS measures where the header's content starts
+ * and ends and the footer's text lines up with it (lines sit one column
+ * padding outside). Until then, and if no header is found, it stays boxed.
+ */
+.avix-ft.is-matched .avix-ft__frame,
+.avix-ft.is-matched .avix-ft__lines {
+	width: auto;
+	margin-right: max(0px, calc(var(--ft-match-r, 0px) - var(--ft-col-pad)));
+	margin-left: max(0px, calc(var(--ft-match-l, 0px) - var(--ft-col-pad)));
+}
+
+.avix-ft.is-matched .avix-ft__lines {
+	right: 0;
+	left: 0;
+	transform: none;
 }
 
 .avix-ft--no-lines .avix-ft__lines {
@@ -176,7 +195,19 @@ body { margin: 0; background: #fff; }
 	height: var(--ft-buddy-h);
 	transform: translateX(-50%);
 	transform-origin: 50% 100%;
-	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--ft-accent) 70%, transparent));
+}
+
+/* Breathing glow: an opacity-only pulse runs on the compositor, unlike an
+   animated filter, which repaints every frame. */
+.avix-ft__buddy::before {
+	position: absolute;
+	inset: -60% -85%;
+	z-index: -1;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--ft-accent) 55%, transparent) 0%, color-mix(in srgb, var(--ft-accent) 18%, transparent) 55%, transparent 100%);
+	opacity: 0.25;
+	pointer-events: none;
+	content: "";
 	animation: avix-ft-glow 2.4s ease-in-out infinite alternate;
 }
 
@@ -187,6 +218,7 @@ body { margin: 0; background: #fff; }
 	overflow: visible;
 	fill: var(--ft-accent);
 	shape-rendering: crispEdges;
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--ft-accent) 70%, transparent));
 }
 
 .avix-ft__buddy rect {
@@ -226,9 +258,7 @@ body { margin: 0; background: #fff; }
 }
 
 .avix-ft.is-armed .avix-ft__buddy.is-landed {
-	animation:
-		avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both,
-		avix-ft-glow 2.4s ease-in-out 900ms infinite alternate;
+	animation: avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both;
 }
 
 @keyframes avix-ft-leg {
@@ -250,8 +280,8 @@ body { margin: 0; background: #fff; }
 }
 
 @keyframes avix-ft-glow {
-	from { filter: drop-shadow(0 0 7px color-mix(in srgb, var(--ft-accent) 55%, transparent)); }
-	to { filter: drop-shadow(0 0 16px color-mix(in srgb, var(--ft-accent) 95%, transparent)); }
+	from { opacity: 0.25; }
+	to { opacity: var(--ft-halo, 0.7); }
 }
 
 @keyframes avix-ft-land {
@@ -262,20 +292,20 @@ body { margin: 0; background: #fff; }
 	100% { opacity: 1; transform: translate(-50%, 0) scale(1, 1); }
 }
 
+/* Softer glow on the light card. */
 .avix-ft--light .avix-ft__buddy {
-	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--ft-accent) 40%, transparent));
-	animation-name: avix-ft-glow-soft;
+	--ft-halo: 0.4;
 }
 
-.avix-ft--light.is-armed .avix-ft__buddy.is-landed {
-	animation:
-		avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both,
-		avix-ft-glow-soft 2.4s ease-in-out 900ms infinite alternate;
+.avix-ft--light .avix-ft__buddy svg {
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--ft-accent) 40%, transparent));
 }
 
-@keyframes avix-ft-glow-soft {
-	from { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--ft-accent) 30%, transparent)); }
-	to { filter: drop-shadow(0 0 11px color-mix(in srgb, var(--ft-accent) 55%, transparent)); }
+/* Nothing loops while the footer is off screen. */
+.avix-ft.is-offscreen *,
+.avix-ft.is-offscreen *::before,
+.avix-ft.is-offscreen *::after {
+	animation-play-state: paused !important;
 }
 
 .avix-ft .avix-ft__pill {
@@ -924,38 +954,51 @@ body { margin: 0; background: #fff; }
 	}
 
 	.avix-ft__buddy,
+	.avix-ft__buddy::before,
 	.avix-ft__buddy rect,
 	.avix-ft.is-armed .avix-ft__buddy {
 		opacity: 1;
 		animation: none !important;
 	}
+
+	.avix-ft__buddy::before {
+		opacity: 0.25;
+	}
 }
+
 </style>
 </head>
 <body>
 <p class="demo-label">Dark style</p>
-<footer class="avix-ft avix-ft--dark" data-avix-ft="">
+		<footer class="avix-ft avix-ft--dark" data-avix-ft="" data-ft-match="#avix-smart-header">
 			<div class="avix-ft__card">
 				<div class="avix-ft__lines" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 				<div class="avix-ft__glow" aria-hidden="true"></div>
+
 				<div class="avix-ft__frame">
 							<section class="avix-ft__cta">
 							<h2 class="avix-ft__title">
 					<span class="avix-ft__perch">Got<span class="avix-ft__buddy" aria-hidden="true"><svg viewBox="0 0 10 11" focusable="false"><rect class="avix-ft__b-leg avix-ft__b-leg--l" x="2" y="7" width="2" height="4"/><rect class="avix-ft__b-leg avix-ft__b-leg--r" x="6" y="7" width="2" height="4"/><rect class="avix-ft__b-body" x="2" y="3" width="6" height="4"/><rect class="avix-ft__b-head" x="3" y="0" width="4" height="3"/><rect class="avix-ft__b-arm avix-ft__b-arm--l" x="0" y="4" width="2" height="3"/><rect class="avix-ft__b-arm avix-ft__b-arm--r" x="8" y="4" width="2" height="3"/></svg></span></span> a project in mind?<br>Let’s build it together.				</h2>
+			
 							<a href="https://avixdigital.com/contact/" class="avix-ft__pill">
 					Book a Free Audit					<span class="avix-ft__pill-icon" aria-hidden="true"><svg class="avix-ft__icon" viewBox="0 0 24 24" focusable="false"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
 				</a>
+			
 							<p class="avix-ft__lead">Transforming premium brands with cutting-edge UI/UX and advanced coding. Partner with Avix Digital for your next custom Shopify, Webflow, or WordPress build.</p>
+			
 							<p class="avix-ft__alt">
 					Already working with us?					<a href="https://admin.avixdigital.com/">Client Portal<svg class="avix-ft__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></a>
 				</p>
 					</section>
+		
 					<div class="avix-ft__grid">
 								<div class="avix-ft__col avix-ft__col--brand">
 							<a href="/" class="avix-ft__logo">
-					<img src="https://avixdigital.com/wp-content/uploads/2026/05/Untitled-design244.png" alt="My WordPress Website" loading="lazy" decoding="async">
+					<img src="https://avixdigital.com/wp-content/uploads/2026/05/Untitled-design244.png" alt="Avix Digital" loading="lazy" decoding="async">
 				</a>
+			
 							<p class="avix-ft__about">Avix Digital is a premium development agency focused on high-converting storefronts, bespoke UI/UX design, and scalable custom web architectures.</p>
+			
 							<div class="avix-ft__social">
 											<p class="avix-ft__social-label">Follow us on:</p>
 										<ul>
@@ -1027,6 +1070,8 @@ body { margin: 0; background: #fff; }
 							</ul>
 		</div>
 							</div>
+
+					
 							<div class="avix-ft__bottom">
 			<div class="avix-ft__bottom-row">
 				<ul class="avix-ft__badges"><li class="avix-ft__badge"><span class="avix-ft__badge-tile"><img src="https://avixdigital.com/wp-content/uploads/2026/09/jZfxvFmbpRDqIBZd8yCfHG8A.avif" alt="Meta Business Partner" loading="lazy" decoding="async" style="--ft-zoom:1"></span></li><li class="avix-ft__badge"><span class="avix-ft__badge-tile"><img src="https://avixdigital.com/wp-content/uploads/2026/09/AOV2DTNHK6JgQPDMFMSruGw.avif" alt="Google Partner" loading="lazy" decoding="async" style="--ft-zoom:1"></span></li><li class="avix-ft__badge"><span class="avix-ft__badge-tile"><img src="https://avixdigital.com/wp-content/uploads/2026/09/images-3.jpeg" alt="Shopify Partner" loading="lazy" decoding="async" style="--ft-zoom:1"></span></li><li class="avix-ft__badge"><span class="avix-ft__badge-tile"><img src="https://avixdigital.com/wp-content/uploads/2026/09/images-5.png" alt="WordPress Partner" loading="lazy" decoding="async" style="--ft-zoom:1.65"></span></li></ul>									<button class="avix-ft__top" type="button" data-ft-top>
@@ -1042,29 +1087,37 @@ body { margin: 0; background: #fff; }
 				<p class="avix-ft__sr" data-ft-status aria-live="polite" data-copied="Copied"></p>
 			</div>
 		</footer>
+		
 <p class="demo-label">Light style</p>
-<footer class="avix-ft avix-ft--light" data-avix-ft="">
+		<footer class="avix-ft avix-ft--light" data-avix-ft="" data-ft-match="#avix-smart-header">
 			<div class="avix-ft__card">
 				<div class="avix-ft__lines" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 				<div class="avix-ft__glow" aria-hidden="true"></div>
+
 				<div class="avix-ft__frame">
 							<section class="avix-ft__cta">
 							<h2 class="avix-ft__title">
 					<span class="avix-ft__perch">Got<span class="avix-ft__buddy" aria-hidden="true"><svg viewBox="0 0 10 11" focusable="false"><rect class="avix-ft__b-leg avix-ft__b-leg--l" x="2" y="7" width="2" height="4"/><rect class="avix-ft__b-leg avix-ft__b-leg--r" x="6" y="7" width="2" height="4"/><rect class="avix-ft__b-body" x="2" y="3" width="6" height="4"/><rect class="avix-ft__b-head" x="3" y="0" width="4" height="3"/><rect class="avix-ft__b-arm avix-ft__b-arm--l" x="0" y="4" width="2" height="3"/><rect class="avix-ft__b-arm avix-ft__b-arm--r" x="8" y="4" width="2" height="3"/></svg></span></span> a project in mind?<br>Let’s build it together.				</h2>
+			
 							<a href="https://avixdigital.com/contact/" class="avix-ft__pill">
 					Book a Free Audit					<span class="avix-ft__pill-icon" aria-hidden="true"><svg class="avix-ft__icon" viewBox="0 0 24 24" focusable="false"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
 				</a>
+			
 							<p class="avix-ft__lead">Transforming premium brands with cutting-edge UI/UX and advanced coding. Partner with Avix Digital for your next custom Shopify, Webflow, or WordPress build.</p>
+			
 							<p class="avix-ft__alt">
 					Already working with us?					<a href="https://admin.avixdigital.com/">Client Portal<svg class="avix-ft__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></a>
 				</p>
 					</section>
+		
 					<div class="avix-ft__grid">
 								<div class="avix-ft__col avix-ft__col--brand">
 							<a href="/" class="avix-ft__logo">
-					<img src="https://avixdigital.com/wp-content/uploads/2024/09/Untitled-design198.png" alt="My WordPress Website" loading="lazy" decoding="async">
+					<img src="https://avixdigital.com/wp-content/uploads/2024/09/Untitled-design198.png" alt="Avix Digital" loading="lazy" decoding="async">
 				</a>
+			
 							<p class="avix-ft__about">Avix Digital is a premium development agency focused on high-converting storefronts, bespoke UI/UX design, and scalable custom web architectures.</p>
+			
 							<div class="avix-ft__social">
 											<p class="avix-ft__social-label">Follow us on:</p>
 										<ul>
@@ -1136,6 +1189,8 @@ body { margin: 0; background: #fff; }
 							</ul>
 		</div>
 							</div>
+
+					
 							<div class="avix-ft__bottom">
 			<div class="avix-ft__bottom-row">
 				<ul class="avix-ft__badges"><li class="avix-ft__badge"><span class="avix-ft__badge-tile"><img src="https://avixdigital.com/wp-content/uploads/2026/09/jZfxvFmbpRDqIBZd8yCfHG8A.avif" alt="Meta Business Partner" loading="lazy" decoding="async" style="--ft-zoom:1"></span></li><li class="avix-ft__badge"><span class="avix-ft__badge-tile"><img src="https://avixdigital.com/wp-content/uploads/2026/09/AOV2DTNHK6JgQPDMFMSruGw.avif" alt="Google Partner" loading="lazy" decoding="async" style="--ft-zoom:1"></span></li><li class="avix-ft__badge"><span class="avix-ft__badge-tile"><img src="https://avixdigital.com/wp-content/uploads/2026/09/images-3.jpeg" alt="Shopify Partner" loading="lazy" decoding="async" style="--ft-zoom:1"></span></li><li class="avix-ft__badge"><span class="avix-ft__badge-tile"><img src="https://avixdigital.com/wp-content/uploads/2026/09/images-5.png" alt="WordPress Partner" loading="lazy" decoding="async" style="--ft-zoom:1.65"></span></li></ul>									<button class="avix-ft__top" type="button" data-ft-top>
@@ -1151,6 +1206,7 @@ body { margin: 0; background: #fff; }
 				<p class="avix-ft__sr" data-ft-status aria-live="polite" data-copied="Copied"></p>
 			</div>
 		</footer>
+		
 <script>
 /*!
  * Avix Digital · Site Footer
@@ -1201,11 +1257,135 @@ body { margin: 0; background: #fff; }
 		});
 	}
 
+	// Headers used by common themes, tried after the widget's own selector.
+	var HEADER_FALLBACK = '.elementor-location-header, #masthead, header.site-header, .site-header, body > header';
+	var HEADER_ITEMS = 'a, button, img, svg, input, select, [role="button"]';
+
+	function findHeaders(selector) {
+		var found = [];
+		[selector, HEADER_FALLBACK].forEach(function (query) {
+			if (!query) {
+				return;
+			}
+			try {
+				Array.prototype.push.apply(found, document.querySelectorAll(query));
+			} catch (error) {
+				// Invalid selector typed in the editor: skip it.
+			}
+		});
+		return found;
+	}
+
+	/**
+	 * Left edge of the header's first item (logo) and right edge of its last
+	 * (usually the CTA), counting only what is visible inside the header bar:
+	 * dropdowns, off-canvas menus and hidden items are ignored.
+	 */
+	function headerEdges(selector, footer) {
+		var headers = findHeaders(selector);
+		var viewport = document.documentElement.clientWidth;
+		for (var h = 0; h < headers.length; h++) {
+			var header = headers[h];
+			if (header.contains(footer)) {
+				continue;
+			}
+			var bar = header.getBoundingClientRect();
+			if (bar.width < 200 || bar.height < 16) {
+				continue;
+			}
+			var left = Infinity;
+			var right = -Infinity;
+			var count = 0;
+			var items = header.querySelectorAll(HEADER_ITEMS);
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				if (item.ownerSVGElement) {
+					continue;
+				}
+				var rect = item.getBoundingClientRect();
+				if (rect.width < 2 || rect.height < 2 || rect.top < bar.top - 1 || rect.bottom > bar.bottom + 1 || rect.left < -1 || rect.right > viewport + 1) {
+					continue;
+				}
+				var style = window.getComputedStyle(item);
+				if (style.visibility === 'hidden' || parseFloat(style.opacity) === 0) {
+					continue;
+				}
+				left = Math.min(left, rect.left);
+				right = Math.max(right, rect.right);
+				count++;
+			}
+			if (count >= 2 && right - left > 160) {
+				return { left: left, right: right };
+			}
+		}
+		return null;
+	}
+
+	function matchHeader(root) {
+		var selector = root.getAttribute('data-ft-match');
+		var card = root.querySelector('.avix-ft__card');
+		if (selector === null || !card) {
+			return;
+		}
+		var frame = 0;
+
+		function apply() {
+			frame = 0;
+			if (!root.isConnected) {
+				return;
+			}
+			var edges = headerEdges(selector, root);
+			var box = card.getBoundingClientRect();
+			var left = edges ? Math.round(edges.left - box.left) : -1;
+			var right = edges ? Math.round(box.right - edges.right) : -1;
+			if (left < 0 || right < 0 || box.width - left - right < 240) {
+				root.classList.remove('is-matched');
+				return;
+			}
+			root.style.setProperty('--ft-match-l', left + 'px');
+			root.style.setProperty('--ft-match-r', right + 'px');
+			root.classList.add('is-matched');
+		}
+
+		function schedule() {
+			if (!frame) {
+				frame = window.requestAnimationFrame(apply);
+			}
+		}
+
+		apply();
+		window.addEventListener('resize', schedule, { passive: true });
+		window.addEventListener('load', schedule);
+		if (document.fonts && document.fonts.ready) {
+			document.fonts.ready.then(schedule);
+		}
+		// Headers often shrink once scrolled: measure again as the footer comes into view.
+		if ('IntersectionObserver' in window) {
+			new window.IntersectionObserver(function (entries) {
+				if (entries[entries.length - 1].isIntersecting) {
+					schedule();
+				}
+			}).observe(root);
+		}
+		if (window.ResizeObserver) {
+			var headers = findHeaders(selector);
+			if (headers.length) {
+				new window.ResizeObserver(schedule).observe(headers[0]);
+			}
+		}
+	}
+
 	function mount(root) {
 		if (!root || root.__avixFt) {
 			return;
 		}
 		root.__avixFt = true;
+		matchHeader(root);
+		if ('IntersectionObserver' in window) {
+			new window.IntersectionObserver(function (entries) {
+				root.classList.toggle('is-offscreen', !entries[entries.length - 1].isIntersecting);
+			}, { rootMargin: '80px 0px' }).observe(root);
+		}
 		var status = root.querySelector('[data-ft-status]');
 
 		Array.prototype.forEach.call(root.querySelectorAll('[data-ft-copy]'), function (button) {
@@ -1297,6 +1477,7 @@ body { margin: 0; background: #fff; }
 		window.addEventListener('elementor/frontend/init', hookElementor);
 	}
 })(window, document);
+
 </script>
 </body>
 </html>

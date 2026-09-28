@@ -675,6 +675,24 @@ body { margin: 0; background: #050608; }
 	border-left: 1px solid var(--ft-line);
 }
 
+/*
+ * Matched to the site header: JS measures where the header's content starts
+ * and ends and the footer's text lines up with it (lines sit one column
+ * padding outside). Until then, and if no header is found, it stays boxed.
+ */
+.avix-ft.is-matched .avix-ft__frame,
+.avix-ft.is-matched .avix-ft__lines {
+	width: auto;
+	margin-right: max(0px, calc(var(--ft-match-r, 0px) - var(--ft-col-pad)));
+	margin-left: max(0px, calc(var(--ft-match-l, 0px) - var(--ft-col-pad)));
+}
+
+.avix-ft.is-matched .avix-ft__lines {
+	right: 0;
+	left: 0;
+	transform: none;
+}
+
 .avix-ft--no-lines .avix-ft__lines {
 	display: none;
 }
@@ -744,7 +762,19 @@ body { margin: 0; background: #050608; }
 	height: var(--ft-buddy-h);
 	transform: translateX(-50%);
 	transform-origin: 50% 100%;
-	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--ft-accent) 70%, transparent));
+}
+
+/* Breathing glow: an opacity-only pulse runs on the compositor, unlike an
+   animated filter, which repaints every frame. */
+.avix-ft__buddy::before {
+	position: absolute;
+	inset: -60% -85%;
+	z-index: -1;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--ft-accent) 55%, transparent) 0%, color-mix(in srgb, var(--ft-accent) 18%, transparent) 55%, transparent 100%);
+	opacity: 0.25;
+	pointer-events: none;
+	content: "";
 	animation: avix-ft-glow 2.4s ease-in-out infinite alternate;
 }
 
@@ -755,6 +785,7 @@ body { margin: 0; background: #050608; }
 	overflow: visible;
 	fill: var(--ft-accent);
 	shape-rendering: crispEdges;
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--ft-accent) 70%, transparent));
 }
 
 .avix-ft__buddy rect {
@@ -794,9 +825,7 @@ body { margin: 0; background: #050608; }
 }
 
 .avix-ft.is-armed .avix-ft__buddy.is-landed {
-	animation:
-		avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both,
-		avix-ft-glow 2.4s ease-in-out 900ms infinite alternate;
+	animation: avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both;
 }
 
 @keyframes avix-ft-leg {
@@ -818,8 +847,8 @@ body { margin: 0; background: #050608; }
 }
 
 @keyframes avix-ft-glow {
-	from { filter: drop-shadow(0 0 7px color-mix(in srgb, var(--ft-accent) 55%, transparent)); }
-	to { filter: drop-shadow(0 0 16px color-mix(in srgb, var(--ft-accent) 95%, transparent)); }
+	from { opacity: 0.25; }
+	to { opacity: var(--ft-halo, 0.7); }
 }
 
 @keyframes avix-ft-land {
@@ -830,20 +859,20 @@ body { margin: 0; background: #050608; }
 	100% { opacity: 1; transform: translate(-50%, 0) scale(1, 1); }
 }
 
+/* Softer glow on the light card. */
 .avix-ft--light .avix-ft__buddy {
-	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--ft-accent) 40%, transparent));
-	animation-name: avix-ft-glow-soft;
+	--ft-halo: 0.4;
 }
 
-.avix-ft--light.is-armed .avix-ft__buddy.is-landed {
-	animation:
-		avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both,
-		avix-ft-glow-soft 2.4s ease-in-out 900ms infinite alternate;
+.avix-ft--light .avix-ft__buddy svg {
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--ft-accent) 40%, transparent));
 }
 
-@keyframes avix-ft-glow-soft {
-	from { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--ft-accent) 30%, transparent)); }
-	to { filter: drop-shadow(0 0 11px color-mix(in srgb, var(--ft-accent) 55%, transparent)); }
+/* Nothing loops while the footer is off screen. */
+.avix-ft.is-offscreen *,
+.avix-ft.is-offscreen *::before,
+.avix-ft.is-offscreen *::after {
+	animation-play-state: paused !important;
 }
 
 .avix-ft .avix-ft__pill {
@@ -1492,10 +1521,15 @@ body { margin: 0; background: #050608; }
 	}
 
 	.avix-ft__buddy,
+	.avix-ft__buddy::before,
 	.avix-ft__buddy rect,
 	.avix-ft.is-armed .avix-ft__buddy {
 		opacity: 1;
 		animation: none !important;
+	}
+
+	.avix-ft__buddy::before {
+		opacity: 0.25;
 	}
 }
 
@@ -1572,7 +1606,7 @@ body { margin: 0; background: #050608; }
 					</div>
 					</div>
 		</section>
-		<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much does a project cost?","acceptedAnswer":{"@type":"Answer","text":"\u003Cp\u003EIt depends on scope: the number of templates, integrations and custom features. Every quote is itemised, so you can see exactly what you’re paying for and adjust the scope to fit your budget.\u003C/p\u003E"}},{"@type":"Question","name":"How long does it take to build a website or store?","acceptedAnswer":{"@type":"Answer","text":"\u003Cp\u003EThat depends on scope too. A focused landing page moves much faster than a custom Shopify Plus build with integrations. Your quote includes a milestone plan, so you always know what happens next and when.\u003C/p\u003E"}},{"@type":"Question","name":"Do you work with Shopify Plus and Webflow?","acceptedAnswer":{"@type":"Answer","text":"\u003Cp\u003EYes. We design and build custom Shopify and Shopify Plus stores and Webflow sites, and recommend the platform that fits your business rather than forcing one.\u003C/p\u003E"}},{"@type":"Question","name":"Can you redesign or migrate our existing site?","acceptedAnswer":{"@type":"Answer","text":"\u003Cp\u003EYes. We audit what you have, keep what already works and map every redirect before launch, so your search rankings and traffic carry over to the new site.\u003C/p\u003E"}},{"@type":"Question","name":"Do you offer support after launch?","acceptedAnswer":{"@type":"Answer","text":"\u003Cp\u003EYes. After launch we stay on for fixes, performance tuning and new features, so your site keeps improving instead of standing still.\u003C/p\u003E"}}]}</script><div class="demo-footer">		<footer class="avix-ft avix-ft--dark" data-avix-ft="">
+		<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much does a project cost?","acceptedAnswer":{"@type":"Answer","text":"\u003Cp\u003EIt depends on scope: the number of templates, integrations and custom features. Every quote is itemised, so you can see exactly what you’re paying for and adjust the scope to fit your budget.\u003C/p\u003E"}},{"@type":"Question","name":"How long does it take to build a website or store?","acceptedAnswer":{"@type":"Answer","text":"\u003Cp\u003EThat depends on scope too. A focused landing page moves much faster than a custom Shopify Plus build with integrations. Your quote includes a milestone plan, so you always know what happens next and when.\u003C/p\u003E"}},{"@type":"Question","name":"Do you work with Shopify Plus and Webflow?","acceptedAnswer":{"@type":"Answer","text":"\u003Cp\u003EYes. We design and build custom Shopify and Shopify Plus stores and Webflow sites, and recommend the platform that fits your business rather than forcing one.\u003C/p\u003E"}},{"@type":"Question","name":"Can you redesign or migrate our existing site?","acceptedAnswer":{"@type":"Answer","text":"\u003Cp\u003EYes. We audit what you have, keep what already works and map every redirect before launch, so your search rankings and traffic carry over to the new site.\u003C/p\u003E"}},{"@type":"Question","name":"Do you offer support after launch?","acceptedAnswer":{"@type":"Answer","text":"\u003Cp\u003EYes. After launch we stay on for fixes, performance tuning and new features, so your site keeps improving instead of standing still.\u003C/p\u003E"}}]}</script><div class="demo-footer">		<footer class="avix-ft avix-ft--dark" data-avix-ft="" data-ft-match="#avix-smart-header">
 			<div class="avix-ft__card">
 				<div class="avix-ft__lines" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 				<div class="avix-ft__glow" aria-hidden="true"></div>
@@ -1896,11 +1930,135 @@ body { margin: 0; background: #050608; }
 		});
 	}
 
+	// Headers used by common themes, tried after the widget's own selector.
+	var HEADER_FALLBACK = '.elementor-location-header, #masthead, header.site-header, .site-header, body > header';
+	var HEADER_ITEMS = 'a, button, img, svg, input, select, [role="button"]';
+
+	function findHeaders(selector) {
+		var found = [];
+		[selector, HEADER_FALLBACK].forEach(function (query) {
+			if (!query) {
+				return;
+			}
+			try {
+				Array.prototype.push.apply(found, document.querySelectorAll(query));
+			} catch (error) {
+				// Invalid selector typed in the editor: skip it.
+			}
+		});
+		return found;
+	}
+
+	/**
+	 * Left edge of the header's first item (logo) and right edge of its last
+	 * (usually the CTA), counting only what is visible inside the header bar:
+	 * dropdowns, off-canvas menus and hidden items are ignored.
+	 */
+	function headerEdges(selector, footer) {
+		var headers = findHeaders(selector);
+		var viewport = document.documentElement.clientWidth;
+		for (var h = 0; h < headers.length; h++) {
+			var header = headers[h];
+			if (header.contains(footer)) {
+				continue;
+			}
+			var bar = header.getBoundingClientRect();
+			if (bar.width < 200 || bar.height < 16) {
+				continue;
+			}
+			var left = Infinity;
+			var right = -Infinity;
+			var count = 0;
+			var items = header.querySelectorAll(HEADER_ITEMS);
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				if (item.ownerSVGElement) {
+					continue;
+				}
+				var rect = item.getBoundingClientRect();
+				if (rect.width < 2 || rect.height < 2 || rect.top < bar.top - 1 || rect.bottom > bar.bottom + 1 || rect.left < -1 || rect.right > viewport + 1) {
+					continue;
+				}
+				var style = window.getComputedStyle(item);
+				if (style.visibility === 'hidden' || parseFloat(style.opacity) === 0) {
+					continue;
+				}
+				left = Math.min(left, rect.left);
+				right = Math.max(right, rect.right);
+				count++;
+			}
+			if (count >= 2 && right - left > 160) {
+				return { left: left, right: right };
+			}
+		}
+		return null;
+	}
+
+	function matchHeader(root) {
+		var selector = root.getAttribute('data-ft-match');
+		var card = root.querySelector('.avix-ft__card');
+		if (selector === null || !card) {
+			return;
+		}
+		var frame = 0;
+
+		function apply() {
+			frame = 0;
+			if (!root.isConnected) {
+				return;
+			}
+			var edges = headerEdges(selector, root);
+			var box = card.getBoundingClientRect();
+			var left = edges ? Math.round(edges.left - box.left) : -1;
+			var right = edges ? Math.round(box.right - edges.right) : -1;
+			if (left < 0 || right < 0 || box.width - left - right < 240) {
+				root.classList.remove('is-matched');
+				return;
+			}
+			root.style.setProperty('--ft-match-l', left + 'px');
+			root.style.setProperty('--ft-match-r', right + 'px');
+			root.classList.add('is-matched');
+		}
+
+		function schedule() {
+			if (!frame) {
+				frame = window.requestAnimationFrame(apply);
+			}
+		}
+
+		apply();
+		window.addEventListener('resize', schedule, { passive: true });
+		window.addEventListener('load', schedule);
+		if (document.fonts && document.fonts.ready) {
+			document.fonts.ready.then(schedule);
+		}
+		// Headers often shrink once scrolled: measure again as the footer comes into view.
+		if ('IntersectionObserver' in window) {
+			new window.IntersectionObserver(function (entries) {
+				if (entries[entries.length - 1].isIntersecting) {
+					schedule();
+				}
+			}).observe(root);
+		}
+		if (window.ResizeObserver) {
+			var headers = findHeaders(selector);
+			if (headers.length) {
+				new window.ResizeObserver(schedule).observe(headers[0]);
+			}
+		}
+	}
+
 	function mount(root) {
 		if (!root || root.__avixFt) {
 			return;
 		}
 		root.__avixFt = true;
+		matchHeader(root);
+		if ('IntersectionObserver' in window) {
+			new window.IntersectionObserver(function (entries) {
+				root.classList.toggle('is-offscreen', !entries[entries.length - 1].isIntersecting);
+			}, { rootMargin: '80px 0px' }).observe(root);
+		}
 		var status = root.querySelector('[data-ft-status]');
 
 		Array.prototype.forEach.call(root.querySelectorAll('[data-ft-copy]'), function (button) {

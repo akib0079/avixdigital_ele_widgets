@@ -815,14 +815,41 @@ class Site_Footer extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'width_mode',
+			array(
+				'label'       => esc_html__( 'Content width', 'avix-widgets' ),
+				'description' => esc_html__( 'Match the header: the footer lines its content up with the header’s logo and last button, on every screen size.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'header',
+				'options'     => array(
+					'header' => esc_html__( 'Match the site header', 'avix-widgets' ),
+					'boxed'  => esc_html__( 'Fixed max width', 'avix-widgets' ),
+				),
+				'separator'   => 'before',
+			)
+		);
+
+		$this->add_control(
+			'header_selector',
+			array(
+				'label'       => esc_html__( 'Header selector', 'avix-widgets' ),
+				'description' => esc_html__( 'CSS selector of your header. Common theme headers are found automatically if this one is missing.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => '#avix-smart-header',
+				'condition'   => array( 'width_mode' => 'header' ),
+			)
+		);
+
 		$this->add_responsive_control(
 			'max_width',
 			array(
-				'label'      => esc_html__( 'Content width', 'avix-widgets' ),
-				'type'       => Controls_Manager::SLIDER,
-				'size_units' => array( 'px' ),
-				'range'      => array( 'px' => array( 'min' => 800, 'max' => 1600 ) ),
-				'selectors'  => array( '{{WRAPPER}} .avix-ft' => '--ft-max: {{SIZE}}{{UNIT}};' ),
+				'label'       => esc_html__( 'Max width', 'avix-widgets' ),
+				'description' => esc_html__( 'Also used if the header can’t be found.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SLIDER,
+				'size_units'  => array( 'px' ),
+				'range'       => array( 'px' => array( 'min' => 800, 'max' => 1600 ) ),
+				'selectors'   => array( '{{WRAPPER}} .avix-ft' => '--ft-max: {{SIZE}}{{UNIT}};' ),
 			)
 		);
 
@@ -878,6 +905,9 @@ class Site_Footer extends Widget_Base {
 				'data-avix-ft'  => '',
 			)
 		);
+		if ( 'boxed' !== ( $s['width_mode'] ?? 'header' ) ) {
+			$this->add_render_attribute( 'root', 'data-ft-match', trim( (string) ( $s['header_selector'] ?? '' ) ) );
+		}
 		?>
 		<footer <?php $this->print_render_attribute_string( 'root' ); ?>>
 			<div class="avix-ft__card">
