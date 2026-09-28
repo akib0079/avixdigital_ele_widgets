@@ -56,15 +56,45 @@ class Client_Logos extends Widget_Base {
 	/* ------------------------------------------------------------------ */
 
 	protected function register_controls(): void {
-		$this->start_controls_section( 'section_header', array( 'label' => esc_html__( 'Header', 'avix-widgets' ) ) );
+		$this->start_controls_section( 'section_header', array( 'label' => esc_html__( 'Layout & Header', 'avix-widgets' ) ) );
+
+		$this->add_control(
+			'variant',
+			array(
+				'label'       => esc_html__( 'Design', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'story',
+				'options'     => array(
+					'story'   => esc_html__( 'Story belt (pixel character)', 'avix-widgets' ),
+					'minimal' => esc_html__( 'Minimal marquee', 'avix-widgets' ),
+				),
+				'description' => esc_html__( 'Minimal: just the logos gliding by with a one-line heading. They turn to colour and the row eases to a stop on hover.', 'avix-widgets' ),
+			)
+		);
+
+		$this->add_control(
+			'head_position',
+			array(
+				'label'     => esc_html__( 'Heading position', 'avix-widgets' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => 'top',
+				'options'   => array(
+					'top'  => esc_html__( 'Above the logos', 'avix-widgets' ),
+					'side' => esc_html__( 'Beside the logos (wide screens)', 'avix-widgets' ),
+				),
+				'condition' => array( 'variant' => 'minimal' ),
+			)
+		);
 
 		$this->add_control(
 			'eyebrow',
 			array(
-				'label'   => esc_html__( 'Eyebrow', 'avix-widgets' ),
-				'type'    => Controls_Manager::TEXT,
-				'default' => esc_html__( 'Our clients', 'avix-widgets' ),
-				'dynamic' => array( 'active' => true ),
+				'label'     => esc_html__( 'Eyebrow', 'avix-widgets' ),
+				'type'      => Controls_Manager::TEXT,
+				'default'   => esc_html__( 'Our clients', 'avix-widgets' ),
+				'dynamic'   => array( 'active' => true ),
+				'condition' => array( 'variant' => 'story' ),
+				'separator' => 'before',
 			)
 		);
 
@@ -101,8 +131,9 @@ class Client_Logos extends Widget_Base {
 				'label'   => esc_html__( 'Subtitle', 'avix-widgets' ),
 				'type'    => Controls_Manager::TEXTAREA,
 				'rows'    => 2,
-				'default' => esc_html__( 'Every logo here is a real launch. Pick one to hear its story.', 'avix-widgets' ),
-				'dynamic' => array( 'active' => true ),
+				'default'   => esc_html__( 'Every logo here is a real launch. Pick one to hear its story.', 'avix-widgets' ),
+				'dynamic'   => array( 'active' => true ),
+				'condition' => array( 'variant' => 'story' ),
 			)
 		);
 
@@ -114,7 +145,7 @@ class Client_Logos extends Widget_Base {
 			'clients_note',
 			array(
 				'type'            => Controls_Manager::RAW_HTML,
-				'raw'             => esc_html__( 'What you add here is what the pixel character says when a visitor hovers or taps the logo. A case-study link makes the logo clickable.', 'avix-widgets' ),
+				'raw'             => esc_html__( 'Story belt: what you add here is what the pixel character says when a visitor hovers or taps the logo. A case-study link makes the logo clickable (in both designs).', 'avix-widgets' ),
 				'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
 			)
 		);
@@ -208,9 +239,62 @@ class Client_Logos extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'show_toggle',
+			array(
+				'label'       => esc_html__( 'Pause button', 'avix-widgets' ),
+				'description' => esc_html__( 'Lets visitors stop the moving logos. Recommended for accessibility.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+			)
+		);
+
+		$this->add_responsive_control(
+			'logo_height',
+			array(
+				'label'      => esc_html__( 'Logo height', 'avix-widgets' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px' ),
+				'range'      => array( 'px' => array( 'min' => 16, 'max' => 96 ) ),
+				'separator'  => 'before',
+				'selectors'  => array( '{{WRAPPER}} .avix-cl__inner' => '--cl-logo-h: {{SIZE}}{{UNIT}};' ),
+				'condition'  => array( 'variant' => 'minimal' ),
+			)
+		);
+
+		$this->add_responsive_control(
+			'logo_width',
+			array(
+				'label'      => esc_html__( 'Max logo width', 'avix-widgets' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px' ),
+				'range'      => array( 'px' => array( 'min' => 60, 'max' => 320 ) ),
+				'selectors'  => array( '{{WRAPPER}} .avix-cl__inner' => '--cl-logo-w: {{SIZE}}{{UNIT}};' ),
+				'condition'  => array( 'variant' => 'minimal' ),
+			)
+		);
+
+		$this->add_responsive_control(
+			'logo_gap',
+			array(
+				'label'      => esc_html__( 'Space between logos', 'avix-widgets' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px' ),
+				'range'      => array( 'px' => array( 'min' => 16, 'max' => 160 ) ),
+				'selectors'  => array( '{{WRAPPER}} .avix-cl__inner' => '--cl-gap: {{SIZE}}{{UNIT}};' ),
+				'condition'  => array( 'variant' => 'minimal' ),
+			)
+		);
+
 		$this->end_controls_section();
 
-		$this->start_controls_section( 'section_buddy', array( 'label' => esc_html__( 'Pixel Character', 'avix-widgets' ) ) );
+		$this->start_controls_section(
+			'section_buddy',
+			array(
+				'label'     => esc_html__( 'Pixel Character', 'avix-widgets' ),
+				'condition' => array( 'variant' => 'story' ),
+			)
+		);
 
 		$this->add_control(
 			'show_buddy',
@@ -388,11 +472,17 @@ class Client_Logos extends Widget_Base {
 			return;
 		}
 
-		$buddy    = 'yes' === $s['show_buddy'];
+		$minimal  = 'minimal' === ( $s['variant'] ?? 'story' );
+		$buddy    = ! $minimal && 'yes' === $s['show_buddy'];
 		$title_id = 'avix-cl-title-' . $this->get_id();
-		$classes  = array( 'avix-cl', 'dark' === $s['theme'] ? 'avix-cl--dark' : 'avix-cl--light' );
+		$classes  = array( 'avix-cl', $minimal ? 'avix-cl--minimal' : 'avix-cl--story', 'dark' === $s['theme'] ? 'avix-cl--dark' : 'avix-cl--light' );
 		if ( 'yes' === $s['mono'] ) {
 			$classes[] = 'avix-cl--mono';
+		}
+		if ( $minimal ) {
+			$classes[] = 'avix-cl--head-' . ( 'side' === $s['head_position'] ? 'side' : 'top' );
+		} elseif ( ! $buddy ) {
+			$classes[] = 'avix-cl--no-buddy';
 		}
 		$speed = isset( $s['speed']['size'] ) && '' !== $s['speed']['size'] ? (float) $s['speed']['size'] : 36;
 
@@ -402,6 +492,7 @@ class Client_Logos extends Widget_Base {
 				'class'        => $classes,
 				'data-avix-cl' => wp_json_encode(
 					array(
+						'story'      => ! $minimal,
 						'speed'      => max( 0, min( 200, $speed ) ),
 						'intro'      => $buddy ? (string) $s['intro'] : '',
 						'introTouch' => $buddy ? (string) $s['intro_touch'] : '',
@@ -413,107 +504,148 @@ class Client_Logos extends Widget_Base {
 		if ( '' !== trim( (string) $s['title'] ) ) {
 			$this->add_render_attribute( 'root', 'aria-labelledby', $title_id );
 		}
-		$tag = Utils::validate_html_tag( $s['title_tag'] );
 		?>
 		<section <?php $this->print_render_attribute_string( 'root' ); ?>>
 			<div class="avix-cl__inner">
-				<div class="avix-cl__frame">
-					<header class="avix-cl__head">
-						<?php if ( '' !== trim( (string) $s['eyebrow'] ) ) : ?>
-							<p class="avix-cl__eyebrow"><?php echo esc_html( $s['eyebrow'] ); ?></p>
-						<?php endif; ?>
-						<?php if ( '' !== trim( (string) $s['title'] ) ) : ?>
-							<<?php echo esc_attr( $tag ); ?> class="avix-cl__title" id="<?php echo esc_attr( $title_id ); ?>"><?php echo $this->accent_html( (string) $s['title'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></<?php echo esc_attr( $tag ); ?>>
-						<?php endif; ?>
-						<?php if ( '' !== trim( (string) $s['subtitle'] ) ) : ?>
-							<p class="avix-cl__sub"><?php echo esc_html( $s['subtitle'] ); ?></p>
-						<?php endif; ?>
-					</header>
-				</div>
-
-				<div class="avix-cl__stage" data-cl-stage>
-					<div class="avix-cl__viewport" data-cl-viewport>
-						<div class="avix-cl__track" data-cl-track>
-							<ul class="avix-cl__set" data-cl-set>
-								<?php foreach ( $clients as $i => $client ) : ?>
-									<li><?php $this->render_tile( $client, $i ); ?></li>
-								<?php endforeach; ?>
-							</ul>
-						</div>
+				<?php if ( $minimal ) : ?>
+					<div class="avix-cl__frame avix-cl__row">
+						<?php $this->render_head( $s, $title_id, true ); ?>
+						<?php $this->render_stage( $s, $clients, false, true ); ?>
 					</div>
-					<span class="avix-cl__belt" data-cl-belt aria-hidden="true"></span>
-
-					<?php if ( $buddy ) : ?>
-						<div class="avix-cl__buddy" data-cl-buddy aria-hidden="true">
-							<span class="avix-cl__sprite">
-								<svg viewBox="0 0 10 12" focusable="false">
-									<rect class="avix-cl__b-leg avix-cl__b-leg--l" x="2" y="7" width="2" height="5"/>
-									<rect class="avix-cl__b-leg avix-cl__b-leg--r" x="6" y="7" width="2" height="5"/>
-									<rect class="avix-cl__b-body" x="2" y="3" width="6" height="4"/>
-									<rect class="avix-cl__b-head" x="3" y="0" width="4" height="3"/>
-									<rect class="avix-cl__b-arm avix-cl__b-arm--l" x="0" y="3" width="2" height="3"/>
-									<rect class="avix-cl__b-arm avix-cl__b-arm--r" x="8" y="3" width="2" height="3"/>
-								</svg>
-							</span>
-						</div>
-					<?php endif; ?>
-
-					<div class="avix-cl__bubble" data-cl-bubble role="status" aria-live="polite" aria-hidden="true">
-						<strong class="avix-cl__bubble-name" data-cl-bname></strong>
-						<span class="avix-cl__bubble-meta" data-cl-bmeta hidden></span>
-						<a class="avix-cl__bubble-link" data-cl-blink href="#" hidden><span><?php echo esc_html( $s['link_text'] ); ?></span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+				<?php else : ?>
+					<div class="avix-cl__frame">
+						<?php $this->render_head( $s, $title_id, false ); ?>
 					</div>
-				</div>
-
-				<div class="avix-cl__frame">
-					<div class="avix-cl__foot">
-						<?php $this->render_proof( $s ); ?>
-						<?php if ( $speed > 0 ) : ?>
-							<button class="avix-cl__toggle" type="button" data-cl-toggle aria-label="<?php esc_attr_e( 'Pause the logos', 'avix-widgets' ); ?>" data-label-pause="<?php esc_attr_e( 'Pause the logos', 'avix-widgets' ); ?>" data-label-play="<?php esc_attr_e( 'Play the logos', 'avix-widgets' ); ?>">
-								<svg class="avix-cl__pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
-								<svg class="avix-cl__play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10.5-6.5L8 5.5Z"/></svg>
-							</button>
-						<?php endif; ?>
-					</div>
-				</div>
+					<?php $this->render_stage( $s, $clients, $buddy, false ); ?>
+				<?php endif; ?>
+				<?php $this->render_foot( $s, $speed ); ?>
 			</div>
 		</section>
 		<?php
 	}
 
-	private function render_tile( array $client, $index ) {
+	private function render_head( array $s, $title_id, $minimal ) {
+		$eyebrow  = $minimal ? '' : trim( (string) $s['eyebrow'] );
+		$title    = trim( (string) $s['title'] );
+		$subtitle = $minimal ? '' : trim( (string) $s['subtitle'] );
+		if ( '' === $eyebrow . $title . $subtitle ) {
+			return;
+		}
+		$tag = Utils::validate_html_tag( $s['title_tag'] );
+		?>
+		<header class="avix-cl__head">
+			<?php if ( '' !== $eyebrow ) : ?>
+				<p class="avix-cl__eyebrow"><?php echo esc_html( $eyebrow ); ?></p>
+			<?php endif; ?>
+			<?php if ( '' !== $title ) : ?>
+				<<?php echo esc_attr( $tag ); ?> class="avix-cl__title" id="<?php echo esc_attr( $title_id ); ?>"><?php echo $this->accent_html( $title ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></<?php echo esc_attr( $tag ); ?>>
+			<?php endif; ?>
+			<?php if ( '' !== $subtitle ) : ?>
+				<p class="avix-cl__sub"><?php echo esc_html( $subtitle ); ?></p>
+			<?php endif; ?>
+		</header>
+		<?php
+	}
+
+	private function render_stage( array $s, array $clients, $buddy, $minimal ) {
+		?>
+		<div class="avix-cl__stage" data-cl-stage>
+			<div class="avix-cl__viewport" data-cl-viewport>
+				<div class="avix-cl__track" data-cl-track>
+					<ul class="avix-cl__set" data-cl-set>
+						<?php foreach ( $clients as $i => $client ) : ?>
+							<li><?php $this->render_tile( $client, $i, $minimal ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+			</div>
+			<?php if ( ! $minimal ) : ?>
+				<span class="avix-cl__belt" data-cl-belt aria-hidden="true"></span>
+
+				<?php if ( $buddy ) : ?>
+					<div class="avix-cl__buddy" data-cl-buddy aria-hidden="true">
+						<span class="avix-cl__sprite">
+							<svg viewBox="0 0 10 12" focusable="false">
+								<rect class="avix-cl__b-leg avix-cl__b-leg--l" x="2" y="7" width="2" height="5"/>
+								<rect class="avix-cl__b-leg avix-cl__b-leg--r" x="6" y="7" width="2" height="5"/>
+								<rect class="avix-cl__b-body" x="2" y="3" width="6" height="4"/>
+								<rect class="avix-cl__b-head" x="3" y="0" width="4" height="3"/>
+								<rect class="avix-cl__b-arm avix-cl__b-arm--l" x="0" y="3" width="2" height="3"/>
+								<rect class="avix-cl__b-arm avix-cl__b-arm--r" x="8" y="3" width="2" height="3"/>
+							</svg>
+						</span>
+					</div>
+				<?php endif; ?>
+
+				<div class="avix-cl__bubble" data-cl-bubble role="status" aria-live="polite" aria-hidden="true">
+					<strong class="avix-cl__bubble-name" data-cl-bname></strong>
+					<span class="avix-cl__bubble-meta" data-cl-bmeta hidden></span>
+					<a class="avix-cl__bubble-link" data-cl-blink href="#" hidden><span><?php echo esc_html( $s['link_text'] ); ?></span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	private function render_foot( array $s, $speed ) {
+		$toggle = $speed > 0 && 'yes' === ( $s['show_toggle'] ?? 'yes' );
+		ob_start();
+		$this->render_proof( $s );
+		$proof = ob_get_clean();
+		if ( '' === trim( $proof ) && ! $toggle ) {
+			return;
+		}
+		?>
+		<div class="avix-cl__frame">
+			<div class="avix-cl__foot<?php echo '' === trim( $proof ) ? ' avix-cl__foot--solo' : ''; ?>">
+				<?php echo $proof; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in render_proof(). ?>
+				<?php if ( $toggle ) : ?>
+					<button class="avix-cl__toggle" type="button" data-cl-toggle aria-label="<?php esc_attr_e( 'Pause the logos', 'avix-widgets' ); ?>" data-label-pause="<?php esc_attr_e( 'Pause the logos', 'avix-widgets' ); ?>" data-label-play="<?php esc_attr_e( 'Play the logos', 'avix-widgets' ); ?>">
+						<svg class="avix-cl__pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+						<svg class="avix-cl__play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10.5-6.5L8 5.5Z"/></svg>
+					</button>
+				<?php endif; ?>
+			</div>
+		</div>
+		<?php
+	}
+
+	private function render_tile( array $client, $index, $minimal = false ) {
 		$name    = trim( (string) ( $client['name'] ?? '' ) );
 		$project = trim( (string) ( $client['project'] ?? '' ) );
 		$country = trim( (string) ( $client['country'] ?? '' ) );
 		$logo    = (string) ( $client['logo']['url'] ?? '' );
 		$link    = (array) ( $client['link'] ?? array() );
 		$key     = 'tile-' . $index;
-		$tag     = empty( $link['url'] ) ? 'button' : 'a';
+		// Minimal logos without a link are just images, not buttons.
+		$tag = empty( $link['url'] ) ? ( $minimal ? 'span' : 'button' ) : 'a';
 
 		$this->add_render_attribute(
 			$key,
 			array(
-				'class'        => 'avix-cl__tile',
+				'class'        => $minimal ? 'avix-cl__logo' : 'avix-cl__tile',
 				'data-cl-tile' => '',
 				'data-name'    => $name,
 				'data-project' => $project,
 				'data-country' => $country,
-				'aria-label'   => implode( ', ', array_filter( array( $name, $project, $country ) ) ),
 			)
 		);
+		if ( ! $minimal ) {
+			$this->add_render_attribute( $key, 'aria-label', implode( ', ', array_filter( array( $name, $project, $country ) ) ) );
+		}
 		$zoom = isset( $client['zoom']['size'] ) && '' !== $client['zoom']['size'] ? (float) $client['zoom']['size'] : 100;
 		if ( 100.0 !== $zoom ) {
 			$this->add_render_attribute( $key, 'style', '--cl-zoom:' . round( max( 50, min( 320, $zoom ) ) / 100, 2 ) );
 		}
 		if ( 'a' === $tag ) {
 			$this->add_link_attributes( $key, $link );
-		} else {
+		} elseif ( 'button' === $tag ) {
 			$this->add_render_attribute( $key, 'type', 'button' );
 		}
 		?>
 		<<?php echo esc_attr( $tag ); ?> <?php $this->print_render_attribute_string( $key ); ?>>
 			<?php if ( '' !== $logo ) : ?>
-				<img src="<?php echo esc_url( $logo ); ?>" alt="" loading="lazy" decoding="async">
+				<img src="<?php echo esc_url( $logo ); ?>" alt="<?php echo esc_attr( $minimal ? $name : '' ); ?>" loading="lazy" decoding="async">
 			<?php else : ?>
 				<span class="avix-cl__tile-name"><?php echo esc_html( $name ); ?></span>
 			<?php endif; ?>

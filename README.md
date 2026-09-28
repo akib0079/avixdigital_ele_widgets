@@ -13,7 +13,7 @@ Custom Elementor widgets for avixdigital.com. Tested on WordPress 7.1 + Elemento
 | **FAQ & Quote** | Minimal FAQ accordion for just above the footer, with FAQPage structured data and a small "Request a quote" card the pixel character sits on. |
 | **Compare & CEO Quote** | "Same budget. Better outcome.": a compact typical-agency-vs-Avix face-off and the CEO quote card. Pixel Akib flies between them on rocket boots, zaps the old habits, cheers the Avix side and perches on the real photo. |
 | **Impact Numbers** | "Numbers behind the work": minimal centered pill + numbers with hairline dividers, a count-up and brand icons that draw themselves in. An optional editorial layout adds a heading and rules. Light, warm-grey or dark theme. |
-| **Client Logos** | "Trusted by 200+ clients": a logo belt the Avix pixel character rides. Hover or tap a logo and it hops over to tell that client's story (what was built, where, and a case-study link) in a speech bubble. |
+| **Client Logos** | "Trusted by 200+ clients" in two designs. *Story belt*: a logo belt the Avix pixel character rides; hover or tap a logo and it hops over to tell that client's story (what was built, where, and a case-study link) in a speech bubble. *Minimal marquee*: just the logos gliding by under a one-line heading. |
 
 No jQuery, GSAP or other libraries. Assets load only on pages that use the widget: about 9 KB gzipped for the stack, 4 KB for the numbers.
 
@@ -95,6 +95,14 @@ Replaces the logo marquee. The idea: every logo is a real launch, and the Avix p
 - **Clients** (Content → Clients): logo, name, *What we built*, *Country / city* and an optional *Case study link* per client. The bubble only says what you fill in. **Logo size** enlarges a logo whose image file has a lot of empty space around it (the defaults are already tuned: Rehall and OvaBalance 300%, World of Alps 180%, FCTRY 170%).
 - **Review badge** under the belt: rating, text and link (default: 5.0 ★ "150+ real reviews on Fiverr" → your Fiverr profile). A pause button stops the belt for anyone who wants it still.
 - Light or dark style; every colour can be overridden. Reduced-motion visitors get a still row. The loop only runs while the section is on screen.
+- Switch the character off (Pixel Character → *Show the character*) and the bubble opens straight above the logo instead.
+
+**Minimal marquee** (1.6.0, Layout & Header → *Design*): the clean version.
+- A one-line heading (`[words]` in orange) above the logos, or **beside** them on wide screens (*Heading position*, with a hairline between the two). No eyebrow, subtitle, tiles or character.
+- Logos in grey that turn to full colour on hover while the row eases to a stop; links open on the first click or tap. Soft fades at both ends. On phones the logos run edge to edge.
+- **Logo height**, **Max logo width** and **Space between logos** per screen size (defaults: 40px / 150px / 72px, phones 30px / 112px / 44px). **Logo size** per client still works and keeps the spacing even.
+- Dark style with grey logos shows them as light-grey versions, so dark logo files stay visible (white backgrounds in logo files blend away).
+- The review badge and **Pause button** are optional in both designs (Clients → *Pause button*; keep it on for accessibility). A lone pause button sits quietly at the end of the row.
 
 ## Testimonial Stack
 

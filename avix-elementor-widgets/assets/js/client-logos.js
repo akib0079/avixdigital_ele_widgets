@@ -38,7 +38,8 @@
 		this.buddy = root.querySelector('[data-cl-buddy]');
 		this.bubble = root.querySelector('[data-cl-bubble]');
 		this.toggle = root.querySelector('[data-cl-toggle]');
-		this.speed = reduceMotion.matches ? 0 : clamp(parseFloat(config.speed) || 36, 0, 200);
+		this.story = config.story !== false;
+		this.speed = reduceMotion.matches ? 0 : clamp(isFinite(parseFloat(config.speed)) ? parseFloat(config.speed) : 36, 0, 200);
 		this.intro = touchOnly.matches ? (config.introTouch || '') : (config.intro || '');
 		this.linkText = config.linkText || 'See the case study';
 
@@ -99,7 +100,8 @@
 		}, { passive: true });
 		this.viewport.addEventListener('click', function (event) {
 			var tile = event.target.closest && event.target.closest('[data-cl-tile]');
-			if (!tile) {
+			// The minimal marquee has no story to tell: links just open.
+			if (!tile || !self.story) {
 				return;
 			}
 			var index = self.tiles.indexOf(tile);
@@ -247,6 +249,9 @@
 	};
 
 	Belt.prototype.hopTo = function (index) {
+		if (!this.buddy) {
+			return;
+		}
 		var r = this.rider;
 		var fromX = r.state === 'hop' ? this.buddyX : this.center(r.idx);
 		var distance = Math.abs(this.center(index) - fromX);
@@ -286,15 +291,20 @@
 		this.bubbleMode = 'client';
 		this.fillBubble(this.tiles[index]);
 
+		if (!this.buddy) {
+			// No character: the bubble opens straight above the logo.
+			if (this.bubble) {
+				this.openBubble();
+			}
+			return;
+		}
 		if (this.rider.state === 'ride' && this.rider.idx === index) {
 			this.openBubble();
 		} else {
 			this.closeBubble();
 			this.hopTo(index);
 		}
-		if (this.buddy) {
-			this.buddy.classList.add('is-talk');
-		}
+		this.buddy.classList.add('is-talk');
 	};
 
 	Belt.prototype.dismiss = function () {
@@ -365,6 +375,17 @@
 
 	Belt.prototype.openBubble = function () {
 		if (this.bubble) {
+			// Jump to the new spot while hidden, so the bubble pops in there instead of sliding over.
+			if (!this.bubble.classList.contains('is-open')) {
+				this.bubble.style.transition = 'none';
+				if (this.buddy) {
+					this.placeBubble(this.buddyX || 0, this.rider.state === 'ride' && this.rider.idx === this.focusIdx ? -4 : 0);
+				} else if (this.focusIdx > -1) {
+					this.placeBubble(this.center(this.focusIdx), -4);
+				}
+				void this.bubble.offsetWidth;
+				this.bubble.style.transition = '';
+			}
 			this.bubble.classList.add('is-open');
 			this.bubble.setAttribute('aria-hidden', 'false');
 			this.wake();
@@ -428,7 +449,7 @@
 
 		this.moveRider(dt);
 
-		var moving = this.v > 0.2 || this.rider.state === 'hop' || this.bubble && this.bubble.classList.contains('is-open');
+		var moving = this.v > 0.2 || this.rider.state === 'hop';
 		if (this.inView && !document.hidden && (moving || this.v !== target)) {
 			this.frame = window.requestAnimationFrame(this.tick);
 		}
@@ -450,6 +471,9 @@
 
 	Belt.prototype.moveRider = function (dt) {
 		if (!this.buddy) {
+			if (this.bubble && this.focusIdx > -1 && this.bubble.classList.contains('is-open')) {
+				this.placeBubble(this.center(this.focusIdx), -4);
+			}
 			return;
 		}
 		var r = this.rider;
@@ -502,7 +526,7 @@
 	Belt.prototype.placeBubble = function (x, lift) {
 		var width = this.bubble.offsetWidth;
 		var height = this.bubble.offsetHeight;
-		var buddyH = this.buddy.offsetHeight;
+		var buddyH = this.buddy ? this.buddy.offsetHeight : 0;
 		var left = clamp(x - width / 2, 12, Math.max(12, this.vw - width - 12));
 		var top = this.viewport.offsetTop + this.tileTop - buddyH - 14 - height + lift;
 		this.bubble.style.setProperty('--cl-bx', left.toFixed(1) + 'px');
