@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avix Digital · Services Showcase (preview)</title>
+<!-- Standalone preview of the Elementor widget output. The live site already loads these fonts. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; background: #030407; }
+.demo-spacer { display: grid; min-height: 50vh; place-items: center; color: #6b665f; background: #f5f3ef; font: 600 12px Inter, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+/*!
+ * Avix Digital · Services Showcase
+ * Services expand on hover / tap, a 3D preview card swaps per service and
+ * the Avix pixel character flies on rocket boots to the active one. The
+ * background only animates transform (no blur filters). Layout follows the
+ * widget's own width (container queries).
+ */
+
+.avix-sv {
+	--sv-bg: #030407;
+	--sv-accent: #fb6007;
+	--sv-ink: #ffffff;
+	--sv-muted: #a0a5aa;
+	--sv-line: rgba(255, 255, 255, 0.3);
+	--sv-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--sv-font-body: "Inter", Arial, sans-serif;
+	--sv-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--sv-max: 1400px;
+	--sv-ratio: 16 / 10;
+	--sv-gutter: clamp(40px, 4.6cqi, 66px);
+	--sv-avatar-w: clamp(24px, 2.4cqi, 34px);
+	--sv-index-w: 0px;
+	--sv-shift: 12px;
+
+	container: avix-sv / inline-size;
+	position: relative;
+	isolation: isolate;
+	display: block;
+	width: 100%;
+	padding: clamp(90px, 9vw, 130px) 0 clamp(100px, 11vw, 170px);
+	overflow: hidden;
+	overflow: clip;
+	color: var(--sv-ink);
+	background-color: var(--sv-bg);
+	font-family: var(--sv-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-sv *,
+.avix-sv *::before,
+.avix-sv *::after {
+	box-sizing: border-box;
+}
+
+.avix-sv--indexed {
+	--sv-index-w: 40px;
+}
+
+/* ---------- Background: soft glows (transform-only drift), grid, spotlight ---------- */
+
+.avix-sv__bg {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.avix-sv__glow {
+	position: absolute;
+	display: block;
+	border-radius: 50%;
+	will-change: transform;
+	animation: avix-sv-drift 22s ease-in-out infinite alternate;
+}
+
+.avix-sv__glow--1 {
+	top: -24%;
+	right: -14%;
+	width: min(760px, 70vw);
+	aspect-ratio: 1;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--sv-accent) 17%, transparent), transparent);
+}
+
+.avix-sv__glow--2 {
+	bottom: -30%;
+	left: -16%;
+	width: min(660px, 64vw);
+	aspect-ratio: 1;
+	background: radial-gradient(closest-side, rgba(204, 41, 0, 0.2), transparent);
+	animation-duration: 27s;
+	animation-delay: -9s;
+}
+
+/* Follows the active service. */
+.avix-sv__spot {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+	width: 620px;
+	height: 620px;
+	margin: -310px 0 0 -310px;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--sv-accent) 11%, transparent), transparent);
+	opacity: 0;
+	transition: opacity 600ms ease;
+	will-change: translate;
+}
+
+.avix-sv.is-ready .avix-sv__spot {
+	opacity: 1;
+}
+
+.avix-sv--no-glow .avix-sv__glow,
+.avix-sv--no-glow .avix-sv__spot {
+	display: none;
+}
+
+.avix-sv__grid {
+	position: absolute;
+	inset: 0;
+	display: block;
+	background-image:
+		linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+	background-size: 70px 70px;
+	-webkit-mask-image: radial-gradient(ellipse at center, #000 10%, transparent 80%);
+	mask-image: radial-gradient(ellipse at center, #000 10%, transparent 80%);
+}
+
+.avix-sv--no-grid .avix-sv__grid {
+	display: none;
+}
+
+/* ---------- Header ---------- */
+
+.avix-sv__frame {
+	position: relative;
+	z-index: 1;
+	width: min(92%, var(--sv-max));
+	margin-inline: auto;
+}
+
+.avix-sv__head {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 18px;
+	margin-bottom: clamp(56px, 7cqi, 100px);
+	text-align: center;
+}
+
+.avix-sv--head-left .avix-sv__head {
+	align-items: flex-start;
+	text-align: left;
+}
+
+.avix-sv .avix-sv__tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 6px 16px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 999px;
+	color: #e0e0e0;
+	background: rgba(255, 255, 255, 0.06);
+	font-family: var(--sv-font-display);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+.avix-sv__tag b {
+	color: var(--sv-accent);
+	font-weight: 600;
+}
+
+.avix-sv .avix-sv__headline {
+	margin: 0;
+	padding: 0;
+	color: var(--sv-ink);
+	font-family: var(--sv-font-display);
+	font-size: clamp(32px, 3.6cqi, 50px);
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.15;
+	text-wrap: balance;
+}
+
+.avix-sv__accent {
+	color: var(--sv-accent);
+}
+
+.avix-sv .avix-sv__intro {
+	max-width: 60ch;
+	margin: 0;
+	color: var(--sv-muted);
+	font-family: var(--sv-font-body);
+	font-size: clamp(15px, 1.2cqi, 17px);
+	line-height: 1.65;
+}
+
+/* ---------- Layout ---------- */
+
+.avix-sv__inner {
+	display: grid;
+	grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+	align-items: center;
+	gap: clamp(40px, 5.5cqi, 84px);
+}
+
+.avix-sv__list {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.avix-sv--guide .avix-sv__list {
+	padding-left: var(--sv-gutter);
+}
+
+/* ---------- Service rows ---------- */
+
+.avix-sv .avix-sv__heading {
+	margin: 0;
+	padding: 0;
+	font-size: 16px;
+	line-height: 1;
+}
+
+/* Heavy reset: theme and Elementor kit button styles must not leak in. */
+.avix-sv .avix-sv__heading .avix-sv__toggle {
+	all: unset;
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	box-sizing: border-box;
+	width: 100%;
+	padding: 14px 0;
+	color: var(--sv-ink);
+	cursor: pointer;
+	text-align: left;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.avix-sv .avix-sv__heading .avix-sv__toggle:focus-visible {
+	border-radius: 6px;
+	outline: 2px solid var(--sv-accent);
+	outline-offset: 4px;
+}
+
+.avix-sv__index {
+	flex: 0 0 var(--sv-index-w);
+	padding-top: 0.55em;
+	color: color-mix(in srgb, var(--sv-ink) 38%, transparent);
+	font-family: var(--sv-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1;
+	transition: color 400ms ease;
+}
+
+.avix-sv__item.is-active .avix-sv__index {
+	color: var(--sv-accent);
+}
+
+/* Closed: outlined. Open: white ink sweeps in left to right. */
+.avix-sv .avix-sv__name {
+	display: inline-block;
+	flex: 1 1 auto;
+	min-width: 0;
+	padding-right: 0.7em;
+	color: transparent;
+	background: linear-gradient(90deg, var(--sv-ink) 0 47%, transparent 53% 100%) 100% 0 / 202% 100% no-repeat;
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-stroke: 1px var(--sv-line);
+	font-family: var(--sv-font-display);
+	font-size: clamp(30px, 3.6cqi, 54px);
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	line-height: 1.02;
+	text-transform: uppercase;
+	overflow-wrap: anywhere;
+	transition: background-position 700ms var(--sv-ease), -webkit-text-stroke-color 400ms ease, transform 450ms var(--sv-ease);
+}
+
+.avix-sv--muted .avix-sv__name {
+	background-image: linear-gradient(90deg, var(--sv-ink) 0 47%, color-mix(in srgb, var(--sv-ink) 30%, transparent) 53% 100%);
+	-webkit-text-stroke: 0 transparent;
+}
+
+.avix-sv__item.is-active .avix-sv__name {
+	background-position: 0 0;
+	-webkit-text-stroke-color: transparent;
+	transform: translateX(var(--sv-shift));
+}
+
+@media (hover: hover) {
+	.avix-sv--outline .avix-sv__item:not(.is-active) .avix-sv__toggle:hover .avix-sv__name {
+		-webkit-text-stroke-color: color-mix(in srgb, var(--sv-accent) 75%, transparent);
+	}
+
+	.avix-sv--muted .avix-sv__item:not(.is-active) .avix-sv__toggle:hover .avix-sv__name {
+		background-image: linear-gradient(90deg, var(--sv-ink) 0 47%, color-mix(in srgb, var(--sv-ink) 55%, transparent) 53% 100%);
+	}
+}
+
+/* The ↗ rides on the last word (see .avix-sv__tail). */
+.avix-sv__tail {
+	white-space: nowrap;
+}
+
+.avix-sv__arrow {
+	display: inline-block;
+	width: 0.52em;
+	height: 0.52em;
+	margin-left: 0.18em;
+	vertical-align: top;
+	color: var(--sv-accent);
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	opacity: 0;
+	transform: translate(-0.2em, 0.2em);
+	transition: opacity 400ms ease, transform 450ms var(--sv-ease);
+}
+
+.avix-sv__item.is-active .avix-sv__arrow {
+	opacity: 1;
+	transform: none;
+}
+
+/* Expanding panel. Without JS every panel stays open, so nothing is hidden. */
+.avix-sv__panel {
+	display: grid;
+	grid-template-rows: 1fr;
+	transition: grid-template-rows 450ms var(--sv-ease);
+}
+
+.avix-sv.is-ready .avix-sv__panel {
+	grid-template-rows: 0fr;
+}
+
+.avix-sv.is-ready .avix-sv__item.is-active .avix-sv__panel {
+	grid-template-rows: 1fr;
+}
+
+.avix-sv__panel-inner {
+	min-height: 0;
+	overflow: hidden;
+	padding-left: calc(var(--sv-index-w) + var(--sv-shift));
+}
+
+.avix-sv__panel-inner > * {
+	transition: opacity 450ms ease 80ms, transform 500ms var(--sv-ease) 80ms;
+}
+
+.avix-sv.is-ready .avix-sv__item:not(.is-active) .avix-sv__panel-inner > * {
+	opacity: 0;
+	transform: translateY(-8px);
+	transition-delay: 0ms;
+}
+
+.avix-sv .avix-sv__desc {
+	max-width: 52ch;
+	margin: 6px 0 0;
+	padding: 0;
+	color: var(--sv-muted);
+	font-family: var(--sv-font-body);
+	font-size: clamp(15px, 1.15cqi, 16.5px);
+	line-height: 1.65;
+}
+
+.avix-sv__desc .avix-sv__accent {
+	font-weight: 600;
+}
+
+.avix-sv .avix-sv__more {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 16px 0 10px;
+	color: var(--sv-accent);
+	font-family: var(--sv-font-body);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.3;
+	text-decoration: none;
+}
+
+.avix-sv__more svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 300ms var(--sv-ease);
+}
+
+.avix-sv .avix-sv__more:hover,
+.avix-sv .avix-sv__more:focus {
+	color: var(--sv-accent);
+	text-decoration: none;
+}
+
+.avix-sv .avix-sv__more:hover svg {
+	transform: translateX(4px);
+}
+
+.avix-sv .avix-sv__more:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid var(--sv-accent);
+	outline-offset: 4px;
+}
+
+.avix-sv__sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	clip-path: inset(50%);
+}
+
+/* Narrow layouts show each preview inside its panel instead. */
+.avix-sv__mobile-shot {
+	display: none;
+}
+
+/* Rows glide in once, the first time the section is seen. */
+.avix-sv.is-armed .avix-sv__item {
+	opacity: 0;
+	transform: translateY(24px);
+}
+
+.avix-sv.is-armed.is-in .avix-sv__item {
+	opacity: 1;
+	transform: none;
+	transition: opacity 700ms ease, transform 800ms var(--sv-ease);
+	transition-delay: calc(var(--sv-i, 0) * 90ms);
+}
+
+/* ---------- The guide: rail, dots, rocket-boot avatar ---------- */
+
+.avix-sv__guide {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: var(--sv-gutter);
+	pointer-events: none;
+}
+
+.avix-sv__rail {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: calc(50% - 1px);
+	display: block;
+	width: 2px;
+	border-radius: 2px;
+	background: color-mix(in srgb, var(--sv-ink) 9%, transparent);
+	-webkit-mask-image: linear-gradient(transparent, #000 6%, #000 94%, transparent);
+	mask-image: linear-gradient(transparent, #000 6%, #000 94%, transparent);
+}
+
+.avix-sv__rail-fill {
+	position: absolute;
+	inset: 0;
+	display: block;
+	background: linear-gradient(transparent, var(--sv-accent));
+	box-shadow: 0 0 10px color-mix(in srgb, var(--sv-accent) 60%, transparent);
+	transform: scaleY(0);
+	transform-origin: 50% 0;
+}
+
+/* Pixel-square stops, one per service (JS places them on each name). */
+.avix-sv__dot {
+	position: absolute;
+	top: -4px;
+	left: calc(50% - 4px);
+	display: block;
+	width: 8px;
+	height: 8px;
+	border: 2px solid color-mix(in srgb, var(--sv-ink) 28%, transparent);
+	background: var(--sv-bg);
+	opacity: 0;
+	transition: border-color 300ms ease, background-color 300ms ease, box-shadow 300ms ease;
+}
+
+.avix-sv.is-ready .avix-sv__dot {
+	opacity: 1;
+}
+
+.avix-sv__dot.is-lit {
+	border-color: var(--sv-accent);
+	background: var(--sv-accent);
+	box-shadow: 0 0 12px var(--sv-accent);
+}
+
+.avix-sv__exhaust {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	image-rendering: pixelated;
+}
+
+.avix-sv__avatar,
+.avix-sv__ghost {
+	position: absolute;
+	top: 0;
+	left: calc(50% - var(--sv-avatar-w) / 2);
+	display: block;
+	width: var(--sv-avatar-w);
+	height: calc(var(--sv-avatar-w) * 1.2);
+	opacity: 0;
+	transform-origin: 50% 90%;
+	will-change: translate;
+}
+
+.avix-sv.is-ready .avix-sv__avatar {
+	opacity: 1;
+	transition: opacity 400ms ease;
+}
+
+.avix-sv__bob {
+	display: block;
+	width: 100%;
+	height: 100%;
+	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--sv-accent) 75%, transparent));
+	animation: avix-sv-bob 2.4s ease-in-out infinite;
+}
+
+.avix-sv__avatar svg,
+.avix-sv__ghost svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--sv-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-sv__avatar rect,
+.avix-sv__ghost rect {
+	transform-box: view-box;
+	transition: transform 160ms steps(2), opacity 120ms steps(1);
+}
+
+.avix-sv__b-point,
+.avix-sv__ghost .avix-sv__b-point {
+	opacity: 0;
+}
+
+/* Resting at a service: points at it, with a little poke. */
+.avix-sv__avatar.is-pointing .avix-sv__b-arm--r {
+	opacity: 0;
+}
+
+.avix-sv__avatar.is-pointing .avix-sv__b-point {
+	opacity: 1;
+	animation: avix-sv-poke 1.1s steps(1) infinite;
+}
+
+/* Flying up: full thrust, arms down. Flying down: jets idle, arms up. */
+.avix-sv__avatar.is-up .avix-sv__b-arm {
+	transform: translate(0, 1px);
+}
+
+.avix-sv__avatar.is-down .avix-sv__b-arm {
+	transform: translate(0, -2px);
+}
+
+.avix-sv__jet {
+	fill: #ffb547;
+	transform-box: fill-box;
+	transform-origin: 50% 0;
+	animation: avix-sv-jet 0.18s steps(2) infinite;
+}
+
+.avix-sv__core {
+	fill: #fff3d1;
+	transform-box: fill-box;
+	transform-origin: 50% 0;
+	animation: avix-sv-jet 0.18s steps(2) -0.09s infinite;
+}
+
+.avix-sv__avatar.is-up .avix-sv__jet,
+.avix-sv__avatar.is-up .avix-sv__core {
+	animation-name: avix-sv-thrust;
+}
+
+.avix-sv__avatar.is-down .avix-sv__jet,
+.avix-sv__avatar.is-down .avix-sv__core {
+	animation-name: avix-sv-idle-jet;
+}
+
+.avix-sv__ghost svg {
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--sv-accent) 60%, transparent));
+}
+
+/* ---------- Preview card ---------- */
+
+.avix-sv__visual {
+	position: sticky;
+	top: 14vh;
+	align-self: center;
+	perspective: 1400px;
+}
+
+.avix-sv__stage {
+	position: relative;
+	display: grid;
+	transform: rotateY(-6deg) rotateX(4deg) rotateZ(-1deg);
+	transform-style: preserve-3d;
+	will-change: transform;
+}
+
+.avix-sv .avix-sv__card {
+	--sv-from: 28px;
+	position: relative;
+	grid-area: 1 / 1;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	border-radius: 14px;
+	background: #0d0f14;
+	box-shadow: -18px 30px 60px rgba(0, 0, 0, 0.55), 0 0 40px color-mix(in srgb, var(--sv-accent) 10%, transparent);
+	opacity: 0;
+	visibility: hidden;
+	transform: translate3d(0, var(--sv-from), -80px) scale(0.95);
+	transition: opacity 400ms ease, transform 700ms var(--sv-ease), visibility 0s linear 700ms;
+}
+
+.avix-sv .avix-sv__card.is-active {
+	z-index: 2;
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition: opacity 450ms ease 60ms, transform 700ms var(--sv-ease), visibility 0s;
+}
+
+.avix-sv .avix-sv__card.is-leaving {
+	z-index: 1;
+	visibility: visible;
+	transform: translate3d(0, calc(var(--sv-from) * -1), -150px) rotateX(8deg) scale(0.92);
+}
+
+.avix-sv .avix-sv__card.is-before {
+	transition: none;
+}
+
+.avix-sv--frame-browser .avix-sv__card {
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: #111318;
+}
+
+.avix-sv--frame-border .avix-sv__card {
+	border: 6px solid #ffffff;
+	border-radius: 12px;
+}
+
+.avix-sv__chrome {
+	display: none;
+}
+
+.avix-sv--frame-browser .avix-sv__chrome {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	height: 38px;
+	padding: 0 14px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+	background: #17191f;
+}
+
+.avix-sv__chrome i {
+	flex: 0 0 auto;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: #ff5f57;
+	opacity: 0.85;
+}
+
+.avix-sv__chrome i:nth-child(2) {
+	background: #febc2e;
+}
+
+.avix-sv__chrome i:nth-child(3) {
+	background: #28c840;
+}
+
+.avix-sv__url {
+	overflow: hidden;
+	max-width: 72%;
+	margin: 0 auto;
+	padding: 5px 14px;
+	border-radius: 999px;
+	color: #a0a5aa;
+	background: rgba(255, 255, 255, 0.06);
+	font-family: var(--sv-font-body);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.2;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.avix-sv__url::before {
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	margin-right: 8px;
+	background: var(--sv-accent);
+	content: "";
+	vertical-align: 1px;
+}
+
+.avix-sv__shot {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: var(--sv-ratio);
+	background: #0b0d12;
+}
+
+.avix-sv .avix-sv__img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: cover;
+}
+
+.avix-sv__glare {
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	display: block;
+	width: 200%;
+	height: 200%;
+	background: radial-gradient(circle at center, rgba(255, 255, 255, 0.16), transparent 40%);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 400ms ease;
+	will-change: translate;
+}
+
+.avix-sv__visual.is-tilting .avix-sv__glare {
+	opacity: 1;
+}
+
+.avix-sv__placeholder {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	gap: 6px;
+	padding: 8%;
+	background:
+		radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--sv-accent) 22%, transparent), transparent 55%),
+		linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 28px 28px,
+		linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 28px 28px,
+		#0d0f14;
+}
+
+.avix-sv__placeholder span {
+	color: var(--sv-accent);
+	font-family: var(--sv-font-display);
+	font-size: clamp(40px, 5cqi, 72px);
+	font-weight: 700;
+	line-height: 1;
+}
+
+.avix-sv__placeholder b {
+	color: var(--sv-ink);
+	font-family: var(--sv-font-display);
+	font-size: clamp(20px, 2.2cqi, 30px);
+	font-weight: 700;
+	line-height: 1.1;
+	text-transform: uppercase;
+}
+
+.avix-sv .avix-sv__label {
+	position: absolute;
+	bottom: 16px;
+	left: 16px;
+	z-index: 2;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 8px 14px;
+	border-radius: 999px;
+	color: #ffffff;
+	background: rgba(10, 11, 13, 0.75);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+	font-family: var(--sv-font-body);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.avix-sv__label::before {
+	width: 7px;
+	height: 7px;
+	background: var(--sv-accent);
+	content: "";
+}
+
+/* JS pauses everything while the section is off screen or the tab is hidden. */
+.avix-sv.is-paused *,
+.avix-sv.is-paused *::before,
+.avix-sv.is-paused *::after {
+	animation-play-state: paused !important;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-sv-drift {
+	from { transform: translate(0, 0) scale(1); }
+	to { transform: translate(-60px, 70px) scale(1.12); }
+}
+
+@keyframes avix-sv-bob {
+	0%,
+	100% { transform: translateY(0); }
+	50% { transform: translateY(-6px); }
+}
+
+@keyframes avix-sv-poke {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(1px, 0); }
+}
+
+@keyframes avix-sv-jet {
+	0% { transform: scaleY(0.7); }
+	50% { transform: scaleY(1.1); }
+}
+
+@keyframes avix-sv-thrust {
+	0% { transform: scaleY(1.6); }
+	50% { transform: scaleY(2.3); }
+}
+
+@keyframes avix-sv-idle-jet {
+	0% { transform: scaleY(0.3); }
+	50% { transform: scaleY(0.5); }
+}
+
+/* ---------- Narrower widget ---------- */
+
+@container avix-sv (max-width: 1024px) {
+	.avix-sv__inner {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-sv__visual {
+		display: none;
+	}
+
+	.avix-sv__mobile-shot {
+		position: relative;
+		display: block;
+		overflow: hidden;
+		max-width: 640px;
+		margin: 8px 0 12px;
+		aspect-ratio: var(--sv-ratio);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 12px;
+		background: #0b0d12;
+	}
+
+	.avix-sv .avix-sv__name {
+		font-size: clamp(28px, 6cqi, 48px);
+	}
+}
+
+/* Tablets: description and preview side by side inside the open panel. */
+@container avix-sv (min-width: 601px) and (max-width: 1024px) {
+	.avix-sv__panel-inner {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+		grid-template-rows: auto 1fr;
+		align-items: start;
+		column-gap: clamp(20px, 4cqi, 40px);
+	}
+
+	.avix-sv__mobile-shot {
+		grid-row: 1 / span 2;
+		grid-column: 2;
+		margin: 8px 0 14px;
+	}
+
+	.avix-sv .avix-sv__desc,
+	.avix-sv .avix-sv__more {
+		grid-column: 1;
+		justify-self: start;
+	}
+}
+
+@container avix-sv (max-width: 600px) {
+	.avix-sv__frame {
+		--sv-shift: 0px;
+		width: calc(100% - 36px);
+	}
+
+	.avix-sv--indexed .avix-sv__frame {
+		--sv-index-w: 30px;
+	}
+
+	.avix-sv__head {
+		margin-bottom: 48px;
+	}
+
+	.avix-sv .avix-sv__name {
+		font-size: clamp(24px, 7.6cqi, 34px);
+		letter-spacing: -0.02em;
+	}
+
+	.avix-sv__index {
+		padding-top: 0.4em;
+		font-size: 11px;
+	}
+
+	.avix-sv .avix-sv__heading .avix-sv__toggle {
+		padding: 12px 0;
+	}
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-sv *,
+	.avix-sv *::before,
+	.avix-sv *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+}
+
+</style>
+</head>
+<body>
+<div class="demo-spacer">Previous section ↓</div>
+		<section class="avix-sv avix-sv--frame-browser avix-sv--outline avix-sv--head-center avix-sv--guide avix-sv--indexed" style="--sv-ratio: 16 / 10;" data-avix-sv="{&quot;trigger&quot;:&quot;hover&quot;,&quot;tilt&quot;:true,&quot;boots&quot;:true}" aria-labelledby="avix-sv-title-svc001">
+			<div class="avix-sv__bg" aria-hidden="true">
+				<span class="avix-sv__glow avix-sv__glow--1"></span>
+				<span class="avix-sv__glow avix-sv__glow--2"></span>
+				<span class="avix-sv__spot" data-sv-spot></span>
+				<span class="avix-sv__grid"></span>
+			</div>
+
+			<div class="avix-sv__frame">
+									<header class="avix-sv__head">
+													<p class="avix-sv__tag"><b aria-hidden="true">/</b> Empowering Your Brand Journey</p>
+																			<h2 class="avix-sv__headline" id="avix-sv-title-svc001">Comprehensive Digital <br>Solutions by Avix Digital.</h2>
+																	</header>
+				
+				<div class="avix-sv__inner">
+					<div class="avix-sv__list" data-sv-list>
+															<div class="avix-sv__guide" aria-hidden="true">
+			<span class="avix-sv__rail"><span class="avix-sv__rail-fill" data-sv-fill></span></span>
+			<span class="avix-sv__dot" data-sv-dot></span><span class="avix-sv__dot" data-sv-dot></span><span class="avix-sv__dot" data-sv-dot></span><span class="avix-sv__dot" data-sv-dot></span>							<canvas class="avix-sv__exhaust" data-sv-exhaust></canvas>
+				<span class="avix-sv__ghost" data-sv-ghost><svg viewBox="0 0 10 12" focusable="false"><rect class="avix-sv__b-leg avix-sv__b-leg--l" x="2" y="7" width="2" height="5"/><rect class="avix-sv__b-leg avix-sv__b-leg--r" x="6" y="7" width="2" height="5"/><rect class="avix-sv__b-body" x="2" y="3" width="6" height="4"/><rect class="avix-sv__b-head" x="3" y="0" width="4" height="3"/><rect class="avix-sv__b-arm avix-sv__b-arm--l" x="0" y="3" width="2" height="3"/><rect class="avix-sv__b-arm avix-sv__b-arm--r" x="8" y="3" width="2" height="3"/><rect class="avix-sv__b-point" x="8" y="3" width="4" height="2"/></svg></span>
+				<span class="avix-sv__ghost" data-sv-ghost><svg viewBox="0 0 10 12" focusable="false"><rect class="avix-sv__b-leg avix-sv__b-leg--l" x="2" y="7" width="2" height="5"/><rect class="avix-sv__b-leg avix-sv__b-leg--r" x="6" y="7" width="2" height="5"/><rect class="avix-sv__b-body" x="2" y="3" width="6" height="4"/><rect class="avix-sv__b-head" x="3" y="0" width="4" height="3"/><rect class="avix-sv__b-arm avix-sv__b-arm--l" x="0" y="3" width="2" height="3"/><rect class="avix-sv__b-arm avix-sv__b-arm--r" x="8" y="3" width="2" height="3"/><rect class="avix-sv__b-point" x="8" y="3" width="4" height="2"/></svg></span>
+						<span class="avix-sv__avatar" data-sv-avatar>
+				<span class="avix-sv__bob"><svg viewBox="0 0 10 12" focusable="false"><rect class="avix-sv__jet avix-sv__jet--l" x="2" y="12" width="2" height="2.5"/><rect class="avix-sv__jet avix-sv__jet--r" x="6" y="12" width="2" height="2.5"/><rect class="avix-sv__core avix-sv__core--l" x="2.5" y="12" width="1" height="1.3"/><rect class="avix-sv__core avix-sv__core--r" x="6.5" y="12" width="1" height="1.3"/><rect class="avix-sv__b-leg avix-sv__b-leg--l" x="2" y="7" width="2" height="5"/><rect class="avix-sv__b-leg avix-sv__b-leg--r" x="6" y="7" width="2" height="5"/><rect class="avix-sv__b-body" x="2" y="3" width="6" height="4"/><rect class="avix-sv__b-head" x="3" y="0" width="4" height="3"/><rect class="avix-sv__b-arm avix-sv__b-arm--l" x="0" y="3" width="2" height="3"/><rect class="avix-sv__b-arm avix-sv__b-arm--r" x="8" y="3" width="2" height="3"/><rect class="avix-sv__b-point" x="8" y="3" width="4" height="2"/></svg></span>
+			</span>
+		</div>
+								
+															<div class="avix-sv__item is-active" data-sv-item style="--sv-i: 0;">
+			<h3 class="avix-sv__heading">
+				<button class="avix-sv__toggle" type="button" id="avix-sv-tab-svc001-0" aria-expanded="true" aria-controls="avix-sv-panel-svc001-0" data-sv-toggle>
+											<span class="avix-sv__index" aria-hidden="true">01</span>
+										<span class="avix-sv__name">Web <span class="avix-sv__tail">Development<svg class="avix-sv__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></span></span>
+				</button>
+			</h3>
+			<div class="avix-sv__panel" id="avix-sv-panel-svc001-0" role="region" aria-labelledby="avix-sv-tab-svc001-0">
+				<div class="avix-sv__panel-inner">
+											<div class="avix-sv__mobile-shot"><img width="2400" height="1350" src="https://example.test/bg-227.webp" srcset="https://example.test/bg-227-768.webp 768w, https://example.test/bg-227-1536.webp 1536w, https://example.test/bg-227.webp 2400w" class="avix-sv__img" alt="Web Development" loading="lazy" decoding="async" sizes="(min-width: 1025px) 600px, 92vw"></div>
+																<p class="avix-sv__desc">We build high-performance websites using <span class="avix-sv__accent">WordPress, Shopify, and Webflow</span> tailored to your specific business goals.</p>
+																<a href="https://avixdigital.com/service/web-development/" class="avix-sv__more">
+							Learn more							<span class="screen-reader-text avix-sv__sr">: Web Development</span>
+							<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+						</a>
+									</div>
+			</div>
+		</div>
+																	<div class="avix-sv__item" data-sv-item style="--sv-i: 1;">
+			<h3 class="avix-sv__heading">
+				<button class="avix-sv__toggle" type="button" id="avix-sv-tab-svc001-1" aria-expanded="false" aria-controls="avix-sv-panel-svc001-1" data-sv-toggle>
+											<span class="avix-sv__index" aria-hidden="true">02</span>
+										<span class="avix-sv__name">Shopify <span class="avix-sv__tail">Plus<svg class="avix-sv__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></span></span>
+				</button>
+			</h3>
+			<div class="avix-sv__panel" id="avix-sv-panel-svc001-1" role="region" aria-labelledby="avix-sv-tab-svc001-1">
+				<div class="avix-sv__panel-inner">
+											<div class="avix-sv__mobile-shot"><img class="avix-sv__img" src="https://avixdigital.com/wp-content/uploads/2026/06/Untitled-design235.png" alt="Shopify Plus" loading="lazy" decoding="async"></div>
+																<p class="avix-sv__desc">Enterprise e-commerce architecture utilizing <span class="avix-sv__accent">custom Liquid coding</span> and automated Shopify Flow ecosystems to drive explosive revenue growth.</p>
+																<a href="https://avixdigital.com/service/shopify-plus/" class="avix-sv__more">
+							Learn more							<span class="screen-reader-text avix-sv__sr">: Shopify Plus</span>
+							<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+						</a>
+									</div>
+			</div>
+		</div>
+																	<div class="avix-sv__item" data-sv-item style="--sv-i: 2;">
+			<h3 class="avix-sv__heading">
+				<button class="avix-sv__toggle" type="button" id="avix-sv-tab-svc001-2" aria-expanded="false" aria-controls="avix-sv-panel-svc001-2" data-sv-toggle>
+											<span class="avix-sv__index" aria-hidden="true">03</span>
+										<span class="avix-sv__name">UI/UX &amp; Brand <span class="avix-sv__tail">Design<svg class="avix-sv__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></span></span>
+				</button>
+			</h3>
+			<div class="avix-sv__panel" id="avix-sv-panel-svc001-2" role="region" aria-labelledby="avix-sv-tab-svc001-2">
+				<div class="avix-sv__panel-inner">
+											<div class="avix-sv__mobile-shot"><img class="avix-sv__img" src="https://avixdigital.com/wp-content/uploads/2026/06/Untitled-design247.webp" alt="UI/UX &amp; Brand Design" loading="lazy" decoding="async"></div>
+																<p class="avix-sv__desc">High-converting, bespoke interfaces engineered for modern brands. We transform complex data into <span class="avix-sv__accent">pixel-perfect, intuitive user journeys</span>.</p>
+																<a href="https://avixdigital.com/service/uiux-and-brand-design/" class="avix-sv__more">
+							Learn more							<span class="screen-reader-text avix-sv__sr">: UI/UX &amp; Brand Design</span>
+							<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+						</a>
+									</div>
+			</div>
+		</div>
+																	<div class="avix-sv__item" data-sv-item style="--sv-i: 3;">
+			<h3 class="avix-sv__heading">
+				<button class="avix-sv__toggle" type="button" id="avix-sv-tab-svc001-3" aria-expanded="false" aria-controls="avix-sv-panel-svc001-3" data-sv-toggle>
+											<span class="avix-sv__index" aria-hidden="true">04</span>
+										<span class="avix-sv__name">Growth <span class="avix-sv__tail">ROI<svg class="avix-sv__arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></span></span>
+				</button>
+			</h3>
+			<div class="avix-sv__panel" id="avix-sv-panel-svc001-3" role="region" aria-labelledby="avix-sv-tab-svc001-3">
+				<div class="avix-sv__panel-inner">
+											<div class="avix-sv__mobile-shot"><img class="avix-sv__img" src="https://avixdigital.com/wp-content/uploads/2025/12/FullSizeRender-3-scaled.jpg" alt="Growth ROI" loading="lazy" decoding="async"></div>
+																<p class="avix-sv__desc">Continuous technical optimization, server-side scaling, and rigorous <span class="avix-sv__accent">conversion rate optimization (CRO)</span> to dominate your digital market.</p>
+																<a href="https://avixdigital.com/contact/" class="avix-sv__more">
+							Learn more							<span class="screen-reader-text avix-sv__sr">: Growth ROI</span>
+							<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+						</a>
+									</div>
+			</div>
+		</div>
+													</div>
+
+					<div class="avix-sv__visual" data-sv-visual>
+						<div class="avix-sv__stage" data-sv-stage>
+																	<figure class="avix-sv__card is-active" data-sv-card>
+			<div class="avix-sv__chrome" aria-hidden="true">
+				<i></i><i></i><i></i>
+									<span class="avix-sv__url">avixdigital.com/service/web-development</span>
+							</div>
+			<div class="avix-sv__shot">
+									<img width="2400" height="1350" src="https://example.test/bg-227.webp" srcset="https://example.test/bg-227-768.webp 768w, https://example.test/bg-227-1536.webp 1536w, https://example.test/bg-227.webp 2400w" class="avix-sv__img" alt="Web Development" loading="lazy" decoding="async" sizes="(min-width: 1440px) 660px, (min-width: 1025px) 46vw, 92vw">								<span class="avix-sv__glare" aria-hidden="true"></span>
+			</div>
+					</figure>
+																			<figure class="avix-sv__card" data-sv-card>
+			<div class="avix-sv__chrome" aria-hidden="true">
+				<i></i><i></i><i></i>
+									<span class="avix-sv__url">avixdigital.com/service/shopify-plus</span>
+							</div>
+			<div class="avix-sv__shot">
+									<img class="avix-sv__img" src="https://avixdigital.com/wp-content/uploads/2026/06/Untitled-design235.png" alt="Shopify Plus" loading="lazy" decoding="async">								<span class="avix-sv__glare" aria-hidden="true"></span>
+			</div>
+					</figure>
+																			<figure class="avix-sv__card" data-sv-card>
+			<div class="avix-sv__chrome" aria-hidden="true">
+				<i></i><i></i><i></i>
+									<span class="avix-sv__url">avixdigital.com/service/uiux-and-brand-design</span>
+							</div>
+			<div class="avix-sv__shot">
+									<img class="avix-sv__img" src="https://avixdigital.com/wp-content/uploads/2026/06/Untitled-design247.webp" alt="UI/UX &amp; Brand Design" loading="lazy" decoding="async">								<span class="avix-sv__glare" aria-hidden="true"></span>
+			</div>
+					</figure>
+																			<figure class="avix-sv__card" data-sv-card>
+			<div class="avix-sv__chrome" aria-hidden="true">
+				<i></i><i></i><i></i>
+									<span class="avix-sv__url">avixdigital.com/contact</span>
+							</div>
+			<div class="avix-sv__shot">
+									<img class="avix-sv__img" src="https://avixdigital.com/wp-content/uploads/2025/12/FullSizeRender-3-scaled.jpg" alt="Growth ROI" loading="lazy" decoding="async">								<span class="avix-sv__glare" aria-hidden="true"></span>
+			</div>
+					</figure>
+															</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		
+<div class="demo-spacer">Next section</div>
+<script>
+/*!
+ * Avix Digital · Services Showcase
+ * Dependency-free. The pixel avatar flies to the active service on a spring
+ * (stretching with speed, jets flaring, exhaust and afterimages trailing),
+ * then points at it. Hover intent ignores the fake hovers a layout shift
+ * produces, so rows never cascade open. One rAF loop runs only while
+ * something moves and pauses off screen.
+ */
+(function (window, document) {
+	'use strict';
+
+	var ROOT_SELECTOR = '[data-avix-sv]';
+	var instances = [];
+	var mq = function (query) {
+		return window.matchMedia ? window.matchMedia(query) : { matches: false };
+	};
+	var reduceMotion = mq('(prefers-reduced-motion: reduce)');
+	var finePointer = mq('(hover: hover) and (pointer: fine)');
+
+	var INTENT_MS = 110; // a hover must rest this long before a service opens
+	var SETTLE_MS = 560; // panel transition (450ms) + margin: keep tracking the moving name
+	var LEAVE_MS = 760; // card leave transition
+	var SPRING = 170; // stiffness
+	var DAMPING = 20; // a little under critical: one small, lively overshoot
+	var BASE_TILT = { x: 4, y: -6 }; // resting card tilt from the CSS, in degrees
+
+	function clamp(value, min, max) {
+		return value < min ? min : value > max ? max : value;
+	}
+
+	function now() {
+		return window.performance ? window.performance.now() : Date.now();
+	}
+
+	function isEditMode() {
+		return !!(window.elementorFrontend && typeof window.elementorFrontend.isEditMode === 'function' && window.elementorFrontend.isEditMode());
+	}
+
+	// Distance from `ancestor` to `el`, ignoring transforms (reveal / active shift).
+	function offsetWithin(el, ancestor) {
+		var y = 0;
+		while (el && el !== ancestor) {
+			y += el.offsetTop;
+			el = el.offsetParent;
+		}
+		return el === ancestor ? y : null;
+	}
+
+	function Showcase(root) {
+		var config = {};
+		try {
+			config = JSON.parse(root.getAttribute('data-avix-sv') || '{}') || {};
+		} catch (error) {
+			config = {};
+		}
+
+		this.root = root;
+		this.alive = true;
+		this.editor = isEditMode();
+		this.hover = config.trigger !== 'click';
+		this.tiltOn = config.tilt !== false;
+		this.boots = !!config.boots;
+
+		this.list = root.querySelector('[data-sv-list]');
+		this.items = Array.prototype.slice.call(root.querySelectorAll('[data-sv-item]'));
+		this.toggles = this.items.map(function (item) {
+			return item.querySelector('[data-sv-toggle]');
+		});
+		this.panels = this.items.map(function (item) {
+			return item.querySelector('.avix-sv__panel');
+		});
+		this.names = this.items.map(function (item) {
+			return item.querySelector('.avix-sv__name');
+		});
+		this.cards = Array.prototype.slice.call(root.querySelectorAll('[data-sv-card]'));
+		this.visual = root.querySelector('[data-sv-visual]');
+		this.stage = root.querySelector('[data-sv-stage]');
+		this.avatar = root.querySelector('[data-sv-avatar]');
+		this.ghosts = Array.prototype.slice.call(root.querySelectorAll('[data-sv-ghost]'));
+		this.dots = Array.prototype.slice.call(root.querySelectorAll('[data-sv-dot]'));
+		this.fill = root.querySelector('[data-sv-fill]');
+		this.spot = root.querySelector('[data-sv-spot]');
+		this.canvas = root.querySelector('[data-sv-exhaust]');
+		this.ctx = this.canvas && this.canvas.getContext ? this.canvas.getContext('2d') : null;
+
+		this.active = Math.max(0, this.items.findIndex ? this.items.findIndex(function (item) {
+			return item.classList.contains('is-active');
+		}) : 0);
+		this.centers = [];
+		this.y = null;
+		this.v = 0;
+		this.history = [];
+		this.particles = [];
+		this.emitAcc = 0;
+		this.pose = '';
+		this.lit = -1;
+		this.settleUntil = 0;
+		this.seen = false;
+		this.visible = !('IntersectionObserver' in window);
+		this.known = this.visible;
+		this.running = false;
+		this.frame = 0;
+		this.lastTime = 0;
+		this.timers = {};
+		this.last = null;
+		this.tilt = { on: false, px: 0, py: 0, x: 0, y: 0, live: false };
+
+		if (!this.list || !this.items.length) {
+			this.alive = false;
+			return;
+		}
+
+		this.tick = this.tick.bind(this);
+		this.init();
+	}
+
+	Showcase.prototype.init = function () {
+		var self = this;
+
+		this.root.classList.add('is-ready');
+		this.items.forEach(function (item, i) {
+			self.setOpen(i, i === self.active);
+		});
+
+		// Clicks, taps and keyboard.
+		this.onClick = function (event) {
+			var toggle = event.target.closest ? event.target.closest('[data-sv-toggle]') : null;
+			var index = self.toggles.indexOf(toggle);
+			if (index > -1) {
+				self.cancel('intent');
+				self.activate(index, true);
+			}
+		};
+		this.onKey = function (event) {
+			var index = self.toggles.indexOf(event.target);
+			if (index < 0) {
+				return;
+			}
+			var last = self.toggles.length - 1;
+			var next = { ArrowDown: index + 1, ArrowRight: index + 1, ArrowUp: index - 1, ArrowLeft: index - 1, Home: 0, End: last }[event.key];
+			if (next === undefined) {
+				return;
+			}
+			event.preventDefault();
+			next = next > last ? 0 : next < 0 ? last : next;
+			self.toggles[next].focus();
+			self.activate(next, true);
+		};
+		this.list.addEventListener('click', this.onClick);
+		this.list.addEventListener('keydown', this.onKey);
+
+		// Hover intent: only real pointer movement counts. When a panel opens,
+		// rows slide under a still cursor and the browser reports fake hovers
+		// at the same coordinates; those are ignored, so nothing cascades.
+		if (this.hover) {
+			this.onListMove = function (event) {
+				if (event.pointerType !== 'mouse') {
+					return;
+				}
+				var moved = !self.last || self.last.x !== event.clientX || self.last.y !== event.clientY;
+				self.last = { x: event.clientX, y: event.clientY };
+				if (!moved) {
+					return;
+				}
+				var item = event.target.closest ? event.target.closest('[data-sv-item]') : null;
+				var index = self.items.indexOf(item);
+				if (index < 0 || index === self.active) {
+					self.cancel('intent');
+					self.intent = -1;
+					return;
+				}
+				if (index !== self.intent) {
+					self.intent = index;
+					self.later('intent', function () {
+						self.intent = -1;
+						self.activate(index, false);
+					}, INTENT_MS);
+				}
+			};
+			this.onListLeave = function () {
+				self.cancel('intent');
+				self.intent = -1;
+				self.last = null;
+			};
+			this.list.addEventListener('pointermove', this.onListMove, { passive: true });
+			this.list.addEventListener('pointerleave', this.onListLeave, { passive: true });
+		}
+
+		// Card tilt + glare.
+		if (this.visual && this.stage && this.tiltOn) {
+			this.onVisualMove = function (event) {
+				if (event.pointerType !== 'mouse' || !finePointer.matches || reduceMotion.matches) {
+					return;
+				}
+				self.tilt.on = true;
+				self.tilt.px = event.clientX;
+				self.tilt.py = event.clientY;
+				self.visual.classList.add('is-tilting');
+				self.wake();
+			};
+			this.onVisualLeave = function () {
+				self.tilt.on = false;
+				self.visual.classList.remove('is-tilting');
+				self.wake();
+			};
+			this.visual.addEventListener('pointermove', this.onVisualMove, { passive: true });
+			this.visual.addEventListener('pointerleave', this.onVisualLeave, { passive: true });
+		}
+
+		this.onVisibility = function () {
+			self.update();
+		};
+		document.addEventListener('visibilitychange', this.onVisibility);
+
+		if ('IntersectionObserver' in window) {
+			if (!this.editor && !reduceMotion.matches) {
+				this.root.classList.add('is-armed');
+			}
+			this.observer = new window.IntersectionObserver(function (entries) {
+				entries.forEach(function (entry) {
+					self.visible = entry.isIntersecting;
+				});
+				self.known = true;
+				self.update();
+			}, { threshold: 0.12 });
+			this.observer.observe(this.root);
+		}
+
+		if (window.ResizeObserver) {
+			this.resizeObserver = new window.ResizeObserver(function () {
+				self.later('measure', function () {
+					self.measure();
+					self.wake();
+				}, 50);
+			});
+			this.resizeObserver.observe(this.list);
+		}
+		if (document.fonts && document.fonts.ready) {
+			document.fonts.ready.then(function () {
+				if (self.alive) {
+					self.measure();
+					self.wake();
+				}
+			});
+		}
+
+		this.measure();
+		this.update();
+	};
+
+	/* ------------------------------------------------------------------ */
+	/* State                                                               */
+	/* ------------------------------------------------------------------ */
+
+	Showcase.prototype.setOpen = function (index, open) {
+		this.items[index].classList.toggle('is-active', open);
+		if (this.toggles[index]) {
+			this.toggles[index].setAttribute('aria-expanded', open ? 'true' : 'false');
+		}
+		var panel = this.panels[index];
+		if (panel) {
+			if ('inert' in panel) {
+				panel.inert = !open;
+			} else {
+				Array.prototype.forEach.call(panel.querySelectorAll('a, button'), function (control) {
+					control.tabIndex = open ? 0 : -1;
+				});
+			}
+		}
+	};
+
+	Showcase.prototype.activate = function (index, fromUser) {
+		if (!this.alive || index === this.active || !this.items[index]) {
+			return;
+		}
+		if (!this.root.isConnected) {
+			this.destroy();
+			return;
+		}
+		var previous = this.active;
+		this.active = index;
+		this.setOpen(previous, false);
+		this.setOpen(index, true);
+		this.swapCards(previous, index);
+		this.settleUntil = now() + SETTLE_MS;
+		this.wake();
+
+		// Phones: keep the opened service in view once the panel above has closed.
+		if (fromUser && this.visual && window.getComputedStyle(this.visual).display === 'none') {
+			var item = this.items[index];
+			var self = this;
+			this.later('scroll', function () {
+				var top = item.getBoundingClientRect().top;
+				if (top < 70) {
+					window.scrollBy({ top: top - 90, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+				}
+				self.wake();
+			}, SETTLE_MS);
+		}
+	};
+
+	// Direction-aware swap: going down the list the new card rises from below.
+	Showcase.prototype.swapCards = function (from, to) {
+		var incoming = this.cards[to];
+		var outgoing = this.cards[from];
+		if (!incoming || !outgoing) {
+			return;
+		}
+		var self = this;
+		var shift = (to > from ? 1 : -1) * 28 + 'px';
+
+		var glare = outgoing.querySelector('.avix-sv__glare');
+		if (glare) {
+			glare.style.translate = '';
+		}
+
+		if (reduceMotion.matches) {
+			outgoing.classList.remove('is-active', 'is-leaving');
+			incoming.classList.remove('is-leaving');
+			incoming.classList.add('is-active');
+			return;
+		}
+
+		incoming.style.setProperty('--sv-from', shift);
+		incoming.classList.remove('is-leaving');
+		incoming.classList.add('is-before');
+		void incoming.offsetWidth; // commit the start pose
+		incoming.classList.remove('is-before');
+		incoming.classList.add('is-active');
+
+		outgoing.style.setProperty('--sv-from', shift);
+		outgoing.classList.remove('is-active');
+		outgoing.classList.add('is-leaving');
+		this.later('leave-' + from, function () {
+			if (self.cards[from] !== self.cards[self.active]) {
+				outgoing.classList.remove('is-leaving');
+			}
+		}, LEAVE_MS);
+	};
+
+	/* ------------------------------------------------------------------ */
+	/* Measuring                                                           */
+	/* ------------------------------------------------------------------ */
+
+	// Vertical centre of each service name's first line, inside the list.
+	// Runs every frame while rows slide, so line heights come from measure().
+	Showcase.prototype.readCenters = function () {
+		var list = this.list;
+		var lines = this.lines || [];
+		this.centers = this.names.map(function (name, i) {
+			var top = offsetWithin(name, list);
+			if (top === null) {
+				var rect = name.getBoundingClientRect();
+				top = rect.top - list.getBoundingClientRect().top;
+			}
+			return top + (lines[i] || name.offsetHeight) / 2;
+		});
+	};
+
+	// Dots sit on each name; they move with the rows while panels open and close.
+	Showcase.prototype.placeDots = function () {
+		for (var i = 0; i < this.dots.length; i++) {
+			if (this.centers[i] !== undefined) {
+				this.dots[i].style.translate = '0 ' + this.centers[i].toFixed(1) + 'px';
+			}
+		}
+	};
+
+	Showcase.prototype.measure = function () {
+		if (!this.alive) {
+			return;
+		}
+		var list = this.list;
+		this.lines = this.names.map(function (name) {
+			var line = parseFloat(window.getComputedStyle(name).lineHeight);
+			return isFinite(line) ? line : 0;
+		});
+		this.readCenters();
+		this.listH = list.offsetHeight;
+
+		// Stable height on the two-column layout: room for the tallest panel,
+		// so the page never jumps while visitors hover through the services.
+		var wide = this.visual && window.getComputedStyle(this.visual).display !== 'none';
+		if (wide) {
+			var gap = parseFloat(window.getComputedStyle(list).rowGap) || 0;
+			var tallest = 0;
+			var rows = 0;
+			var padding = parseFloat(window.getComputedStyle(list).paddingTop) + parseFloat(window.getComputedStyle(list).paddingBottom);
+			this.items.forEach(function (item, i) {
+				var heading = item.firstElementChild;
+				var inner = item.querySelector('.avix-sv__panel-inner');
+				rows += heading ? heading.offsetHeight : 0;
+				tallest = Math.max(tallest, inner ? inner.scrollHeight : 0);
+				if (i) {
+					rows += gap;
+				}
+			});
+			list.style.minHeight = Math.ceil(rows + tallest + padding) + 'px';
+		} else {
+			list.style.minHeight = '';
+		}
+
+		this.placeDots();
+
+		if (this.ctx) {
+			var w = this.canvas.parentNode.offsetWidth;
+			var h = list.offsetHeight;
+			if (w && h && (w !== this.canvas.width || h !== this.canvas.height)) {
+				this.canvas.width = w;
+				this.canvas.height = h;
+			}
+			this.color = window.getComputedStyle(this.root).getPropertyValue('--sv-accent').trim() || '#fb6007';
+		}
+
+		if (this.spot) {
+			var rootRect = this.root.getBoundingClientRect();
+			var listRect = list.getBoundingClientRect();
+			this.spotX = listRect.left - rootRect.left + list.clientWidth * 0.32;
+			this.spotY = listRect.top - rootRect.top;
+		}
+
+		this.avatarH = this.avatar ? this.avatar.offsetHeight : 0;
+		if (this.avatar && this.y === null) {
+			// Parked above the rail until the section is first seen, then it flies in.
+			this.avatar.style.translate = '0 ' + (-40 - this.avatarH / 2) + 'px';
+		}
+	};
+
+	/* ------------------------------------------------------------------ */
+	/* Run / pause                                                         */
+	/* ------------------------------------------------------------------ */
+
+	Showcase.prototype.update = function () {
+		if (!this.alive) {
+			return;
+		}
+		if (!this.root.isConnected) {
+			this.destroy();
+			return;
+		}
+		var running = this.visible && !document.hidden;
+		this.root.classList.toggle('is-paused', this.known && !running);
+		if (running === this.running) {
+			return;
+		}
+		this.running = running;
+		if (!running) {
+			if (this.frame) {
+				window.cancelAnimationFrame(this.frame);
+				this.frame = 0;
+			}
+			this.lastTime = 0;
+			return;
+		}
+
+		if (!this.seen) {
+			// First time on screen: rows glide in, the avatar flies down to its service.
+			this.seen = true;
+			this.root.classList.add('is-in');
+			this.readCenters();
+			var target = this.centers[this.active] || 0;
+			this.y = this.editor || reduceMotion.matches ? target : -40;
+			this.v = 0;
+			this.settleUntil = now() + SETTLE_MS;
+		}
+		this.wake();
+	};
+
+	Showcase.prototype.wake = function () {
+		if (this.alive && this.running && !this.frame) {
+			this.frame = window.requestAnimationFrame(this.tick);
+		}
+	};
+
+	Showcase.prototype.later = function (name, fn, delay) {
+		var self = this;
+		this.cancel(name);
+		this.timers[name] = window.setTimeout(function () {
+			delete self.timers[name];
+			if (self.alive) {
+				fn();
+			}
+		}, delay);
+	};
+
+	Showcase.prototype.cancel = function (name) {
+		if (this.timers[name]) {
+			window.clearTimeout(this.timers[name]);
+			delete this.timers[name];
+		}
+	};
+
+	/* ------------------------------------------------------------------ */
+	/* Frame loop                                                          */
+	/* ------------------------------------------------------------------ */
+
+	Showcase.prototype.tick = function (time) {
+		this.frame = 0;
+		if (!this.root.isConnected) {
+			this.destroy();
+			return;
+		}
+		if (!this.running) {
+			return;
+		}
+
+		var dt = this.lastTime ? Math.min(0.05, (time - this.lastTime) / 1000) : 1 / 60;
+		this.lastTime = time;
+		var busy = false;
+
+		// ---- Reads ----
+		if (time < this.settleUntil) {
+			this.readCenters(); // names slide while panels open and close
+			busy = true;
+		}
+		var slide = time < this.settleUntil + 40;
+		var visualRect = this.tilt.on || this.tilt.live ? this.visual.getBoundingClientRect() : null;
+
+		// ---- Writes ----
+		if (slide) {
+			this.placeDots();
+		}
+
+		// ---- Avatar ----
+		if (this.avatar && this.y !== null) {
+			busy = this.fly(dt, time) || busy;
+		}
+
+		// ---- Card tilt + glare ----
+		if (visualRect) {
+			busy = this.tiltCard(dt, visualRect) || busy;
+		}
+
+		if (busy) {
+			this.frame = window.requestAnimationFrame(this.tick);
+		} else {
+			this.lastTime = 0;
+		}
+	};
+
+	Showcase.prototype.fly = function (dt, time) {
+		var target = this.centers[this.active] || 0;
+		var calm = reduceMotion.matches;
+
+		if (calm) {
+			this.y = target;
+			this.v = 0;
+		} else {
+			var accel = SPRING * (target - this.y) - DAMPING * this.v;
+			this.v += accel * dt;
+			this.y += this.v * dt;
+		}
+
+		var speed = Math.abs(this.v);
+		var settled = Math.abs(target - this.y) < 0.4 && speed < 6 && time >= this.settleUntil;
+		if (settled) {
+			if (this.pose !== 'point' && this.pose !== '' && !calm) {
+				this.puff();
+			}
+			this.y = target;
+			this.v = 0;
+			speed = 0;
+		}
+
+		// Pose + squash & stretch.
+		var pose = settled ? 'point' : this.v < -70 ? 'up' : this.v > 70 ? 'down' : 'hover';
+		if (pose !== this.pose) {
+			this.pose = pose;
+			this.avatar.classList.toggle('is-pointing', pose === 'point');
+			this.avatar.classList.toggle('is-up', pose === 'up');
+			this.avatar.classList.toggle('is-down', pose === 'down');
+		}
+		var stretch = Math.min(0.2, speed / 2600);
+		var h = this.avatarH || 0;
+		this.avatar.style.translate = '0 ' + (this.y - h / 2).toFixed(2) + 'px';
+		this.avatar.style.scale = stretch > 0.004 ? (1 - stretch * 0.55).toFixed(3) + ' ' + (1 + stretch).toFixed(3) : '';
+
+		// Rail fills up to the avatar; the spotlight follows it.
+		if (this.fill && this.listH) {
+			this.fill.style.transform = 'scaleY(' + clamp(this.y / this.listH, 0, 1).toFixed(4) + ')';
+		}
+		if (this.spot) {
+			this.spot.style.translate = this.spotX.toFixed(1) + 'px ' + (this.spotY + this.y).toFixed(1) + 'px';
+		}
+		var lit = settled ? this.active : -1;
+		if (lit !== this.lit) {
+			this.lit = lit;
+			for (var d = 0; d < this.dots.length; d++) {
+				this.dots[d].classList.toggle('is-lit', d === lit);
+			}
+		}
+
+		var busy = !settled;
+		if (this.boots && !calm) {
+			busy = this.trail(dt, speed, h) || busy;
+		}
+		return busy;
+	};
+
+	// Afterimages + exhaust particles while flying.
+	Showcase.prototype.trail = function (dt, speed, h) {
+		this.history.unshift(this.y);
+		if (this.history.length > 12) {
+			this.history.length = 12;
+		}
+		var ghostsOn = false;
+		for (var g = 0; g < this.ghosts.length; g++) {
+			var lag = this.history[(g + 1) * 4];
+			var alpha = speed > 90 && lag !== undefined ? Math.min(0.4, speed / 2200) * (1 - g * 0.45) : 0;
+			this.ghosts[g].style.opacity = alpha ? alpha.toFixed(3) : '';
+			if (alpha) {
+				this.ghosts[g].style.translate = '0 ' + (lag - h / 2).toFixed(2) + 'px';
+				ghostsOn = true;
+			}
+		}
+
+		if (!this.ctx) {
+			return ghostsOn;
+		}
+
+		// Exhaust comes out of the boots, more of it the faster it flies.
+		var up = this.v < 0;
+		this.emitAcc += dt * Math.min(70, speed * (up ? 0.07 : 0.025));
+		var feet = this.y + h / 2 - 1;
+		var cx = this.canvas.width / 2;
+		var spread = h * 0.28;
+		while (this.emitAcc >= 1) {
+			this.emitAcc -= 1;
+			this.spawn(cx + (Math.random() < 0.5 ? -spread : spread) * (0.6 + Math.random() * 0.4), feet, up ? 70 + Math.random() * 110 : 25 + Math.random() * 40);
+		}
+
+		var ctx = this.ctx;
+		ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		var alive = [];
+		for (var i = 0; i < this.particles.length; i++) {
+			var p = this.particles[i];
+			p.age += dt;
+			if (p.age >= p.life) {
+				continue;
+			}
+			p.x += p.vx * dt;
+			p.y += p.vy * dt;
+			p.vy *= 0.96;
+			ctx.globalAlpha = 1 - p.age / p.life;
+			ctx.fillStyle = p.hot ? '#ffd07a' : this.color;
+			ctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+			alive.push(p);
+		}
+		ctx.globalAlpha = 1;
+		this.particles = alive;
+		return ghostsOn || alive.length > 0;
+	};
+
+	Showcase.prototype.spawn = function (x, y, vy) {
+		if (this.particles.length > 120) {
+			return;
+		}
+		this.particles.push({
+			x: x,
+			y: y,
+			vx: (Math.random() - 0.5) * 24,
+			vy: vy,
+			age: 0,
+			life: 0.35 + Math.random() * 0.35,
+			size: Math.random() < 0.55 ? 2 : 3,
+			hot: Math.random() < 0.4
+		});
+	};
+
+	// Little landing puff under the boots.
+	Showcase.prototype.puff = function () {
+		if (!this.ctx) {
+			return;
+		}
+		var feet = this.y + (this.avatarH || 0) / 2;
+		for (var i = 0; i < 8; i++) {
+			var side = i % 2 ? 1 : -1;
+			this.particles.push({ x: this.canvas.width / 2 + side * (2 + Math.random() * 6), y: feet, vx: side * (30 + Math.random() * 40), vy: 10 + Math.random() * 20, age: 0, life: 0.3 + Math.random() * 0.2, size: 2, hot: i < 3 });
+		}
+	};
+
+	Showcase.prototype.tiltCard = function (dt, rect) {
+		var tilt = this.tilt;
+		var nx = 0;
+		var ny = 0;
+		if (tilt.on) {
+			nx = clamp((tilt.px - rect.left) / rect.width * 2 - 1, -1, 1);
+			ny = clamp((tilt.py - rect.top) / rect.height * 2 - 1, -1, 1);
+		}
+		var ease = 1 - Math.exp(-dt / 0.16);
+		tilt.x += (-ny * 6 - tilt.x) * ease;
+		tilt.y += (nx * 8 - tilt.y) * ease;
+
+		var still = !tilt.on && Math.abs(tilt.x) < 0.02 && Math.abs(tilt.y) < 0.02;
+		if (still) {
+			tilt.x = tilt.y = 0;
+			tilt.live = false;
+			this.stage.style.transform = '';
+			return false;
+		}
+		tilt.live = true;
+		this.stage.style.transform = 'rotateY(' + (BASE_TILT.y + tilt.y).toFixed(2) + 'deg) rotateX(' + (BASE_TILT.x + tilt.x).toFixed(2) + 'deg) rotateZ(-1deg)';
+
+		var card = this.cards[this.active];
+		var glare = card && card.querySelector('.avix-sv__glare');
+		if (glare) {
+			glare.style.translate = (nx * rect.width * 0.45).toFixed(1) + 'px ' + (ny * rect.height * 0.45).toFixed(1) + 'px';
+		}
+		return true;
+	};
+
+	/* ------------------------------------------------------------------ */
+	/* Teardown                                                            */
+	/* ------------------------------------------------------------------ */
+
+	Showcase.prototype.destroy = function () {
+		if (!this.alive) {
+			return;
+		}
+		this.alive = false;
+		if (this.frame) {
+			window.cancelAnimationFrame(this.frame);
+		}
+		Object.keys(this.timers).forEach(this.cancel, this);
+		this.list.removeEventListener('click', this.onClick);
+		this.list.removeEventListener('keydown', this.onKey);
+		if (this.onListMove) {
+			this.list.removeEventListener('pointermove', this.onListMove);
+			this.list.removeEventListener('pointerleave', this.onListLeave);
+		}
+		if (this.onVisualMove) {
+			this.visual.removeEventListener('pointermove', this.onVisualMove);
+			this.visual.removeEventListener('pointerleave', this.onVisualLeave);
+		}
+		document.removeEventListener('visibilitychange', this.onVisibility);
+		if (this.observer) {
+			this.observer.disconnect();
+		}
+		if (this.resizeObserver) {
+			this.resizeObserver.disconnect();
+		}
+		var index = instances.indexOf(this);
+		if (index > -1) {
+			instances.splice(index, 1);
+		}
+	};
+
+	function mount(root) {
+		if (!root || (root.__avixSv && root.__avixSv.alive)) {
+			return;
+		}
+		// Editor re-renders replace the DOM; drop instances whose root is gone.
+		instances.slice().forEach(function (instance) {
+			if (!instance.root.isConnected) {
+				instance.destroy();
+			}
+		});
+		var showcase = new Showcase(root);
+		if (showcase.alive) {
+			root.__avixSv = showcase;
+			instances.push(showcase);
+		}
+	}
+
+	function mountAll(scope) {
+		Array.prototype.forEach.call((scope || document).querySelectorAll(ROOT_SELECTOR), mount);
+	}
+
+	window.AvixServices = { mount: mount, mountAll: mountAll };
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', function () {
+			mountAll();
+		});
+	} else {
+		mountAll();
+	}
+
+	function hookElementor() {
+		if (!window.elementorFrontend || !window.elementorFrontend.hooks) {
+			return;
+		}
+		window.elementorFrontend.hooks.addAction('frontend/element_ready/avix-services.default', function ($scope) {
+			var element = $scope && $scope[0] ? $scope[0] : $scope;
+			if (element && element.querySelectorAll) {
+				mountAll(element);
+			}
+		});
+	}
+
+	if (window.elementorFrontend && window.elementorFrontend.hooks) {
+		hookElementor();
+	} else {
+		window.addEventListener('elementor/frontend/init', hookElementor);
+	}
+})(window, document);
+
+</script>
+</body>
+</html>

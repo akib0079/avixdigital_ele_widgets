@@ -1301,8 +1301,8 @@ class Hero extends Widget_Base {
 	 */
 	private function image_html( array $s ) {
 		$image    = (array) $s['bg_image'];
-		$id       = absint( $image['id'] ?? 0 );
 		$url      = (string) ( $image['url'] ?? '' );
+		$id       = absint( $image['id'] ?? 0 ) ? absint( $image['id'] ) : $this->attachment_id( $url );
 		$priority = 'yes' === $s['bg_priority'];
 		$focus    = sprintf(
 			'object-position:%s%% %s%%;',
@@ -1337,6 +1337,28 @@ class Hero extends Widget_Base {
 			$out .= ' ' . $name . '="' . esc_attr( $value ) . '"';
 		}
 		return $out . '>';
+	}
+
+	/**
+	 * Media-library ID for an image given only by URL (e.g. the defaults), so it
+	 * still gets responsive srcset sizes. Also matches resized names like
+	 * "photo-2048x1143.webp". Cached per request.
+	 */
+	private function attachment_id( $url ) {
+		static $cache = array();
+		$url = (string) $url;
+		if ( '' === $url || ! function_exists( 'attachment_url_to_postid' ) ) {
+			return 0;
+		}
+		if ( ! isset( $cache[ $url ] ) ) {
+			$id = attachment_url_to_postid( $url );
+			if ( ! $id ) {
+				$full = preg_replace( '/-\d+x\d+(\.[a-z0-9]+)$/i', '$1', $url );
+				$id   = $full !== $url ? attachment_url_to_postid( $full ) : 0;
+			}
+			$cache[ $url ] = (int) $id;
+		}
+		return $cache[ $url ];
 	}
 
 	/**

@@ -5,6 +5,7 @@ Custom Elementor widgets for avixdigital.com. Tested on WordPress 7.1 + Elemento
 | Widget | What it is |
 | --- | --- |
 | **Hero Banner** | The homepage welcome: parallax background with rounded glass pixels and a pixel trail under the cursor, a headline with the tilted orange highlight and round icon, and the Avix pixel character sitting on the headline, waving hello and chilling. |
+| **Services Showcase** | Service list that expands on hover or tap, a 3D preview card in a browser frame that swaps per service, and the Avix pixel character flying on rocket boots to the service being viewed. |
 | **Selected Work Stack** | Sticky scroll stack of case studies. Each card slides over the last one, which tilts back and dims. Includes a live `01 — 03` progress readout and an optional cursor bubble. |
 | **Testimonial Stack** | Review slider where each new card drops onto a pile. Real reviews, verifiable Fiverr/Upwork badges, autoplay with a progress bar. |
 | **Site Footer** | Rounded footer in dark or light style: big CTA with a tilted pill, brand + socials, two link columns, direct contact with copy-to-clipboard, partner badges. |
@@ -35,9 +36,23 @@ Replaces the HTML hero. Every text, link, image, icon and colour is editable, an
 - **Welcome badge**: Avix mark, a pulsing "available" dot, any Elementor icon, or none; optional link.
 - **Buttons**: the main CTA plus an optional quieter second link (e.g. "See our work" → `#work`).
 - **Trust dock**: add, remove or reorder items, each with an icon and an optional proof link (your Fiverr or partner profile).
-- **Background**: a real `<img>` with responsive sizes that loads first, since it's the biggest thing on the first screen. Turn off **Load image first** if the banner isn't at the top of the page. Focus point, overlay colours, slow zoom, glass pixels, pixel trail (square size, radius, strength), mouse parallax and the entrance animation are all switchable.
+- **Background**: a real `<img>` with responsive sizes that loads first, since it's the biggest thing on the first screen. Turn off **Load image first** if the banner isn't at the top of the page. An image given only as a URL is matched to your media library, so it still gets responsive sizes. Focus point, overlay colours, slow zoom, glass pixels, pixel trail (square size, radius, strength), mouse parallax and the entrance animation are all switchable.
 - **Performance**: effects share one animation loop that stops when nothing moves, and everything, CSS animations included, pauses once the banner is scrolled past or the tab is hidden. Measured in Chrome against the HTML version: script time while idle 5.5 → 0.04 ms per second; after scrolling past, 0.
 - Reduced-motion visitors get a still banner (the avatar still says hi). The entrance doesn't replay on every change in the Elementor editor. On phones the tags hide, the dock stacks, glass blur is dropped (costly on phone GPUs) and a tap sends a small pixel ripple.
+
+## Services Showcase
+
+Replaces the HTML services section.
+
+- **Services** come from a manual list (name, description, link + link text, preview image, optional card label) or straight from a post type: your Services pages if the theme registers them (picked automatically), using title, excerpt, featured image and permalink. `[words]` in a description or the section title are highlighted orange.
+- **Pixel guide**: the Avix character hovers in the left rail on flickering rocket boots and points at the open service. When another opens it flies there on a spring: it stretches with speed, thrusts on the way up, lifts its arms on the way down, trails exhaust sparks and afterimages, bounces once and lands with a puff. The rail lights up behind it. Switch the boots or the whole guide off under **Pixel Avatar**.
+- **Names** are outlined when closed; the open one fills with white ink from left to right, with the ↗ riding on its last word. Choose *Dimmed text* instead of outlines under Style.
+- **Preview card**: tilts toward the mouse with a light glare, swaps up or down depending on direction, and shows the page address in a browser frame (or a white border, or no frame). Missing images get a branded placeholder.
+- **Opening**: hover on desktop (a short hover-intent delay means a mouse passing over doesn't flicker through every row), tap on touch screens, or click only. Arrow keys, Home and End move between services; each name is a real button inside a heading, with `aria-expanded`, and closed panels are skipped by Tab. Without JavaScript every description stays open.
+- **Stable height**: the list reserves room for the longest description, so the page never jumps while visitors hover through the services, and the card stays put.
+- **Phones & tablets**: the preview moves inside the open service (beside the text on tablets, above it on phones), the opened service is kept in view, and the guide keeps flying in a narrower rail.
+- **Performance**: no blur filters; the background glows only move with `transform`. One animation loop runs only while the avatar flies or the card tilts, and everything pauses when the section is off screen. In a test browser without GPU acceleration the HTML version rendered at 22 fps; this one holds 60.
+- **Images** load lazily with responsive sizes; each one is downloaded once, and hidden copies are never fetched. Images given only as a URL (like the defaults) are matched to your media library, so phones still get a smaller copy instead of the 2048px original.
 
 ## Selected Work Stack
 
@@ -99,8 +114,8 @@ The widgets default to the brand system: Space Grotesk for display, Inter for te
 ```
 avix-elementor-widgets/
 ├── avix-elementor-widgets.php          bootstrap: checks Elementor, registers category, widgets, assets
-├── includes/widgets/class-<slug>.php   one class per widget: hero, selected-work, impact-numbers,
-│                                       testimonial-stack, site-footer, process-timeline
+├── includes/widgets/class-<slug>.php   one class per widget: hero, services, selected-work,
+│                                       impact-numbers, testimonial-stack, site-footer, process-timeline
 └── assets/
     ├── css/<slug>.css
     └── js/<slug>.js
