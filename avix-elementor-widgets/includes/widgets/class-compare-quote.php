@@ -627,7 +627,7 @@ class Compare_Quote extends Widget_Base {
 		}
 		$media = $this->media_html( $s, implode( ', ', array_filter( array( $name, $role ), 'strlen' ) ) );
 		?>
-		<figure class="avix-cq__quote<?php echo '' === $media ? ' avix-cq__quote--text' : ''; ?>" data-cq-quote data-cq-reveal style="--cq-delay: 120ms;">
+		<div class="avix-cq__quote<?php echo '' === $media ? ' avix-cq__quote--text' : ''; ?>" data-cq-quote data-cq-reveal style="--cq-delay: 120ms;">
 			<?php if ( '' !== $media ) : ?>
 				<div class="avix-cq__photo" data-cq-perch>
 					<?php echo $media; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in media_html(). ?>
@@ -638,7 +638,7 @@ class Compare_Quote extends Widget_Base {
 					<p><?php echo $this->accent_html( (string) $s['quote'], false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></p>
 				</blockquote>
 				<?php if ( '' !== $name || '' !== $role ) : ?>
-					<figcaption class="avix-cq__by">
+					<div class="avix-cq__by">
 						<?php if ( '' !== $name ) : ?>
 							<cite class="avix-cq__name">
 								<?php if ( $linked ) : ?>
@@ -654,10 +654,10 @@ class Compare_Quote extends Widget_Base {
 						<?php if ( '' !== $role ) : ?>
 							<span class="avix-cq__role"><?php echo esc_html( $role ); ?></span>
 						<?php endif; ?>
-					</figcaption>
+					</div>
 				<?php endif; ?>
 			</div>
-		</figure>
+		</div>
 		<?php
 	}
 

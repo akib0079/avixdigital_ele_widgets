@@ -711,7 +711,7 @@ class Services extends Widget_Base {
 		$image = $this->image_html( $item, '(min-width: 1440px) 660px, (min-width: 1025px) 46vw, 92vw', 'avix-sv__img' );
 		$url   = $item['link'] ? $this->url_label( $item['link']['url'] ) : '';
 		?>
-		<figure class="avix-sv__card<?php echo $is_active ? ' is-active' : ''; ?>" data-sv-card>
+		<div class="avix-sv__card<?php echo $is_active ? ' is-active' : ''; ?>" data-sv-card>
 			<div class="avix-sv__chrome" aria-hidden="true">
 				<i></i><i></i><i></i>
 				<?php if ( '' !== $url ) : ?>
@@ -730,9 +730,9 @@ class Services extends Widget_Base {
 				<span class="avix-sv__glare" aria-hidden="true"></span>
 			</div>
 			<?php if ( '' !== $item['label'] ) : ?>
-				<figcaption class="avix-sv__label"><?php echo esc_html( $item['label'] ); ?></figcaption>
+				<div class="avix-sv__label"><?php echo esc_html( $item['label'] ); ?></div>
 			<?php endif; ?>
-		</figure>
+		</div>
 		<?php
 	}
 

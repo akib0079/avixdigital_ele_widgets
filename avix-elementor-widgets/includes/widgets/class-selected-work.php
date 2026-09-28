@@ -1573,7 +1573,7 @@ class Selected_Work extends Widget_Base {
 		?>
 		<article <?php $this->print_render_attribute_string( $card_key ); ?>>
 			<<?php echo esc_attr( $surface_tag ); ?> <?php $this->print_render_attribute_string( $link_key ); ?>>
-				<figure class="avix-work-card__media" data-aw-media>
+				<div class="avix-work-card__media" data-aw-media>
 					<?php
 					$image = $this->image_html( $item, $settings['image_size'] );
 					if ( $image ) {
@@ -1582,7 +1582,7 @@ class Selected_Work extends Widget_Base {
 						echo '<span class="avix-work-card__placeholder" aria-hidden="true">' . esc_html( $this->initials( $item['name'] ) ) . '</span>';
 					}
 					?>
-				</figure>
+				</div>
 				<div class="avix-work-card__panel">
 					<?php if ( $show_index || $show_year ) : ?>
 						<div class="avix-work-card__meta">

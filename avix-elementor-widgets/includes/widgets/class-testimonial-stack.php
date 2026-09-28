@@ -680,7 +680,7 @@ class Testimonial_Stack extends Widget_Base {
 		?>
 		<article <?php $this->print_render_attribute_string( $key ); ?>>
 			<div class="avix-rv-card__shell">
-				<figure class="avix-rv-card__visual<?php echo $photo ? ' avix-rv-card__visual--photo' : ''; ?>" aria-hidden="true">
+				<div class="avix-rv-card__visual<?php echo $photo ? ' avix-rv-card__visual--photo' : ''; ?>" aria-hidden="true">
 					<?php if ( $photo ) : ?>
 						<?php $focus = isset( $review['photo_focus']['size'] ) && '' !== $review['photo_focus']['size'] ? max( 0, min( 100, (float) $review['photo_focus']['size'] ) ) : 28; ?>
 						<img class="avix-rv-card__photo" src="<?php echo esc_url( $photo ); ?>" alt="" loading="lazy" decoding="async" style="--rv-focus:<?php echo esc_attr( $focus ); ?>%">
@@ -690,7 +690,7 @@ class Testimonial_Stack extends Widget_Base {
 					<?php if ( '' !== $location ) : ?>
 						<span class="avix-rv-card__place"><?php $this->icon( 'pin' ); ?><?php echo esc_html( $location ); ?></span>
 					<?php endif; ?>
-				</figure>
+				</div>
 
 				<div class="avix-rv-card__content">
 					<div class="avix-rv-card__top">
