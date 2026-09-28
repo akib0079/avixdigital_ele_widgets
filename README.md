@@ -143,6 +143,10 @@ Replaces the HTML services section.
 - **SEO & accessibility**: rows are a real list, and each reads as "The typical agency: … Avix Digital: …" to screen readers and search engines. The quote is a `figure` with `blockquote` and `cite`. Person structured data for the CEO shares its `@id` with the Process Timeline team row, so search engines see one person. The character is a labelled button; its lines are announced politely. Without JavaScript everything is visible and the character stays hidden.
 - **Performance**: one spring animation loop that only runs while it moves, no scroll-driven work except a cheap check of where the quote is, idle fidgets driven by a timer twice a second instead of CSS loops (measured: 1–3 ms per second of main-thread time while visible), and everything pauses off screen. Reduced-motion visitors get instant moves, no flight, no tour.
 
+## After updating the plugin: clear the caches
+
+Your site strips `?ver=` from asset URLs (a theme or optimiser setting), and Hostinger's CDN caches CSS/JS for 7 days. Since v1.4.1 the plugin adds its own `?avixv=` stamp that changes whenever a file changes, so updates reach visitors. After uploading a new version, still purge the cache once: hPanel → Websites → your site → Performance → CDN → **Flush cache** (and your WordPress cache plugin, if any).
+
 ## Fonts & colours
 
 The widgets default to the brand system: Space Grotesk for display, Inter for text, `#FB6007` accent, `#1A1A1A` ink, and a darker `#C64700` for small orange text so it stays readable on white. The live site already loads both fonts. Every colour and font can be overridden in each widget's Style tab.

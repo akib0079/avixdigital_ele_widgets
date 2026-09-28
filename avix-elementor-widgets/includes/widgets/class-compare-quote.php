@@ -634,7 +634,7 @@ class Compare_Quote extends Widget_Base {
 				</div>
 			<?php endif; ?>
 			<div class="avix-cq__body">
-				<blockquote class="avix-cq__words">
+				<blockquote class="avix-cq__words is-style-plain has-background">
 					<p><?php echo $this->accent_html( (string) $s['quote'], false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></p>
 				</blockquote>
 				<?php if ( '' !== $name || '' !== $role ) : ?>

@@ -3,7 +3,7 @@
  * Plugin Name:       Avix Digital Elementor Widgets
  * Plugin URI:        https://avixdigital.com
  * Description:       Custom Elementor widgets for avixdigital.com: Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline, FAQ & Quote and Compare & CEO Quote.
- * Version:           1.4.0
+ * Version:           1.4.1
  * Author:            Avix Digital
  * Author URI:        https://avixdigital.com
  * Text Domain:       avix-widgets
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AVIX_EW_VERSION', '1.4.0' );
+define( 'AVIX_EW_VERSION', '1.4.1' );
 define( 'AVIX_EW_FILE', __FILE__ );
 define( 'AVIX_EW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AVIX_EW_URL', plugin_dir_url( __FILE__ ) );
@@ -66,6 +66,10 @@ final class Avix_Elementor_Widgets {
 		add_action( 'elementor/widgets/register', array( __CLASS__, 'register_widgets' ) );
 		add_action( 'elementor/frontend/after_register_styles', array( __CLASS__, 'register_styles' ) );
 		add_action( 'elementor/frontend/after_register_scripts', array( __CLASS__, 'register_scripts' ) );
+
+		// Runs last, after any theme/optimiser that strips "?ver=" from asset URLs.
+		add_filter( 'style_loader_src', array( __CLASS__, 'bust_cache' ), PHP_INT_MAX, 2 );
+		add_filter( 'script_loader_src', array( __CLASS__, 'bust_cache' ), PHP_INT_MAX, 2 );
 	}
 
 	/**
@@ -93,16 +97,47 @@ final class Avix_Elementor_Widgets {
 		}
 	}
 
+	/**
+	 * Handle => asset path (relative to the plugin root), for cache busting.
+	 *
+	 * @var array<string, string>
+	 */
+	private static $assets = array();
+
 	public static function register_styles() {
+		self::register_style( 'avix-widgets-base', 'assets/css/base.css' );
 		foreach ( array_keys( self::$widgets ) as $slug ) {
-			wp_register_style( 'avix-' . $slug, AVIX_EW_URL . 'assets/css/' . $slug . '.css', array(), self::asset_version( 'assets/css/' . $slug . '.css' ) );
+			self::register_style( 'avix-' . $slug, 'assets/css/' . $slug . '.css', array( 'avix-widgets-base' ) );
 		}
 	}
 
 	public static function register_scripts() {
 		foreach ( array_keys( self::$widgets ) as $slug ) {
-			wp_register_script( 'avix-' . $slug, AVIX_EW_URL . 'assets/js/' . $slug . '.js', array(), self::asset_version( 'assets/js/' . $slug . '.js' ), true );
+			$relative = 'assets/js/' . $slug . '.js';
+			self::$assets[ 'avix-' . $slug ] = $relative;
+			wp_register_script( 'avix-' . $slug, AVIX_EW_URL . $relative, array(), self::asset_version( $relative ), true );
 		}
+	}
+
+	private static function register_style( $handle, $relative, array $deps = array() ) {
+		self::$assets[ $handle ] = $relative;
+		wp_register_style( $handle, AVIX_EW_URL . $relative, $deps, self::asset_version( $relative ) );
+	}
+
+	/**
+	 * Some themes and optimisers remove "?ver=" from asset URLs. With a CDN in
+	 * front, visitors then keep getting old CSS/JS after a plugin update (and
+	 * phones and desktops can even get different old copies). A separate
+	 * parameter that changes whenever a file changes keeps our assets fresh.
+	 *
+	 * @param string $src    Asset URL.
+	 * @param string $handle Registered handle.
+	 */
+	public static function bust_cache( $src, $handle ) {
+		if ( ! is_string( $src ) || '' === $src || ! isset( self::$assets[ $handle ] ) ) {
+			return $src;
+		}
+		return add_query_arg( 'avixv', self::asset_version( self::$assets[ $handle ] ), $src );
 	}
 
 	/**

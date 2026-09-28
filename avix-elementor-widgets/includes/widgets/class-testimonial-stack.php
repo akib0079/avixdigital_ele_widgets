@@ -706,7 +706,7 @@ class Testimonial_Stack extends Widget_Base {
 
 					<span class="avix-rv-card__rule" aria-hidden="true"></span>
 
-					<blockquote class="avix-rv-card__quote">
+					<blockquote class="avix-rv-card__quote is-style-plain has-background">
 						<p>&ldquo;<?php echo esc_html( trim( (string) $review['quote'], " \t\n\r\"“”" ) ); ?>&rdquo;</p>
 					</blockquote>
 
