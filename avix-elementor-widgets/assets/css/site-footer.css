@@ -1,0 +1,920 @@
+/*!
+ * Avix Digital · Site Footer
+ * Dark rounded card with column hairlines, a big CTA with a tilted pill,
+ * four content columns and an oversized wordmark. Layout follows the
+ * widget's own width (container queries).
+ */
+
+.avix-ft {
+	--ft-bg: #121212;
+	--ft-ink: #ffffff;
+	--ft-soft: #d9d5cf;
+	--ft-muted: #928d86;
+	--ft-line: rgba(255, 255, 255, 0.075);
+	--ft-accent: #fb6007;
+	--ft-accent-soft: #ff8a3d;
+	--ft-pill-ink: #ffffff;
+	--ft-surface: rgba(255, 255, 255, 0.06);
+	--ft-surface-line: rgba(255, 255, 255, 0.07);
+	--ft-hover: rgba(255, 255, 255, 0.08);
+	--ft-ok: #34d399;
+	--ft-glow: 30%;
+	--ft-tile-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+	--ft-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--ft-font-body: "Inter", Arial, sans-serif;
+	--ft-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--ft-radius: 32px;
+	--ft-max: 1200px;
+	--ft-gutter: 24px;
+	--ft-cols: 1.2fr 0.85fr 0.85fr 1.2fr;
+	--ft-col-pad: clamp(16px, 2.2cqi, 30px);
+	--ft-title: clamp(42px, 6.6cqi, 92px);
+
+	container: avix-ft / inline-size;
+	display: block;
+	width: 100%;
+	padding: 0 16px 16px;
+	font-family: var(--ft-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-ft *,
+.avix-ft *::before,
+.avix-ft *::after {
+	box-sizing: border-box;
+}
+
+/* Light style: warm paper card, same brand orange. */
+.avix-ft--light {
+	--ft-bg: #f5f3ef;
+	--ft-ink: #1a1a1a;
+	--ft-soft: #3a3733;
+	--ft-muted: #6b665f;
+	--ft-line: rgba(26, 26, 26, 0.09);
+	--ft-accent-soft: #c64700;
+	--ft-surface: #ffffff;
+	--ft-surface-line: rgba(26, 26, 26, 0.08);
+	--ft-hover: rgba(26, 26, 26, 0.06);
+	--ft-ok: #059669;
+	--ft-glow: 16%;
+	--ft-tile-shadow: 0 1px 2px rgba(26, 26, 26, 0.06), 0 6px 18px rgba(26, 26, 26, 0.06);
+}
+
+.avix-ft__card {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+	border-radius: var(--ft-radius);
+	color: var(--ft-ink);
+	background: var(--ft-bg);
+}
+
+.avix-ft__frame {
+	position: relative;
+	z-index: 2;
+	width: min(calc(100% - var(--ft-gutter) * 2), var(--ft-max));
+	margin-inline: auto;
+}
+
+/* Column hairlines, aligned with the content grid. */
+.avix-ft__lines {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	z-index: 0;
+	display: grid;
+	width: min(calc(100% - var(--ft-gutter) * 2), var(--ft-max));
+	grid-template-columns: var(--ft-cols);
+	border-right: 1px solid var(--ft-line);
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+
+.avix-ft__lines span {
+	border-left: 1px solid var(--ft-line);
+}
+
+.avix-ft--no-lines .avix-ft__lines {
+	display: none;
+}
+
+/* Warm glow behind the wordmark: the Avix signature. */
+.avix-ft__glow {
+	position: absolute;
+	bottom: -34%;
+	left: 50%;
+	z-index: 1;
+	width: min(980px, 92%);
+	height: 58%;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--ft-accent) var(--ft-glow), transparent), transparent);
+	filter: blur(50px);
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+
+.avix-ft--no-glow .avix-ft__glow {
+	display: none;
+}
+
+/* ---------- CTA ---------- */
+
+.avix-ft__cta {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: clamp(96px, 12cqi, 168px) var(--ft-col-pad) 0;
+	text-align: center;
+}
+
+.avix-ft .avix-ft__title {
+	max-width: 16ch;
+	margin: 0;
+	padding: 0;
+	color: var(--ft-ink);
+	font-family: var(--ft-font-display);
+	font-size: var(--ft-title);
+	font-weight: 600;
+	letter-spacing: -0.055em;
+	line-height: 1;
+	text-wrap: balance;
+}
+
+.avix-ft__title-accent {
+	color: var(--ft-muted);
+}
+
+/* ---------- Pixel buddy: the Avix character, sitting on the headline ---------- */
+
+.avix-ft__perch {
+	position: relative;
+	display: inline-block;
+}
+
+.avix-ft__buddy {
+	--ft-buddy-w: clamp(24px, 0.46em, 48px);
+	--ft-buddy-h: calc(var(--ft-buddy-w) * 1.1);
+	position: absolute;
+	/* The seat (row 7 of 11) lands on the cap line of the word. */
+	top: calc(var(--ft-buddy-cap, 0.13em) + var(--ft-buddy-nudge, 0em) - var(--ft-buddy-h) * 0.636);
+	left: var(--ft-buddy-x, 24%);
+	z-index: 4;
+	width: var(--ft-buddy-w);
+	height: var(--ft-buddy-h);
+	transform: translateX(-50%);
+	transform-origin: 50% 100%;
+	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--ft-accent) 70%, transparent));
+	animation: avix-ft-glow 2.4s ease-in-out infinite alternate;
+}
+
+.avix-ft__buddy svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--ft-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-ft__buddy rect {
+	transform-box: view-box;
+}
+
+/* Lazy leg swing, one leg at a time. */
+.avix-ft__b-leg--l {
+	animation: avix-ft-leg 1.5s steps(1) infinite;
+}
+
+.avix-ft__b-leg--r {
+	animation: avix-ft-leg 1.5s steps(1) -0.75s infinite;
+}
+
+/* Every few seconds it glances left, then right. */
+.avix-ft__b-head {
+	animation: avix-ft-look 7s steps(1) infinite;
+}
+
+/* Waves when the CTA (or the buddy itself) is hovered. */
+.avix-ft__cta:has(.avix-ft__pill:hover) .avix-ft__b-arm--r,
+.avix-ft__cta:has(.avix-ft__pill:focus-visible) .avix-ft__b-arm--r,
+.avix-ft__buddy:hover .avix-ft__b-arm--r {
+	animation: avix-ft-wave 0.5s steps(1) infinite;
+}
+
+.avix-ft__cta:has(.avix-ft__pill:hover) .avix-ft__b-head,
+.avix-ft__buddy:hover .avix-ft__b-head {
+	animation: none;
+	transform: translate(1px, 0);
+}
+
+/* Drops onto the headline the first time the footer is seen. */
+.avix-ft.is-armed .avix-ft__buddy {
+	opacity: 0;
+}
+
+.avix-ft.is-armed .avix-ft__buddy.is-landed {
+	animation:
+		avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both,
+		avix-ft-glow 2.4s ease-in-out 900ms infinite alternate;
+}
+
+@keyframes avix-ft-leg {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-ft-look {
+	0% { transform: translate(0, 0); }
+	62% { transform: translate(-1px, 0); }
+	74% { transform: translate(1px, 0); }
+	86% { transform: translate(0, 0); }
+}
+
+/* Raised arm stays joined at the shoulder and bobs: a pixel-art hello. */
+@keyframes avix-ft-wave {
+	0% { transform: translate(0, -3px); }
+	50% { transform: translate(0, -2px); }
+}
+
+@keyframes avix-ft-glow {
+	from { filter: drop-shadow(0 0 7px color-mix(in srgb, var(--ft-accent) 55%, transparent)); }
+	to { filter: drop-shadow(0 0 16px color-mix(in srgb, var(--ft-accent) 95%, transparent)); }
+}
+
+@keyframes avix-ft-land {
+	0% { opacity: 0; transform: translate(-50%, -180%); }
+	55% { opacity: 1; transform: translate(-50%, 6%) scale(1.12, 0.86); }
+	72% { transform: translate(-50%, -14%) scale(0.96, 1.05); }
+	86% { transform: translate(-50%, 2%) scale(1.03, 0.97); }
+	100% { opacity: 1; transform: translate(-50%, 0) scale(1, 1); }
+}
+
+.avix-ft--light .avix-ft__buddy {
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--ft-accent) 40%, transparent));
+	animation-name: avix-ft-glow-soft;
+}
+
+.avix-ft--light.is-armed .avix-ft__buddy.is-landed {
+	animation:
+		avix-ft-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both,
+		avix-ft-glow-soft 2.4s ease-in-out 900ms infinite alternate;
+}
+
+@keyframes avix-ft-glow-soft {
+	from { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--ft-accent) 30%, transparent)); }
+	to { filter: drop-shadow(0 0 11px color-mix(in srgb, var(--ft-accent) 55%, transparent)); }
+}
+
+.avix-ft .avix-ft__pill {
+	position: relative;
+	z-index: 3;
+	display: inline-flex;
+	align-items: center;
+	gap: 14px;
+	margin-top: calc(var(--ft-title) * -0.22);
+	padding: 9px 9px 9px 26px;
+	border-radius: 999px;
+	color: var(--ft-pill-ink);
+	background: var(--ft-accent);
+	box-shadow:
+		0 0 0 1px color-mix(in srgb, var(--ft-accent) 60%, #ffffff),
+		0 12px 40px color-mix(in srgb, var(--ft-accent) 55%, transparent),
+		0 0 90px color-mix(in srgb, var(--ft-accent) 35%, transparent);
+	font-family: var(--ft-font-body);
+	/* 19px bold counts as large text, so white on the brand orange meets WCAG AA (3:1). */
+	font-size: 19px;
+	font-weight: 700;
+	letter-spacing: -0.015em;
+	line-height: 1;
+	text-decoration: none;
+	white-space: nowrap;
+	transform: translateX(6%) rotate(-6deg);
+	transition: transform 520ms var(--ft-ease), box-shadow 520ms var(--ft-ease);
+}
+
+.avix-ft .avix-ft__pill:hover,
+.avix-ft .avix-ft__pill:focus {
+	color: var(--ft-pill-ink);
+	text-decoration: none;
+}
+
+.avix-ft__pill-icon {
+	display: grid;
+	width: 40px;
+	height: 40px;
+	flex: 0 0 auto;
+	place-items: center;
+	border-radius: 50%;
+	color: var(--ft-accent);
+	background: #ffffff;
+	transition: transform 420ms var(--ft-ease);
+}
+
+.avix-ft__icon {
+	display: block;
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.avix-ft .avix-ft__lead {
+	max-width: 52ch;
+	margin: clamp(40px, 5cqi, 56px) 0 0;
+	color: var(--ft-muted);
+	font-family: var(--ft-font-body);
+	font-size: clamp(15px, 1.5cqi, 17px);
+	line-height: 1.65;
+}
+
+.avix-ft .avix-ft__alt {
+	margin: 18px 0 0;
+	color: var(--ft-muted);
+	font-family: var(--ft-font-body);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.avix-ft .avix-ft__alt a {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	color: var(--ft-ink);
+	font-weight: 600;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--ft-ink) 30%, transparent);
+	text-underline-offset: 4px;
+	transition: color 220ms ease, text-decoration-color 220ms ease;
+}
+
+.avix-ft .avix-ft__alt a:hover {
+	color: var(--ft-accent-soft);
+	text-decoration-color: currentColor;
+}
+
+.avix-ft__alt .avix-ft__icon {
+	width: 13px;
+	height: 13px;
+}
+
+/* ---------- Columns ---------- */
+
+.avix-ft__grid {
+	display: grid;
+	grid-template-columns: var(--ft-cols);
+	margin-top: clamp(96px, 11cqi, 150px);
+}
+
+.avix-ft__col {
+	min-width: 0;
+	padding: 0 var(--ft-col-pad);
+}
+
+.avix-ft .avix-ft__label {
+	margin: 0 0 22px;
+	color: var(--ft-muted);
+	font-family: var(--ft-font-body);
+	font-size: 13px;
+	font-weight: 500;
+	letter-spacing: 0.01em;
+	line-height: 1;
+}
+
+.avix-ft .avix-ft__list {
+	display: grid;
+	gap: 14px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-ft .avix-ft__list li {
+	margin: 0;
+	padding: 0;
+}
+
+.avix-ft .avix-ft__list li::before,
+.avix-ft .avix-ft__list li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-ft .avix-ft__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--ft-soft);
+	font-family: var(--ft-font-body);
+	font-size: 16px;
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	line-height: 1.35;
+	text-decoration: none;
+	transition: color 220ms ease, transform 320ms var(--ft-ease);
+}
+
+/* Small accent dot that appears on hover / current page. */
+.avix-ft .avix-ft__link::before {
+	width: 5px;
+	height: 5px;
+	margin-left: -13px;
+	border-radius: 50%;
+	background: var(--ft-accent);
+	opacity: 0;
+	content: "";
+	transform: scale(0.4);
+	transition: opacity 220ms ease, transform 320ms var(--ft-ease);
+}
+
+.avix-ft .avix-ft__link:hover,
+.avix-ft .avix-ft__link:focus-visible {
+	color: var(--ft-ink);
+	transform: translateX(13px);
+}
+
+.avix-ft .avix-ft__link:hover::before,
+.avix-ft .avix-ft__link:focus-visible::before {
+	opacity: 1;
+	transform: scale(1);
+}
+
+.avix-ft .avix-ft__link[aria-current="page"] {
+	color: var(--ft-accent-soft);
+}
+
+/* Brand column */
+.avix-ft__logo {
+	display: inline-block;
+	margin-bottom: 22px;
+}
+
+.avix-ft .avix-ft__logo img {
+	display: block;
+	width: auto;
+	max-width: 190px;
+	height: 38px;
+	max-height: 38px;
+	object-fit: contain;
+	object-position: left center;
+}
+
+.avix-ft .avix-ft__about {
+	max-width: 34ch;
+	margin: 0;
+	color: var(--ft-muted);
+	font-family: var(--ft-font-body);
+	font-size: 14.5px;
+	line-height: 1.65;
+}
+
+.avix-ft__social {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px 16px;
+	margin-top: 30px;
+}
+
+.avix-ft .avix-ft__social-label {
+	margin: 0;
+	color: var(--ft-ink);
+	font-family: var(--ft-font-display);
+	font-size: 16px;
+	font-weight: 500;
+	letter-spacing: -0.02em;
+}
+
+.avix-ft .avix-ft__social ul {
+	display: flex;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-ft .avix-ft__social li {
+	margin: 0;
+	padding: 0;
+}
+
+.avix-ft .avix-ft__social li::before,
+.avix-ft .avix-ft__social li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-ft .avix-ft__social a {
+	display: grid;
+	width: 36px;
+	height: 36px;
+	place-items: center;
+	border: 1px solid var(--ft-surface-line);
+	border-radius: 10px;
+	color: var(--ft-ink);
+	background: var(--ft-surface);
+	text-decoration: none;
+	transition: background-color 240ms ease, border-color 240ms ease, color 240ms ease, transform 320ms var(--ft-ease);
+}
+
+.avix-ft__social svg {
+	width: 15px;
+	height: 15px;
+	fill: currentColor;
+}
+
+.avix-ft__fi {
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: -0.05em;
+	line-height: 1;
+}
+
+.avix-ft .avix-ft__social a:hover,
+.avix-ft .avix-ft__social a:focus-visible {
+	border-color: var(--ft-accent);
+	color: #ffffff;
+	background: var(--ft-accent);
+	transform: translateY(-2px);
+}
+
+/* Contact column */
+.avix-ft .avix-ft__contact {
+	gap: 18px;
+}
+
+.avix-ft__key {
+	display: block;
+	margin-bottom: 5px;
+	color: var(--ft-muted);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.avix-ft__value {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.avix-ft .avix-ft__contact .avix-ft__link {
+	font-size: 16px;
+	overflow-wrap: anywhere;
+}
+
+.avix-ft .avix-ft__contact .avix-ft__link::before {
+	display: none;
+}
+
+.avix-ft .avix-ft__contact .avix-ft__link:hover {
+	transform: none;
+}
+
+.avix-ft .avix-ft__text {
+	color: var(--ft-soft);
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+.avix-ft .avix-ft__copy {
+	position: relative;
+	display: grid;
+	width: 28px;
+	height: 28px;
+	flex: 0 0 auto;
+	place-items: center;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	color: var(--ft-muted);
+	background: transparent;
+	cursor: pointer;
+	transition: color 220ms ease, background-color 220ms ease;
+}
+
+.avix-ft .avix-ft__copy:hover {
+	color: var(--ft-ink);
+	background: var(--ft-hover);
+}
+
+.avix-ft__copy svg {
+	width: 15px;
+	height: 15px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.avix-ft__copy .avix-ft__copy-done,
+.avix-ft__copy.is-copied .avix-ft__copy-idle {
+	display: none;
+}
+
+.avix-ft__copy.is-copied .avix-ft__copy-done {
+	display: block;
+	color: var(--ft-ok);
+}
+
+/* ---------- Wordmark ---------- */
+
+.avix-ft__mark {
+	margin-top: clamp(80px, 10cqi, 136px);
+	padding: 0 var(--ft-col-pad);
+}
+
+.avix-ft .avix-ft__mark img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: auto;
+	margin: 0;
+	border-radius: 0;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+/* ---------- Bottom ---------- */
+
+.avix-ft__bottom {
+	margin-top: clamp(80px, 9cqi, 124px);
+	padding: 0 var(--ft-col-pad);
+	border-top: 1px solid var(--ft-line);
+}
+
+.avix-ft__bottom-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18px 32px;
+	padding: 28px 0;
+}
+
+.avix-ft__bottom-row + .avix-ft__bottom-row {
+	align-items: flex-start;
+	padding-top: 0;
+	padding-bottom: 32px;
+}
+
+.avix-ft .avix-ft__legal {
+	margin: 0;
+	color: var(--ft-muted);
+	font-family: var(--ft-font-body);
+	font-size: 13.5px;
+	line-height: 1.5;
+}
+
+.avix-ft .avix-ft__top {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	color: var(--ft-soft);
+	background: transparent;
+	font-family: var(--ft-font-body);
+	font-size: 13.5px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: color 220ms ease;
+}
+
+.avix-ft__top span {
+	display: grid;
+	width: 32px;
+	height: 32px;
+	place-items: center;
+	border: 1px solid var(--ft-line);
+	border-radius: 50%;
+	transition: border-color 220ms ease, transform 320ms var(--ft-ease);
+}
+
+.avix-ft .avix-ft__top:hover {
+	color: var(--ft-ink);
+}
+
+.avix-ft .avix-ft__top:hover span {
+	border-color: var(--ft-accent);
+	transform: translateY(-3px);
+}
+
+/* ---------- Partner badges & small print ---------- */
+
+.avix-ft .avix-ft__badges {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-ft .avix-ft__badge {
+	margin: 0;
+	padding: 0;
+}
+
+.avix-ft .avix-ft__badge::before,
+.avix-ft .avix-ft__badge::marker {
+	display: none;
+	content: none;
+}
+
+.avix-ft .avix-ft__badge-tile {
+	display: grid;
+	height: 66px;
+	min-width: 66px;
+	place-items: center;
+	overflow: hidden;
+	padding: 7px 10px;
+	border: 1px solid var(--ft-surface-line);
+	border-radius: 12px;
+	background: #ffffff;
+	box-shadow: var(--ft-tile-shadow);
+	transition: transform 320ms var(--ft-ease);
+}
+
+.avix-ft .avix-ft__badge-tile img {
+	display: block;
+	width: auto;
+	max-width: 150px;
+	height: 52px;
+	max-height: 52px;
+	margin: 0;
+	border-radius: 6px;
+	object-fit: contain;
+	transform: scale(var(--ft-zoom, 1));
+}
+
+.avix-ft a.avix-ft__badge-tile:hover {
+	transform: translateY(-3px);
+}
+
+.avix-ft a.avix-ft__badge-tile:focus-visible {
+	outline: 2px solid var(--ft-accent-soft);
+	outline-offset: 4px;
+}
+
+.avix-ft .avix-ft__print {
+	max-width: 64ch;
+	margin: 0;
+	text-align: right;
+	color: color-mix(in srgb, var(--ft-muted) 80%, transparent);
+	font-family: var(--ft-font-body);
+	font-size: 12px;
+	line-height: 1.55;
+}
+
+/* ---------- Interaction ---------- */
+
+@media (hover: hover) {
+	.avix-ft .avix-ft__pill:hover {
+		box-shadow:
+			0 0 0 1px color-mix(in srgb, var(--ft-accent) 60%, #ffffff),
+			0 18px 50px color-mix(in srgb, var(--ft-accent) 70%, transparent),
+			0 0 120px color-mix(in srgb, var(--ft-accent) 45%, transparent);
+		transform: translateX(6%) rotate(-2deg) translateY(-4px) scale(1.03);
+	}
+
+	.avix-ft .avix-ft__pill:hover .avix-ft__pill-icon {
+		transform: rotate(45deg);
+	}
+}
+
+.avix-ft .avix-ft__pill:focus-visible,
+.avix-ft .avix-ft__alt a:focus-visible,
+.avix-ft .avix-ft__link:focus-visible,
+.avix-ft .avix-ft__social a:focus-visible,
+.avix-ft .avix-ft__copy:focus-visible,
+.avix-ft .avix-ft__top:focus-visible {
+	outline: 2px solid var(--ft-accent-soft);
+	outline-offset: 4px;
+}
+
+.avix-ft__sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	clip-path: inset(50%);
+}
+
+/* ---------- Narrower widget ---------- */
+
+@container avix-ft (max-width: 1080px) {
+	.avix-ft__card {
+		--ft-cols: 1fr 1fr;
+	}
+
+	.avix-ft__lines span:nth-child(n + 3) {
+		display: none;
+	}
+
+	.avix-ft__grid {
+		row-gap: 56px;
+	}
+
+	.avix-ft__bottom-row + .avix-ft__bottom-row {
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.avix-ft .avix-ft__print {
+		text-align: left;
+	}
+}
+
+@container avix-ft (max-width: 640px) {
+	/* Container queries style descendants only, so tokens are reset on the card. */
+	.avix-ft__card {
+		--ft-gutter: 22px;
+		--ft-col-pad: 0px;
+		--ft-title: clamp(36px, 11cqi, 48px);
+		border-radius: min(var(--ft-radius), 24px);
+	}
+
+	.avix-ft__grid {
+		column-gap: 20px;
+	}
+
+	.avix-ft__bottom {
+		padding-inline: 0;
+	}
+
+	.avix-ft__bottom-row {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.avix-ft .avix-ft__print {
+		text-align: left;
+	}
+
+	.avix-ft__lines {
+		display: none;
+	}
+
+	.avix-ft .avix-ft__pill {
+		margin-top: 26px;
+		transform: rotate(-4deg);
+	}
+
+	.avix-ft__grid {
+		row-gap: 44px;
+	}
+
+	.avix-ft__col--brand,
+	.avix-ft__col--contact {
+		grid-column: 1 / -1;
+	}
+
+	.avix-ft .avix-ft__badges {
+		gap: 10px;
+	}
+
+	.avix-ft .avix-ft__badge-tile {
+		height: 56px;
+		min-width: 56px;
+	}
+
+	.avix-ft .avix-ft__badge-tile img {
+		height: 42px;
+		max-height: 42px;
+	}
+}
+
+@media (max-width: 640px) {
+	.avix-ft {
+		padding: 0 8px 8px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-ft *,
+	.avix-ft *::before,
+	.avix-ft *::after {
+		transition-duration: 0.01ms !important;
+	}
+
+	.avix-ft__buddy,
+	.avix-ft__buddy rect,
+	.avix-ft.is-armed .avix-ft__buddy {
+		opacity: 1;
+		animation: none !important;
+	}
+}

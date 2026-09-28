@@ -1,0 +1,991 @@
+/*!
+ * Avix Digital · Selected Work (scroll stack)
+ * Layout switches on the widget's own width (container queries), so it adapts
+ * to any column or breakpoint setup, not only the viewport.
+ */
+
+.avix-work {
+	/* Brand tokens, overridden by the widget's Style controls. */
+	--aw-bg: #ffffff;
+	--aw-ink: #1a1a1a;
+	--aw-muted: #5d5a56;
+	--aw-accent: #fb6007;
+	--aw-accent-text: #c64700;
+	--aw-line: rgba(26, 26, 26, 0.12);
+	--aw-card-bg: #ece9e2;
+	--aw-panel-bg: #111111;
+	--aw-panel-ink: #ffffff;
+	--aw-panel-muted: #b9b6b1;
+	--aw-panel-soft: rgba(255, 255, 255, 0.07);
+	--aw-panel-line: rgba(255, 255, 255, 0.14);
+	--aw-panel-accent: #ff7a2c;
+	--aw-panel-glow: rgba(251, 96, 7, 0.11);
+	--aw-cta-bg: #111111;
+	--aw-cta-ink: #ffffff;
+	--aw-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--aw-font-body: "Inter", Arial, sans-serif;
+	--aw-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+	/* Geometry */
+	--aw-max: 1200px;
+	--aw-gutter: 24px;
+	--aw-radius: 28px;
+	--aw-panel-radius: 22px;
+	--aw-panel-inset: 12px;
+	--aw-panel-w: 420px;
+	--aw-card-h: clamp(470px, 46vw, 570px);
+	--aw-gap: 112px;
+	--aw-head-h: 112px;
+	--aw-head-gap: 56px;
+	--aw-release: clamp(150px, 20vh, 236px);
+
+	/* Set by JS: height of fixed bars (admin bar, smart header) currently covering the top. */
+	--aw-offset: 0px;
+	--aw-top: calc(var(--aw-offset) + var(--aw-head-h) + var(--aw-head-gap));
+
+	container: avix-work / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: 56px 0 72px;
+	color: var(--aw-ink);
+	background: var(--aw-bg);
+	font-family: var(--aw-font-body);
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+.avix-work--static-head {
+	--aw-top: calc(var(--aw-offset) + 32px);
+}
+
+.avix-work *,
+.avix-work *::before,
+.avix-work *::after {
+	box-sizing: border-box;
+}
+
+.avix-work__frame {
+	width: min(calc(100% - var(--aw-gutter) * 2), var(--aw-max));
+	margin-inline: auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-work__head {
+	position: sticky;
+	top: var(--aw-offset);
+	z-index: 50;
+	display: flex;
+	min-height: var(--aw-head-h);
+	align-items: center;
+	justify-content: space-between;
+	gap: 32px;
+	margin: 0 0 var(--aw-head-gap);
+	padding: 20px 0;
+	background: var(--aw-bg);
+	background: color-mix(in srgb, var(--aw-bg) 92%, transparent);
+	-webkit-backdrop-filter: blur(16px);
+	backdrop-filter: blur(16px);
+	will-change: transform;
+}
+
+.avix-work--static-head .avix-work__head {
+	position: relative;
+	top: auto;
+	z-index: 1;
+	min-height: 0;
+	background: none;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+}
+
+.avix-work__kicker {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 12px;
+	color: var(--aw-accent-text);
+	font-family: var(--aw-font-body);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.avix-work__kicker::before {
+	width: 18px;
+	height: 2px;
+	flex: 0 0 auto;
+	border-radius: 2px;
+	background: var(--aw-accent);
+	content: "";
+}
+
+.avix-work__title {
+	margin: 0;
+	color: var(--aw-ink);
+	font-family: var(--aw-font-display);
+	font-size: clamp(40px, 5.4cqi, 68px);
+	font-weight: 600;
+	letter-spacing: -0.055em;
+	line-height: 0.95;
+}
+
+.avix-work__title-accent {
+	color: var(--aw-accent);
+}
+
+.avix-work__count {
+	display: inline-block;
+	margin-left: 0.3em;
+	color: var(--aw-accent-text);
+	font-family: var(--aw-font-body);
+	font-size: max(12px, 0.24em);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	line-height: 1;
+	vertical-align: top;
+	transform: translateY(0.35em);
+}
+
+.avix-work__aside {
+	display: flex;
+	flex: 0 0 auto;
+	align-items: center;
+	gap: 28px;
+}
+
+/* Live position readout: 01 ---- 03 */
+.avix-work__progress {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: var(--aw-muted);
+	font-family: var(--aw-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.04em;
+}
+
+.avix-work__progress-current {
+	min-width: 2ch;
+	color: var(--aw-ink);
+}
+
+.avix-work__progress-track {
+	position: relative;
+	display: block;
+	width: 72px;
+	height: 2px;
+	overflow: hidden;
+	border-radius: 2px;
+	background: var(--aw-line);
+}
+
+.avix-work__progress-bar {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: var(--aw-accent);
+	transform: scaleX(0);
+	transform-origin: 0 50%;
+}
+
+.avix-work__cta {
+	display: inline-flex;
+	min-height: 52px;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	padding: 7px 7px 7px 22px;
+	border-radius: 999px;
+	color: var(--aw-cta-ink);
+	background: var(--aw-cta-bg);
+	box-shadow: 0 18px 38px rgba(17, 17, 17, 0.18);
+	font-family: var(--aw-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background-color 260ms var(--aw-ease), box-shadow 260ms var(--aw-ease), transform 260ms var(--aw-ease);
+}
+
+.avix-work .avix-work__cta,
+.avix-work .avix-work__cta:hover,
+.avix-work .avix-work__cta:focus {
+	color: var(--aw-cta-ink);
+	text-decoration: none;
+}
+
+.avix-work__cta-icon {
+	display: grid;
+	width: 38px;
+	height: 38px;
+	flex: 0 0 auto;
+	place-items: center;
+	border-radius: 50%;
+	color: var(--aw-cta-bg);
+	background: var(--aw-cta-ink);
+	transition: transform 320ms var(--aw-ease), background-color 260ms var(--aw-ease), color 260ms var(--aw-ease);
+}
+
+.avix-work__icon {
+	display: block;
+	width: 18px;
+	height: 18px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.8;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+/* ---------- Stack ---------- */
+
+.avix-work__stack {
+	--aw-layout: overlay;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-work__stack::after {
+	display: block;
+	height: var(--aw-release);
+	content: "";
+}
+
+.avix-work__stack--static::after {
+	display: none;
+}
+
+.avix-work-card {
+	position: sticky;
+	top: var(--aw-top);
+	z-index: calc(var(--aw-i, 0) + 1);
+	display: block;
+	width: 100%;
+	height: var(--aw-card-h);
+	margin: 0 0 var(--aw-gap);
+	overflow: hidden;
+	isolation: isolate;
+	border: 1px solid var(--aw-line);
+	border-radius: var(--aw-radius);
+	background: var(--aw-card-bg);
+	box-shadow: 0 28px 56px rgba(26, 26, 26, 0.11);
+	transform-origin: 50% 100%;
+	transition: border-color 360ms var(--aw-ease), box-shadow 520ms var(--aw-ease);
+}
+
+.avix-work-card:last-child {
+	margin-bottom: 0;
+}
+
+.avix-work.is-ready .avix-work-card {
+	will-change: transform;
+}
+
+/* Buried cards dim as the next one slides over them. */
+.avix-work-card::after {
+	position: absolute;
+	inset: 0;
+	z-index: 8;
+	border-radius: inherit;
+	background: #0b0b0b;
+	opacity: var(--aw-dim, 0);
+	pointer-events: none;
+	content: "";
+}
+
+.avix-work-card.is-past {
+	pointer-events: none;
+}
+
+.avix-work-card__surface {
+	position: absolute;
+	inset: 0;
+	display: block;
+	color: inherit;
+	text-decoration: none;
+	outline: none;
+}
+
+.avix-work .avix-work-card__surface:hover,
+.avix-work .avix-work-card__surface:focus {
+	color: inherit;
+	text-decoration: none;
+}
+
+.avix-work-card__media {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	overflow: hidden;
+	background: var(--aw-card-bg);
+}
+
+.avix-work-card__media::after {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	background:
+		linear-gradient(125deg, rgba(251, 96, 7, 0.1), transparent 38%),
+		linear-gradient(0deg, rgba(10, 10, 10, 0.16), transparent 42%);
+	opacity: 0;
+	pointer-events: none;
+	content: "";
+	transition: opacity 520ms var(--aw-ease);
+}
+
+.avix-work-card__img,
+.avix-work .avix-work-card__img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: cover;
+	object-position: var(--aw-pos, 50% 50%);
+	transform: translate3d(0, var(--aw-img-y, 0%), 0) scale(var(--aw-img-scale, 1.05));
+	transition: transform 820ms var(--aw-ease), filter 520ms var(--aw-ease);
+}
+
+.avix-work-card__placeholder {
+	display: grid;
+	width: 100%;
+	height: 100%;
+	place-items: center;
+	color: var(--aw-muted);
+	font-family: var(--aw-font-display);
+	font-size: clamp(48px, 9cqi, 120px);
+	font-weight: 600;
+	letter-spacing: -0.06em;
+	opacity: 0.35;
+}
+
+/* ---------- Panel ---------- */
+
+.avix-work-card__panel {
+	position: absolute;
+	top: var(--aw-panel-inset);
+	right: var(--aw-panel-inset);
+	bottom: var(--aw-panel-inset);
+	z-index: 2;
+	display: flex;
+	width: clamp(340px, 36%, var(--aw-panel-w));
+	flex-direction: column;
+	padding: clamp(24px, 2.6cqi, 34px);
+	overflow: hidden;
+	border-radius: var(--aw-panel-radius);
+	color: var(--aw-panel-ink);
+	background-color: var(--aw-panel-bg);
+	background-image: radial-gradient(90% 42% at 100% 0%, var(--aw-panel-glow), transparent 70%);
+	transition: transform 520ms var(--aw-ease), background-color 520ms var(--aw-ease);
+}
+
+.avix-work--panel-left .avix-work-card__panel,
+.avix-work--panel-alternate .avix-work-card:nth-child(even) .avix-work-card__panel {
+	right: auto;
+	left: var(--aw-panel-inset);
+	background-image: radial-gradient(90% 42% at 0% 0%, var(--aw-panel-glow), transparent 70%);
+}
+
+.avix-work-card__meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 22px;
+	font-family: var(--aw-font-body);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	line-height: 1;
+}
+
+.avix-work-card__index {
+	color: var(--aw-accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-work-card__index span {
+	color: var(--aw-panel-muted);
+	opacity: 0.6;
+}
+
+.avix-work-card__year {
+	color: var(--aw-panel-muted);
+	font-weight: 600;
+	letter-spacing: 0.08em;
+}
+
+.avix-work .avix-work-card__name {
+	margin: 0;
+	padding: 0;
+	color: var(--aw-panel-ink);
+	font-family: var(--aw-font-display);
+	font-size: clamp(30px, 3.4cqi, 42px);
+	font-weight: 500;
+	letter-spacing: -0.045em;
+	line-height: 1;
+}
+
+.avix-work .avix-work-card__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 7px;
+	margin: 16px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-work .avix-work-card__tags li {
+	display: inline-flex;
+	min-height: 28px;
+	align-items: center;
+	margin: 0;
+	padding: 7px 11px;
+	border: 1px solid rgba(255, 255, 255, 0.06);
+	border-radius: 999px;
+	color: #dcdcdc;
+	background: var(--aw-panel-soft);
+	font-family: var(--aw-font-body);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	line-height: 1;
+}
+
+.avix-work .avix-work-card__tags li::before,
+.avix-work .avix-work-card__tags li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-work .avix-work-card__desc {
+	max-width: 34ch;
+	margin: 22px 0 0;
+	color: var(--aw-panel-muted);
+	font-family: var(--aw-font-body);
+	font-size: clamp(14px, 1.4cqi, 16px);
+	line-height: 1.55;
+}
+
+.avix-work-card__outcome {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 20px;
+	margin: 0 0 20px;
+	padding: 0;
+	padding-top: 22px;
+	border-top: 1px solid var(--aw-panel-line);
+}
+
+.avix-work-card__outcome-label {
+	color: #8d8d8d;
+	font-family: var(--aw-font-body);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	line-height: 1.3;
+	text-transform: uppercase;
+}
+
+.avix-work-card__outcome-value {
+	max-width: 14ch;
+	color: var(--aw-panel-accent);
+	font-family: var(--aw-font-display);
+	font-size: clamp(20px, 2.2cqi, 27px);
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	line-height: 1;
+	text-align: right;
+}
+
+.avix-work-card__foot {
+	margin-top: auto;
+	padding-top: 22px;
+}
+
+.avix-work-card__cta {
+	position: relative;
+	z-index: 4;
+	display: flex;
+	min-height: 50px;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 7px 8px 7px 20px;
+	border-radius: 999px;
+	color: #111111;
+	background: #ffffff;
+	font-family: var(--aw-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	transition: background-color 260ms var(--aw-ease), color 260ms var(--aw-ease);
+}
+
+.avix-work-card__cta-icon {
+	display: grid;
+	width: 34px;
+	height: 34px;
+	flex: 0 0 auto;
+	place-items: center;
+	border-radius: 50%;
+	color: #ffffff;
+	background: #111111;
+	transition: transform 320ms var(--aw-ease), background-color 260ms var(--aw-ease);
+}
+
+.avix-work-card__cta-icon .avix-work__icon {
+	width: 16px;
+	height: 16px;
+}
+
+/* ---------- Platforms strip ---------- */
+
+.avix-work__platforms {
+	--aw-platform-ink: var(--aw-muted);
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 14px 28px;
+	margin-top: clamp(44px, 5cqi, 72px);
+}
+
+.avix-work .avix-work__platforms-label {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	color: var(--aw-muted);
+	font-family: var(--aw-font-body);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.avix-work .avix-work__platforms-label::after {
+	width: 18px;
+	height: 1px;
+	background: var(--aw-line);
+	content: "";
+}
+
+.avix-work .avix-work__platforms-list {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 12px 26px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-work .avix-work__platforms-list li {
+	margin: 0;
+	padding: 0;
+}
+
+.avix-work .avix-work__platforms-list li::before,
+.avix-work .avix-work__platforms-list li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-work .avix-work__platform {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--aw-platform-ink);
+	font-family: var(--aw-font-display);
+	font-size: 15px;
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	line-height: 1;
+	text-decoration: none;
+	transition: color 240ms var(--aw-ease);
+}
+
+.avix-work__platform-mark {
+	display: block;
+	width: 17px;
+	height: 17px;
+	flex: 0 0 auto;
+	fill: currentColor;
+	object-fit: contain;
+	transition: color 240ms var(--aw-ease), filter 240ms var(--aw-ease), opacity 240ms var(--aw-ease);
+}
+
+/* Real brand colours (default). */
+.avix-work--logos-brand .avix-work__platform-mark {
+	color: var(--aw-brand, currentColor);
+}
+
+.avix-work--logos-hover img.avix-work__platform-mark,
+.avix-work--logos-mono img.avix-work__platform-mark {
+	filter: grayscale(1);
+	opacity: 0.75;
+}
+
+@media (hover: hover) {
+	.avix-work a.avix-work__platform:hover {
+		color: var(--aw-ink);
+	}
+
+	.avix-work--logos-hover .avix-work__platform:hover .avix-work__platform-mark {
+		color: var(--aw-brand, currentColor);
+	}
+
+	.avix-work--logos-hover .avix-work__platform:hover img.avix-work__platform-mark {
+		filter: none;
+		opacity: 1;
+	}
+}
+
+.avix-work a.avix-work__platform:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid var(--aw-accent);
+	outline-offset: 4px;
+}
+
+/* ---------- Interaction ---------- */
+
+@media (hover: hover) {
+	.avix-work__cta:hover {
+		background: color-mix(in srgb, var(--aw-cta-bg) 88%, var(--aw-accent));
+		box-shadow: 0 22px 44px rgba(17, 17, 17, 0.22);
+	}
+
+	.avix-work__cta:hover .avix-work__cta-icon {
+		color: #ffffff;
+		background: var(--aw-accent);
+		transform: rotate(45deg);
+	}
+
+	.avix-work-card:hover {
+		border-color: rgba(251, 96, 7, 0.34);
+		box-shadow: 0 38px 78px rgba(26, 26, 26, 0.16);
+	}
+
+	.avix-work-card:hover .avix-work-card__img {
+		--aw-img-scale: 1.09;
+		filter: saturate(1.05) contrast(1.02);
+	}
+
+	.avix-work-card:hover .avix-work-card__media::after {
+		opacity: 1;
+	}
+
+	.avix-work-card:hover .avix-work-card__panel {
+		transform: translate3d(-4px, 0, 0);
+	}
+
+	.avix-work--panel-left .avix-work-card:hover .avix-work-card__panel,
+	.avix-work--panel-alternate .avix-work-card:nth-child(even):hover .avix-work-card__panel {
+		transform: translate3d(4px, 0, 0);
+	}
+
+	.avix-work-card:hover .avix-work-card__cta {
+		background: #ffefe5;
+	}
+
+	.avix-work-card:hover .avix-work-card__cta-icon {
+		background: var(--aw-accent);
+		transform: rotate(45deg);
+	}
+}
+
+.avix-work__cta:focus-visible {
+	outline: 3px solid var(--aw-accent);
+	outline-offset: 4px;
+}
+
+.avix-work-card:focus-within {
+	border-color: rgba(251, 96, 7, 0.5);
+	box-shadow: 0 0 0 3px rgba(251, 96, 7, 0.16), 0 32px 68px rgba(26, 26, 26, 0.14);
+}
+
+.avix-work-card__surface:focus-visible .avix-work-card__cta {
+	outline: 3px solid var(--aw-accent);
+	outline-offset: 3px;
+}
+
+/* Cursor bubble. Lives on <body> so position: fixed is not trapped by containment. */
+.avix-work-cursor {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9990;
+	width: 0;
+	height: 0;
+	pointer-events: none;
+	will-change: transform;
+}
+
+.avix-work-cursor__bubble {
+	position: absolute;
+	top: -46px;
+	left: -46px;
+	display: grid;
+	width: 92px;
+	height: 92px;
+	place-items: center;
+	border-radius: 50%;
+	color: var(--awc-ink, #ffffff);
+	background: var(--awc-bg, #fb6007);
+	box-shadow: 0 16px 40px rgba(251, 96, 7, 0.32);
+	font: 600 13px/1.1 var(--awc-font, "Inter", Arial, sans-serif);
+	letter-spacing: 0.01em;
+	text-align: center;
+	opacity: 0;
+	transform: scale(0.3);
+	transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease;
+}
+
+.avix-work-cursor.is-visible .avix-work-cursor__bubble {
+	opacity: 1;
+	transform: scale(1);
+}
+
+/* ---------- Stacked layout (narrow widget: tablets, phones, narrow columns) ---------- */
+
+@container avix-work (max-width: 899px) {
+	.avix-work__stack {
+		--aw-layout: stacked;
+	}
+
+	.avix-work__head {
+		position: relative;
+		top: auto;
+		z-index: 1;
+		min-height: 0;
+		margin-bottom: 36px;
+		padding: 0;
+		background: none;
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+
+	.avix-work__progress {
+		display: none;
+	}
+
+	.avix-work-card {
+		top: calc(var(--aw-offset) + 20px);
+		height: min(var(--aw-card-h-stacked, 700px), calc(100svh - 40px));
+		margin-bottom: var(--aw-gap-stacked, 64px);
+		border-radius: min(var(--aw-radius), 22px);
+		transform-origin: 50% 100%;
+	}
+
+	.avix-work-card__surface {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.avix-work-card__media {
+		position: relative;
+		inset: auto;
+		min-height: 150px;
+		flex: 1 1 auto;
+	}
+
+	.avix-work-card__panel,
+	.avix-work--panel-left .avix-work-card__panel,
+	.avix-work--panel-alternate .avix-work-card:nth-child(even) .avix-work-card__panel {
+		position: relative;
+		inset: auto;
+		width: auto;
+		flex: 0 0 auto;
+		padding: 24px;
+		border-radius: 0;
+		background-image: radial-gradient(90% 60% at 100% 0%, var(--aw-panel-glow), transparent 62%);
+	}
+
+	.avix-work-card:hover .avix-work-card__panel,
+	.avix-work--panel-left .avix-work-card:hover .avix-work-card__panel,
+	.avix-work--panel-alternate .avix-work-card:nth-child(even):hover .avix-work-card__panel {
+		transform: none;
+	}
+
+	.avix-work-card__meta {
+		margin-bottom: 14px;
+	}
+
+	.avix-work .avix-work-card__name {
+		font-size: clamp(30px, 6.5cqi, 40px);
+	}
+
+	.avix-work .avix-work-card__tags {
+		margin-top: 12px;
+	}
+
+	.avix-work .avix-work-card__desc {
+		max-width: 52ch;
+		margin-top: 14px;
+		font-size: 14px;
+		line-height: 1.5;
+	}
+
+	.avix-work-card__foot {
+		padding-top: 18px;
+	}
+
+	.avix-work-card__outcome {
+		margin-bottom: 16px;
+		padding-top: 16px;
+	}
+
+	.avix-work-card__outcome-value {
+		font-size: 22px;
+	}
+
+	.avix-work-card__cta {
+		min-height: 48px;
+	}
+
+	.avix-work__stack::after {
+		height: var(--aw-release-stacked, 120px);
+	}
+}
+
+@container avix-work (max-width: 559px) {
+	.avix-work__frame {
+		width: min(calc(100% - 32px), var(--aw-max));
+	}
+
+	.avix-work__head {
+		align-items: flex-end;
+		gap: 16px;
+		margin-bottom: 28px;
+	}
+
+	.avix-work__kicker {
+		margin-bottom: 10px;
+		font-size: 10px;
+	}
+
+	.avix-work__title {
+		font-size: clamp(34px, 10.5cqi, 44px);
+	}
+
+	.avix-work__cta {
+		min-height: 44px;
+		gap: 9px;
+		padding: 5px 5px 5px 14px;
+		font-size: 12px;
+	}
+
+	.avix-work__cta-icon {
+		width: 34px;
+		height: 34px;
+	}
+
+	.avix-work-card {
+		top: calc(var(--aw-offset) + 14px);
+		height: min(var(--aw-card-h-stacked, 640px), calc(100svh - 28px));
+		margin-bottom: var(--aw-gap-stacked, 48px);
+		border-radius: min(var(--aw-radius), 20px);
+	}
+
+	.avix-work-card__panel,
+	.avix-work--panel-left .avix-work-card__panel,
+	.avix-work--panel-alternate .avix-work-card:nth-child(even) .avix-work-card__panel {
+		padding: 20px;
+	}
+
+	.avix-work .avix-work-card__name {
+		font-size: 30px;
+	}
+
+	.avix-work .avix-work-card__tags li {
+		min-height: 25px;
+		padding: 6px 9px;
+		font-size: 10px;
+	}
+
+	.avix-work .avix-work-card__desc {
+		display: -webkit-box;
+		overflow: hidden;
+		font-size: 13.5px;
+		-webkit-line-clamp: 4;
+		-webkit-box-orient: vertical;
+	}
+
+	.avix-work-card__outcome-label {
+		font-size: 10px;
+	}
+
+	.avix-work-card__outcome-value {
+		font-size: 20px;
+	}
+
+	.avix-work__platforms {
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.avix-work .avix-work__platforms-label::after {
+		display: none;
+	}
+}
+
+/* Very short viewports: let the page scroll normally instead of trapping tall cards. */
+@media (max-height: 540px) {
+	.avix-work-card {
+		position: relative;
+		top: auto;
+	}
+
+	.avix-work__head {
+		position: relative;
+		top: auto;
+	}
+
+	.avix-work__stack::after {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-work *,
+	.avix-work *::before,
+	.avix-work *::after {
+		transition-duration: 0.01ms !important;
+	}
+
+	.avix-work-card {
+		transform: none !important;
+	}
+
+	.avix-work-cursor {
+		display: none;
+	}
+}
+
+@container avix-work (max-width: 899px) {
+	@media (prefers-reduced-motion: reduce) {
+		.avix-work-card {
+			position: relative;
+			top: auto;
+		}
+
+		.avix-work__stack::after {
+			display: none;
+		}
+	}
+}

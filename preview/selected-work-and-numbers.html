@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avix Digital · Selected Work + Impact Numbers (preview)</title>
+<!-- Standalone preview of the Elementor widget output. The live site already loads these fonts. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; background: #fff; }
+.demo-spacer { display: grid; min-height: 70vh; place-items: center; color: #fff; background: #111; font: 600 15px Inter, sans-serif; letter-spacing: .02em; }
+.demo-spacer--light { color: #1a1a1a; background: #f2f1ee; }
+/*!
+ * Avix Digital · Selected Work (scroll stack)
+ * Layout switches on the widget's own width (container queries), so it adapts
+ * to any column or breakpoint setup, not only the viewport.
+ */
+
+.avix-work {
+	/* Brand tokens, overridden by the widget's Style controls. */
+	--aw-bg: #ffffff;
+	--aw-ink: #1a1a1a;
+	--aw-muted: #5d5a56;
+	--aw-accent: #fb6007;
+	--aw-accent-text: #c64700;
+	--aw-line: rgba(26, 26, 26, 0.12);
+	--aw-card-bg: #ece9e2;
+	--aw-panel-bg: #111111;
+	--aw-panel-ink: #ffffff;
+	--aw-panel-muted: #b9b6b1;
+	--aw-panel-soft: rgba(255, 255, 255, 0.07);
+	--aw-panel-line: rgba(255, 255, 255, 0.14);
+	--aw-panel-accent: #ff7a2c;
+	--aw-panel-glow: rgba(251, 96, 7, 0.11);
+	--aw-cta-bg: #111111;
+	--aw-cta-ink: #ffffff;
+	--aw-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--aw-font-body: "Inter", Arial, sans-serif;
+	--aw-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+	/* Geometry */
+	--aw-max: 1200px;
+	--aw-gutter: 24px;
+	--aw-radius: 28px;
+	--aw-panel-radius: 22px;
+	--aw-panel-inset: 12px;
+	--aw-panel-w: 420px;
+	--aw-card-h: clamp(470px, 46vw, 570px);
+	--aw-gap: 112px;
+	--aw-head-h: 112px;
+	--aw-head-gap: 56px;
+	--aw-release: clamp(150px, 20vh, 236px);
+
+	/* Set by JS: height of fixed bars (admin bar, smart header) currently covering the top. */
+	--aw-offset: 0px;
+	--aw-top: calc(var(--aw-offset) + var(--aw-head-h) + var(--aw-head-gap));
+
+	container: avix-work / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: 56px 0 72px;
+	color: var(--aw-ink);
+	background: var(--aw-bg);
+	font-family: var(--aw-font-body);
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+.avix-work--static-head {
+	--aw-top: calc(var(--aw-offset) + 32px);
+}
+
+.avix-work *,
+.avix-work *::before,
+.avix-work *::after {
+	box-sizing: border-box;
+}
+
+.avix-work__frame {
+	width: min(calc(100% - var(--aw-gutter) * 2), var(--aw-max));
+	margin-inline: auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-work__head {
+	position: sticky;
+	top: var(--aw-offset);
+	z-index: 50;
+	display: flex;
+	min-height: var(--aw-head-h);
+	align-items: center;
+	justify-content: space-between;
+	gap: 32px;
+	margin: 0 0 var(--aw-head-gap);
+	padding: 20px 0;
+	background: var(--aw-bg);
+	background: color-mix(in srgb, var(--aw-bg) 92%, transparent);
+	-webkit-backdrop-filter: blur(16px);
+	backdrop-filter: blur(16px);
+	will-change: transform;
+}
+
+.avix-work--static-head .avix-work__head {
+	position: relative;
+	top: auto;
+	z-index: 1;
+	min-height: 0;
+	background: none;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+}
+
+.avix-work__kicker {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 12px;
+	color: var(--aw-accent-text);
+	font-family: var(--aw-font-body);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.avix-work__kicker::before {
+	width: 18px;
+	height: 2px;
+	flex: 0 0 auto;
+	border-radius: 2px;
+	background: var(--aw-accent);
+	content: "";
+}
+
+.avix-work__title {
+	margin: 0;
+	color: var(--aw-ink);
+	font-family: var(--aw-font-display);
+	font-size: clamp(40px, 5.4cqi, 68px);
+	font-weight: 600;
+	letter-spacing: -0.055em;
+	line-height: 0.95;
+}
+
+.avix-work__title-accent {
+	color: var(--aw-accent);
+}
+
+.avix-work__count {
+	display: inline-block;
+	margin-left: 0.3em;
+	color: var(--aw-accent-text);
+	font-family: var(--aw-font-body);
+	font-size: max(12px, 0.24em);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	line-height: 1;
+	vertical-align: top;
+	transform: translateY(0.35em);
+}
+
+.avix-work__aside {
+	display: flex;
+	flex: 0 0 auto;
+	align-items: center;
+	gap: 28px;
+}
+
+/* Live position readout: 01 ---- 03 */
+.avix-work__progress {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: var(--aw-muted);
+	font-family: var(--aw-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.04em;
+}
+
+.avix-work__progress-current {
+	min-width: 2ch;
+	color: var(--aw-ink);
+}
+
+.avix-work__progress-track {
+	position: relative;
+	display: block;
+	width: 72px;
+	height: 2px;
+	overflow: hidden;
+	border-radius: 2px;
+	background: var(--aw-line);
+}
+
+.avix-work__progress-bar {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: var(--aw-accent);
+	transform: scaleX(0);
+	transform-origin: 0 50%;
+}
+
+.avix-work__cta {
+	display: inline-flex;
+	min-height: 52px;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	padding: 7px 7px 7px 22px;
+	border-radius: 999px;
+	color: var(--aw-cta-ink);
+	background: var(--aw-cta-bg);
+	box-shadow: 0 18px 38px rgba(17, 17, 17, 0.18);
+	font-family: var(--aw-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background-color 260ms var(--aw-ease), box-shadow 260ms var(--aw-ease), transform 260ms var(--aw-ease);
+}
+
+.avix-work .avix-work__cta,
+.avix-work .avix-work__cta:hover,
+.avix-work .avix-work__cta:focus {
+	color: var(--aw-cta-ink);
+	text-decoration: none;
+}
+
+.avix-work__cta-icon {
+	display: grid;
+	width: 38px;
+	height: 38px;
+	flex: 0 0 auto;
+	place-items: center;
+	border-radius: 50%;
+	color: var(--aw-cta-bg);
+	background: var(--aw-cta-ink);
+	transition: transform 320ms var(--aw-ease), background-color 260ms var(--aw-ease), color 260ms var(--aw-ease);
+}
+
+.avix-work__icon {
+	display: block;
+	width: 18px;
+	height: 18px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.8;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+/* ---------- Stack ---------- */
+
+.avix-work__stack {
+	--aw-layout: overlay;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-work__stack::after {
+	display: block;
+	height: var(--aw-release);
+	content: "";
+}
+
+.avix-work__stack--static::after {
+	display: none;
+}
+
+.avix-work-card {
+	position: sticky;
+	top: var(--aw-top);
+	z-index: calc(var(--aw-i, 0) + 1);
+	display: block;
+	width: 100%;
+	height: var(--aw-card-h);
+	margin: 0 0 var(--aw-gap);
+	overflow: hidden;
+	isolation: isolate;
+	border: 1px solid var(--aw-line);
+	border-radius: var(--aw-radius);
+	background: var(--aw-card-bg);
+	box-shadow: 0 28px 56px rgba(26, 26, 26, 0.11);
+	transform-origin: 50% 100%;
+	transition: border-color 360ms var(--aw-ease), box-shadow 520ms var(--aw-ease);
+}
+
+.avix-work-card:last-child {
+	margin-bottom: 0;
+}
+
+.avix-work.is-ready .avix-work-card {
+	will-change: transform;
+}
+
+/* Buried cards dim as the next one slides over them. */
+.avix-work-card::after {
+	position: absolute;
+	inset: 0;
+	z-index: 8;
+	border-radius: inherit;
+	background: #0b0b0b;
+	opacity: var(--aw-dim, 0);
+	pointer-events: none;
+	content: "";
+}
+
+.avix-work-card.is-past {
+	pointer-events: none;
+}
+
+.avix-work-card__surface {
+	position: absolute;
+	inset: 0;
+	display: block;
+	color: inherit;
+	text-decoration: none;
+	outline: none;
+}
+
+.avix-work .avix-work-card__surface:hover,
+.avix-work .avix-work-card__surface:focus {
+	color: inherit;
+	text-decoration: none;
+}
+
+.avix-work-card__media {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	overflow: hidden;
+	background: var(--aw-card-bg);
+}
+
+.avix-work-card__media::after {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	background:
+		linear-gradient(125deg, rgba(251, 96, 7, 0.1), transparent 38%),
+		linear-gradient(0deg, rgba(10, 10, 10, 0.16), transparent 42%);
+	opacity: 0;
+	pointer-events: none;
+	content: "";
+	transition: opacity 520ms var(--aw-ease);
+}
+
+.avix-work-card__img,
+.avix-work .avix-work-card__img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: cover;
+	object-position: var(--aw-pos, 50% 50%);
+	transform: translate3d(0, var(--aw-img-y, 0%), 0) scale(var(--aw-img-scale, 1.05));
+	transition: transform 820ms var(--aw-ease), filter 520ms var(--aw-ease);
+}
+
+.avix-work-card__placeholder {
+	display: grid;
+	width: 100%;
+	height: 100%;
+	place-items: center;
+	color: var(--aw-muted);
+	font-family: var(--aw-font-display);
+	font-size: clamp(48px, 9cqi, 120px);
+	font-weight: 600;
+	letter-spacing: -0.06em;
+	opacity: 0.35;
+}
+
+/* ---------- Panel ---------- */
+
+.avix-work-card__panel {
+	position: absolute;
+	top: var(--aw-panel-inset);
+	right: var(--aw-panel-inset);
+	bottom: var(--aw-panel-inset);
+	z-index: 2;
+	display: flex;
+	width: clamp(340px, 36%, var(--aw-panel-w));
+	flex-direction: column;
+	padding: clamp(24px, 2.6cqi, 34px);
+	overflow: hidden;
+	border-radius: var(--aw-panel-radius);
+	color: var(--aw-panel-ink);
+	background-color: var(--aw-panel-bg);
+	background-image: radial-gradient(90% 42% at 100% 0%, var(--aw-panel-glow), transparent 70%);
+	transition: transform 520ms var(--aw-ease), background-color 520ms var(--aw-ease);
+}
+
+.avix-work--panel-left .avix-work-card__panel,
+.avix-work--panel-alternate .avix-work-card:nth-child(even) .avix-work-card__panel {
+	right: auto;
+	left: var(--aw-panel-inset);
+	background-image: radial-gradient(90% 42% at 0% 0%, var(--aw-panel-glow), transparent 70%);
+}
+
+.avix-work-card__meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 22px;
+	font-family: var(--aw-font-body);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	line-height: 1;
+}
+
+.avix-work-card__index {
+	color: var(--aw-accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-work-card__index span {
+	color: var(--aw-panel-muted);
+	opacity: 0.6;
+}
+
+.avix-work-card__year {
+	color: var(--aw-panel-muted);
+	font-weight: 600;
+	letter-spacing: 0.08em;
+}
+
+.avix-work .avix-work-card__name {
+	margin: 0;
+	padding: 0;
+	color: var(--aw-panel-ink);
+	font-family: var(--aw-font-display);
+	font-size: clamp(30px, 3.4cqi, 42px);
+	font-weight: 500;
+	letter-spacing: -0.045em;
+	line-height: 1;
+}
+
+.avix-work .avix-work-card__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 7px;
+	margin: 16px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-work .avix-work-card__tags li {
+	display: inline-flex;
+	min-height: 28px;
+	align-items: center;
+	margin: 0;
+	padding: 7px 11px;
+	border: 1px solid rgba(255, 255, 255, 0.06);
+	border-radius: 999px;
+	color: #dcdcdc;
+	background: var(--aw-panel-soft);
+	font-family: var(--aw-font-body);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	line-height: 1;
+}
+
+.avix-work .avix-work-card__tags li::before,
+.avix-work .avix-work-card__tags li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-work .avix-work-card__desc {
+	max-width: 34ch;
+	margin: 22px 0 0;
+	color: var(--aw-panel-muted);
+	font-family: var(--aw-font-body);
+	font-size: clamp(14px, 1.4cqi, 16px);
+	line-height: 1.55;
+}
+
+.avix-work-card__outcome {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 20px;
+	margin: 0 0 20px;
+	padding: 0;
+	padding-top: 22px;
+	border-top: 1px solid var(--aw-panel-line);
+}
+
+.avix-work-card__outcome-label {
+	color: #8d8d8d;
+	font-family: var(--aw-font-body);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	line-height: 1.3;
+	text-transform: uppercase;
+}
+
+.avix-work-card__outcome-value {
+	max-width: 14ch;
+	color: var(--aw-panel-accent);
+	font-family: var(--aw-font-display);
+	font-size: clamp(20px, 2.2cqi, 27px);
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	line-height: 1;
+	text-align: right;
+}
+
+.avix-work-card__foot {
+	margin-top: auto;
+	padding-top: 22px;
+}
+
+.avix-work-card__cta {
+	position: relative;
+	z-index: 4;
+	display: flex;
+	min-height: 50px;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 7px 8px 7px 20px;
+	border-radius: 999px;
+	color: #111111;
+	background: #ffffff;
+	font-family: var(--aw-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	transition: background-color 260ms var(--aw-ease), color 260ms var(--aw-ease);
+}
+
+.avix-work-card__cta-icon {
+	display: grid;
+	width: 34px;
+	height: 34px;
+	flex: 0 0 auto;
+	place-items: center;
+	border-radius: 50%;
+	color: #ffffff;
+	background: #111111;
+	transition: transform 320ms var(--aw-ease), background-color 260ms var(--aw-ease);
+}
+
+.avix-work-card__cta-icon .avix-work__icon {
+	width: 16px;
+	height: 16px;
+}
+
+/* ---------- Platforms strip ---------- */
+
+.avix-work__platforms {
+	--aw-platform-ink: var(--aw-muted);
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 14px 28px;
+	margin-top: clamp(44px, 5cqi, 72px);
+}
+
+.avix-work .avix-work__platforms-label {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	color: var(--aw-muted);
+	font-family: var(--aw-font-body);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.avix-work .avix-work__platforms-label::after {
+	width: 18px;
+	height: 1px;
+	background: var(--aw-line);
+	content: "";
+}
+
+.avix-work .avix-work__platforms-list {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 12px 26px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-work .avix-work__platforms-list li {
+	margin: 0;
+	padding: 0;
+}
+
+.avix-work .avix-work__platforms-list li::before,
+.avix-work .avix-work__platforms-list li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-work .avix-work__platform {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--aw-platform-ink);
+	font-family: var(--aw-font-display);
+	font-size: 15px;
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	line-height: 1;
+	text-decoration: none;
+	transition: color 240ms var(--aw-ease);
+}
+
+.avix-work__platform-mark {
+	display: block;
+	width: 17px;
+	height: 17px;
+	flex: 0 0 auto;
+	fill: currentColor;
+	object-fit: contain;
+	transition: color 240ms var(--aw-ease), filter 240ms var(--aw-ease), opacity 240ms var(--aw-ease);
+}
+
+/* Real brand colours (default). */
+.avix-work--logos-brand .avix-work__platform-mark {
+	color: var(--aw-brand, currentColor);
+}
+
+.avix-work--logos-hover img.avix-work__platform-mark,
+.avix-work--logos-mono img.avix-work__platform-mark {
+	filter: grayscale(1);
+	opacity: 0.75;
+}
+
+@media (hover: hover) {
+	.avix-work a.avix-work__platform:hover {
+		color: var(--aw-ink);
+	}
+
+	.avix-work--logos-hover .avix-work__platform:hover .avix-work__platform-mark {
+		color: var(--aw-brand, currentColor);
+	}
+
+	.avix-work--logos-hover .avix-work__platform:hover img.avix-work__platform-mark {
+		filter: none;
+		opacity: 1;
+	}
+}
+
+.avix-work a.avix-work__platform:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid var(--aw-accent);
+	outline-offset: 4px;
+}
+
+/* ---------- Interaction ---------- */
+
+@media (hover: hover) {
+	.avix-work__cta:hover {
+		background: color-mix(in srgb, var(--aw-cta-bg) 88%, var(--aw-accent));
+		box-shadow: 0 22px 44px rgba(17, 17, 17, 0.22);
+	}
+
+	.avix-work__cta:hover .avix-work__cta-icon {
+		color: #ffffff;
+		background: var(--aw-accent);
+		transform: rotate(45deg);
+	}
+
+	.avix-work-card:hover {
+		border-color: rgba(251, 96, 7, 0.34);
+		box-shadow: 0 38px 78px rgba(26, 26, 26, 0.16);
+	}
+
+	.avix-work-card:hover .avix-work-card__img {
+		--aw-img-scale: 1.09;
+		filter: saturate(1.05) contrast(1.02);
+	}
+
+	.avix-work-card:hover .avix-work-card__media::after {
+		opacity: 1;
+	}
+
+	.avix-work-card:hover .avix-work-card__panel {
+		transform: translate3d(-4px, 0, 0);
+	}
+
+	.avix-work--panel-left .avix-work-card:hover .avix-work-card__panel,
+	.avix-work--panel-alternate .avix-work-card:nth-child(even):hover .avix-work-card__panel {
+		transform: translate3d(4px, 0, 0);
+	}
+
+	.avix-work-card:hover .avix-work-card__cta {
+		background: #ffefe5;
+	}
+
+	.avix-work-card:hover .avix-work-card__cta-icon {
+		background: var(--aw-accent);
+		transform: rotate(45deg);
+	}
+}
+
+.avix-work__cta:focus-visible {
+	outline: 3px solid var(--aw-accent);
+	outline-offset: 4px;
+}
+
+.avix-work-card:focus-within {
+	border-color: rgba(251, 96, 7, 0.5);
+	box-shadow: 0 0 0 3px rgba(251, 96, 7, 0.16), 0 32px 68px rgba(26, 26, 26, 0.14);
+}
+
+.avix-work-card__surface:focus-visible .avix-work-card__cta {
+	outline: 3px solid var(--aw-accent);
+	outline-offset: 3px;
+}
+
+/* Cursor bubble. Lives on <body> so position: fixed is not trapped by containment. */
+.avix-work-cursor {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9990;
+	width: 0;
+	height: 0;
+	pointer-events: none;
+	will-change: transform;
+}
+
+.avix-work-cursor__bubble {
+	position: absolute;
+	top: -46px;
+	left: -46px;
+	display: grid;
+	width: 92px;
+	height: 92px;
+	place-items: center;
+	border-radius: 50%;
+	color: var(--awc-ink, #ffffff);
+	background: var(--awc-bg, #fb6007);
+	box-shadow: 0 16px 40px rgba(251, 96, 7, 0.32);
+	font: 600 13px/1.1 var(--awc-font, "Inter", Arial, sans-serif);
+	letter-spacing: 0.01em;
+	text-align: center;
+	opacity: 0;
+	transform: scale(0.3);
+	transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease;
+}
+
+.avix-work-cursor.is-visible .avix-work-cursor__bubble {
+	opacity: 1;
+	transform: scale(1);
+}
+
+/* ---------- Stacked layout (narrow widget: tablets, phones, narrow columns) ---------- */
+
+@container avix-work (max-width: 899px) {
+	.avix-work__stack {
+		--aw-layout: stacked;
+	}
+
+	.avix-work__head {
+		position: relative;
+		top: auto;
+		z-index: 1;
+		min-height: 0;
+		margin-bottom: 36px;
+		padding: 0;
+		background: none;
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+
+	.avix-work__progress {
+		display: none;
+	}
+
+	.avix-work-card {
+		top: calc(var(--aw-offset) + 20px);
+		height: min(var(--aw-card-h-stacked, 700px), calc(100svh - 40px));
+		margin-bottom: var(--aw-gap-stacked, 64px);
+		border-radius: min(var(--aw-radius), 22px);
+		transform-origin: 50% 100%;
+	}
+
+	.avix-work-card__surface {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.avix-work-card__media {
+		position: relative;
+		inset: auto;
+		min-height: 150px;
+		flex: 1 1 auto;
+	}
+
+	.avix-work-card__panel,
+	.avix-work--panel-left .avix-work-card__panel,
+	.avix-work--panel-alternate .avix-work-card:nth-child(even) .avix-work-card__panel {
+		position: relative;
+		inset: auto;
+		width: auto;
+		flex: 0 0 auto;
+		padding: 24px;
+		border-radius: 0;
+		background-image: radial-gradient(90% 60% at 100% 0%, var(--aw-panel-glow), transparent 62%);
+	}
+
+	.avix-work-card:hover .avix-work-card__panel,
+	.avix-work--panel-left .avix-work-card:hover .avix-work-card__panel,
+	.avix-work--panel-alternate .avix-work-card:nth-child(even):hover .avix-work-card__panel {
+		transform: none;
+	}
+
+	.avix-work-card__meta {
+		margin-bottom: 14px;
+	}
+
+	.avix-work .avix-work-card__name {
+		font-size: clamp(30px, 6.5cqi, 40px);
+	}
+
+	.avix-work .avix-work-card__tags {
+		margin-top: 12px;
+	}
+
+	.avix-work .avix-work-card__desc {
+		max-width: 52ch;
+		margin-top: 14px;
+		font-size: 14px;
+		line-height: 1.5;
+	}
+
+	.avix-work-card__foot {
+		padding-top: 18px;
+	}
+
+	.avix-work-card__outcome {
+		margin-bottom: 16px;
+		padding-top: 16px;
+	}
+
+	.avix-work-card__outcome-value {
+		font-size: 22px;
+	}
+
+	.avix-work-card__cta {
+		min-height: 48px;
+	}
+
+	.avix-work__stack::after {
+		height: var(--aw-release-stacked, 120px);
+	}
+}
+
+@container avix-work (max-width: 559px) {
+	.avix-work__frame {
+		width: min(calc(100% - 32px), var(--aw-max));
+	}
+
+	.avix-work__head {
+		align-items: flex-end;
+		gap: 16px;
+		margin-bottom: 28px;
+	}
+
+	.avix-work__kicker {
+		margin-bottom: 10px;
+		font-size: 10px;
+	}
+
+	.avix-work__title {
+		font-size: clamp(34px, 10.5cqi, 44px);
+	}
+
+	.avix-work__cta {
+		min-height: 44px;
+		gap: 9px;
+		padding: 5px 5px 5px 14px;
+		font-size: 12px;
+	}
+
+	.avix-work__cta-icon {
+		width: 34px;
+		height: 34px;
+	}
+
+	.avix-work-card {
+		top: calc(var(--aw-offset) + 14px);
+		height: min(var(--aw-card-h-stacked, 640px), calc(100svh - 28px));
+		margin-bottom: var(--aw-gap-stacked, 48px);
+		border-radius: min(var(--aw-radius), 20px);
+	}
+
+	.avix-work-card__panel,
+	.avix-work--panel-left .avix-work-card__panel,
+	.avix-work--panel-alternate .avix-work-card:nth-child(even) .avix-work-card__panel {
+		padding: 20px;
+	}
+
+	.avix-work .avix-work-card__name {
+		font-size: 30px;
+	}
+
+	.avix-work .avix-work-card__tags li {
+		min-height: 25px;
+		padding: 6px 9px;
+		font-size: 10px;
+	}
+
+	.avix-work .avix-work-card__desc {
+		display: -webkit-box;
+		overflow: hidden;
+		font-size: 13.5px;
+		-webkit-line-clamp: 4;
+		-webkit-box-orient: vertical;
+	}
+
+	.avix-work-card__outcome-label {
+		font-size: 10px;
+	}
+
+	.avix-work-card__outcome-value {
+		font-size: 20px;
+	}
+
+	.avix-work__platforms {
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.avix-work .avix-work__platforms-label::after {
+		display: none;
+	}
+}
+
+/* Very short viewports: let the page scroll normally instead of trapping tall cards. */
+@media (max-height: 540px) {
+	.avix-work-card {
+		position: relative;
+		top: auto;
+	}
+
+	.avix-work__head {
+		position: relative;
+		top: auto;
+	}
+
+	.avix-work__stack::after {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-work *,
+	.avix-work *::before,
+	.avix-work *::after {
+		transition-duration: 0.01ms !important;
+	}
+
+	.avix-work-card {
+		transform: none !important;
+	}
+
+	.avix-work-cursor {
+		display: none;
+	}
+}
+
+@container avix-work (max-width: 899px) {
+	@media (prefers-reduced-motion: reduce) {
+		.avix-work-card {
+			position: relative;
+			top: auto;
+		}
+
+		.avix-work__stack::after {
+			display: none;
+		}
+	}
+}
+/*!
+ * Avix Digital · Impact Numbers
+ */
+
+.avix-impact {
+	--ai-bg: #ffffff;
+	--ai-ink: #1a1a1a;
+	--ai-muted: #66615b;
+	--ai-line: #e7e3dc;
+	--ai-accent: #fb6007;
+	--ai-accent-text: #c64700;
+	--ai-pill-bg: #f7f5f2;
+	--ai-pill-line: #e5e1db;
+	--ai-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--ai-font-body: "Inter", Arial, sans-serif;
+	--ai-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--ai-max: 1200px;
+	--ai-gutter: 24px;
+	--ai-cols: 4;
+	--ai-gap: clamp(20px, 3cqi, 48px);
+
+	container: avix-impact / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(88px, 10vw, 144px) 0 clamp(96px, 11vw, 160px);
+	overflow: clip;
+	color: var(--ai-ink);
+	background: var(--ai-bg);
+	font-family: var(--ai-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-impact--divider {
+	border-top: 1px solid var(--ai-line);
+}
+
+.avix-impact--soft {
+	--ai-bg: #f5f3ef;
+	--ai-line: #e1dcd4;
+	--ai-pill-bg: #ffffff;
+	--ai-pill-line: #e1dcd4;
+}
+
+.avix-impact--dark {
+	--ai-bg: #111111;
+	--ai-ink: #ffffff;
+	--ai-muted: #a8a39c;
+	--ai-line: rgba(255, 255, 255, 0.14);
+	--ai-accent-text: #ff7a2c;
+	--ai-pill-bg: rgba(255, 255, 255, 0.06);
+	--ai-pill-line: rgba(255, 255, 255, 0.12);
+}
+
+/* Soft brand glow in the dark theme. */
+.avix-impact--dark::before {
+	position: absolute;
+	top: -30%;
+	right: -10%;
+	width: min(720px, 70vw);
+	aspect-ratio: 1;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(251, 96, 7, 0.18), rgba(251, 96, 7, 0) 66%);
+	pointer-events: none;
+	content: "";
+}
+
+.avix-impact *,
+.avix-impact *::before,
+.avix-impact *::after {
+	box-sizing: border-box;
+}
+
+.avix-impact__frame {
+	position: relative;
+	width: min(calc(100% - var(--ai-gutter) * 2), var(--ai-max));
+	margin-inline: auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-impact__head {
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+	align-items: end;
+	gap: 28px clamp(40px, 7cqi, 112px);
+	margin-bottom: clamp(56px, 7cqi, 96px);
+}
+
+.avix-impact--head-center .avix-impact__head {
+	grid-template-columns: minmax(0, 1fr);
+	justify-items: center;
+	text-align: center;
+}
+
+.avix-impact--head-center .avix-impact__text {
+	max-width: 56ch;
+}
+
+.avix-impact__eyebrow {
+	display: inline-flex;
+	width: fit-content;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 24px;
+	padding: 9px 14px;
+	border: 1px solid var(--ai-pill-line);
+	border-radius: 999px;
+	color: var(--ai-muted);
+	background: var(--ai-pill-bg);
+	font-family: var(--ai-font-body);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1;
+}
+
+.avix-impact__eyebrow::before {
+	width: 6px;
+	height: 6px;
+	flex: 0 0 auto;
+	border-radius: 50%;
+	background: var(--ai-accent);
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--ai-accent) 18%, transparent);
+	content: "";
+}
+
+.avix-impact .avix-impact__title {
+	max-width: 16ch;
+	margin: 0;
+	padding: 0;
+	color: var(--ai-ink);
+	font-family: var(--ai-font-display);
+	font-size: clamp(36px, 4.8cqi, 60px);
+	font-weight: 600;
+	letter-spacing: -0.05em;
+	line-height: 1;
+	text-wrap: balance;
+}
+
+.avix-impact--head-center .avix-impact__title {
+	max-width: 20ch;
+}
+
+.avix-impact__title-accent {
+	color: var(--ai-accent);
+}
+
+.avix-impact .avix-impact__text {
+	max-width: 42ch;
+	margin: 0;
+	color: var(--ai-muted);
+	font-family: var(--ai-font-body);
+	font-size: clamp(15px, 1.5cqi, 17px);
+	line-height: 1.65;
+}
+
+/* ---------- Metrics ---------- */
+
+.avix-impact .avix-impact__grid {
+	display: grid;
+	grid-template-columns: repeat(var(--ai-cols), minmax(0, 1fr));
+	gap: 48px var(--ai-gap);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-impact .avix-impact__item {
+	position: relative;
+	min-width: 0;
+	margin: 0;
+	padding: 30px 0 0;
+	border-top: 1px solid var(--ai-line);
+}
+
+.avix-impact .avix-impact__item::marker {
+	content: none;
+}
+
+/* Accent segment that draws in on reveal. */
+.avix-impact__item::before {
+	position: absolute;
+	top: -1px;
+	left: 0;
+	width: 56px;
+	height: 2px;
+	background: var(--ai-accent);
+	transform-origin: 0 50%;
+	content: "";
+}
+
+.avix-impact__index {
+	display: block;
+	margin-bottom: clamp(28px, 3.4cqi, 44px);
+	color: var(--ai-muted);
+	font-family: var(--ai-font-body);
+	font-size: 11px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.14em;
+	line-height: 1;
+}
+
+.avix-impact .avix-impact__value {
+	display: flex;
+	align-items: flex-start;
+	margin: 0;
+	color: var(--ai-ink);
+	font-family: var(--ai-font-display);
+	font-size: clamp(56px, 8cqi, 112px);
+	font-weight: 500;
+	letter-spacing: -0.07em;
+	line-height: 0.84;
+	white-space: nowrap;
+}
+
+.avix-impact__affix {
+	color: var(--ai-accent);
+	font-weight: 400;
+}
+
+.avix-impact__affix--prefix {
+	margin-right: 0.04em;
+}
+
+.avix-impact__affix--suffix {
+	margin-left: 0.04em;
+}
+
+.avix-impact__affix--small {
+	font-size: 0.5em;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	transform: translateY(0.12em);
+}
+
+.avix-impact .avix-impact__label {
+	margin: 22px 0 0;
+	color: var(--ai-ink);
+	font-family: var(--ai-font-body);
+	font-size: clamp(15px, 1.5cqi, 17px);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.35;
+}
+
+.avix-impact .avix-impact__desc {
+	max-width: 30ch;
+	margin: 8px 0 0;
+	color: var(--ai-muted);
+	font-family: var(--ai-font-body);
+	font-size: 14px;
+	line-height: 1.55;
+}
+
+/* ---------- Minimal layout: centered pill, 3 columns, hairline dividers ---------- */
+
+.avix-impact--eyebrow-only .avix-impact__head {
+	margin-bottom: clamp(52px, 6cqi, 82px);
+}
+
+.avix-impact--eyebrow-only .avix-impact__eyebrow {
+	margin-bottom: 0;
+}
+
+.avix-impact--minimal .avix-impact__grid {
+	gap: 0;
+}
+
+.avix-impact--minimal .avix-impact__item {
+	padding: 0 clamp(12px, 2.5cqi, 36px);
+	border-top: 0;
+	text-align: center;
+}
+
+.avix-impact--minimal .avix-impact__item::before {
+	display: none;
+}
+
+.avix-impact--minimal .avix-impact__item + .avix-impact__item::after {
+	position: absolute;
+	top: 10%;
+	bottom: 10%;
+	left: 0;
+	width: 1px;
+	background: var(--ai-line);
+	content: "";
+}
+
+.avix-impact--minimal .avix-impact__value {
+	justify-content: center;
+	font-size: clamp(64px, 9cqi, 112px);
+	font-weight: 550;
+	letter-spacing: -0.075em;
+	line-height: 0.82;
+}
+
+.avix-impact--minimal .avix-impact__affix {
+	font-weight: 500;
+}
+
+.avix-impact--minimal .avix-impact__label {
+	margin-top: 25px;
+	color: var(--ai-muted);
+	font-weight: 400;
+	letter-spacing: 0;
+	line-height: 1.5;
+}
+
+.avix-impact--minimal .avix-impact__desc {
+	margin-inline: auto;
+}
+
+/* ---------- Reveal ---------- */
+
+.avix-impact.is-armed .avix-impact__head,
+.avix-impact.is-armed .avix-impact__item {
+	opacity: 0;
+	transform: translate3d(0, 26px, 0);
+	transition: opacity 800ms var(--ai-ease), transform 900ms var(--ai-ease);
+	transition-delay: calc(var(--ai-i, 0) * 110ms + 120ms);
+}
+
+.avix-impact.is-armed .avix-impact__head {
+	transition-delay: 0ms;
+}
+
+.avix-impact.is-armed .avix-impact__item::before {
+	transform: scaleX(0);
+	transition: transform 1100ms var(--ai-ease);
+	transition-delay: calc(var(--ai-i, 0) * 110ms + 320ms);
+}
+
+.avix-impact.is-armed.is-visible .avix-impact__head,
+.avix-impact.is-armed.is-visible .avix-impact__item {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-impact.is-armed.is-visible .avix-impact__item::before {
+	transform: scaleX(1);
+}
+
+/* ---------- Responsive (widget width) ---------- */
+
+@container avix-impact (max-width: 899px) {
+	.avix-impact__head {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 20px;
+	}
+
+	.avix-impact .avix-impact__grid {
+		grid-template-columns: repeat(min(var(--ai-cols), 2), minmax(0, 1fr));
+		gap: 44px 24px;
+	}
+
+	.avix-impact .avix-impact__value {
+		font-size: clamp(48px, 11cqi, 88px);
+	}
+}
+
+@container avix-impact (max-width: 559px) {
+	.avix-impact__frame {
+		width: min(calc(100% - 32px), var(--ai-max));
+	}
+
+	.avix-impact .avix-impact__title {
+		font-size: clamp(32px, 9.5cqi, 42px);
+	}
+
+	.avix-impact .avix-impact__grid {
+		gap: 36px 18px;
+	}
+
+	.avix-impact .avix-impact__item {
+		padding-top: 22px;
+	}
+
+	.avix-impact__index {
+		margin-bottom: 22px;
+	}
+
+	.avix-impact .avix-impact__value {
+		font-size: clamp(40px, 13.5cqi, 64px);
+	}
+
+	.avix-impact .avix-impact__label {
+		margin-top: 16px;
+		font-size: 14px;
+	}
+
+	.avix-impact .avix-impact__desc {
+		font-size: 13px;
+	}
+}
+
+@container avix-impact (max-width: 899px) {
+	.avix-impact--minimal .avix-impact__grid {
+		grid-template-columns: repeat(var(--ai-cols), minmax(0, 1fr));
+		gap: 0;
+	}
+
+	.avix-impact--minimal .avix-impact__value {
+		font-size: clamp(48px, 9.5cqi, 88px);
+	}
+}
+
+@container avix-impact (max-width: 559px) {
+	.avix-impact--minimal .avix-impact__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-impact--minimal .avix-impact__item {
+		padding: 40px 0;
+	}
+
+	.avix-impact--minimal .avix-impact__item + .avix-impact__item {
+		border-top: 1px solid var(--ai-line);
+	}
+
+	.avix-impact--minimal .avix-impact__item + .avix-impact__item::after {
+		display: none;
+	}
+
+	.avix-impact--minimal .avix-impact__value {
+		font-size: clamp(72px, 24cqi, 98px);
+	}
+
+	.avix-impact--minimal .avix-impact__label {
+		margin-top: 20px;
+		font-size: 15px;
+	}
+}
+
+@container avix-impact (max-width: 339px) {
+	.avix-impact .avix-impact__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-impact.is-armed .avix-impact__head,
+	.avix-impact.is-armed .avix-impact__item,
+	.avix-impact.is-armed .avix-impact__item::before {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+</style>
+</head>
+<body>
+<div class="demo-spacer">Scroll down ↓</div>
+<section class="avix-work avix-work--panel-right avix-work--logos-brand" data-avix-work="{&quot;motion&quot;:true,&quot;intensity&quot;:1,&quot;parallax&quot;:true,&quot;dim&quot;:0.4,&quot;releaseHead&quot;:true,&quot;offsetSelectors&quot;:&quot;#wpadminbar, #avix-smart-header&quot;,&quot;offsetExtra&quot;:0,&quot;fixOverflow&quot;:true,&quot;cursor&quot;:true,&quot;cursorText&quot;:&quot;View case&quot;}" aria-labelledby="avix-work-title-work001">
+			<div class="avix-work__frame">
+						<header class="avix-work__head" data-aw-head>
+			<div class="avix-work__heading">
+									<p class="avix-work__kicker">Portfolio / 2026</p>
+								<h2 class="avix-work__title" id="avix-work-title-work001">
+					Selected work																<sup class="avix-work__count" aria-hidden="true">(03)</sup>
+									</h2>
+			</div>
+							<div class="avix-work__aside">
+											<div class="avix-work__progress" aria-hidden="true">
+							<span class="avix-work__progress-current" data-aw-current>01</span>
+							<span class="avix-work__progress-track"><span class="avix-work__progress-bar" data-aw-bar></span></span>
+							<span class="avix-work__progress-total">03</span>
+						</div>
+																<a href="https://akib.avixdigital.com/" class="avix-work__cta">
+							All case studies							<span class="avix-work__cta-icon" aria-hidden="true"><svg class="avix-work__icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
+						</a>
+									</div>
+					</header>
+						<div class="avix-work__stack" data-aw-stack>
+							<article class="avix-work-card" data-aw-card="" style="--aw-i:0;--aw-pos:50% 50%;">
+			<a href="https://akib.avixdigital.com/ovabalance-eu/" class="avix-work-card__surface" data-aw-surface="" aria-label="View case study: OvaBalance">
+				<figure class="avix-work-card__media" data-aw-media>
+					<img class="avix-work-card__img" src="https://avixdigital.com/wp-content/uploads/2025/12/Untitled-design-7.webp" alt="OvaBalance" loading="lazy" decoding="async" data-aw-img>				</figure>
+				<div class="avix-work-card__panel">
+											<div class="avix-work-card__meta">
+															<span class="avix-work-card__index">01<span> / 03</span></span>
+																				</div>
+					<h3 class="avix-work-card__name">OvaBalance</h3>
+											<ul class="avix-work-card__tags">
+															<li>Shopify</li>
+															<li>Liquid</li>
+															<li>Subscription</li>
+													</ul>
+											<p class="avix-work-card__desc">A custom Shopify subscription experience with dynamic pricing, recurring order integration and a modular Liquid theme.</p>
+											<div class="avix-work-card__foot">
+															<div class="avix-work-card__outcome">
+									<span class="avix-work-card__outcome-label">Designed for</span>
+									<strong class="avix-work-card__outcome-value">Repeat purchase</strong>
+								</div>
+																						<span class="avix-work-card__cta">
+									View case study									<span class="avix-work-card__cta-icon" aria-hidden="true"><svg class="avix-work__icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
+								</span>
+													</div>
+									</div>
+			</a>
+		</article>
+				<article class="avix-work-card" data-aw-card="" style="--aw-i:1;--aw-pos:50% 35%;">
+			<a href="https://akib.avixdigital.com/rehall-com/" class="avix-work-card__surface" data-aw-surface="" aria-label="View case study: Rehall">
+				<figure class="avix-work-card__media" data-aw-media>
+					<img class="avix-work-card__img" src="https://avixdigital.com/wp-content/uploads/2025/12/rehall.webp" alt="Rehall" loading="lazy" decoding="async" data-aw-img>				</figure>
+				<div class="avix-work-card__panel">
+											<div class="avix-work-card__meta">
+															<span class="avix-work-card__index">02<span> / 03</span></span>
+																				</div>
+					<h3 class="avix-work-card__name">Rehall</h3>
+											<ul class="avix-work-card__tags">
+															<li>Shopify</li>
+															<li>Theme engineering</li>
+													</ul>
+											<p class="avix-work-card__desc">Custom theme engineering and third party integrations shape a responsive storefront built for confident product discovery.</p>
+											<div class="avix-work-card__foot">
+															<div class="avix-work-card__outcome">
+									<span class="avix-work-card__outcome-label">Designed for</span>
+									<strong class="avix-work-card__outcome-value">Faster discovery</strong>
+								</div>
+																						<span class="avix-work-card__cta">
+									View case study									<span class="avix-work-card__cta-icon" aria-hidden="true"><svg class="avix-work__icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
+								</span>
+													</div>
+									</div>
+			</a>
+		</article>
+				<article class="avix-work-card" data-aw-card="" style="--aw-i:2;--aw-pos:50% 50%;">
+			<a href="https://akib.avixdigital.com/flow-storage/" class="avix-work-card__surface" data-aw-surface="" aria-label="View case study: Flow Storage">
+				<figure class="avix-work-card__media" data-aw-media>
+					<img class="avix-work-card__img" src="https://avixdigital.com/wp-content/uploads/2025/12/Untitled-design-6.webp" alt="Flow Storage" loading="lazy" decoding="async" data-aw-img>				</figure>
+				<div class="avix-work-card__panel">
+											<div class="avix-work-card__meta">
+															<span class="avix-work-card__index">03<span> / 03</span></span>
+																				</div>
+					<h3 class="avix-work-card__name">Flow Storage</h3>
+											<ul class="avix-work-card__tags">
+															<li>Webflow</li>
+															<li>CMS</li>
+															<li>Lead generation</li>
+													</ul>
+											<p class="avix-work-card__desc">A precise Figma to Webflow build with custom CMS architecture and lead forms tuned for a clear customer journey.</p>
+											<div class="avix-work-card__foot">
+															<div class="avix-work-card__outcome">
+									<span class="avix-work-card__outcome-label">Designed for</span>
+									<strong class="avix-work-card__outcome-value">Qualified leads</strong>
+								</div>
+																						<span class="avix-work-card__cta">
+									View case study									<span class="avix-work-card__cta-icon" aria-hidden="true"><svg class="avix-work__icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
+								</span>
+													</div>
+									</div>
+			</a>
+		</article>
+						</div>
+						<div class="avix-work__platforms">
+							<p class="avix-work__platforms-label">We build with</p>
+						<ul class="avix-work__platforms-list">
+									<li>
+						<a class="avix-work__platform" style="--aw-brand:#95BF47;" href="https://avixdigital.com/service/shopify-plus/">
+							<svg class="avix-work__platform-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.337 23.979l7.216-1.561s-2.604-17.613-2.625-17.73c-.018-.116-.114-.192-.211-.192s-1.929-.136-1.929-.136-1.275-1.274-1.439-1.411c-.045-.037-.075-.057-.121-.074l-.914 21.104h.023zM11.71 11.305s-.81-.424-1.774-.424c-1.447 0-1.504.906-1.504 1.141 0 1.232 3.24 1.715 3.24 4.629 0 2.295-1.44 3.76-3.406 3.76-2.354 0-3.54-1.465-3.54-1.465l.646-2.086s1.245 1.066 2.28 1.066c.675 0 .975-.545.975-.932 0-1.619-2.654-1.694-2.654-4.359-.034-2.237 1.571-4.416 4.827-4.416 1.257 0 1.875.361 1.875.361l-.945 2.715-.02.01zM11.17.83c.136 0 .271.038.405.135-.984.465-2.064 1.639-2.508 3.992-.656.213-1.293.405-1.889.578C7.697 3.75 8.951.84 11.17.84V.83zm1.235 2.949v.135c-.754.232-1.583.484-2.394.736.466-1.777 1.333-2.645 2.085-2.971.193.501.309 1.176.309 2.1zm.539-2.234c.694.074 1.141.867 1.429 1.755-.349.114-.735.231-1.158.366v-.252c0-.752-.096-1.371-.271-1.871v.002zm2.992 1.289c-.02 0-.06.021-.078.021s-.289.075-.714.21c-.423-1.233-1.176-2.37-2.508-2.37h-.115C12.135.209 11.669 0 11.265 0 8.159 0 6.675 3.877 6.21 5.846c-1.194.365-2.063.636-2.16.674-.675.213-.694.232-.772.87-.075.462-1.83 14.063-1.83 14.063L15.009 24l.927-21.166z"/></svg>Shopify						</a>
+					</li>
+										<li>
+						<a class="avix-work__platform" style="--aw-brand:#21759B;" href="https://avixdigital.com/service/wordpress-development/">
+							<svg class="avix-work__platform-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21.469 6.825c.84 1.537 1.318 3.3 1.318 5.175 0 3.979-2.156 7.456-5.363 9.325l3.295-9.527c.615-1.54.82-2.771.82-3.864 0-.405-.026-.78-.07-1.11m-7.981.105c.647-.03 1.232-.105 1.232-.105.582-.075.514-.93-.067-.899 0 0-1.755.135-2.88.135-1.064 0-2.85-.15-2.85-.15-.585-.03-.661.855-.075.885 0 0 .54.061 1.125.09l1.68 4.605-2.37 7.08L5.354 6.9c.649-.03 1.234-.1 1.234-.1.585-.075.516-.93-.065-.896 0 0-1.746.138-2.874.138-.2 0-.438-.008-.69-.015C4.911 3.15 8.235 1.215 12 1.215c2.809 0 5.365 1.072 7.286 2.833-.046-.003-.091-.009-.141-.009-1.06 0-1.812.923-1.812 1.914 0 .89.513 1.643 1.06 2.531.411.72.89 1.643.89 2.977 0 .915-.354 1.994-.821 3.479l-1.075 3.585-3.9-11.61.001.014zM12 22.784c-1.059 0-2.081-.153-3.048-.437l3.237-9.406 3.315 9.087c.024.053.05.101.078.149-1.12.393-2.325.609-3.582.609M1.211 12c0-1.564.336-3.05.935-4.39L7.29 21.709C3.694 19.96 1.212 16.271 1.211 12M12 0C5.385 0 0 5.385 0 12s5.385 12 12 12 12-5.385 12-12S18.615 0 12 0"/></svg>WordPress						</a>
+					</li>
+										<li>
+						<span class="avix-work__platform" style="--aw-brand:#146EF5;">
+							<svg class="avix-work__platform-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m24 4.515-7.658 14.97H9.149l3.205-6.204h-.144C9.566 16.713 5.621 18.973 0 19.485v-6.118s3.596-.213 5.71-2.435H0V4.515h6.417v5.278l.144-.001 2.622-5.277h4.854v5.244h.144l2.72-5.244H24Z"/></svg>Webflow						</span>
+					</li>
+										<li>
+						<a class="avix-work__platform" style="--aw-brand:#61DAFB;" href="https://avixdigital.com/service/web-development/">
+							<svg class="avix-work__platform-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278zm-.005 1.09v.006c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44-.96-.236-2.006-.417-3.107-.534-.66-.905-1.345-1.727-2.035-2.447 1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442-1.107.117-2.154.298-3.113.538-.112-.49-.195-.964-.254-1.42-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.345-.034-.46 0-.915.01-1.36.034.44-.572.895-1.096 1.345-1.565zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87-.728.063-1.466.098-2.21.098-.74 0-1.477-.035-2.202-.093-.406-.582-.802-1.204-1.183-1.86-.372-.64-.71-1.29-1.018-1.946.303-.657.646-1.313 1.013-1.954.38-.66.773-1.286 1.18-1.868.728-.064 1.466-.098 2.21-.098zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933-.2-.39-.41-.783-.64-1.174-.225-.392-.465-.774-.705-1.146zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493-.28-.958-.646-1.956-1.1-2.98.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98-.45 1.017-.812 2.01-1.086 2.964-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm11.678 4.28c.265.657.49 1.312.676 1.948-.64.157-1.316.29-2.016.39.24-.375.48-.762.705-1.158.225-.39.435-.788.636-1.18zm-9.945.02c.2.392.41.783.64 1.175.23.39.465.772.705 1.143-.695-.102-1.365-.23-2.006-.386.18-.63.406-1.282.66-1.933zM17.92 16.32c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54zm-11.83.01c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm4.56.64c.44.02.89.034 1.345.034.46 0 .915-.01 1.36-.034-.44.572-.895 1.095-1.345 1.565-.455-.47-.91-.993-1.36-1.565z"/></svg>React						</a>
+					</li>
+										<li>
+						<a class="avix-work__platform" style="--aw-brand:#000000;" href="https://avixdigital.com/service/web-development/">
+							<svg class="avix-work__platform-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18.665 21.978C16.758 23.255 14.465 24 12 24 5.377 24 0 18.623 0 12S5.377 0 12 0s12 5.377 12 12c0 3.583-1.574 6.801-4.067 9.001L9.219 7.2H7.2v9.596h1.615V9.251l9.85 12.727Zm-3.332-8.533 1.6 2.061V7.2h-1.6v6.245Z"/></svg>Next.js						</a>
+					</li>
+										<li>
+						<a class="avix-work__platform" style="--aw-brand:#5FA04E;" href="https://avixdigital.com/service/web-development/">
+							<svg class="avix-work__platform-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M11.998,24c-0.321,0-0.641-0.084-0.922-0.247l-2.936-1.737c-0.438-0.245-0.224-0.332-0.08-0.383 c0.585-0.203,0.703-0.25,1.328-0.604c0.065-0.037,0.151-0.023,0.218,0.017l2.256,1.339c0.082,0.045,0.197,0.045,0.272,0l8.795-5.076 c0.082-0.047,0.134-0.141,0.134-0.238V6.921c0-0.099-0.053-0.192-0.137-0.242l-8.791-5.072c-0.081-0.047-0.189-0.047-0.271,0 L3.075,6.68C2.99,6.729,2.936,6.825,2.936,6.921v10.15c0,0.097,0.054,0.189,0.139,0.235l2.409,1.392 c1.307,0.654,2.108-0.116,2.108-0.89V7.787c0-0.142,0.114-0.253,0.256-0.253h1.115c0.139,0,0.255,0.112,0.255,0.253v10.021 c0,1.745-0.95,2.745-2.604,2.745c-0.508,0-0.909,0-2.026-0.551L2.28,18.675c-0.57-0.329-0.922-0.945-0.922-1.604V6.921 c0-0.659,0.353-1.275,0.922-1.603l8.795-5.082c0.557-0.315,1.296-0.315,1.848,0l8.794,5.082c0.57,0.329,0.924,0.944,0.924,1.603 v10.15c0,0.659-0.354,1.273-0.924,1.604l-8.794,5.078C12.643,23.916,12.324,24,11.998,24z M19.099,13.993 c0-1.9-1.284-2.406-3.987-2.763c-2.731-0.361-3.009-0.548-3.009-1.187c0-0.528,0.235-1.233,2.258-1.233 c1.807,0,2.473,0.389,2.747,1.607c0.024,0.115,0.129,0.199,0.247,0.199h1.141c0.071,0,0.138-0.031,0.186-0.081 c0.048-0.054,0.074-0.123,0.067-0.196c-0.177-2.098-1.571-3.076-4.388-3.076c-2.508,0-4.004,1.058-4.004,2.833 c0,1.925,1.488,2.457,3.895,2.695c2.88,0.282,3.103,0.703,3.103,1.269c0,0.983-0.789,1.402-2.642,1.402 c-2.327,0-2.839-0.584-3.011-1.742c-0.02-0.124-0.126-0.215-0.253-0.215h-1.137c-0.141,0-0.254,0.112-0.254,0.253 c0,1.482,0.806,3.248,4.655,3.248C17.501,17.007,19.099,15.91,19.099,13.993z"/></svg>Node.js						</a>
+					</li>
+								</ul>
+		</div>
+					</div>
+		</section>
+<section class="avix-impact avix-impact--light avix-impact--minimal avix-impact--head-center avix-impact--eyebrow-only avix-impact--divider" style="--ai-cols:3;" data-avix-impact="{&quot;animate&quot;:true,&quot;countUp&quot;:true,&quot;duration&quot;:1800}">
+			<div class="avix-impact__frame">
+									<header class="avix-impact__head">
+						<div>
+															<p class="avix-impact__eyebrow">Numbers behind the work</p>
+																				</div>
+											</header>
+									<ul class="avix-impact__grid" role="list">
+															<li class="avix-impact__item" style="--ai-i:0;">
+						<p class="avix-impact__value" aria-label="200+">
+													<span class="avix-impact__num" aria-hidden="true" data-to="200" data-decimals="0" data-separator=",">200</span>
+													<span class="avix-impact__affix avix-impact__affix--suffix" aria-hidden="true">+</span>
+							</p>
+							<p class="avix-impact__label">Clients supported worldwide</p>
+								</li>
+																	<li class="avix-impact__item" style="--ai-i:1;">
+						<p class="avix-impact__value" aria-label="250+">
+													<span class="avix-impact__num" aria-hidden="true" data-to="250" data-decimals="0" data-separator=",">250</span>
+													<span class="avix-impact__affix avix-impact__affix--suffix" aria-hidden="true">+</span>
+							</p>
+							<p class="avix-impact__label">Projects delivered</p>
+								</li>
+																	<li class="avix-impact__item" style="--ai-i:2;">
+						<p class="avix-impact__value" aria-label="150+">
+													<span class="avix-impact__num" aria-hidden="true" data-to="150" data-decimals="0" data-separator=",">150</span>
+													<span class="avix-impact__affix avix-impact__affix--suffix" aria-hidden="true">+</span>
+							</p>
+							<p class="avix-impact__label">Verified client reviews</p>
+								</li>
+													</ul>
+							</div>
+		</section>
+<div class="demo-spacer demo-spacer--light">Next section</div>
+<script>
+/*!
+ * Avix Digital · Selected Work (scroll stack)
+ * Dependency-free. Cards are CSS sticky; this script adds the 3D "buried card"
+ * motion, image parallax, the live progress readout, the header release and
+ * an offset that follows fixed headers (admin bar, hide-on-scroll site header).
+ */
+(function (window, document) {
+	'use strict';
+
+	var ROOT_SELECTOR = '[data-avix-work]';
+	var instances = [];
+	var mq = function (query) {
+		return window.matchMedia ? window.matchMedia(query) : { matches: false, addEventListener: function () {} };
+	};
+	var reduceMotion = mq('(prefers-reduced-motion: reduce)');
+	var finePointer = mq('(hover: hover) and (pointer: fine)');
+
+	// Motion recipe per layout, tuned to the original GSAP timeline.
+	var PRESETS = {
+		overlay: { perspective: 1400, scale: 0.86, scaleStep: 0.035, rotX: -7, rotXStep: 1.5, rotZ: 2.2, y: -18, z: -160, start: 0.08, parallax: 2.4 },
+		stacked: { perspective: 1100, scale: 0.925, scaleStep: 0.015, rotX: -4.5, rotXStep: 1, rotZ: 1.15, y: -10, z: -110, start: 0.07, parallax: 0 }
+	};
+
+	var ELEMENTOR_WRAPPERS = '.elementor-element, .e-con, .e-con-inner, .elementor-container, .elementor-column, .elementor-widget-wrap, .elementor-widget-container, .elementor-section';
+
+	function clamp(value, min, max) {
+		return value < min ? min : value > max ? max : value;
+	}
+
+	function toNumber(value, fallback) {
+		var parsed = parseFloat(value);
+		return isFinite(parsed) ? parsed : fallback;
+	}
+
+	function pad(value) {
+		return value < 10 ? '0' + value : String(value);
+	}
+
+	function isEditMode() {
+		return !!(window.elementorFrontend && typeof window.elementorFrontend.isEditMode === 'function' && window.elementorFrontend.isEditMode());
+	}
+
+	function Stack(root) {
+		var config = {};
+		try {
+			config = JSON.parse(root.getAttribute('data-avix-work') || '{}') || {};
+		} catch (error) {
+			config = {};
+		}
+
+		this.root = root;
+		this.alive = true;
+		this.config = {
+			motion: config.motion !== false,
+			intensity: clamp(toNumber(config.intensity, 1), 0, 2),
+			parallax: config.parallax !== false,
+			dim: clamp(toNumber(config.dim, 0.42), 0, 0.9),
+			releaseHead: config.releaseHead !== false,
+			offsetSelectors: typeof config.offsetSelectors === 'string' ? config.offsetSelectors : '#wpadminbar',
+			offsetExtra: toNumber(config.offsetExtra, 0),
+			fixOverflow: config.fixOverflow !== false,
+			cursor: !!config.cursor,
+			cursorText: config.cursorText || 'View case'
+		};
+
+		this.stack = root.querySelector('[data-aw-stack]');
+		this.head = root.querySelector('[data-aw-head]');
+		this.cards = Array.prototype.slice.call(root.querySelectorAll('[data-aw-card]'));
+		this.images = this.cards.map(function (card) {
+			return card.querySelector('[data-aw-img]');
+		});
+		this.currentLabel = root.querySelector('[data-aw-current]');
+		this.progressBar = root.querySelector('[data-aw-bar]');
+		this.count = this.cards.length;
+
+		this.progress = this.cards.map(function () { return 0; });
+		this.naturalTops = [];
+		this.stackBottom = 0;
+		this.lastHeight = 0;
+		this.baseTop = 0;
+		this.offset = 0;
+		this.offsetElements = [];
+		this.layout = 'overlay';
+		this.current = -1;
+		this.frame = 0;
+		this.lastTime = 0;
+		this.activeUntil = 0;
+		this.cursor = null;
+
+		this.onScroll = this.wake.bind(this);
+		this.onResize = this.refresh.bind(this);
+		this.onMotionChange = this.refresh.bind(this);
+		this.tick = this.tick.bind(this);
+
+		if (!this.stack || !this.count) {
+			this.alive = false;
+			return;
+		}
+
+		this.init();
+	}
+
+	Stack.prototype.init = function () {
+		var self = this;
+
+		if (this.config.fixOverflow) {
+			this.releaseOverflowAncestors();
+		}
+
+		window.addEventListener('scroll', this.onScroll, { passive: true });
+		window.addEventListener('resize', this.onResize, { passive: true });
+		window.addEventListener('load', this.onResize);
+		if (reduceMotion.addEventListener) {
+			reduceMotion.addEventListener('change', this.onMotionChange);
+		}
+
+		if (window.ResizeObserver) {
+			this.resizeObserver = new window.ResizeObserver(function () {
+				self.refresh();
+			});
+			this.resizeObserver.observe(this.stack);
+		}
+
+		this.images.forEach(function (image) {
+			if (image && !image.complete) {
+				image.addEventListener('load', self.onResize, { once: true });
+			}
+		});
+
+		if (document.fonts && document.fonts.ready) {
+			document.fonts.ready.then(function () {
+				self.refresh();
+			});
+		}
+
+		if (this.config.cursor && finePointer.matches && !isEditMode()) {
+			this.setupCursor();
+		}
+
+		this.root.classList.add('is-ready');
+		this.refresh();
+	};
+
+	// Sticky breaks under overflow:hidden ancestors. Elementor wrappers are
+	// flex/grid boxes, so swapping hidden for clip keeps the clipping without
+	// creating a scroll container. Theme wrappers are only reported.
+	Stack.prototype.releaseOverflowAncestors = function () {
+		for (var node = this.root.parentElement; node && node !== document.body && node !== document.documentElement; node = node.parentElement) {
+			var style = window.getComputedStyle(node);
+			var blocking = /(hidden|auto|scroll)/.test(style.overflowX + style.overflowY);
+			if (!blocking) {
+				continue;
+			}
+			var onlyHidden = !/(auto|scroll)/.test(style.overflowX + style.overflowY);
+			if (onlyHidden && node.matches && node.matches(ELEMENTOR_WRAPPERS)) {
+				node.style.overflow = 'clip';
+				(this.clipped = this.clipped || []).push(node);
+			} else if (window.console && !this.warned) {
+				this.warned = true;
+				window.console.warn('[Avix Selected Work] An ancestor has overflow "' + style.overflowX + '/' + style.overflowY + '", which stops the sticky stack. Change it to "clip" or "visible".', node);
+			}
+		}
+	};
+
+	Stack.prototype.refresh = function () {
+		if (!this.alive) {
+			return;
+		}
+		this.measure();
+		this.wake();
+	};
+
+	Stack.prototype.measure = function () {
+		var styles = window.getComputedStyle(this.stack);
+		var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+		var stackRect = this.stack.getBoundingClientRect();
+		var top = stackRect.top + scrollY;
+		var self = this;
+
+		this.layout = styles.getPropertyValue('--aw-layout').trim() === 'stacked' ? 'stacked' : 'overlay';
+		this.naturalTops = [];
+
+		this.cards.forEach(function (card) {
+			self.naturalTops.push(top);
+			top += card.offsetHeight + toNumber(window.getComputedStyle(card).marginBottom, 0);
+		});
+
+		this.lastHeight = this.cards[this.count - 1].offsetHeight;
+		this.stackBottom = stackRect.bottom + scrollY - toNumber(styles.paddingBottom, 0);
+		this.baseTop = toNumber(window.getComputedStyle(this.cards[0]).top, 0) - this.offset;
+
+		this.offsetElements = [];
+		if (this.config.offsetSelectors) {
+			try {
+				Array.prototype.forEach.call(document.querySelectorAll(this.config.offsetSelectors), function (element) {
+					var position = window.getComputedStyle(element).position;
+					if ((position === 'fixed' || position === 'sticky') && !self.root.contains(element)) {
+						self.offsetElements.push(element);
+					}
+				});
+			} catch (error) {
+				// Invalid selector typed in the editor: ignore.
+			}
+		}
+	};
+
+	Stack.prototype.readOffset = function (viewportHeight) {
+		var offset = 0;
+		for (var i = 0; i < this.offsetElements.length; i++) {
+			var rect = this.offsetElements[i].getBoundingClientRect();
+			if (rect.height > 0 && rect.bottom > 0 && rect.top < viewportHeight * 0.35) {
+				offset = Math.max(offset, rect.bottom);
+			}
+		}
+		return clamp(offset, 0, viewportHeight * 0.35) + this.config.offsetExtra;
+	};
+
+	Stack.prototype.wake = function () {
+		if (!this.alive) {
+			return;
+		}
+		// Keep ticking briefly after the last scroll so smoothing and header
+		// slide-in animations settle.
+		this.activeUntil = (window.performance ? window.performance.now() : Date.now()) + 750;
+		if (!this.frame) {
+			this.lastTime = 0;
+			this.frame = window.requestAnimationFrame(this.tick);
+		}
+	};
+
+	Stack.prototype.tick = function (time) {
+		this.frame = 0;
+
+		if (!this.root.isConnected) {
+			this.destroy();
+			return;
+		}
+
+		var dt = this.lastTime ? Math.min(0.1, (time - this.lastTime) / 1000) : 1 / 60;
+		this.lastTime = time;
+
+		// ---- Reads ----
+		var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+		var viewportHeight = window.innerHeight;
+		var offset = this.readOffset(viewportHeight);
+		var stickyTop = this.baseTop + offset;
+		var preset = PRESETS[this.layout];
+		var motion = this.config.motion && !reduceMotion.matches;
+		var intensity = this.config.intensity;
+		var start = viewportHeight * (1 - preset.start);
+		var span = Math.max(1, start - stickyTop);
+		var smoothing = 1 - Math.exp(-dt / 0.13);
+		var settled = true;
+		var current = 0;
+		var i;
+
+		for (i = 0; i < this.count; i++) {
+			if (this.naturalTops[i] - scrollY <= stickyTop + 4) {
+				current = i;
+			}
+		}
+
+		for (i = 0; i < this.count - 1; i++) {
+			var target = clamp((start - (this.naturalTops[i + 1] - scrollY)) / span, 0, 1);
+			var value = this.progress[i];
+			value += (target - value) * smoothing;
+			if (Math.abs(target - value) < 0.0006) {
+				value = target;
+			} else {
+				settled = false;
+			}
+			this.progress[i] = value;
+		}
+
+		// ---- Writes ----
+		if (Math.abs(offset - this.offset) > 0.25) {
+			this.offset = offset;
+			this.root.style.setProperty('--aw-offset', offset.toFixed(2) + 'px');
+		}
+
+		for (i = 0; i < this.count; i++) {
+			var card = this.cards[i];
+			var p = i < this.count - 1 ? this.progress[i] : 0;
+
+			if (motion && intensity > 0 && p > 0.0001) {
+				var direction = i % 2 === 0 ? -1 : 1;
+				var endScale = Math.min(0.97, preset.scale + i * preset.scaleStep);
+				var scale = 1 - (1 - endScale) * p * intensity;
+				var rotX = Math.min(-1, preset.rotX + i * preset.rotXStep) * p * intensity;
+				var rotZ = direction * preset.rotZ * p * intensity;
+				card.style.transform = 'perspective(' + preset.perspective + 'px) translate3d(0,' + (preset.y * p * intensity).toFixed(2) + 'px,' + (preset.z * p * intensity).toFixed(2) + 'px) rotateX(' + rotX.toFixed(3) + 'deg) rotate(' + rotZ.toFixed(3) + 'deg) scale(' + scale.toFixed(4) + ')';
+			} else if (card.style.transform) {
+				card.style.transform = '';
+			}
+
+			card.style.setProperty('--aw-dim', (p * this.config.dim).toFixed(3));
+			card.classList.toggle('is-past', i < current);
+			card.classList.toggle('is-current', i === current);
+
+			var image = this.images[i];
+			if (image) {
+				if (motion && this.config.parallax && preset.parallax) {
+					var naturalTop = this.naturalTops[i] - scrollY;
+					var enter = clamp((viewportHeight - naturalTop) / Math.max(1, viewportHeight - stickyTop), 0, 1);
+					var shift = p > 0 ? p * preset.parallax : (enter - 1) * preset.parallax;
+					image.style.setProperty('--aw-img-y', shift.toFixed(3) + '%');
+				} else {
+					image.style.removeProperty('--aw-img-y');
+				}
+			}
+		}
+
+		// The readout flips once the incoming card covers most of the current one.
+		var shown = current < this.count - 1 && this.progress[current] > 0.55 ? current + 1 : current;
+		if (shown !== this.current) {
+			this.current = shown;
+			if (this.currentLabel) {
+				this.currentLabel.textContent = pad(shown + 1);
+			}
+		}
+
+		if (this.progressBar) {
+			var fraction = current < this.count - 1 ? this.progress[current] : 0;
+			var overall = this.count > 1 ? clamp((current + fraction) / (this.count - 1), 0, 1) : 1;
+			this.progressBar.style.transform = 'scaleX(' + overall.toFixed(4) + ')';
+		}
+
+		// The sticky header leaves together with the last card instead of
+		// letting the stack slide underneath it.
+		if (this.head) {
+			var shiftHead = 0;
+			if (this.config.releaseHead && this.layout === 'overlay') {
+				var lastTop = this.stackBottom - scrollY - this.lastHeight;
+				shiftHead = Math.min(0, lastTop - stickyTop);
+			}
+			this.head.style.transform = shiftHead < -0.5 ? 'translate3d(0,' + shiftHead.toFixed(2) + 'px,0)' : '';
+		}
+
+		var now = window.performance ? window.performance.now() : Date.now();
+		if (!settled || now < this.activeUntil) {
+			this.frame = window.requestAnimationFrame(this.tick);
+		}
+	};
+
+	Stack.prototype.setupCursor = function () {
+		var self = this;
+		var cursor = document.createElement('div');
+		var bubble = document.createElement('span');
+		var styles = window.getComputedStyle(this.root);
+
+		cursor.className = 'avix-work-cursor';
+		cursor.setAttribute('aria-hidden', 'true');
+		bubble.className = 'avix-work-cursor__bubble';
+		bubble.textContent = this.config.cursorText;
+		cursor.appendChild(bubble);
+		cursor.style.setProperty('--awc-bg', styles.getPropertyValue('--aw-accent').trim() || '#fb6007');
+		cursor.style.setProperty('--awc-font', styles.getPropertyValue('--aw-font-body').trim() || 'Inter, Arial, sans-serif');
+		document.body.appendChild(cursor);
+
+		var state = { x: 0, y: 0, tx: 0, ty: 0, frame: 0, visible: false };
+		var render = function () {
+			state.frame = 0;
+			state.x += (state.tx - state.x) * 0.22;
+			state.y += (state.ty - state.y) * 0.22;
+			cursor.style.transform = 'translate3d(' + state.x.toFixed(1) + 'px,' + state.y.toFixed(1) + 'px,0)';
+			if (Math.abs(state.tx - state.x) > 0.2 || Math.abs(state.ty - state.y) > 0.2) {
+				state.frame = window.requestAnimationFrame(render);
+			}
+		};
+		var show = function (visible) {
+			if (visible !== state.visible) {
+				state.visible = visible;
+				cursor.classList.toggle('is-visible', visible);
+			}
+		};
+
+		this.onPointerMove = function (event) {
+			var target = event.target;
+			var media = target && target.closest ? target.closest('[data-aw-media]') : null;
+			var card = media ? media.closest('[data-aw-card]') : null;
+			var hasLink = card && card.querySelector('a[data-aw-surface]');
+			if (!state.visible) {
+				state.x = event.clientX;
+				state.y = event.clientY;
+			}
+			state.tx = event.clientX;
+			state.ty = event.clientY;
+			show(!!(media && hasLink && !card.classList.contains('is-past')));
+			if (!state.frame) {
+				state.frame = window.requestAnimationFrame(render);
+			}
+		};
+		this.onPointerLeave = function () {
+			show(false);
+		};
+		this.onScrollCursor = function () {
+			show(false);
+		};
+
+		this.stack.addEventListener('pointermove', this.onPointerMove, { passive: true });
+		this.stack.addEventListener('pointerleave', this.onPointerLeave);
+		window.addEventListener('scroll', this.onScrollCursor, { passive: true });
+		this.cursor = cursor;
+	};
+
+	Stack.prototype.destroy = function () {
+		if (!this.alive) {
+			return;
+		}
+		this.alive = false;
+		if (this.frame) {
+			window.cancelAnimationFrame(this.frame);
+		}
+		window.removeEventListener('scroll', this.onScroll);
+		window.removeEventListener('resize', this.onResize);
+		window.removeEventListener('load', this.onResize);
+		if (reduceMotion.removeEventListener) {
+			reduceMotion.removeEventListener('change', this.onMotionChange);
+		}
+		if (this.resizeObserver) {
+			this.resizeObserver.disconnect();
+		}
+		if (this.cursor) {
+			this.stack.removeEventListener('pointermove', this.onPointerMove);
+			this.stack.removeEventListener('pointerleave', this.onPointerLeave);
+			window.removeEventListener('scroll', this.onScrollCursor);
+			this.cursor.remove();
+			this.cursor = null;
+		}
+		var index = instances.indexOf(this);
+		if (index > -1) {
+			instances.splice(index, 1);
+		}
+	};
+
+	function mount(root) {
+		if (!root || (root.__avixWork && root.__avixWork.alive)) {
+			return;
+		}
+		// Editor re-renders replace the DOM; drop instances whose root is gone.
+		instances.slice().forEach(function (instance) {
+			if (!instance.root.isConnected) {
+				instance.destroy();
+			}
+		});
+		var instance = new Stack(root);
+		if (instance.alive) {
+			root.__avixWork = instance;
+			instances.push(instance);
+		}
+	}
+
+	function mountAll(scope) {
+		Array.prototype.forEach.call((scope || document).querySelectorAll(ROOT_SELECTOR), mount);
+	}
+
+	window.AvixSelectedWork = { mount: mount, mountAll: mountAll };
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', function () {
+			mountAll();
+		});
+	} else {
+		mountAll();
+	}
+
+	function hookElementor() {
+		if (!window.elementorFrontend || !window.elementorFrontend.hooks) {
+			return;
+		}
+		window.elementorFrontend.hooks.addAction('frontend/element_ready/avix-selected-work.default', function ($scope) {
+			var element = $scope && $scope[0] ? $scope[0] : $scope;
+			if (element && element.querySelectorAll) {
+				mountAll(element);
+			}
+		});
+	}
+
+	if (window.elementorFrontend && window.elementorFrontend.hooks) {
+		hookElementor();
+	} else {
+		window.addEventListener('elementor/frontend/init', hookElementor);
+	}
+})(window, document);
+</script>
+<script>
+/*!
+ * Avix Digital · Impact Numbers
+ * Reveal on scroll + count-up. The final values are rendered server-side, so
+ * without JS (or with reduced motion) the real numbers are always shown.
+ */
+(function (window, document) {
+	'use strict';
+
+	var ROOT_SELECTOR = '[data-avix-impact]';
+	var reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+	function easeOutExpo(t) {
+		return t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
+	}
+
+	function format(value, decimals, separator) {
+		var fixed = value.toFixed(decimals);
+		if (!separator) {
+			return fixed;
+		}
+		var parts = fixed.split('.');
+		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+		return parts.join('.');
+	}
+
+	function isEditMode() {
+		return !!(window.elementorFrontend && typeof window.elementorFrontend.isEditMode === 'function' && window.elementorFrontend.isEditMode());
+	}
+
+	function countUp(element, duration) {
+		var to = parseFloat(element.getAttribute('data-to'));
+		var decimals = parseInt(element.getAttribute('data-decimals'), 10) || 0;
+		var separator = element.getAttribute('data-separator') || '';
+		var from = parseFloat(element.getAttribute('data-from')) || 0;
+		if (!isFinite(to)) {
+			return;
+		}
+		var start = 0;
+		var step = function (time) {
+			if (!start) {
+				start = time;
+			}
+			var t = Math.min(1, (time - start) / duration);
+			element.textContent = format(from + (to - from) * easeOutExpo(t), decimals, separator);
+			if (t < 1 && element.isConnected) {
+				window.requestAnimationFrame(step);
+			}
+		};
+		window.requestAnimationFrame(step);
+	}
+
+	function mount(root) {
+		if (!root || root.__avixImpact) {
+			return;
+		}
+		root.__avixImpact = true;
+
+		var config = {};
+		try {
+			config = JSON.parse(root.getAttribute('data-avix-impact') || '{}') || {};
+		} catch (error) {
+			config = {};
+		}
+
+		var animate = config.animate !== false && !reduceMotion.matches && 'IntersectionObserver' in window;
+		var counters = Array.prototype.slice.call(root.querySelectorAll('[data-to]'));
+		var duration = Math.max(300, parseInt(config.duration, 10) || 1800);
+
+		if (!animate) {
+			return;
+		}
+
+		root.classList.add('is-armed');
+		if (config.countUp !== false) {
+			counters.forEach(function (counter) {
+				counter.textContent = format(parseFloat(counter.getAttribute('data-from')) || 0, parseInt(counter.getAttribute('data-decimals'), 10) || 0, counter.getAttribute('data-separator') || '');
+			});
+		}
+
+		var reveal = function () {
+			root.classList.add('is-visible');
+			if (config.countUp !== false) {
+				counters.forEach(function (counter, index) {
+					window.setTimeout(function () {
+						countUp(counter, duration);
+					}, 180 + index * 110);
+				});
+			}
+		};
+
+		var observer = new window.IntersectionObserver(function (entries) {
+			entries.forEach(function (entry) {
+				if (entry.isIntersecting) {
+					observer.disconnect();
+					reveal();
+				}
+			});
+		}, { threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
+
+		observer.observe(root.querySelector('.avix-impact__grid') || root);
+
+		if (isEditMode()) {
+			// Editor iframes can miss the first intersection after a re-render.
+			window.setTimeout(function () {
+				if (!root.classList.contains('is-visible')) {
+					observer.disconnect();
+					reveal();
+				}
+			}, 1500);
+		}
+	}
+
+	function mountAll(scope) {
+		Array.prototype.forEach.call((scope || document).querySelectorAll(ROOT_SELECTOR), mount);
+	}
+
+	window.AvixImpactNumbers = { mount: mount, mountAll: mountAll };
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', function () {
+			mountAll();
+		});
+	} else {
+		mountAll();
+	}
+
+	function hookElementor() {
+		if (!window.elementorFrontend || !window.elementorFrontend.hooks) {
+			return;
+		}
+		window.elementorFrontend.hooks.addAction('frontend/element_ready/avix-impact-numbers.default', function ($scope) {
+			var element = $scope && $scope[0] ? $scope[0] : $scope;
+			if (element && element.querySelectorAll) {
+				mountAll(element);
+			}
+		});
+	}
+
+	if (window.elementorFrontend && window.elementorFrontend.hooks) {
+		hookElementor();
+	} else {
+		window.addEventListener('elementor/frontend/init', hookElementor);
+	}
+})(window, document);
+</script>
+</body>
+</html>

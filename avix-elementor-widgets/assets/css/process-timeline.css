@@ -1,0 +1,621 @@
+/*!
+ * Avix Digital · Process Timeline
+ * A serpentine line draws itself as you scroll; the Avix pixel character
+ * walks it, lights up each step, and sits down at the end of the line.
+ * One set of step markup serves both layouts (container queries).
+ */
+
+.avix-pt {
+	--pt-bg: #050608;
+	--pt-ink: #ffffff;
+	--pt-muted: #a0a5aa;
+	--pt-line: rgba(255, 255, 255, 0.08);
+	--pt-accent: #fb6007;
+	--pt-grid: rgba(255, 255, 255, 0.022);
+	--pt-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--pt-font-body: "Inter", Arial, sans-serif;
+	--pt-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--pt-max: 1400px;
+	--pt-gutter: 5%;
+	--pt-buddy-w: clamp(26px, 2.3vw, 36px);
+
+	container: avix-pt / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(110px, 11vw, 150px) 0 clamp(80px, 8vw, 110px);
+	overflow: clip;
+	color: var(--pt-ink);
+	background-color: var(--pt-bg);
+	background-image:
+		linear-gradient(var(--pt-grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--pt-grid) 1px, transparent 1px);
+	background-position: center top;
+	background-size: 80px 80px;
+	font-family: var(--pt-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-pt--no-grid {
+	background-image: none;
+}
+
+.avix-pt *,
+.avix-pt *::before,
+.avix-pt *::after {
+	box-sizing: border-box;
+}
+
+/* Ambient corner glows */
+.avix-pt::before,
+.avix-pt::after {
+	position: absolute;
+	z-index: 0;
+	width: 800px;
+	height: 800px;
+	border-radius: 50%;
+	pointer-events: none;
+	content: "";
+}
+
+.avix-pt::before {
+	top: -200px;
+	right: -300px;
+	background: radial-gradient(circle, color-mix(in srgb, var(--pt-accent) 6%, transparent) 0%, transparent 65%);
+}
+
+.avix-pt::after {
+	bottom: 5%;
+	left: -300px;
+	background: radial-gradient(circle, color-mix(in srgb, var(--pt-accent) 4%, transparent) 0%, transparent 65%);
+}
+
+.avix-pt--no-glow::before,
+.avix-pt--no-glow::after {
+	display: none;
+}
+
+.avix-pt__frame {
+	position: relative;
+	z-index: 1;
+	width: min(calc(100% - var(--pt-gutter) * 2), var(--pt-max));
+	margin-inline: auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-pt__head {
+	margin-bottom: clamp(70px, 8cqi, 120px);
+}
+
+.avix-pt .avix-pt__tag {
+	display: inline-flex;
+	width: fit-content;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 24px;
+	padding: 6px 16px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 999px;
+	color: #e0e0e0;
+	background: rgba(255, 255, 255, 0.08);
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+	font-family: var(--pt-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1.4;
+	text-transform: uppercase;
+	transition: color 500ms ease, border-color 500ms ease, background-color 500ms ease, box-shadow 500ms ease;
+}
+
+.avix-pt__tag b {
+	color: var(--pt-accent);
+	font-weight: 600;
+}
+
+.avix-pt .avix-pt__title {
+	max-width: 1000px;
+	margin: 0;
+	padding: 0;
+	color: var(--pt-ink);
+	font-family: var(--pt-font-display);
+	font-size: clamp(34px, 4.6cqi, 64px);
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.15;
+}
+
+.avix-pt__word {
+	display: inline-block;
+	white-space: pre;
+}
+
+/* ---------- Timeline (wide layout) ---------- */
+
+.avix-pt__timeline {
+	position: relative;
+	aspect-ratio: var(--pt-ratio, 1400 / 2100);
+}
+
+.avix-pt__svg {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	pointer-events: none;
+}
+
+.avix-pt__track {
+	fill: none;
+	stroke: var(--pt-line);
+	stroke-width: 2;
+}
+
+.avix-pt__draw {
+	fill: none;
+	stroke: var(--pt-accent);
+	stroke-width: 4;
+	stroke-linecap: round;
+	opacity: 0;
+	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--pt-accent) 50%, transparent));
+}
+
+.avix-pt.is-live .avix-pt__draw {
+	opacity: 1;
+}
+
+/* Mobile rail (hidden on the wide layout) */
+.avix-pt__rail {
+	display: none;
+}
+
+.avix-pt .avix-pt__steps {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-pt .avix-pt__step {
+	position: absolute;
+	top: var(--pt-top);
+	z-index: 10;
+	width: 42%;
+	margin: 0;
+	padding: 20px;
+	border-radius: 16px;
+	background: radial-gradient(circle at center, var(--pt-bg) 0%, transparent 80%);
+	transform: translateY(-50%);
+	transition: transform 400ms var(--pt-ease), filter 400ms ease, opacity 600ms ease;
+}
+
+.avix-pt .avix-pt__step::before,
+.avix-pt .avix-pt__step::marker {
+	display: none;
+	content: none;
+}
+
+.avix-pt__step--left {
+	left: 6%;
+}
+
+.avix-pt__step--right {
+	right: 6%;
+}
+
+.avix-pt .avix-pt__step-title {
+	margin: 0 0 15px;
+	padding: 0;
+	color: var(--pt-ink);
+	font-family: var(--pt-font-display);
+	font-size: clamp(24px, 2.5cqi, 36px);
+	font-weight: 600;
+	letter-spacing: -0.015em;
+	line-height: 1.25;
+}
+
+.avix-pt .avix-pt__desc {
+	margin: 0;
+	color: var(--pt-muted);
+	font-family: var(--pt-font-body);
+	font-size: clamp(15px, 1.2cqi, 17px);
+	line-height: 1.7;
+}
+
+@media (hover: hover) {
+	.avix-pt .avix-pt__step:hover {
+		z-index: 20;
+		filter: drop-shadow(0 15px 30px color-mix(in srgb, var(--pt-accent) 10%, transparent));
+		transform: translateY(-52%) scale(1.02);
+	}
+}
+
+/* Steps light up as the character reaches them. */
+.avix-pt.is-live .avix-pt__step {
+	opacity: 0.4;
+}
+
+.avix-pt.is-live .avix-pt__step.is-reached {
+	opacity: 1;
+}
+
+.avix-pt.is-live .avix-pt__step.is-current .avix-pt__tag {
+	border-color: color-mix(in srgb, var(--pt-accent) 45%, transparent);
+	color: #ffffff;
+	background: color-mix(in srgb, var(--pt-accent) 14%, transparent);
+	box-shadow: 0 0 24px color-mix(in srgb, var(--pt-accent) 22%, transparent);
+}
+
+/* ---------- Reveal ---------- */
+
+.avix-pt.is-live [data-pt-reveal] {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+	transition-delay: var(--pt-delay, 0ms);
+}
+
+.avix-pt.is-live [data-pt-reveal].is-shown {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-pt.is-live .avix-pt__title.is-split {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-pt.is-live .avix-pt__title.is-split .avix-pt__word {
+	opacity: 0;
+	filter: blur(8px);
+	transform: translateY(20px) scale(0.95) rotate(2deg);
+	transition: transform 800ms var(--pt-ease), opacity 800ms ease, filter 800ms ease;
+	transition-delay: var(--pt-delay, 0ms);
+}
+
+.avix-pt.is-live .avix-pt__title.is-split.is-shown .avix-pt__word {
+	opacity: 1;
+	filter: blur(0);
+	transform: none;
+}
+
+/* ---------- The pixel character ---------- */
+
+.avix-pt__buddy {
+	--pt-buddy-h: calc(var(--pt-buddy-w) * 1.2);
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 30;
+	width: var(--pt-buddy-w);
+	height: var(--pt-buddy-h);
+	margin: calc(var(--pt-buddy-h) / -2) 0 0 calc(var(--pt-buddy-w) / -2);
+	visibility: hidden;
+	pointer-events: none;
+	will-change: transform;
+	filter: drop-shadow(0 0 12px color-mix(in srgb, var(--pt-accent) 80%, transparent));
+}
+
+.avix-pt.is-live .avix-pt__buddy {
+	visibility: visible;
+	animation: avix-pt-glow 2s ease-in-out infinite alternate;
+}
+
+.avix-pt__sprite {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform: scale(0);
+	transform-origin: 50% 100%;
+	transition: transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.avix-pt__buddy.is-on .avix-pt__sprite {
+	transform: scale(1);
+}
+
+/* Sitting: the seat (row 7 of 12) moves onto the line, legs hang past it. */
+.avix-pt__buddy.is-chill .avix-pt__sprite {
+	transform: translateY(calc(var(--pt-buddy-h) / -12)) scale(1);
+}
+
+.avix-pt__sprite svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--pt-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-pt__sprite rect {
+	transform-box: view-box;
+	transition: transform 240ms steps(2);
+}
+
+/* Walking: legs step while the line is drawing. */
+.avix-pt__buddy.is-walking .avix-pt__b-leg--l {
+	animation: avix-pt-step 0.32s steps(1) infinite;
+}
+
+.avix-pt__buddy.is-walking .avix-pt__b-leg--r {
+	animation: avix-pt-step 0.32s steps(1) -0.16s infinite;
+}
+
+/* Chilling: arms rest on the ledge, legs swing, head glances around. */
+.avix-pt__buddy.is-chill .avix-pt__b-arm {
+	transform: translate(0, 1px);
+}
+
+.avix-pt__buddy.is-chill .avix-pt__b-leg--l {
+	animation: avix-pt-step 1.5s steps(1) infinite;
+}
+
+.avix-pt__buddy.is-chill .avix-pt__b-leg--r {
+	animation: avix-pt-step 1.5s steps(1) -0.75s infinite;
+}
+
+.avix-pt__buddy.is-chill .avix-pt__b-head {
+	animation: avix-pt-look 7s steps(1) 1.2s infinite;
+}
+
+@keyframes avix-pt-step {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-pt-look {
+	0% { transform: translate(0, 0); }
+	60% { transform: translate(-1px, 0); }
+	72% { transform: translate(1px, 0); }
+	84% { transform: translate(0, 0); }
+}
+
+@keyframes avix-pt-glow {
+	from { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--pt-accent) 60%, transparent)); }
+	to { filter: drop-shadow(0 0 20px var(--pt-accent)); }
+}
+
+/* ---------- Speech bubble at the end of the line ---------- */
+
+.avix-pt .avix-pt__bubble {
+	position: absolute;
+	top: var(--pt-end-y);
+	left: var(--pt-end-x);
+	z-index: 25;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 11px 16px 11px 18px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 16px 16px 4px 16px;
+	color: var(--pt-ink);
+	background: rgba(20, 20, 22, 0.86);
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
+	box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+	font-family: var(--pt-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	white-space: nowrap;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(calc(-100% - 24px), calc(-100% - 14px)) scale(0.85);
+	transform-origin: 100% 100%;
+	transition: opacity 300ms ease, transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 250ms ease, background-color 250ms ease;
+}
+
+.avix-pt .avix-pt__bubble--right {
+	border-radius: 16px 16px 16px 4px;
+	transform: translate(24px, calc(-100% - 14px)) scale(0.85);
+	transform-origin: 0 100%;
+}
+
+.avix-pt.is-chill .avix-pt__bubble {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translate(calc(-100% - 24px), calc(-100% - 14px)) scale(1);
+	transition-delay: 550ms;
+}
+
+.avix-pt.is-chill .avix-pt__bubble--right {
+	transform: translate(24px, calc(-100% - 14px)) scale(1);
+}
+
+.avix-pt .avix-pt__bubble:hover,
+.avix-pt .avix-pt__bubble:focus-visible {
+	border-color: color-mix(in srgb, var(--pt-accent) 60%, transparent);
+	color: var(--pt-ink);
+	background: rgba(30, 30, 32, 0.95);
+	text-decoration: none;
+}
+
+.avix-pt .avix-pt__bubble:focus-visible {
+	outline: 2px solid var(--pt-accent);
+	outline-offset: 3px;
+}
+
+.avix-pt__bubble svg {
+	width: 15px;
+	height: 15px;
+	color: var(--pt-accent);
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 300ms var(--pt-ease);
+}
+
+.avix-pt .avix-pt__bubble:hover svg {
+	transform: translateX(3px);
+}
+
+/* ---------- Narrow widget: straight rail on the left ---------- */
+
+@container avix-pt (max-width: 900px) {
+	.avix-pt__frame {
+		/* Rail stops this far above the timeline bottom; the ledge sits there, clear of the text. */
+		--pt-rail-bottom: 56px;
+		--pt-ledge: 72px;
+	}
+
+	.avix-pt__head {
+		margin-bottom: 60px;
+	}
+
+	.avix-pt .avix-pt__title {
+		font-size: clamp(30px, 6cqi, 48px);
+		line-height: 1.2;
+	}
+
+	.avix-pt__timeline {
+		aspect-ratio: auto;
+		padding: 4px 0 calc(var(--pt-rail-bottom) + 76px) 34px;
+	}
+
+	.avix-pt__svg {
+		display: none;
+	}
+
+	.avix-pt__rail {
+		position: absolute;
+		top: 0;
+		bottom: var(--pt-rail-bottom);
+		left: 0;
+		display: block;
+		width: 2px;
+		border-radius: 2px;
+		background: var(--pt-line);
+		pointer-events: none;
+	}
+
+	.avix-pt__rail-draw {
+		position: absolute;
+		top: 0;
+		left: -1px;
+		display: block;
+		width: 4px;
+		height: 0;
+		border-radius: 2px;
+		background: var(--pt-accent);
+		box-shadow: 0 0 10px color-mix(in srgb, var(--pt-accent) 50%, transparent);
+	}
+
+	/* The short ledge the character sits on. */
+	.avix-pt__ledge {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		display: block;
+		width: var(--pt-ledge);
+		height: 2px;
+		border-radius: 2px;
+		background: var(--pt-line);
+	}
+
+	.avix-pt__ledge::after {
+		position: absolute;
+		inset: -1px 0;
+		display: block;
+		width: 0;
+		border-radius: 2px;
+		background: var(--pt-accent);
+		box-shadow: 0 0 10px color-mix(in srgb, var(--pt-accent) 50%, transparent);
+		content: "";
+		transition: width 450ms var(--pt-ease);
+	}
+
+	.avix-pt.is-chill .avix-pt__ledge::after {
+		width: 100%;
+	}
+
+	.avix-pt .avix-pt__step {
+		position: relative;
+		top: auto;
+		right: auto;
+		left: auto;
+		width: auto;
+		padding: 0 0 56px 12px;
+		background: none;
+		transform: none;
+	}
+
+	.avix-pt .avix-pt__step:last-child {
+		padding-bottom: 0;
+	}
+
+	.avix-pt .avix-pt__step-title {
+		font-size: clamp(22px, 4.6cqi, 28px);
+		margin-bottom: 12px;
+		line-height: 1.3;
+	}
+
+	.avix-pt .avix-pt__desc {
+		font-size: 15px;
+		line-height: 1.6;
+	}
+
+	@media (hover: hover) {
+		.avix-pt .avix-pt__step:hover {
+			transform: translateX(6px);
+		}
+	}
+
+	.avix-pt .avix-pt__bubble,
+	.avix-pt .avix-pt__bubble--right {
+		top: auto;
+		bottom: calc(var(--pt-rail-bottom) + 14px);
+		left: calc(var(--pt-ledge) + 22px);
+		border-radius: 16px 16px 16px 4px;
+		transform: translateY(0) scale(0.85);
+		transform-origin: 0 100%;
+	}
+
+	.avix-pt.is-chill .avix-pt__bubble,
+	.avix-pt.is-chill .avix-pt__bubble--right {
+		transform: translateY(0) scale(1);
+	}
+}
+
+@container avix-pt (max-width: 600px) {
+	.avix-pt .avix-pt__title {
+		font-size: clamp(28px, 8.6cqi, 34px);
+		letter-spacing: -0.02em;
+	}
+
+	.avix-pt .avix-pt__tag {
+		margin-bottom: 18px;
+		padding: 5px 13px;
+		font-size: 11px;
+	}
+
+	.avix-pt .avix-pt__step {
+		padding-bottom: 48px;
+		padding-left: 8px;
+	}
+
+	.avix-pt .avix-pt__bubble {
+		padding: 10px 14px;
+		font-size: 13px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-pt *,
+	.avix-pt *::before,
+	.avix-pt *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-pt.is-live .avix-pt__title.is-split .avix-pt__word {
+		filter: none;
+	}
+}

@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Local tooling (Claude Code preview config with machine-specific paths)
+.claude/
+
+# Dependencies
+node_modules/

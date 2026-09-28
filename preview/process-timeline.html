@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avix Digital · Process Timeline (preview)</title>
+<!-- Standalone preview of the Elementor widget output. The live site already loads these fonts. -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; background: #f5f3ef; }
+.demo-spacer { display: grid; min-height: 70vh; place-items: center; color: #1a1a1a; font: 600 15px Inter, sans-serif; }
+/*!
+ * Avix Digital · Process Timeline
+ * A serpentine line draws itself as you scroll; the Avix pixel character
+ * walks it, lights up each step, and sits down at the end of the line.
+ * One set of step markup serves both layouts (container queries).
+ */
+
+.avix-pt {
+	--pt-bg: #050608;
+	--pt-ink: #ffffff;
+	--pt-muted: #a0a5aa;
+	--pt-line: rgba(255, 255, 255, 0.08);
+	--pt-accent: #fb6007;
+	--pt-grid: rgba(255, 255, 255, 0.022);
+	--pt-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--pt-font-body: "Inter", Arial, sans-serif;
+	--pt-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--pt-max: 1400px;
+	--pt-gutter: 5%;
+	--pt-buddy-w: clamp(26px, 2.3vw, 36px);
+
+	container: avix-pt / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(110px, 11vw, 150px) 0 clamp(80px, 8vw, 110px);
+	overflow: clip;
+	color: var(--pt-ink);
+	background-color: var(--pt-bg);
+	background-image:
+		linear-gradient(var(--pt-grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--pt-grid) 1px, transparent 1px);
+	background-position: center top;
+	background-size: 80px 80px;
+	font-family: var(--pt-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-pt--no-grid {
+	background-image: none;
+}
+
+.avix-pt *,
+.avix-pt *::before,
+.avix-pt *::after {
+	box-sizing: border-box;
+}
+
+/* Ambient corner glows */
+.avix-pt::before,
+.avix-pt::after {
+	position: absolute;
+	z-index: 0;
+	width: 800px;
+	height: 800px;
+	border-radius: 50%;
+	pointer-events: none;
+	content: "";
+}
+
+.avix-pt::before {
+	top: -200px;
+	right: -300px;
+	background: radial-gradient(circle, color-mix(in srgb, var(--pt-accent) 6%, transparent) 0%, transparent 65%);
+}
+
+.avix-pt::after {
+	bottom: 5%;
+	left: -300px;
+	background: radial-gradient(circle, color-mix(in srgb, var(--pt-accent) 4%, transparent) 0%, transparent 65%);
+}
+
+.avix-pt--no-glow::before,
+.avix-pt--no-glow::after {
+	display: none;
+}
+
+.avix-pt__frame {
+	position: relative;
+	z-index: 1;
+	width: min(calc(100% - var(--pt-gutter) * 2), var(--pt-max));
+	margin-inline: auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-pt__head {
+	margin-bottom: clamp(70px, 8cqi, 120px);
+}
+
+.avix-pt .avix-pt__tag {
+	display: inline-flex;
+	width: fit-content;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 24px;
+	padding: 6px 16px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 999px;
+	color: #e0e0e0;
+	background: rgba(255, 255, 255, 0.08);
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+	font-family: var(--pt-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1.4;
+	text-transform: uppercase;
+	transition: color 500ms ease, border-color 500ms ease, background-color 500ms ease, box-shadow 500ms ease;
+}
+
+.avix-pt__tag b {
+	color: var(--pt-accent);
+	font-weight: 600;
+}
+
+.avix-pt .avix-pt__title {
+	max-width: 1000px;
+	margin: 0;
+	padding: 0;
+	color: var(--pt-ink);
+	font-family: var(--pt-font-display);
+	font-size: clamp(34px, 4.6cqi, 64px);
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.15;
+}
+
+.avix-pt__word {
+	display: inline-block;
+	white-space: pre;
+}
+
+/* ---------- Timeline (wide layout) ---------- */
+
+.avix-pt__timeline {
+	position: relative;
+	aspect-ratio: var(--pt-ratio, 1400 / 2100);
+}
+
+.avix-pt__svg {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	pointer-events: none;
+}
+
+.avix-pt__track {
+	fill: none;
+	stroke: var(--pt-line);
+	stroke-width: 2;
+}
+
+.avix-pt__draw {
+	fill: none;
+	stroke: var(--pt-accent);
+	stroke-width: 4;
+	stroke-linecap: round;
+	opacity: 0;
+	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--pt-accent) 50%, transparent));
+}
+
+.avix-pt.is-live .avix-pt__draw {
+	opacity: 1;
+}
+
+/* Mobile rail (hidden on the wide layout) */
+.avix-pt__rail {
+	display: none;
+}
+
+.avix-pt .avix-pt__steps {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-pt .avix-pt__step {
+	position: absolute;
+	top: var(--pt-top);
+	z-index: 10;
+	width: 42%;
+	margin: 0;
+	padding: 20px;
+	border-radius: 16px;
+	background: radial-gradient(circle at center, var(--pt-bg) 0%, transparent 80%);
+	transform: translateY(-50%);
+	transition: transform 400ms var(--pt-ease), filter 400ms ease, opacity 600ms ease;
+}
+
+.avix-pt .avix-pt__step::before,
+.avix-pt .avix-pt__step::marker {
+	display: none;
+	content: none;
+}
+
+.avix-pt__step--left {
+	left: 6%;
+}
+
+.avix-pt__step--right {
+	right: 6%;
+}
+
+.avix-pt .avix-pt__step-title {
+	margin: 0 0 15px;
+	padding: 0;
+	color: var(--pt-ink);
+	font-family: var(--pt-font-display);
+	font-size: clamp(24px, 2.5cqi, 36px);
+	font-weight: 600;
+	letter-spacing: -0.015em;
+	line-height: 1.25;
+}
+
+.avix-pt .avix-pt__desc {
+	margin: 0;
+	color: var(--pt-muted);
+	font-family: var(--pt-font-body);
+	font-size: clamp(15px, 1.2cqi, 17px);
+	line-height: 1.7;
+}
+
+@media (hover: hover) {
+	.avix-pt .avix-pt__step:hover {
+		z-index: 20;
+		filter: drop-shadow(0 15px 30px color-mix(in srgb, var(--pt-accent) 10%, transparent));
+		transform: translateY(-52%) scale(1.02);
+	}
+}
+
+/* Steps light up as the character reaches them. */
+.avix-pt.is-live .avix-pt__step {
+	opacity: 0.4;
+}
+
+.avix-pt.is-live .avix-pt__step.is-reached {
+	opacity: 1;
+}
+
+.avix-pt.is-live .avix-pt__step.is-current .avix-pt__tag {
+	border-color: color-mix(in srgb, var(--pt-accent) 45%, transparent);
+	color: #ffffff;
+	background: color-mix(in srgb, var(--pt-accent) 14%, transparent);
+	box-shadow: 0 0 24px color-mix(in srgb, var(--pt-accent) 22%, transparent);
+}
+
+/* ---------- Reveal ---------- */
+
+.avix-pt.is-live [data-pt-reveal] {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+	transition-delay: var(--pt-delay, 0ms);
+}
+
+.avix-pt.is-live [data-pt-reveal].is-shown {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-pt.is-live .avix-pt__title.is-split {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-pt.is-live .avix-pt__title.is-split .avix-pt__word {
+	opacity: 0;
+	filter: blur(8px);
+	transform: translateY(20px) scale(0.95) rotate(2deg);
+	transition: transform 800ms var(--pt-ease), opacity 800ms ease, filter 800ms ease;
+	transition-delay: var(--pt-delay, 0ms);
+}
+
+.avix-pt.is-live .avix-pt__title.is-split.is-shown .avix-pt__word {
+	opacity: 1;
+	filter: blur(0);
+	transform: none;
+}
+
+/* ---------- The pixel character ---------- */
+
+.avix-pt__buddy {
+	--pt-buddy-h: calc(var(--pt-buddy-w) * 1.2);
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 30;
+	width: var(--pt-buddy-w);
+	height: var(--pt-buddy-h);
+	margin: calc(var(--pt-buddy-h) / -2) 0 0 calc(var(--pt-buddy-w) / -2);
+	visibility: hidden;
+	pointer-events: none;
+	will-change: transform;
+	filter: drop-shadow(0 0 12px color-mix(in srgb, var(--pt-accent) 80%, transparent));
+}
+
+.avix-pt.is-live .avix-pt__buddy {
+	visibility: visible;
+	animation: avix-pt-glow 2s ease-in-out infinite alternate;
+}
+
+.avix-pt__sprite {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform: scale(0);
+	transform-origin: 50% 100%;
+	transition: transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.avix-pt__buddy.is-on .avix-pt__sprite {
+	transform: scale(1);
+}
+
+/* Sitting: the seat (row 7 of 12) moves onto the line, legs hang past it. */
+.avix-pt__buddy.is-chill .avix-pt__sprite {
+	transform: translateY(calc(var(--pt-buddy-h) / -12)) scale(1);
+}
+
+.avix-pt__sprite svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--pt-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-pt__sprite rect {
+	transform-box: view-box;
+	transition: transform 240ms steps(2);
+}
+
+/* Walking: legs step while the line is drawing. */
+.avix-pt__buddy.is-walking .avix-pt__b-leg--l {
+	animation: avix-pt-step 0.32s steps(1) infinite;
+}
+
+.avix-pt__buddy.is-walking .avix-pt__b-leg--r {
+	animation: avix-pt-step 0.32s steps(1) -0.16s infinite;
+}
+
+/* Chilling: arms rest on the ledge, legs swing, head glances around. */
+.avix-pt__buddy.is-chill .avix-pt__b-arm {
+	transform: translate(0, 1px);
+}
+
+.avix-pt__buddy.is-chill .avix-pt__b-leg--l {
+	animation: avix-pt-step 1.5s steps(1) infinite;
+}
+
+.avix-pt__buddy.is-chill .avix-pt__b-leg--r {
+	animation: avix-pt-step 1.5s steps(1) -0.75s infinite;
+}
+
+.avix-pt__buddy.is-chill .avix-pt__b-head {
+	animation: avix-pt-look 7s steps(1) 1.2s infinite;
+}
+
+@keyframes avix-pt-step {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-pt-look {
+	0% { transform: translate(0, 0); }
+	60% { transform: translate(-1px, 0); }
+	72% { transform: translate(1px, 0); }
+	84% { transform: translate(0, 0); }
+}
+
+@keyframes avix-pt-glow {
+	from { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--pt-accent) 60%, transparent)); }
+	to { filter: drop-shadow(0 0 20px var(--pt-accent)); }
+}
+
+/* ---------- Speech bubble at the end of the line ---------- */
+
+.avix-pt .avix-pt__bubble {
+	position: absolute;
+	top: var(--pt-end-y);
+	left: var(--pt-end-x);
+	z-index: 25;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 11px 16px 11px 18px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 16px 16px 4px 16px;
+	color: var(--pt-ink);
+	background: rgba(20, 20, 22, 0.86);
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
+	box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+	font-family: var(--pt-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	white-space: nowrap;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(calc(-100% - 24px), calc(-100% - 14px)) scale(0.85);
+	transform-origin: 100% 100%;
+	transition: opacity 300ms ease, transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 250ms ease, background-color 250ms ease;
+}
+
+.avix-pt .avix-pt__bubble--right {
+	border-radius: 16px 16px 16px 4px;
+	transform: translate(24px, calc(-100% - 14px)) scale(0.85);
+	transform-origin: 0 100%;
+}
+
+.avix-pt.is-chill .avix-pt__bubble {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translate(calc(-100% - 24px), calc(-100% - 14px)) scale(1);
+	transition-delay: 550ms;
+}
+
+.avix-pt.is-chill .avix-pt__bubble--right {
+	transform: translate(24px, calc(-100% - 14px)) scale(1);
+}
+
+.avix-pt .avix-pt__bubble:hover,
+.avix-pt .avix-pt__bubble:focus-visible {
+	border-color: color-mix(in srgb, var(--pt-accent) 60%, transparent);
+	color: var(--pt-ink);
+	background: rgba(30, 30, 32, 0.95);
+	text-decoration: none;
+}
+
+.avix-pt .avix-pt__bubble:focus-visible {
+	outline: 2px solid var(--pt-accent);
+	outline-offset: 3px;
+}
+
+.avix-pt__bubble svg {
+	width: 15px;
+	height: 15px;
+	color: var(--pt-accent);
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 300ms var(--pt-ease);
+}
+
+.avix-pt .avix-pt__bubble:hover svg {
+	transform: translateX(3px);
+}
+
+/* ---------- Narrow widget: straight rail on the left ---------- */
+
+@container avix-pt (max-width: 900px) {
+	.avix-pt__frame {
+		/* Rail stops this far above the timeline bottom; the ledge sits there, clear of the text. */
+		--pt-rail-bottom: 56px;
+		--pt-ledge: 72px;
+	}
+
+	.avix-pt__head {
+		margin-bottom: 60px;
+	}
+
+	.avix-pt .avix-pt__title {
+		font-size: clamp(30px, 6cqi, 48px);
+		line-height: 1.2;
+	}
+
+	.avix-pt__timeline {
+		aspect-ratio: auto;
+		padding: 4px 0 calc(var(--pt-rail-bottom) + 76px) 34px;
+	}
+
+	.avix-pt__svg {
+		display: none;
+	}
+
+	.avix-pt__rail {
+		position: absolute;
+		top: 0;
+		bottom: var(--pt-rail-bottom);
+		left: 0;
+		display: block;
+		width: 2px;
+		border-radius: 2px;
+		background: var(--pt-line);
+		pointer-events: none;
+	}
+
+	.avix-pt__rail-draw {
+		position: absolute;
+		top: 0;
+		left: -1px;
+		display: block;
+		width: 4px;
+		height: 0;
+		border-radius: 2px;
+		background: var(--pt-accent);
+		box-shadow: 0 0 10px color-mix(in srgb, var(--pt-accent) 50%, transparent);
+	}
+
+	/* The short ledge the character sits on. */
+	.avix-pt__ledge {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		display: block;
+		width: var(--pt-ledge);
+		height: 2px;
+		border-radius: 2px;
+		background: var(--pt-line);
+	}
+
+	.avix-pt__ledge::after {
+		position: absolute;
+		inset: -1px 0;
+		display: block;
+		width: 0;
+		border-radius: 2px;
+		background: var(--pt-accent);
+		box-shadow: 0 0 10px color-mix(in srgb, var(--pt-accent) 50%, transparent);
+		content: "";
+		transition: width 450ms var(--pt-ease);
+	}
+
+	.avix-pt.is-chill .avix-pt__ledge::after {
+		width: 100%;
+	}
+
+	.avix-pt .avix-pt__step {
+		position: relative;
+		top: auto;
+		right: auto;
+		left: auto;
+		width: auto;
+		padding: 0 0 56px 12px;
+		background: none;
+		transform: none;
+	}
+
+	.avix-pt .avix-pt__step:last-child {
+		padding-bottom: 0;
+	}
+
+	.avix-pt .avix-pt__step-title {
+		font-size: clamp(22px, 4.6cqi, 28px);
+		margin-bottom: 12px;
+		line-height: 1.3;
+	}
+
+	.avix-pt .avix-pt__desc {
+		font-size: 15px;
+		line-height: 1.6;
+	}
+
+	@media (hover: hover) {
+		.avix-pt .avix-pt__step:hover {
+			transform: translateX(6px);
+		}
+	}
+
+	.avix-pt .avix-pt__bubble,
+	.avix-pt .avix-pt__bubble--right {
+		top: auto;
+		bottom: calc(var(--pt-rail-bottom) + 14px);
+		left: calc(var(--pt-ledge) + 22px);
+		border-radius: 16px 16px 16px 4px;
+		transform: translateY(0) scale(0.85);
+		transform-origin: 0 100%;
+	}
+
+	.avix-pt.is-chill .avix-pt__bubble,
+	.avix-pt.is-chill .avix-pt__bubble--right {
+		transform: translateY(0) scale(1);
+	}
+}
+
+@container avix-pt (max-width: 600px) {
+	.avix-pt .avix-pt__title {
+		font-size: clamp(28px, 8.6cqi, 34px);
+		letter-spacing: -0.02em;
+	}
+
+	.avix-pt .avix-pt__tag {
+		margin-bottom: 18px;
+		padding: 5px 13px;
+		font-size: 11px;
+	}
+
+	.avix-pt .avix-pt__step {
+		padding-bottom: 48px;
+		padding-left: 8px;
+	}
+
+	.avix-pt .avix-pt__bubble {
+		padding: 10px 14px;
+		font-size: 13px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-pt *,
+	.avix-pt *::before,
+	.avix-pt *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-pt.is-live .avix-pt__title.is-split .avix-pt__word {
+		filter: none;
+	}
+}
+
+</style>
+</head>
+<body>
+<div class="demo-spacer">Scroll down ↓</div>
+<section class="avix-pt" data-avix-pt="{&quot;w&quot;:1400,&quot;h&quot;:2110,&quot;bands&quot;:[50,550,1050,1550]}" aria-labelledby="avix-pt-title-proc001">
+			<div class="avix-pt__frame">
+				<header class="avix-pt__head">
+											<p class="avix-pt__tag" data-pt-reveal><b>/</b> Our Methodology</p>
+																<h2 class="avix-pt__title" id="avix-pt-title-proc001" data-pt-reveal data-pt-words>How we transform bold ideas into high-converting e-commerce and web experiences.</h2>
+									</header>
+				<div class="avix-pt__timeline" data-pt-timeline style="--pt-ratio: 1400 / 2110;">
+					<svg class="avix-pt__svg" viewBox="0 0 1400 2110" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+						<path class="avix-pt__track" d="M 0 50 L 1200 50 Q 1350 50, 1350 200 L 1350 400 Q 1350 550, 1200 550 L 200 550 Q 50 550, 50 700 L 50 900 Q 50 1050, 200 1050 L 1200 1050 Q 1350 1050, 1350 1200 L 1350 1400 Q 1350 1550, 1200 1550 L 200 1550 Q 50 1550, 50 1700 L 50 1900 Q 50 2050, 200 2050 L 1000 2050"/>
+						<path class="avix-pt__draw" d="M 0 50 L 1200 50 Q 1350 50, 1350 200 L 1350 400 Q 1350 550, 1200 550 L 200 550 Q 50 550, 50 700 L 50 900 Q 50 1050, 200 1050 L 1200 1050 Q 1350 1050, 1350 1200 L 1350 1400 Q 1350 1550, 1200 1550 L 200 1550 Q 50 1550, 50 1700 L 50 1900 Q 50 2050, 200 2050 L 1000 2050" data-pt-draw/>
+					</svg>
+					<div class="avix-pt__rail" data-pt-rail aria-hidden="true">
+						<span class="avix-pt__rail-draw" data-pt-rail-draw></span>
+						<span class="avix-pt__ledge"></span>
+					</div>
+					<ol class="avix-pt__steps">
+													<li class="avix-pt__step avix-pt__step--left" data-pt-step style="--pt-top: 14.218%;">
+																	<p class="avix-pt__tag" data-pt-reveal><b>01 /</b> Strategy</p>
+																									<h3 class="avix-pt__step-title" data-pt-reveal style="--pt-delay: 100ms;">Digital Audit &amp; Strategic Planning</h3>
+																									<p class="avix-pt__desc" data-pt-reveal style="--pt-delay: 200ms;">We begin by analyzing your brand, target audience, and current digital footprint. Our data-driven approach uncovers critical growth opportunities, laying a scalable foundation for your custom Shopify Plus or Webflow project.</p>
+															</li>
+													<li class="avix-pt__step avix-pt__step--right" data-pt-step style="--pt-top: 37.915%;">
+																	<p class="avix-pt__tag" data-pt-reveal><b>02 /</b> UI/UX</p>
+																									<h3 class="avix-pt__step-title" data-pt-reveal style="--pt-delay: 100ms;">Conversion-Focused UI/UX Design</h3>
+																									<p class="avix-pt__desc" data-pt-reveal style="--pt-delay: 200ms;">We craft pixel-perfect, bespoke interfaces designed to engage users and maximize conversions. Every wireframe and prototype is tailored to reflect your premium brand identity while ensuring a frictionless customer journey.</p>
+															</li>
+													<li class="avix-pt__step avix-pt__step--left" data-pt-step style="--pt-top: 61.611%;">
+																	<p class="avix-pt__tag" data-pt-reveal><b>03 /</b> Development</p>
+																									<h3 class="avix-pt__step-title" data-pt-reveal style="--pt-delay: 100ms;">Advanced Web &amp; Shopify Development</h3>
+																									<p class="avix-pt__desc" data-pt-reveal style="--pt-delay: 200ms;">Our engineers bring your design to life using clean, scalable code. From bespoke Shopify Liquid architecture to advanced Webflow and modern JS frameworks, we build lightning-fast, robust digital platforms.</p>
+															</li>
+													<li class="avix-pt__step avix-pt__step--right" data-pt-step style="--pt-top: 85.308%;">
+																	<p class="avix-pt__tag" data-pt-reveal><b>04 /</b> Growth</p>
+																									<h3 class="avix-pt__step-title" data-pt-reveal style="--pt-delay: 100ms;">Seamless Launch &amp; Measurable ROI</h3>
+																									<p class="avix-pt__desc" data-pt-reveal style="--pt-delay: 200ms;">Before going live, we conduct rigorous QA testing to ensure peak performance across all devices. Post-launch, we provide ongoing support and technical optimization to drive sustainable e-commerce scaling and lasting business impact.</p>
+															</li>
+											</ol>
+											<div class="avix-pt__buddy" data-pt-buddy aria-hidden="true">
+							<span class="avix-pt__sprite">
+								<svg viewBox="0 0 10 12" focusable="false">
+									<rect class="avix-pt__b-leg avix-pt__b-leg--l" x="2" y="7" width="2" height="5"/>
+									<rect class="avix-pt__b-leg avix-pt__b-leg--r" x="6" y="7" width="2" height="5"/>
+									<rect class="avix-pt__b-body" x="2" y="3" width="6" height="4"/>
+									<rect class="avix-pt__b-head" x="3" y="0" width="4" height="3"/>
+									<rect class="avix-pt__b-arm avix-pt__b-arm--l" x="0" y="3" width="2" height="3"/>
+									<rect class="avix-pt__b-arm avix-pt__b-arm--r" x="8" y="3" width="2" height="3"/>
+								</svg>
+							</span>
+						</div>
+													<a href="https://avixdigital.com/contact/" class="avix-pt__bubble" style="--pt-end-x:71.429%;--pt-end-y:97.156%;">
+								Let’s start yours								<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+							</a>
+															</div>
+			</div>
+		</section>
+<div class="demo-spacer">Next section</div>
+<script>
+/*!
+ * Avix Digital · Process Timeline
+ * Scroll draws the line; the pixel character walks it, lights up each step
+ * and sits down at the end of the line instead of disappearing.
+ */
+(function (window, document) {
+	'use strict';
+
+	var ROOT_SELECTOR = '[data-avix-pt]';
+	var reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+
+	function clamp(value, min, max) {
+		return value < min ? min : value > max ? max : value;
+	}
+
+	function isEditMode() {
+		return !!(window.elementorFrontend && typeof window.elementorFrontend.isEditMode === 'function' && window.elementorFrontend.isEditMode());
+	}
+
+	function Timeline(root) {
+		var config = {};
+		try {
+			config = JSON.parse(root.getAttribute('data-avix-pt') || '{}') || {};
+		} catch (error) {
+			config = {};
+		}
+
+		this.root = root;
+		this.alive = true;
+		this.timeline = root.querySelector('[data-pt-timeline]');
+		this.path = root.querySelector('[data-pt-draw]');
+		this.rail = root.querySelector('[data-pt-rail]');
+		this.railDraw = root.querySelector('[data-pt-rail-draw]');
+		this.buddy = root.querySelector('[data-pt-buddy]');
+		this.steps = Array.prototype.slice.call(root.querySelectorAll('[data-pt-step]'));
+		this.viewW = parseFloat(config.w) || 1400;
+		this.viewH = parseFloat(config.h) || 2100;
+		this.bandTops = (config.bands || []).map(parseFloat);
+		this.progress = 0;
+		this.target = 0;
+		this.frame = 0;
+		this.lastTime = 0;
+		this.activeUntil = 0;
+		this.walkUntil = 0;
+		this.state = '';
+
+		if (!this.timeline || !this.steps.length) {
+			this.alive = false;
+			return;
+		}
+
+		this.onScroll = this.wake.bind(this);
+		this.onResize = this.measure.bind(this);
+		this.tick = this.tick.bind(this);
+		this.init();
+	}
+
+	Timeline.prototype.init = function () {
+		var self = this;
+		this.root.classList.add('is-live');
+		this.splitTitle();
+		this.observeReveals();
+
+		window.addEventListener('scroll', this.onScroll, { passive: true });
+		window.addEventListener('resize', this.onResize, { passive: true });
+		if (window.ResizeObserver) {
+			this.resizeObserver = new window.ResizeObserver(function () {
+				self.measure();
+			});
+			this.resizeObserver.observe(this.timeline);
+		}
+		this.measure();
+	};
+
+	// Word-by-word title reveal. The text stays in the HTML for SEO / no-JS.
+	Timeline.prototype.splitTitle = function () {
+		var title = this.root.querySelector('[data-pt-words]');
+		if (!title || title.getAttribute('data-pt-split')) {
+			return;
+		}
+		var words = title.textContent.trim().split(/\s+/);
+		title.setAttribute('aria-label', title.textContent.trim().replace(/\s+/g, ' '));
+		title.textContent = '';
+		words.forEach(function (word, index) {
+			var span = document.createElement('span');
+			span.className = 'avix-pt__word';
+			span.setAttribute('aria-hidden', 'true');
+			span.style.setProperty('--pt-delay', index * 40 + 'ms');
+			span.textContent = word + (index < words.length - 1 ? ' ' : '');
+			title.appendChild(span);
+		});
+		title.setAttribute('data-pt-split', '1');
+		title.classList.add('is-split');
+	};
+
+	Timeline.prototype.observeReveals = function () {
+		var items = Array.prototype.slice.call(this.root.querySelectorAll('[data-pt-reveal]'));
+		if (!('IntersectionObserver' in window) || reduceMotion.matches || isEditMode()) {
+			items.forEach(function (item) {
+				item.classList.add('is-shown');
+			});
+			return;
+		}
+		this.revealObserver = new window.IntersectionObserver(function (entries, observer) {
+			entries.forEach(function (entry) {
+				if (entry.isIntersecting) {
+					entry.target.classList.add('is-shown');
+					observer.unobserve(entry.target);
+				}
+			});
+		}, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+		items.forEach(function (item) {
+			this.revealObserver.observe(item);
+		}, this);
+	};
+
+	Timeline.prototype.measure = function () {
+		if (!this.alive) {
+			return;
+		}
+		var styles = window.getComputedStyle(this.timeline);
+		this.mode = styles.getPropertyValue('aspect-ratio') === 'auto' || !this.path || this.path.getBoundingClientRect().width === 0 ? 'rail' : 'path';
+
+		if (this.mode === 'path') {
+			this.length = this.path.getTotalLength();
+			this.path.style.strokeDasharray = this.length + ' ' + this.length;
+			// Length at which the line reaches each step's band.
+			var self = this;
+			this.stepLengths = this.bandTops.map(function (top) {
+				return self.lengthAtY(top);
+			});
+		} else if (this.rail) {
+			this.railHeight = this.rail.offsetHeight;
+			this.stepOffsets = this.steps.map(function (step) {
+				return step.offsetTop;
+			});
+		}
+		this.wake();
+	};
+
+	// First length whose point reaches y (coarse search is plenty here).
+	Timeline.prototype.lengthAtY = function (y) {
+		var steps = 400;
+		for (var i = 0; i <= steps; i++) {
+			var length = this.length * i / steps;
+			if (this.path.getPointAtLength(length).y >= y - 1) {
+				return length;
+			}
+		}
+		return this.length;
+	};
+
+	Timeline.prototype.wake = function () {
+		if (!this.alive) {
+			return;
+		}
+		this.activeUntil = window.performance.now() + 600;
+		if (!this.frame) {
+			this.lastTime = 0;
+			this.frame = window.requestAnimationFrame(this.tick);
+		}
+	};
+
+	Timeline.prototype.tick = function (time) {
+		this.frame = 0;
+		if (!this.root.isConnected) {
+			this.destroy();
+			return;
+		}
+
+		var dt = this.lastTime ? Math.min(0.1, (time - this.lastTime) / 1000) : 1 / 60;
+		this.lastTime = time;
+
+		var rect = this.timeline.getBoundingClientRect();
+		var vh = window.innerHeight;
+		var anchor = vh * 0.58;
+		var span = this.mode === 'path' ? rect.height * 0.94 : (this.railHeight || rect.height);
+		this.target = clamp((anchor - rect.top) / Math.max(1, span), 0, 1);
+
+		var previous = this.progress;
+		if (reduceMotion.matches) {
+			this.progress = this.target;
+		} else {
+			this.progress += (this.target - this.progress) * (1 - Math.exp(-dt / 0.12));
+			if (Math.abs(this.target - this.progress) < 0.0004) {
+				this.progress = this.target;
+			}
+		}
+
+		var p = this.progress;
+		var moving = Math.abs(p - previous) > 0.00035;
+		var now = time;
+		if (moving) {
+			this.walkUntil = now + 160;
+		}
+
+		var chill = this.target >= 0.999 && p >= 0.996;
+		var on = p > 0.004;
+
+		if (this.mode === 'path') {
+			this.renderPath(rect, p);
+		} else {
+			this.renderRail(p, chill, now);
+		}
+
+		this.setState(on, chill, !chill && now < this.walkUntil);
+
+		if (this.target !== this.progress || now < this.activeUntil || now < this.walkUntil || now < (this.glideUntil || 0)) {
+			this.frame = window.requestAnimationFrame(this.tick);
+		}
+	};
+
+	Timeline.prototype.renderPath = function (rect, p) {
+		var length = this.length * p;
+		var point = this.path.getPointAtLength(length);
+		var scaleX = rect.width / this.viewW;
+		var scaleY = rect.height / this.viewH;
+
+		this.path.style.strokeDashoffset = String(this.length - length);
+		if (this.buddy) {
+			this.buddy.style.transform = 'translate3d(' + (point.x * scaleX).toFixed(1) + 'px,' + (point.y * scaleY).toFixed(1) + 'px,0)';
+		}
+
+		var current = -1;
+		for (var i = 0; i < this.steps.length; i++) {
+			var reached = p > 0.004 && length >= (this.stepLengths[i] || 0) - 1;
+			this.steps[i].classList.toggle('is-reached', reached);
+			if (reached) {
+				current = i;
+			}
+		}
+		this.markCurrent(current);
+	};
+
+	Timeline.prototype.renderRail = function (p, chill, now) {
+		var height = this.railHeight || 0;
+		var y = height * p;
+		if (this.railDraw) {
+			this.railDraw.style.height = (p * 100).toFixed(2) + '%';
+		}
+		if (this.buddy) {
+			// At the end it steps onto the ledge and sits near its edge.
+			var ledge = parseFloat(window.getComputedStyle(this.rail.parentNode).getPropertyValue('--pt-ledge')) || 72;
+			var x = chill ? ledge - 12 : 1;
+			if (chill !== this.railChill) {
+				this.railChill = chill;
+				this.glideUntil = now + 480;
+			}
+			this.buddy.style.transition = now < (this.glideUntil || 0) ? 'transform 450ms cubic-bezier(0.22, 1, 0.36, 1)' : '';
+			this.buddy.style.transform = 'translate3d(' + x + 'px,' + y.toFixed(1) + 'px,0)';
+		}
+
+		var current = -1;
+		for (var i = 0; i < this.steps.length; i++) {
+			var reached = p > 0.004 && y + 24 >= (this.stepOffsets[i] || 0);
+			this.steps[i].classList.toggle('is-reached', reached);
+			if (reached) {
+				current = i;
+			}
+		}
+		this.markCurrent(current);
+	};
+
+	Timeline.prototype.markCurrent = function (current) {
+		for (var i = 0; i < this.steps.length; i++) {
+			this.steps[i].classList.toggle('is-current', i === current);
+		}
+	};
+
+	Timeline.prototype.setState = function (on, chill, walking) {
+		var state = (on ? 'on' : '') + (chill ? ' chill' : '') + (walking ? ' walk' : '');
+		if (state === this.state) {
+			return;
+		}
+		this.state = state;
+		if (this.buddy) {
+			this.buddy.classList.toggle('is-on', on);
+			this.buddy.classList.toggle('is-chill', chill);
+			this.buddy.classList.toggle('is-walking', walking);
+		}
+		this.root.classList.toggle('is-chill', chill);
+	};
+
+	Timeline.prototype.destroy = function () {
+		if (!this.alive) {
+			return;
+		}
+		this.alive = false;
+		window.removeEventListener('scroll', this.onScroll);
+		window.removeEventListener('resize', this.onResize);
+		if (this.resizeObserver) {
+			this.resizeObserver.disconnect();
+		}
+		if (this.revealObserver) {
+			this.revealObserver.disconnect();
+		}
+		if (this.frame) {
+			window.cancelAnimationFrame(this.frame);
+		}
+	};
+
+	function mount(root) {
+		if (!root || (root.__avixPt && root.__avixPt.alive)) {
+			return;
+		}
+		var timeline = new Timeline(root);
+		if (timeline.alive) {
+			root.__avixPt = timeline;
+		}
+	}
+
+	function mountAll(scope) {
+		Array.prototype.forEach.call((scope || document).querySelectorAll(ROOT_SELECTOR), mount);
+	}
+
+	window.AvixProcessTimeline = { mount: mount, mountAll: mountAll };
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', function () {
+			mountAll();
+		});
+	} else {
+		mountAll();
+	}
+
+	function hookElementor() {
+		if (!window.elementorFrontend || !window.elementorFrontend.hooks) {
+			return;
+		}
+		window.elementorFrontend.hooks.addAction('frontend/element_ready/avix-process-timeline.default', function ($scope) {
+			var element = $scope && $scope[0] ? $scope[0] : $scope;
+			if (element && element.querySelectorAll) {
+				mountAll(element);
+			}
+		});
+	}
+
+	if (window.elementorFrontend && window.elementorFrontend.hooks) {
+		hookElementor();
+	} else {
+		window.addEventListener('elementor/frontend/init', hookElementor);
+	}
+})(window, document);
+
+</script>
+</body>
+</html>
