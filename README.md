@@ -4,6 +4,7 @@ Custom Elementor widgets for avixdigital.com. Tested on WordPress 7.1 + Elemento
 
 | Widget | What it is |
 | --- | --- |
+| **Intro Text** | The brand intro under the hero: the tagline and CEO line fade in word by word from a soft blur, keywords fan out project pictures, and the Avix pixel character plays on the logo (peeks over it, sits on it, runs on it while it rolls, flips off it). |
 | **Hero Banner** | The homepage welcome: parallax background with rounded glass pixels and a pixel trail under the cursor, a headline with the tilted orange highlight and round icon, and the Avix pixel character sitting on the headline, waving hello and chilling. |
 | **Services Showcase** | Service list that expands on hover or tap, a 3D preview card in a browser frame that swaps per service, and the Avix pixel character flying on rocket boots to the service being viewed. |
 | **Selected Work Stack** | Sticky scroll stack of case studies. Each card slides over the last one, which tilts back and dims. Includes a live `01 — 03` progress readout and an optional cursor bubble. |
@@ -24,6 +25,23 @@ No jQuery, GSAP or other libraries. Assets load only on pages that use the widge
 3. Put each widget in a **full-width container with 0 padding**. Each widget handles its own content width (1200px) and side spacing.
 
 The files in `preview/` are standalone copies of the rendered output (e.g. `preview/hero.html`), handy for sharing or quick checks.
+
+## Intro Text
+
+Replaces the HTML intro ("We design conversion-focused products…").
+
+- **Text** (Content → Text): *Tagline* (H2 by default) and *Intro*. Wrap a word in `{curly braces}` to make it a keyword; Enter starts a new line. Default copy is the current homepage intro.
+- **Keywords** (Content → Keywords): one row per `{keyword}`, with 1–3 pictures that fan out above it (*Fan of cards*) or a *Round portrait* that pops out beside it (the CEO GIF by default), a line for the character, and an optional link. The pictures never leave the screen, and open downward instead of covering the logo and character. On phones the first tap shows the pictures and a second tap follows the link; tap anywhere else to close.
+- **The pixel character** (Content → Logo & Character):
+  - The first time the section is seen, the logo pops in and the character peeks over its top edge, hands on the rim like "Kilroy was here", looks left and right, waves ("Psst… hi! 👋"), then hops on and sits on the logo, legs dangling. Then it tells visitors what to do: "Hover the logo 👀" (or "Tap the logo 👀" on touch screens).
+  - **Hover the logo** and it starts rolling like a log; the character jumps up and runs on top to keep its balance, wobbling ("Whoa, whoa! 😅"). Move away and the logo slows and settles upright, and the character sits back down.
+  - **Click or tap the logo** and it spins, flinging the character into a flip (a double flip every fourth time) with a squashy landing. Its lines take turns ("Wheee! 🎉", "Again! Again!", "10/10 landing 🙌", "Okay, I'm dizzy 😵‍💫").
+  - Hover a keyword and the character looks at it, raises that arm and talks about it ("That's my human! 🧡" for the CEO), with the bubble on the far side from the pictures. It also glances toward the mouse.
+  - Every line is editable; switch the character off to show just the logo.
+- **Phones** (below 600px of widget width): left-aligned, a smaller logo, the tagline at 27–34px with tighter lines, and no big empty band above the logo. *Alignment* (Style → Section) can set left or centre per screen size.
+- **SEO & accessibility**: the tagline stays one real heading and the words are in the HTML (the reveal only starts once the script runs, so no-JS visitors and search engines see everything). Pictures are decorative. The logo is a labelled button. Reduced-motion visitors get the text at once and a character that just sits and talks.
+- **Background** (Style → Section) also sets the thin outline that keeps the character visible on the orange logo, and the disc behind logos with see-through parts. Set it if the section isn't white.
+- **Performance**: one animation loop that only runs while something moves (roll, flip, hop), paused off screen; the character's idle fidgets are cheap CSS steps.
 
 ## Hero Banner
 
@@ -182,7 +200,7 @@ avix-elementor-widgets/
 ├── includes/trait-media.php            shared helper: matches URL-only images to the media library
 ├── includes/widgets/class-<slug>.php   one class per widget: hero, services, selected-work,
 │                                       impact-numbers, testimonial-stack, site-footer, process-timeline, faq,
-│                                       compare-quote, client-logos
+│                                       compare-quote, client-logos, intro-text
 └── assets/
     ├── css/<slug>.css
     └── js/<slug>.js

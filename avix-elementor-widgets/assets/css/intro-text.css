@@ -1,0 +1,637 @@
+/*!
+ * Avix Digital · Intro Text
+ * Brand intro: words fade in from a soft blur, keywords fan out pictures,
+ * and the Avix pixel character plays on the logo. Layout follows the
+ * widget width (container queries), not the screen.
+ */
+
+.avix-it {
+	--it-bg: #ffffff;
+	--it-ink: #111111;
+	--it-muted: #5f5a54;
+	--it-accent: #fb6007;
+	--it-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--it-font-body: "Inter", Arial, sans-serif;
+	--it-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--it-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--it-max: 1180px;
+
+	container: avix-it / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	color: var(--it-ink);
+	font-family: var(--it-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-it *,
+.avix-it *::before,
+.avix-it *::after {
+	box-sizing: border-box;
+}
+
+/* Tokens live on the inner wrapper so container queries (and the Style tab) can change them. */
+.avix-it__inner {
+	--it-logo: 88px;
+	--it-align: center;
+	--it-items: center;
+	--it-card-w: 220px;
+	--it-card-h: 165px;
+	--it-spread: 46px;
+	--it-round: 120px;
+
+	display: flex;
+	width: min(calc(100% - 48px), var(--it-max));
+	flex-direction: column;
+	align-items: var(--it-items);
+	margin-inline: auto;
+	padding: clamp(72px, 7cqi, 100px) 0 clamp(88px, 9cqi, 120px);
+	text-align: var(--it-align);
+}
+
+/* ---------- Logo + character ---------- */
+
+.avix-it__mark {
+	--it-buddy: clamp(26px, calc(var(--it-logo) * 0.44), 52px);
+	position: relative;
+	flex: none;
+	width: var(--it-logo);
+	height: var(--it-logo);
+	margin: 0 0 clamp(28px, 3cqi, 38px);
+}
+
+.avix-it .avix-it__logo {
+	position: relative;
+	z-index: 2;
+	display: block;
+	width: 100%;
+	min-width: 0;
+	height: 100%;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	color: inherit;
+	background: none;
+	box-shadow: none;
+	font: inherit;
+	line-height: 0;
+	text-transform: none;
+	cursor: pointer;
+	transform-origin: 50% 100%;
+	-webkit-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.avix-it span.avix-it__logo {
+	cursor: default;
+}
+
+.avix-it .avix-it__logo:hover,
+.avix-it .avix-it__logo:focus,
+.avix-it .avix-it__logo:active {
+	color: inherit;
+	background: none;
+	box-shadow: none;
+}
+
+.avix-it .avix-it__logo:focus-visible {
+	outline: 2px solid var(--it-accent);
+	outline-offset: 6px;
+}
+
+.avix-it__logo.is-squash {
+	animation: avix-it-squash 460ms var(--it-ease);
+}
+
+.avix-it__wheel {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	/* Solid backing: logo files with see-through stripes would show the character hiding behind. */
+	background: var(--it-bg);
+	will-change: transform;
+}
+
+.avix-it .avix-it__wheel img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	object-fit: contain;
+	pointer-events: none;
+	-webkit-user-drag: none;
+	user-select: none;
+}
+
+/* The character. JS moves it; poses are classes. */
+.avix-it__buddy {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	width: var(--it-buddy);
+	height: calc(var(--it-buddy) * 1.2);
+	visibility: hidden;
+	pointer-events: none;
+	will-change: transform;
+}
+
+.avix-it.is-buddy .avix-it__buddy {
+	visibility: visible;
+}
+
+/* In front of the logo once it's on top (behind it while peeking). */
+.avix-it__buddy.is-front {
+	z-index: 3;
+}
+
+.avix-it__sprite {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform-origin: 50% 60%;
+}
+
+.avix-it__sprite svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--it-accent);
+	shape-rendering: crispEdges;
+	/* A thin outline in the background colour keeps it visible on the orange logo. */
+	filter: drop-shadow(1.5px 0 0 var(--it-bg)) drop-shadow(-1.5px 0 0 var(--it-bg)) drop-shadow(0 1.5px 0 var(--it-bg)) drop-shadow(0 -1.5px 0 var(--it-bg));
+	transform-origin: 50% 100%;
+}
+
+.avix-it__sprite rect {
+	transform-box: view-box;
+}
+
+.avix-it__buddy.is-land svg {
+	animation: avix-it-land 380ms var(--it-ease);
+}
+
+/* Sitting: lazy leg swing and a glance around now and then. */
+.avix-it__buddy.is-sit .avix-it__b-leg--l {
+	animation: avix-it-leg 1.5s steps(1) infinite;
+}
+
+.avix-it__buddy.is-sit .avix-it__b-leg--r {
+	animation: avix-it-leg 1.5s steps(1) -0.75s infinite;
+}
+
+.avix-it__buddy.is-sit .avix-it__b-head {
+	animation: avix-it-look 7s steps(1) infinite;
+}
+
+/* Running on the rolling logo: quick feet, flailing arms. */
+.avix-it__buddy.is-run .avix-it__b-leg--l,
+.avix-it__buddy.is-run .avix-it__b-arm--r {
+	animation: avix-it-leg 0.24s steps(1) infinite;
+}
+
+.avix-it__buddy.is-run .avix-it__b-leg--r,
+.avix-it__buddy.is-run .avix-it__b-arm--l {
+	animation: avix-it-leg 0.24s steps(1) -0.12s infinite;
+}
+
+/* Peeking over the top edge: both hands gripping it, like "Kilroy was here". */
+.avix-it__buddy.is-peek .avix-it__b-arm {
+	transform: translate(0, -3px);
+}
+
+.avix-it__buddy.is-peek.is-wave .avix-it__b-arm--r {
+	animation: avix-it-wave 0.5s steps(1) infinite;
+}
+
+/* In the air: legs tucked, arms up. */
+.avix-it__buddy.is-air .avix-it__b-leg,
+.avix-it__buddy.is-air .avix-it__b-arm {
+	animation: none;
+	transform: translate(0, -2px);
+}
+
+.avix-it__buddy.is-wave .avix-it__b-arm--r {
+	animation: avix-it-wave 0.5s steps(1) infinite;
+}
+
+.avix-it__buddy.is-look-l .avix-it__b-head {
+	animation: none;
+	transform: translate(-1px, 0);
+}
+
+.avix-it__buddy.is-look-r .avix-it__b-head {
+	animation: none;
+	transform: translate(1px, 0);
+}
+
+/* Raises the arm on the side of the keyword it's talking about. */
+.avix-it__buddy.is-point-l .avix-it__b-arm--l,
+.avix-it__buddy.is-point-r .avix-it__b-arm--r {
+	animation: avix-it-wave 0.6s steps(1) infinite;
+}
+
+.avix-it.is-off .avix-it__buddy * {
+	animation-play-state: paused;
+}
+
+/* Speech bubble beside the character. */
+.avix-it__bubble {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 6;
+	width: max-content;
+	max-width: 210px;
+	padding: 8px 12px 9px;
+	border-radius: 12px;
+	color: #ffffff;
+	background: #111111;
+	box-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.5);
+	font-family: var(--it-font-body);
+	font-size: 13.5px;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+	line-height: 1.35;
+	text-align: left;
+	white-space: normal;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate3d(var(--it-bx, 0px), var(--it-by, 0px), 0) scale(0.8);
+	transform-origin: 0 50%;
+	transition: opacity 180ms ease, transform 340ms var(--it-pop);
+}
+
+.avix-it__bubble.is-left {
+	transform-origin: 100% 50%;
+}
+
+.avix-it__bubble.is-open {
+	opacity: 1;
+	transform: translate3d(var(--it-bx, 0px), var(--it-by, 0px), 0) scale(1);
+}
+
+.avix-it__bubble::after {
+	position: absolute;
+	top: 50%;
+	right: 100%;
+	width: 7px;
+	height: 12px;
+	margin-top: -6px;
+	background: inherit;
+	clip-path: polygon(100% 0, 0 50%, 100% 100%);
+	content: "";
+}
+
+.avix-it__bubble.is-left::after {
+	right: auto;
+	left: 100%;
+	clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+/* ---------- Text ---------- */
+
+.avix-it .avix-it__tagline {
+	max-width: 1120px;
+	margin: 0;
+	padding: 0;
+	color: var(--it-ink);
+	font-family: var(--it-font-display);
+	font-size: clamp(28px, 3.6cqi, 56px);
+	font-weight: 700;
+	letter-spacing: -0.035em;
+	line-height: 1.26;
+	text-wrap: balance;
+}
+
+.avix-it .avix-it__intro {
+	max-width: 64ch;
+	margin: clamp(20px, 2.2cqi, 30px) 0 0;
+	padding: 0;
+	color: var(--it-muted);
+	font-family: var(--it-font-body);
+	font-size: clamp(16px, 1.45cqi, 21px);
+	font-weight: 400;
+	line-height: 1.6;
+	text-wrap: balance;
+}
+
+.avix-it__w {
+	display: inline-block;
+}
+
+/* Word-by-word reveal (only once JS is running, so no-JS visitors see the text). */
+.avix-it.is-armed .avix-it__w {
+	opacity: 0;
+	filter: blur(8px);
+	transform: translateY(0.45em) scale(0.92) rotate(2deg);
+	transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease, filter 0.8s ease;
+	transition-delay: calc(var(--i, 0) * var(--it-step, 40ms) + 150ms);
+}
+
+.avix-it.is-armed.is-in .avix-it__w {
+	opacity: 1;
+	filter: none;
+	transform: none;
+}
+
+.avix-it.is-armed .avix-it__mark {
+	opacity: 0;
+	transform: scale(0.55);
+	transition: opacity 0.35s ease, transform 0.7s var(--it-pop);
+}
+
+.avix-it.is-armed.is-in .avix-it__mark {
+	opacity: 1;
+	transform: none;
+}
+
+/* ---------- Keywords + picture fans ---------- */
+
+.avix-it .avix-it__kw {
+	position: relative;
+	color: var(--it-ink);
+	font-weight: inherit;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--it-accent) 35%, transparent);
+	text-decoration-skip-ink: none;
+	text-decoration-thickness: max(2px, 0.065em);
+	text-underline-offset: 0.16em;
+	cursor: pointer;
+	transition: color 0.25s ease, text-decoration-color 0.25s ease;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.avix-it .avix-it__intro .avix-it__kw {
+	font-weight: 600;
+	text-decoration-thickness: 3px;
+	text-underline-offset: 5px;
+}
+
+.avix-it .avix-it__kw.is-open,
+.avix-it a.avix-it__kw:hover,
+.avix-it a.avix-it__kw:focus-visible {
+	color: var(--it-accent);
+	text-decoration-color: var(--it-accent);
+}
+
+.avix-it a.avix-it__kw:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid var(--it-accent);
+	outline-offset: 3px;
+}
+
+/* The word holding an open keyword stays above its neighbours. */
+.avix-it__w.is-raised {
+	position: relative;
+	z-index: 30;
+}
+
+.avix-it__deck {
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	z-index: 50;
+	width: 0;
+	height: 0;
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+	transform: translateX(var(--it-shift, 0px));
+	transition: opacity 0.28s ease, visibility 0s linear 0.28s;
+}
+
+.avix-it__kw.is-open .avix-it__deck {
+	visibility: visible;
+	opacity: 1;
+	transition: opacity 0.2s ease;
+}
+
+.avix-it .avix-it__card {
+	position: absolute;
+	bottom: 14px;
+	left: calc(var(--it-card-w) / -2);
+	width: var(--it-card-w);
+	min-width: 0;
+	max-width: none;
+	height: var(--it-card-h);
+	max-height: none;
+	margin: 0;
+	border: 4px solid #ffffff;
+	border-radius: 14px;
+	background: #f3f0ec;
+	box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.05);
+	object-fit: cover;
+	transform: translateY(26px) scale(0.88);
+	transform-origin: 50% 100%;
+	transition: transform 0.56s var(--it-pop), box-shadow 0.56s ease;
+}
+
+.avix-it__card:nth-child(1) {
+	z-index: 1;
+}
+
+.avix-it__card:nth-child(2) {
+	z-index: 3;
+}
+
+.avix-it__card:nth-child(3) {
+	z-index: 2;
+}
+
+/* Three cards: fanned. */
+.avix-it__kw--deck.is-open .avix-it__card:nth-child(1) {
+	transform: translateX(calc(var(--it-spread) * -1)) rotate(-12deg);
+}
+
+.avix-it__kw--deck.is-open .avix-it__card:nth-child(2) {
+	box-shadow: 0 35px 60px rgba(0, 0, 0, 0.25);
+	transform: translateY(-18px) scale(1.04);
+}
+
+.avix-it__kw--deck.is-open .avix-it__card:nth-child(3) {
+	transform: translateX(var(--it-spread)) rotate(12deg);
+}
+
+/* Two cards: a pair. */
+.avix-it__kw--deck.is-open .avix-it__card:first-child:nth-last-child(2) {
+	transform: translateX(calc(var(--it-spread) * -0.6)) rotate(-8deg);
+}
+
+.avix-it__kw--deck.is-open .avix-it__card:nth-child(2):last-child {
+	transform: translate(calc(var(--it-spread) * 0.6), -10px) rotate(6deg);
+}
+
+/* One card. */
+.avix-it__kw--deck.is-open .avix-it__card:only-child {
+	transform: translateY(-12px) rotate(-3deg);
+}
+
+/* Opening downward, when opening upward would cover the logo and the character. */
+.avix-it__kw--deck.is-below .avix-it__deck {
+	top: 100%;
+	bottom: auto;
+}
+
+.avix-it .avix-it__kw--deck.is-below .avix-it__card {
+	top: 12px;
+	bottom: auto;
+	transform: translateY(-26px) scale(0.88);
+	transform-origin: 50% 0;
+}
+
+.avix-it__kw--deck.is-below.is-open .avix-it__card:nth-child(1) {
+	transform: translateX(calc(var(--it-spread) * -1)) rotate(12deg);
+}
+
+.avix-it__kw--deck.is-below.is-open .avix-it__card:nth-child(2) {
+	transform: translateY(18px) scale(1.04);
+}
+
+.avix-it__kw--deck.is-below.is-open .avix-it__card:nth-child(3) {
+	transform: translateX(var(--it-spread)) rotate(-12deg);
+}
+
+.avix-it__kw--deck.is-below.is-open .avix-it__card:first-child:nth-last-child(2) {
+	transform: translateX(calc(var(--it-spread) * -0.6)) rotate(8deg);
+}
+
+.avix-it__kw--deck.is-below.is-open .avix-it__card:nth-child(2):last-child {
+	transform: translate(calc(var(--it-spread) * 0.6), 10px) rotate(-6deg);
+}
+
+.avix-it__kw--deck.is-below.is-open .avix-it__card:only-child {
+	transform: translateY(12px) rotate(3deg);
+}
+
+/* Round portrait (e.g. the CEO): pops out beside the name, or before it near the right edge. */
+.avix-it__kw--round .avix-it__deck {
+	bottom: 50%;
+	left: 100%;
+	transform: none;
+}
+
+.avix-it__kw--round.is-flip .avix-it__deck {
+	right: 100%;
+	left: auto;
+}
+
+.avix-it .avix-it__kw--round .avix-it__card {
+	bottom: calc(var(--it-round) / -2);
+	left: 12px;
+	width: var(--it-round);
+	height: var(--it-round);
+	border-radius: 50%;
+	object-position: 50% 20%;
+	transform: translateX(-14px) scale(0.6);
+	transform-origin: 0 50%;
+}
+
+.avix-it .avix-it__kw--round.is-flip .avix-it__card {
+	right: 12px;
+	left: auto;
+	transform: translateX(14px) scale(0.6);
+	transform-origin: 100% 50%;
+}
+
+.avix-it .avix-it__kw--round.is-open .avix-it__card {
+	border-color: var(--it-accent);
+	box-shadow: 0 20px 40px color-mix(in srgb, var(--it-accent) 28%, transparent);
+	transform: rotate(-4deg);
+}
+
+/* ---------- Narrow widget (phones) ---------- */
+
+@container avix-it (max-width: 1024px) {
+	.avix-it__inner {
+		--it-card-w: 180px;
+		--it-card-h: 135px;
+		--it-spread: 30px;
+		--it-round: 110px;
+	}
+}
+
+@container avix-it (max-width: 600px) {
+	/* Container queries style descendants only: tokens are reset on the inner wrapper. */
+	.avix-it__inner {
+		--it-logo: 68px;
+		--it-align: left;
+		--it-items: flex-start;
+		--it-card-w: 150px;
+		--it-card-h: 112px;
+		--it-spread: 26px;
+		--it-round: 96px;
+		width: calc(100% - 40px);
+		padding: 56px 0 64px;
+	}
+
+	.avix-it__mark {
+		margin-bottom: 26px;
+	}
+
+	.avix-it .avix-it__tagline {
+		font-size: clamp(27px, 7.8cqi, 34px);
+		letter-spacing: -0.03em;
+		line-height: 1.2;
+	}
+
+	.avix-it .avix-it__intro {
+		margin-top: 18px;
+		font-size: 16px;
+		text-wrap: pretty;
+	}
+
+	.avix-it .avix-it__card {
+		border-width: 3px;
+		border-radius: 12px;
+	}
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-it-leg {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-it-look {
+	0% { transform: translate(0, 0); }
+	62% { transform: translate(-1px, 0); }
+	74% { transform: translate(1px, 0); }
+	86% { transform: translate(0, 0); }
+}
+
+@keyframes avix-it-wave {
+	0% { transform: translate(0, -3px); }
+	50% { transform: translate(0, -2px); }
+}
+
+@keyframes avix-it-land {
+	0% { transform: scale(1.18, 0.8); }
+	55% { transform: scale(0.95, 1.06); }
+	100% { transform: scale(1, 1); }
+}
+
+@keyframes avix-it-squash {
+	0% { transform: scale(1, 1); }
+	28% { transform: scale(1.07, 0.9); }
+	60% { transform: scale(0.97, 1.04); }
+	100% { transform: scale(1, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-it *,
+	.avix-it *::before,
+	.avix-it *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+}

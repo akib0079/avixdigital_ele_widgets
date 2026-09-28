@@ -3,7 +3,7 @@
  * Plugin Name:       Avix Digital Elementor Widgets
  * Plugin URI:        https://avixdigital.com
  * Description:       Custom Elementor widgets for avixdigital.com: Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline, FAQ & Quote, Compare & CEO Quote and Client Logos.
- * Version:           1.6.0
+ * Version:           1.7.0
  * Author:            Avix Digital
  * Author URI:        https://avixdigital.com
  * Text Domain:       avix-widgets
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AVIX_EW_VERSION', '1.6.0' );
+define( 'AVIX_EW_VERSION', '1.7.0' );
 define( 'AVIX_EW_FILE', __FILE__ );
 define( 'AVIX_EW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AVIX_EW_URL', plugin_dir_url( __FILE__ ) );
@@ -46,6 +46,7 @@ final class Avix_Elementor_Widgets {
 		'faq'               => array( 'includes/widgets/class-faq.php', '\AvixWidgets\Widgets\Faq' ),
 		'compare-quote'     => array( 'includes/widgets/class-compare-quote.php', '\AvixWidgets\Widgets\Compare_Quote' ),
 		'client-logos'      => array( 'includes/widgets/class-client-logos.php', '\AvixWidgets\Widgets\Client_Logos' ),
+		'intro-text'        => array( 'includes/widgets/class-intro-text.php', '\AvixWidgets\Widgets\Intro_Text' ),
 	);
 
 	public static function init() {
