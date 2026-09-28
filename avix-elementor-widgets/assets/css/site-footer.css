@@ -32,6 +32,7 @@
 
 	container: avix-ft / inline-size;
 	display: block;
+	box-sizing: border-box;
 	width: 100%;
 	padding: 0 16px 16px;
 	font-family: var(--ft-font-body);

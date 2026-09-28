@@ -17,6 +17,8 @@ defined( 'ABSPATH' ) || exit;
 
 class Process_Timeline extends Widget_Base {
 
+	use Media;
+
 	/* Path geometry, in SVG units. Each step adds one 500-unit loop. */
 	const VIEW_W = 1400;
 	const TOP    = 50;
@@ -42,7 +44,7 @@ class Process_Timeline extends Widget_Base {
 	}
 
 	public function get_keywords(): array {
-		return array( 'process', 'timeline', 'steps', 'methodology', 'scroll', 'avatar', 'avix' );
+		return array( 'process', 'timeline', 'steps', 'methodology', 'scroll', 'avatar', 'team', 'avix' );
 	}
 
 	public function get_style_depends(): array {
@@ -77,11 +79,12 @@ class Process_Timeline extends Widget_Base {
 		$this->add_control(
 			'title',
 			array(
-				'label'   => esc_html__( 'Title', 'avix-widgets' ),
-				'type'    => Controls_Manager::TEXTAREA,
-				'rows'    => 3,
-				'default' => 'How we transform bold ideas into high-converting e-commerce and web experiences.',
-				'dynamic' => array( 'active' => true ),
+				'label'       => esc_html__( 'Title', 'avix-widgets' ),
+				'description' => esc_html__( 'Wrap words in [square brackets] to colour them with the accent.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXTAREA,
+				'rows'        => 3,
+				'default'     => 'How we transform bold ideas into [high-converting] e-commerce and web experiences.',
+				'dynamic'     => array( 'active' => true ),
 			)
 		);
 
@@ -110,6 +113,8 @@ class Process_Timeline extends Widget_Base {
 		);
 
 		$this->end_controls_section();
+
+		$this->controls_team();
 
 		$this->start_controls_section( 'section_steps', array( 'label' => esc_html__( 'Steps', 'avix-widgets' ) ) );
 
@@ -229,6 +234,7 @@ class Process_Timeline extends Widget_Base {
 		$colors = array(
 			'pt_bg'     => array( esc_html__( 'Background', 'avix-widgets' ), '--pt-bg' ),
 			'pt_accent' => array( esc_html__( 'Accent (line & character)', 'avix-widgets' ), '--pt-accent' ),
+			'pt_hl'     => array( esc_html__( 'Title [highlight]', 'avix-widgets' ), '--pt-hl' ),
 			'pt_ink'    => array( esc_html__( 'Headings', 'avix-widgets' ), '--pt-ink' ),
 			'pt_muted'  => array( esc_html__( 'Body text', 'avix-widgets' ), '--pt-muted' ),
 			'pt_line'   => array( esc_html__( 'Undrawn line', 'avix-widgets' ), '--pt-line' ),
@@ -296,6 +302,18 @@ class Process_Timeline extends Widget_Base {
 			)
 		);
 
+		$this->add_responsive_control(
+			'team_size',
+			array(
+				'label'      => esc_html__( 'Team photo size', 'avix-widgets' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px' ),
+				'range'      => array( 'px' => array( 'min' => 44, 'max' => 160 ) ),
+				'selectors'  => array( '{{WRAPPER}} .avix-pt' => '--pt-tile: {{SIZE}}{{UNIT}};' ),
+				'condition'  => array( 'show_team' => 'yes' ),
+			)
+		);
+
 		$this->end_controls_section();
 
 		$this->start_controls_section(
@@ -330,6 +348,162 @@ class Process_Timeline extends Widget_Base {
 				'name'     => 'desc_typography',
 				'label'    => esc_html__( 'Step text', 'avix-widgets' ),
 				'selector' => '{{WRAPPER}} .avix-pt .avix-pt__desc',
+			)
+		);
+
+		$this->end_controls_section();
+	}
+
+	private function controls_team() {
+		$this->start_controls_section( 'section_team', array( 'label' => esc_html__( 'Team', 'avix-widgets' ) ) );
+
+		$this->add_control(
+			'show_team',
+			array(
+				'label'       => esc_html__( 'Show the team under the title', 'avix-widgets' ),
+				'description' => esc_html__( 'Real faces next to your process build trust. The row appears once a member is added.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+			)
+		);
+
+		$member = new Repeater();
+		$member->add_control(
+			'photo',
+			array(
+				'label'       => esc_html__( 'Photo', 'avix-widgets' ),
+				'description' => esc_html__( 'Square crop reads best. Without a photo the initials are shown.', 'avix-widgets' ),
+				'type'        => Controls_Manager::MEDIA,
+				'dynamic'     => array( 'active' => true ),
+				'default'     => array(
+					'url' => '',
+					'id'  => '',
+				),
+			)
+		);
+		$member->add_control(
+			'name',
+			array(
+				'label'       => esc_html__( 'Name', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'label_block' => true,
+				'dynamic'     => array( 'active' => true ),
+			)
+		);
+		$member->add_control(
+			'role',
+			array(
+				'label'       => esc_html__( 'Role', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'label_block' => true,
+				'placeholder' => esc_html__( 'Lead Developer', 'avix-widgets' ),
+				'dynamic'     => array( 'active' => true ),
+			)
+		);
+		$member->add_control(
+			'link',
+			array(
+				'label'       => esc_html__( 'Profile link', 'avix-widgets' ),
+				'description' => esc_html__( 'LinkedIn or a bio page. Also added to the structured data.', 'avix-widgets' ),
+				'type'        => Controls_Manager::URL,
+				'dynamic'     => array( 'active' => true ),
+			)
+		);
+
+		$this->add_control(
+			'team',
+			array(
+				'label'       => esc_html__( 'Members', 'avix-widgets' ),
+				'type'        => Controls_Manager::REPEATER,
+				'fields'      => $member->get_controls(),
+				'title_field' => '{{{ name || "Team member" }}}',
+				'default'     => array(),
+				'condition'   => array( 'show_team' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'team_names',
+			array(
+				'label'     => esc_html__( 'Names & roles', 'avix-widgets' ),
+				'type'      => Controls_Manager::SELECT,
+				'default'   => 'hover',
+				'options'   => array(
+					'hover'  => esc_html__( 'Tooltip on hover', 'avix-widgets' ),
+					'always' => esc_html__( 'Always, under the photos', 'avix-widgets' ),
+				),
+				'condition' => array( 'show_team' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'team_text',
+			array(
+				'label'     => esc_html__( 'Text beside the photos', 'avix-widgets' ),
+				'type'      => Controls_Manager::TEXTAREA,
+				'rows'      => 3,
+				'default'   => esc_html__( 'The people who plan your project are the same people who build it. No hand-offs, no black boxes, one team from kickoff to launch.', 'avix-widgets' ),
+				'dynamic'   => array( 'active' => true ),
+				'condition' => array( 'show_team' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'team_link_text',
+			array(
+				'label'     => esc_html__( 'Link text', 'avix-widgets' ),
+				'type'      => Controls_Manager::TEXT,
+				'default'   => esc_html__( 'Meet the team', 'avix-widgets' ),
+				'dynamic'   => array( 'active' => true ),
+				'condition' => array( 'show_team' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'team_link',
+			array(
+				'label'       => esc_html__( 'Link', 'avix-widgets' ),
+				'description' => esc_html__( 'Optional, e.g. your About page. Hidden when empty.', 'avix-widgets' ),
+				'type'        => Controls_Manager::URL,
+				'dynamic'     => array( 'active' => true ),
+				'condition'   => array( 'show_team' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'team_mascot',
+			array(
+				'label'       => esc_html__( 'Pixel character tile', 'avix-widgets' ),
+				'description' => esc_html__( 'Adds the Avix pixel character to the row, waving at visitors.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+				'separator'   => 'before',
+				'condition'   => array( 'show_team' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'team_mascot_label',
+			array(
+				'label'     => esc_html__( 'Character tooltip', 'avix-widgets' ),
+				'type'      => Controls_Manager::TEXT,
+				'default'   => esc_html__( 'Hi! I’m on the team too', 'avix-widgets' ),
+				'condition' => array(
+					'show_team'   => 'yes',
+					'team_mascot' => 'yes',
+				),
+			)
+		);
+
+		$this->add_control(
+			'team_schema',
+			array(
+				'label'       => esc_html__( 'Person structured data', 'avix-widgets' ),
+				'description' => esc_html__( 'JSON-LD telling search engines who works here: name, role, photo, profile link, employer. Members without a name are skipped.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+				'separator'   => 'before',
+				'condition'   => array( 'show_team' => 'yes' ),
 			)
 		);
 
@@ -396,8 +570,9 @@ class Process_Timeline extends Widget_Base {
 						<p class="avix-pt__tag" data-pt-reveal><b>/</b> <?php echo esc_html( $s['tag'] ); ?></p>
 					<?php endif; ?>
 					<?php if ( '' !== trim( (string) $s['title'] ) ) : ?>
-						<<?php echo esc_attr( $tag ); ?> class="avix-pt__title" id="<?php echo esc_attr( $title_id ); ?>" data-pt-reveal<?php echo 'yes' === $s['word_reveal'] ? ' data-pt-words' : ''; ?>><?php echo esc_html( $s['title'] ); ?></<?php echo esc_attr( $tag ); ?>>
+						<<?php echo esc_attr( $tag ); ?> class="avix-pt__title" id="<?php echo esc_attr( $title_id ); ?>" data-pt-reveal<?php echo 'yes' === $s['word_reveal'] ? ' data-pt-words' : ''; ?>><?php echo $this->accent_html( (string) $s['title'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></<?php echo esc_attr( $tag ); ?>>
 					<?php endif; ?>
+					<?php $this->render_team( $s ); ?>
 				</header>
 
 				<div class="avix-pt__timeline" data-pt-timeline style="--pt-ratio: <?php echo (int) self::VIEW_W; ?> / <?php echo (int) $geo['h']; ?>;">
@@ -507,6 +682,232 @@ class Process_Timeline extends Widget_Base {
 			'end'           => array( $end_x, $end_y ),
 			'heading_right' => $heading_right,
 		);
+	}
+
+	/**
+	 * Escaped title with [words] wrapped in the accent span.
+	 */
+	private function accent_html( $text ) {
+		return preg_replace( '/\[([^\[\]]+)\]/', '<span class="avix-pt__accent">$1</span>', esc_html( $text ) );
+	}
+
+	/**
+	 * Team row under the title: photos (or initials), optional pixel character
+	 * tile, a short line of copy and Person JSON-LD.
+	 */
+	private function render_team( array $s ) {
+		if ( 'yes' !== ( $s['show_team'] ?? '' ) ) {
+			return;
+		}
+
+		$members = array();
+		foreach ( (array) ( $s['team'] ?? array() ) as $row ) {
+			$photo = (array) ( $row['photo'] ?? array() );
+			$m     = array(
+				'name' => trim( (string) ( $row['name'] ?? '' ) ),
+				'role' => trim( (string) ( $row['role'] ?? '' ) ),
+				'id'   => $this->media_id( $photo ),
+				'url'  => (string) ( $photo['url'] ?? '' ),
+				'link' => (array) ( $row['link'] ?? array() ),
+			);
+			if ( '' !== $m['name'] || $m['id'] || '' !== $m['url'] ) {
+				$members[] = $m;
+			}
+		}
+
+		$edit = \Elementor\Plugin::$instance->editor->is_edit_mode();
+		if ( ! $members && ! $edit ) {
+			return;
+		}
+
+		$text      = trim( (string) ( $s['team_text'] ?? '' ) );
+		$link_text = trim( (string) ( $s['team_link_text'] ?? '' ) );
+		$has_link  = '' !== $link_text && '' !== esc_url( $s['team_link']['url'] ?? '' );
+		$mascot    = 'yes' === ( $s['team_mascot'] ?? '' );
+		$named     = 'always' === ( $s['team_names'] ?? '' );
+		$sizes     = $this->team_sizes( $s );
+
+		if ( $has_link ) {
+			$this->add_link_attributes( 'team_link', $s['team_link'] );
+			$this->add_render_attribute( 'team_link', 'class', 'avix-pt__team-link' );
+		}
+		?>
+		<div class="avix-pt__team<?php echo $named ? ' avix-pt__team--named' : ''; ?>" data-pt-reveal style="--pt-delay: 120ms;">
+			<ul class="avix-pt__faces" aria-label="<?php esc_attr_e( 'Our team', 'avix-widgets' ); ?>">
+				<?php foreach ( $members as $i => $m ) : ?>
+					<li class="avix-pt__member" style="--pt-i: <?php echo (int) $i; ?>;">
+						<?php
+						$key = 'member_' . $i;
+						if ( '' !== esc_url( $m['link']['url'] ?? '' ) ) {
+							$this->add_link_attributes( $key, $m['link'] );
+							$this->add_render_attribute( $key, 'class', 'avix-pt__face' );
+							echo '<a ' . $this->get_render_attribute_string( $key ) . '>' . $this->face_html( $m, $sizes ) . '</a>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attributes and image markup are escaped at the source.
+						} else {
+							echo '<span class="avix-pt__face">' . $this->face_html( $m, $sizes ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in face_html().
+						}
+						echo $this->who_html( $m['name'], $m['role'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in who_html().
+						?>
+					</li>
+				<?php endforeach; ?>
+				<?php if ( ! $members ) : ?>
+					<?php for ( $i = 0; $i < 3; $i++ ) : ?>
+						<li class="avix-pt__member avix-pt__member--empty" style="--pt-i: <?php echo (int) $i; ?>;">
+							<span class="avix-pt__face"><span class="avix-pt__plus"></span></span>
+							<?php echo $this->who_html( __( 'Add a team member', 'avix-widgets' ), __( 'Content → Team → Members', 'avix-widgets' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in who_html(). ?>
+						</li>
+					<?php endfor; ?>
+				<?php endif; ?>
+				<?php if ( $mascot ) : ?>
+					<li class="avix-pt__member avix-pt__member--mascot" style="--pt-i: <?php echo (int) ( $members ? count( $members ) : 3 ); ?>;" aria-hidden="true">
+						<span class="avix-pt__face">
+							<span class="avix-pt__mascot">
+								<svg viewBox="0 0 10 12" focusable="false">
+									<rect class="avix-pt__b-leg avix-pt__b-leg--l" x="2" y="7" width="2" height="5"/>
+									<rect class="avix-pt__b-leg avix-pt__b-leg--r" x="6" y="7" width="2" height="5"/>
+									<rect class="avix-pt__b-body" x="2" y="3" width="6" height="4"/>
+									<rect class="avix-pt__b-head" x="3" y="0" width="4" height="3"/>
+									<rect class="avix-pt__b-arm avix-pt__b-arm--l" x="0" y="3" width="2" height="3"/>
+									<rect class="avix-pt__b-arm avix-pt__b-arm--r" x="8" y="3" width="2" height="3"/>
+								</svg>
+							</span>
+						</span>
+						<?php echo $this->who_html( (string) ( $s['team_mascot_label'] ?? '' ), '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in who_html(). ?>
+					</li>
+				<?php endif; ?>
+			</ul>
+			<?php if ( '' !== $text || $has_link ) : ?>
+				<div class="avix-pt__team-copy">
+					<?php if ( '' !== $text ) : ?>
+						<p class="avix-pt__team-text"><?php echo esc_html( $text ); ?></p>
+					<?php endif; ?>
+					<?php if ( $has_link ) : ?>
+						<a <?php $this->print_render_attribute_string( 'team_link' ); ?>><?php echo esc_html( $link_text ); ?><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
+		if ( 'yes' === ( $s['team_schema'] ?? '' ) ) {
+			$this->team_schema( $members );
+		}
+	}
+
+	/**
+	 * `sizes` for the photos, from the tile-size control (CSS px).
+	 */
+	private function team_sizes( array $s ) {
+		$desktop = (int) ( $s['team_size']['size'] ?? 0 );
+		$mobile  = (int) ( $s['team_size_mobile']['size'] ?? 0 );
+		return sprintf( '(max-width: 767px) %dpx, %dpx', $mobile ? $mobile : ( $desktop ? min( $desktop, 64 ) : 60 ), $desktop ? $desktop : 88 );
+	}
+
+	private function face_html( array $m, $sizes ) {
+		$label = implode( ', ', array_filter( array( $m['name'], $m['role'] ), 'strlen' ) );
+		if ( $m['id'] ) {
+			$attrs = array(
+				'class'    => 'avix-pt__photo',
+				'loading'  => 'lazy',
+				'decoding' => 'async',
+				'sizes'    => $sizes,
+			);
+			if ( '' !== $label ) {
+				$attrs['alt'] = $label;
+			}
+			$html = wp_get_attachment_image( $m['id'], 'medium', false, $attrs );
+			if ( $html ) {
+				return $html;
+			}
+		}
+		if ( '' !== $m['url'] ) {
+			return sprintf( '<img class="avix-pt__photo" src="%s" alt="%s" width="160" height="160" loading="lazy" decoding="async">', esc_url( $m['url'] ), esc_attr( $label ) );
+		}
+		return sprintf( '<span class="avix-pt__monogram" role="img" aria-label="%s">%s</span>', esc_attr( $label ), esc_html( $this->initials( $m['name'] ) ) );
+	}
+
+	/**
+	 * Visible name / role label. The image alt already carries both for
+	 * assistive tech, so this copy is hidden from it.
+	 */
+	private function who_html( $name, $role ) {
+		$name = trim( (string) $name );
+		$role = trim( (string) $role );
+		if ( '' === $name && '' === $role ) {
+			return '';
+		}
+		return '<span class="avix-pt__who" aria-hidden="true">'
+			. ( '' !== $name ? '<b>' . esc_html( $name ) . '</b>' : '' )
+			. ( '' !== $role ? '<span>' . esc_html( $role ) . '</span>' : '' )
+			. '</span>';
+	}
+
+	private function initials( $name ) {
+		$parts = preg_split( '/\s+/u', trim( (string) $name ), -1, PREG_SPLIT_NO_EMPTY );
+		if ( ! $parts ) {
+			return '';
+		}
+		$pick = static function ( $word ) {
+			$char = function_exists( 'mb_substr' ) ? mb_substr( $word, 0, 1, 'UTF-8' ) : substr( $word, 0, 1 );
+			return function_exists( 'mb_strtoupper' ) ? mb_strtoupper( $char, 'UTF-8' ) : strtoupper( $char );
+		};
+		return $pick( $parts[0] ) . ( count( $parts ) > 1 ? $pick( end( $parts ) ) : '' );
+	}
+
+	/**
+	 * schema.org Person for each named member, linked to the site as employer.
+	 */
+	private function team_schema( array $members ) {
+		$home   = home_url( '/' );
+		$host   = wp_parse_url( $home, PHP_URL_HOST );
+		$org    = array(
+			'@type' => 'Organization',
+			'name'  => wp_strip_all_tags( get_bloginfo( 'name' ) ),
+			'url'   => $home,
+		);
+		$people = array();
+		foreach ( $members as $m ) {
+			$name = wp_strip_all_tags( $m['name'] );
+			if ( '' === $name ) {
+				continue;
+			}
+			$person = array(
+				'@type' => 'Person',
+				'name'  => $name,
+			);
+			if ( '' !== $m['role'] ) {
+				$person['jobTitle'] = wp_strip_all_tags( $m['role'] );
+			}
+			$image = $m['id'] ? wp_get_attachment_image_url( $m['id'], 'medium' ) : $m['url'];
+			if ( $image ) {
+				$person['image'] = esc_url_raw( $image );
+			}
+			$link = trim( (string) ( $m['link']['url'] ?? '' ) );
+			if ( '' !== $link && '/' === $link[0] && ( ! isset( $link[1] ) || '/' !== $link[1] ) ) {
+				$link = home_url( $link );
+			}
+			$link = esc_url_raw( $link, array( 'http', 'https' ) );
+			if ( '' !== $link ) {
+				if ( wp_parse_url( $link, PHP_URL_HOST ) === $host ) {
+					$person['url'] = $link;
+				} else {
+					$person['sameAs'] = array( $link );
+				}
+			}
+			$person['worksFor'] = $org;
+			$people[]           = $person;
+		}
+		if ( ! $people ) {
+			return;
+		}
+		$json = wp_json_encode(
+			array(
+				'@context' => 'https://schema.org',
+				'@graph'   => $people,
+			),
+			JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP
+		);
+		if ( $json ) {
+			echo '<script type="application/ld+json">' . $json . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON with < > & hex-escaped.
+		}
 	}
 
 	private function default_steps() {

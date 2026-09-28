@@ -60,6 +60,7 @@
 		this.root.classList.add('is-live');
 		this.splitTitle();
 		this.observeReveals();
+		this.observeView();
 
 		window.addEventListener('scroll', this.onScroll, { passive: true });
 		window.addEventListener('resize', this.onResize, { passive: true });
@@ -73,24 +74,74 @@
 	};
 
 	// Word-by-word title reveal. The text stays in the HTML for SEO / no-JS.
+	// Words are split on whitespace only, so "[highlight]." stays one word;
+	// highlighted runs keep their span (cloned per word).
 	Timeline.prototype.splitTitle = function () {
 		var title = this.root.querySelector('[data-pt-words]');
 		if (!title || title.getAttribute('data-pt-split')) {
 			return;
 		}
-		var words = title.textContent.trim().split(/\s+/);
+		var words = [];
+		var current = null;
+		Array.prototype.forEach.call(title.childNodes, function (node) {
+			var wrapper = node.nodeType === 1 ? node : null;
+			(node.textContent || '').split(/(\s+)/).forEach(function (part) {
+				if (!part) {
+					return;
+				}
+				if (/^\s+$/.test(part)) {
+					current = null;
+					return;
+				}
+				if (!current) {
+					current = [];
+					words.push(current);
+				}
+				current.push({ text: part, wrapper: wrapper });
+			});
+		});
+		if (!words.length) {
+			return;
+		}
+
 		title.setAttribute('aria-label', title.textContent.trim().replace(/\s+/g, ' '));
-		title.textContent = '';
-		words.forEach(function (word, index) {
+		var fragment = document.createDocumentFragment();
+		words.forEach(function (runs, index) {
 			var span = document.createElement('span');
 			span.className = 'avix-pt__word';
 			span.setAttribute('aria-hidden', 'true');
 			span.style.setProperty('--pt-delay', index * 40 + 'ms');
-			span.textContent = word + (index < words.length - 1 ? ' ' : '');
-			title.appendChild(span);
+			runs.forEach(function (run) {
+				var text = document.createTextNode(run.text);
+				if (run.wrapper) {
+					var clone = run.wrapper.cloneNode(false);
+					clone.appendChild(text);
+					span.appendChild(clone);
+				} else {
+					span.appendChild(text);
+				}
+			});
+			if (index) {
+				fragment.appendChild(document.createTextNode(' '));
+			}
+			fragment.appendChild(span);
 		});
+		title.textContent = '';
+		title.appendChild(fragment);
 		title.setAttribute('data-pt-split', '1');
 		title.classList.add('is-split');
+	};
+
+	// Loops (glow, the waving tile) pause while the section is off screen.
+	Timeline.prototype.observeView = function () {
+		if (!('IntersectionObserver' in window)) {
+			return;
+		}
+		var root = this.root;
+		this.viewObserver = new window.IntersectionObserver(function (entries) {
+			root.classList.toggle('is-offscreen', !entries[entries.length - 1].isIntersecting);
+		}, { rootMargin: '100px 0px' });
+		this.viewObserver.observe(root);
 	};
 
 	Timeline.prototype.observeReveals = function () {
@@ -293,6 +344,9 @@
 		}
 		if (this.revealObserver) {
 			this.revealObserver.disconnect();
+		}
+		if (this.viewObserver) {
+			this.viewObserver.disconnect();
 		}
 		if (this.frame) {
 			window.cancelAnimationFrame(this.frame);

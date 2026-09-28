@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Avix Digital Elementor Widgets
  * Plugin URI:        https://avixdigital.com
- * Description:       Custom Elementor widgets for avixdigital.com: Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer and Process Timeline.
- * Version:           1.2.0
+ * Description:       Custom Elementor widgets for avixdigital.com: Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline and FAQ & Quote.
+ * Version:           1.3.0
  * Author:            Avix Digital
  * Author URI:        https://avixdigital.com
  * Text Domain:       avix-widgets
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AVIX_EW_VERSION', '1.2.0' );
+define( 'AVIX_EW_VERSION', '1.3.0' );
 define( 'AVIX_EW_FILE', __FILE__ );
 define( 'AVIX_EW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AVIX_EW_URL', plugin_dir_url( __FILE__ ) );
@@ -43,6 +43,7 @@ final class Avix_Elementor_Widgets {
 		'testimonial-stack' => array( 'includes/widgets/class-testimonial-stack.php', '\AvixWidgets\Widgets\Testimonial_Stack' ),
 		'site-footer'       => array( 'includes/widgets/class-site-footer.php', '\AvixWidgets\Widgets\Site_Footer' ),
 		'process-timeline'  => array( 'includes/widgets/class-process-timeline.php', '\AvixWidgets\Widgets\Process_Timeline' ),
+		'faq'               => array( 'includes/widgets/class-faq.php', '\AvixWidgets\Widgets\Faq' ),
 	);
 
 	public static function init() {
@@ -83,6 +84,7 @@ final class Avix_Elementor_Widgets {
 	 * @param \Elementor\Widgets_Manager $widgets_manager Widgets manager.
 	 */
 	public static function register_widgets( $widgets_manager ) {
+		require_once AVIX_EW_PATH . 'includes/trait-media.php';
 		foreach ( self::$widgets as $widget ) {
 			require_once AVIX_EW_PATH . $widget[0];
 			$class = $widget[1];

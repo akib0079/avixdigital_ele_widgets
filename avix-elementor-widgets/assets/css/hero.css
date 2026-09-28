@@ -358,8 +358,31 @@
 	width: 100%;
 	height: 100%;
 	transform-origin: 50% 100%;
-	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--hero-accent) 70%, transparent));
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--hero-accent) 70%, transparent));
+}
+
+/* Breathing glow: an opacity-only pulse runs on the compositor, unlike an
+   animated filter, which repaints every frame. */
+.avix-hero__buddy::before {
+	position: absolute;
+	inset: -60% -85%;
+	z-index: -1;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--hero-accent) 55%, transparent) 0%, color-mix(in srgb, var(--hero-accent) 18%, transparent) 55%, transparent 100%);
+	opacity: 0.25;
+	pointer-events: none;
+	content: "";
 	animation: avix-hero-glow 2.4s ease-in-out infinite alternate;
+}
+
+.avix-hero.is-armed .avix-hero__buddy::before {
+	opacity: 0;
+	animation: none;
+}
+
+.avix-hero.is-armed .avix-hero__buddy.is-landed::before {
+	opacity: 0.25;
+	animation: avix-hero-glow 2.4s ease-in-out 900ms infinite alternate;
 }
 
 .avix-hero__sprite svg {
@@ -424,9 +447,7 @@
 
 .avix-hero.is-armed .avix-hero__buddy.is-landed .avix-hero__sprite {
 	opacity: 1;
-	animation:
-		avix-hero-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both,
-		avix-hero-glow 2.4s ease-in-out 900ms infinite alternate;
+	animation: avix-hero-land 900ms cubic-bezier(0.3, 0.9, 0.4, 1) both;
 }
 
 /*
@@ -936,8 +957,8 @@
 }
 
 @keyframes avix-hero-glow {
-	from { filter: drop-shadow(0 0 7px color-mix(in srgb, var(--hero-accent) 55%, transparent)); }
-	to { filter: drop-shadow(0 0 16px color-mix(in srgb, var(--hero-accent) 95%, transparent)); }
+	from { opacity: 0.25; }
+	to { opacity: 0.7; }
 }
 
 @keyframes avix-hero-land {
@@ -1044,5 +1065,9 @@
 
 	.avix-hero.is-armed .avix-hero__sprite {
 		opacity: 1;
+	}
+
+	.avix-hero.is-armed .avix-hero__buddy::before {
+		opacity: 0.25;
 	}
 }

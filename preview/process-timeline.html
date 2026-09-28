@@ -8,8 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body { margin: 0; background: #f5f3ef; }
-.demo-spacer { display: grid; min-height: 70vh; place-items: center; color: #1a1a1a; font: 600 15px Inter, sans-serif; }
+body { margin: 0; background: #050608; }
+.demo-spacer { display: grid; min-height: 60vh; place-items: center; color: #6b665f; background: #f5f3ef; font: 600 12px Inter, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+.demo-footer { background: #050608; }
 /*!
  * Avix Digital · Process Timeline
  * A serpentine line draws itself as you scroll; the Avix pixel character
@@ -30,6 +31,7 @@ body { margin: 0; background: #f5f3ef; }
 	--pt-max: 1400px;
 	--pt-gutter: 5%;
 	--pt-buddy-w: clamp(26px, 2.3vw, 36px);
+	--pt-tile: clamp(56px, 7cqi, 88px);
 
 	container: avix-pt / inline-size;
 	position: relative;
@@ -139,9 +141,361 @@ body { margin: 0; background: #f5f3ef; }
 	line-height: 1.15;
 }
 
+.avix-pt .avix-pt__accent {
+	color: var(--pt-hl, var(--pt-accent));
+}
+
 .avix-pt__word {
 	display: inline-block;
 	white-space: pre;
+}
+
+/* ---------- Team row under the title ---------- */
+
+.avix-pt__team {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 24px clamp(28px, 3.4cqi, 52px);
+	margin-top: clamp(34px, 4cqi, 52px);
+}
+
+.avix-pt .avix-pt__faces {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: clamp(8px, 0.9cqi, 12px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-pt .avix-pt__member {
+	--pt-tip-left: 50%;
+	--pt-tip-x: -50%;
+	--pt-tip-arrow: 50%;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-pt .avix-pt__member:first-child {
+	--pt-tip-left: 0px;
+	--pt-tip-x: 0px;
+	--pt-tip-arrow: calc(var(--pt-tile) / 2);
+}
+
+.avix-pt .avix-pt__member::before,
+.avix-pt .avix-pt__member::marker {
+	display: none;
+	content: none;
+}
+
+.avix-pt .avix-pt__face {
+	position: relative;
+	display: block;
+	width: var(--pt-tile);
+	height: var(--pt-tile);
+	overflow: hidden;
+	border-radius: 24%;
+	color: inherit;
+	background: #15171b;
+	text-decoration: none;
+	transition: transform 450ms var(--pt-ease), box-shadow 450ms ease;
+}
+
+/* Hairline ring drawn above the photo. */
+.avix-pt__face::after {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+	pointer-events: none;
+	content: "";
+	transition: box-shadow 450ms ease;
+}
+
+.avix-pt .avix-pt__photo {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	object-fit: cover;
+	transition: transform 600ms var(--pt-ease);
+}
+
+.avix-pt__monogram {
+	display: grid;
+	width: 100%;
+	height: 100%;
+	place-items: center;
+	color: var(--pt-ink);
+	background: linear-gradient(145deg, color-mix(in srgb, var(--pt-accent) 24%, #15171b) 0%, #15171b 72%);
+	font-family: var(--pt-font-display);
+	font-size: calc(var(--pt-tile) * 0.32);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1;
+}
+
+@media (hover: hover) {
+	.avix-pt__member:hover .avix-pt__face {
+		box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+		transform: translateY(-4px);
+	}
+
+	.avix-pt__member:hover .avix-pt__photo {
+		transform: scale(1.06);
+	}
+}
+
+.avix-pt__member:hover .avix-pt__face::after,
+.avix-pt__member:focus-within .avix-pt__face::after {
+	box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--pt-accent) 75%, transparent);
+}
+
+.avix-pt a.avix-pt__face:focus-visible {
+	outline: 2px solid var(--pt-accent);
+	outline-offset: 3px;
+}
+
+/* Name / role tooltip */
+.avix-pt__who {
+	position: absolute;
+	bottom: calc(100% + 12px);
+	left: var(--pt-tip-left);
+	z-index: 40;
+	display: grid;
+	gap: 2px;
+	padding: 8px 12px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 10px;
+	color: var(--pt-ink);
+	background: #141518;
+	box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+	font-family: var(--pt-font-body);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.35;
+	text-align: left;
+	white-space: nowrap;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(var(--pt-tip-x), 6px) scale(0.96);
+	transform-origin: var(--pt-tip-arrow) 100%;
+	transition: opacity 200ms ease, transform 300ms var(--pt-ease);
+}
+
+.avix-pt__who::after {
+	position: absolute;
+	top: 100%;
+	left: var(--pt-tip-arrow);
+	width: 9px;
+	height: 9px;
+	border-right: 1px solid rgba(255, 255, 255, 0.12);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	background: #141518;
+	content: "";
+	transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.avix-pt__who b {
+	color: var(--pt-ink);
+	font-family: var(--pt-font-display);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.avix-pt__who span {
+	color: var(--pt-muted);
+}
+
+.avix-pt__member:focus-within .avix-pt__who {
+	opacity: 1;
+	transform: translate(var(--pt-tip-x), 0) scale(1);
+}
+
+@media (hover: hover) {
+	.avix-pt__member:hover .avix-pt__who {
+		opacity: 1;
+		transform: translate(var(--pt-tip-x), 0) scale(1);
+	}
+}
+
+/* Names always visible, under each photo. */
+.avix-pt .avix-pt__team--named .avix-pt__who {
+	position: static;
+	width: var(--pt-tile);
+	margin-top: 10px;
+	padding: 0;
+	border: 0;
+	background: none;
+	box-shadow: none;
+	font-size: 11.5px;
+	white-space: normal;
+	opacity: 1;
+	overflow-wrap: anywhere;
+	transform: none;
+}
+
+.avix-pt .avix-pt__team--named .avix-pt__who::after {
+	display: none;
+}
+
+.avix-pt .avix-pt__team--named .avix-pt__member--mascot .avix-pt__who b {
+	color: var(--pt-muted);
+	font-family: var(--pt-font-body);
+	font-size: inherit;
+	font-weight: 500;
+}
+
+/* The pixel character's own tile: standing on a short ledge, waving. */
+.avix-pt .avix-pt__member--mascot .avix-pt__face {
+	display: grid;
+	place-items: end center;
+	background:
+		radial-gradient(circle at 50% 115%, color-mix(in srgb, var(--pt-accent) 40%, transparent) 0%, transparent 62%),
+		#101114;
+}
+
+.avix-pt__member--mascot .avix-pt__face::before {
+	position: absolute;
+	right: 24%;
+	bottom: calc(16% - 2px);
+	left: 24%;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--pt-accent);
+	box-shadow: 0 0 10px color-mix(in srgb, var(--pt-accent) 60%, transparent);
+	content: "";
+}
+
+.avix-pt__mascot {
+	display: block;
+	width: 36%;
+	aspect-ratio: 10 / 12;
+	margin-bottom: 16%;
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--pt-accent) 70%, transparent));
+}
+
+.avix-pt__mascot svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--pt-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-pt__mascot rect {
+	transform-box: view-box;
+}
+
+.avix-pt__mascot .avix-pt__b-arm--r {
+	animation: avix-pt-hi 5s steps(1) 1.2s infinite;
+}
+
+.avix-pt__mascot .avix-pt__b-head {
+	animation: avix-pt-look 7s steps(1) 3.5s infinite;
+}
+
+@media (hover: hover) {
+	.avix-pt__member--mascot:hover .avix-pt__b-arm--r {
+		animation: avix-pt-wave 0.5s steps(1) infinite;
+	}
+}
+
+/* Builder-only placeholders until a member is added. */
+.avix-pt .avix-pt__member--empty .avix-pt__face {
+	border: 1.5px dashed rgba(255, 255, 255, 0.2);
+	background: transparent;
+}
+
+.avix-pt__plus {
+	display: grid;
+	width: 100%;
+	height: 100%;
+	place-items: center;
+	color: rgba(255, 255, 255, 0.45);
+	font-size: calc(var(--pt-tile) * 0.36);
+	font-weight: 300;
+	line-height: 1;
+}
+
+.avix-pt__plus::before {
+	content: "+";
+}
+
+.avix-pt__team-copy {
+	flex: 1 1 260px;
+	max-width: 400px;
+}
+
+.avix-pt .avix-pt__team-text {
+	margin: 0;
+	color: var(--pt-muted);
+	font-family: var(--pt-font-body);
+	font-size: clamp(15px, 1.2cqi, 17px);
+	line-height: 1.6;
+}
+
+.avix-pt .avix-pt__team-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 14px;
+	color: var(--pt-ink);
+	font-family: var(--pt-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	transition: color 250ms ease;
+}
+
+.avix-pt .avix-pt__team-link:hover {
+	color: var(--pt-accent);
+	text-decoration: none;
+}
+
+.avix-pt .avix-pt__team-link:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid var(--pt-accent);
+	outline-offset: 4px;
+}
+
+.avix-pt__team-link svg {
+	width: 15px;
+	height: 15px;
+	color: var(--pt-accent);
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 300ms var(--pt-ease);
+}
+
+.avix-pt .avix-pt__team-link:hover svg {
+	transform: translateX(3px);
+}
+
+/* Faces pop in one after another when the row reveals. */
+.avix-pt.is-live .avix-pt__team .avix-pt__member {
+	opacity: 0;
+	transform: translateY(14px) scale(0.9);
+	transition: opacity 600ms ease, transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	transition-delay: calc(220ms + var(--pt-i, 0) * 80ms);
+}
+
+.avix-pt.is-live .avix-pt__team.is-shown .avix-pt__member {
+	opacity: 1;
+	transform: none;
 }
 
 /* ---------- Timeline (wide layout) ---------- */
@@ -308,11 +662,27 @@ body { margin: 0; background: #f5f3ef; }
 	visibility: hidden;
 	pointer-events: none;
 	will-change: transform;
-	filter: drop-shadow(0 0 12px color-mix(in srgb, var(--pt-accent) 80%, transparent));
 }
 
 .avix-pt.is-live .avix-pt__buddy {
 	visibility: visible;
+}
+
+/* Breathing glow: an opacity-only pulse runs on the compositor, unlike an
+   animated filter, which repaints every frame. */
+.avix-pt__buddy::before {
+	position: absolute;
+	inset: -70% -90%;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--pt-accent) 55%, transparent) 0%, color-mix(in srgb, var(--pt-accent) 18%, transparent) 55%, transparent 100%);
+	opacity: 0;
+	pointer-events: none;
+	content: "";
+	transition: opacity 450ms ease;
+}
+
+.avix-pt__buddy.is-on::before {
+	opacity: 0.45;
 	animation: avix-pt-glow 2s ease-in-out infinite alternate;
 }
 
@@ -341,6 +711,7 @@ body { margin: 0; background: #f5f3ef; }
 	overflow: visible;
 	fill: var(--pt-accent);
 	shape-rendering: crispEdges;
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--pt-accent) 80%, transparent));
 }
 
 .avix-pt__sprite rect {
@@ -386,9 +757,24 @@ body { margin: 0; background: #f5f3ef; }
 	84% { transform: translate(0, 0); }
 }
 
+/* Three quick waves, then a rest. */
+@keyframes avix-pt-hi {
+	0% { transform: translate(0, -3px); }
+	5% { transform: translate(0, -2px); }
+	10% { transform: translate(0, -3px); }
+	15% { transform: translate(0, -2px); }
+	20% { transform: translate(0, -3px); }
+	25%, 100% { transform: translate(0, 0); }
+}
+
+@keyframes avix-pt-wave {
+	0% { transform: translate(0, -3px); }
+	50% { transform: translate(0, -2px); }
+}
+
 @keyframes avix-pt-glow {
-	from { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--pt-accent) 60%, transparent)); }
-	to { filter: drop-shadow(0 0 20px var(--pt-accent)); }
+	from { opacity: 0.25; }
+	to { opacity: 0.7; }
 }
 
 /* ---------- Speech bubble at the end of the line ---------- */
@@ -466,6 +852,13 @@ body { margin: 0; background: #f5f3ef; }
 
 .avix-pt .avix-pt__bubble:hover svg {
 	transform: translateX(3px);
+}
+
+/* Nothing loops while the section is off screen. */
+.avix-pt.is-offscreen *,
+.avix-pt.is-offscreen *::before,
+.avix-pt.is-offscreen *::after {
+	animation-play-state: paused !important;
 }
 
 /* ---------- Narrow widget: straight rail on the left ---------- */
@@ -607,6 +1000,16 @@ body { margin: 0; background: #f5f3ef; }
 		font-size: 11px;
 	}
 
+	.avix-pt__team {
+		gap: 20px;
+		margin-top: 30px;
+	}
+
+	.avix-pt__team-copy {
+		flex-basis: 100%;
+		max-width: 34em;
+	}
+
 	.avix-pt .avix-pt__step {
 		padding-bottom: 48px;
 		padding-left: 8px;
@@ -630,27 +1033,64 @@ body { margin: 0; background: #f5f3ef; }
 	.avix-pt.is-live .avix-pt__title.is-split .avix-pt__word {
 		filter: none;
 	}
+
+	/* A still hello instead of the wave. */
+	.avix-pt__mascot .avix-pt__b-arm--r {
+		transform: translate(0, -3px);
+	}
 }
+
 
 </style>
 </head>
 <body>
-<div class="demo-spacer">Scroll down ↓</div>
-<section class="avix-pt" data-avix-pt="{&quot;w&quot;:1400,&quot;h&quot;:2110,&quot;bands&quot;:[50,550,1050,1550]}" aria-labelledby="avix-pt-title-proc001">
+<div class="demo-spacer">Previous section</div>		<section class="avix-pt" data-avix-pt="{&quot;w&quot;:1400,&quot;h&quot;:2110,&quot;bands&quot;:[50,550,1050,1550]}" aria-labelledby="avix-pt-title-pt001">
 			<div class="avix-pt__frame">
 				<header class="avix-pt__head">
 											<p class="avix-pt__tag" data-pt-reveal><b>/</b> Our Methodology</p>
-																<h2 class="avix-pt__title" id="avix-pt-title-proc001" data-pt-reveal data-pt-words>How we transform bold ideas into high-converting e-commerce and web experiences.</h2>
-									</header>
+																<h2 class="avix-pt__title" id="avix-pt-title-pt001" data-pt-reveal data-pt-words>How we transform bold ideas into <span class="avix-pt__accent">high-converting</span> e-commerce and web experiences.</h2>
+												<div class="avix-pt__team" data-pt-reveal style="--pt-delay: 120ms;">
+			<ul class="avix-pt__faces" aria-label="Our team">
+									<li class="avix-pt__member" style="--pt-i: 0;">
+						<span class="avix-pt__face"><img class="avix-pt__photo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTYwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNjOWEyN2UiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3YTVhNDMiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjgwIiBjeT0iNjQiIHI9IjI4IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii4yOCIvPjxwYXRoIGQ9Ik0yNiAxNjBjNC0zNCAyNi01MiA1NC01MnM1MCAxOCA1NCA1MnoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjI4Ii8+PC9zdmc+" alt="Team member, Strategy lead" width="160" height="160" loading="lazy" decoding="async"></span><span class="avix-pt__who" aria-hidden="true"><b>Team member</b><span>Strategy lead</span></span>					</li>
+									<li class="avix-pt__member" style="--pt-i: 1;">
+						<span class="avix-pt__face"><img class="avix-pt__photo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTYwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNhN2IzYzkiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM0ZjVjNzgiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjgwIiBjeT0iNjQiIHI9IjI4IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii4yOCIvPjxwYXRoIGQ9Ik0yNiAxNjBjNC0zNCAyNi01MiA1NC01MnM1MCAxOCA1NCA1MnoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjI4Ii8+PC9zdmc+" alt="Team member, Design lead" width="160" height="160" loading="lazy" decoding="async"></span><span class="avix-pt__who" aria-hidden="true"><b>Team member</b><span>Design lead</span></span>					</li>
+									<li class="avix-pt__member" style="--pt-i: 2;">
+						<span class="avix-pt__face"><img class="avix-pt__photo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTYwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNiOWM3YTEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM1ZDZlNDUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjgwIiBjeT0iNjQiIHI9IjI4IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii4yOCIvPjxwYXRoIGQ9Ik0yNiAxNjBjNC0zNCAyNi01MiA1NC01MnM1MCAxOCA1NCA1MnoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjI4Ii8+PC9zdmc+" alt="Team member, Lead developer" width="160" height="160" loading="lazy" decoding="async"></span><span class="avix-pt__who" aria-hidden="true"><b>Team member</b><span>Lead developer</span></span>					</li>
+									<li class="avix-pt__member" style="--pt-i: 3;">
+						<span class="avix-pt__face"><img class="avix-pt__photo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTYwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNkMmEzYTMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3YzRhNGEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjgwIiBjeT0iNjQiIHI9IjI4IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii4yOCIvPjxwYXRoIGQ9Ik0yNiAxNjBjNC0zNCAyNi01MiA1NC01MnM1MCAxOCA1NCA1MnoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjI4Ii8+PC9zdmc+" alt="Team member, Growth lead" width="160" height="160" loading="lazy" decoding="async"></span><span class="avix-pt__who" aria-hidden="true"><b>Team member</b><span>Growth lead</span></span>					</li>
+																	<li class="avix-pt__member avix-pt__member--mascot" style="--pt-i: 4;" aria-hidden="true">
+						<span class="avix-pt__face">
+							<span class="avix-pt__mascot">
+								<svg viewBox="0 0 10 12" focusable="false">
+									<rect class="avix-pt__b-leg avix-pt__b-leg--l" x="2" y="7" width="2" height="5"/>
+									<rect class="avix-pt__b-leg avix-pt__b-leg--r" x="6" y="7" width="2" height="5"/>
+									<rect class="avix-pt__b-body" x="2" y="3" width="6" height="4"/>
+									<rect class="avix-pt__b-head" x="3" y="0" width="4" height="3"/>
+									<rect class="avix-pt__b-arm avix-pt__b-arm--l" x="0" y="3" width="2" height="3"/>
+									<rect class="avix-pt__b-arm avix-pt__b-arm--r" x="8" y="3" width="2" height="3"/>
+								</svg>
+							</span>
+						</span>
+						<span class="avix-pt__who" aria-hidden="true"><b>Hi! I’m on the team too</b></span>					</li>
+							</ul>
+							<div class="avix-pt__team-copy">
+											<p class="avix-pt__team-text">The people who plan your project are the same people who build it. No hand-offs, no black boxes, one team from kickoff to launch.</p>
+														</div>
+					</div>
+		<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","name":"Team member","jobTitle":"Strategy lead","image":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTYwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNjOWEyN2UiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3YTVhNDMiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjgwIiBjeT0iNjQiIHI9IjI4IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii4yOCIvPjxwYXRoIGQ9Ik0yNiAxNjBjNC0zNCAyNi01MiA1NC01MnM1MCAxOCA1NCA1MnoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjI4Ii8+PC9zdmc+","worksFor":{"@type":"Organization","name":"Avix Digital","url":"https://avixdigital.com/"}},{"@type":"Person","name":"Team member","jobTitle":"Design lead","image":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTYwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNhN2IzYzkiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM0ZjVjNzgiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjgwIiBjeT0iNjQiIHI9IjI4IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii4yOCIvPjxwYXRoIGQ9Ik0yNiAxNjBjNC0zNCAyNi01MiA1NC01MnM1MCAxOCA1NCA1MnoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjI4Ii8+PC9zdmc+","worksFor":{"@type":"Organization","name":"Avix Digital","url":"https://avixdigital.com/"}},{"@type":"Person","name":"Team member","jobTitle":"Lead developer","image":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTYwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNiOWM3YTEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM1ZDZlNDUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjgwIiBjeT0iNjQiIHI9IjI4IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii4yOCIvPjxwYXRoIGQ9Ik0yNiAxNjBjNC0zNCAyNi01MiA1NC01MnM1MCAxOCA1NCA1MnoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjI4Ii8+PC9zdmc+","worksFor":{"@type":"Organization","name":"Avix Digital","url":"https://avixdigital.com/"}},{"@type":"Person","name":"Team member","jobTitle":"Growth lead","image":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTYwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNkMmEzYTMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3YzRhNGEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjgwIiBjeT0iNjQiIHI9IjI4IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii4yOCIvPjxwYXRoIGQ9Ik0yNiAxNjBjNC0zNCAyNi01MiA1NC01MnM1MCAxOCA1NCA1MnoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjI4Ii8+PC9zdmc+","worksFor":{"@type":"Organization","name":"Avix Digital","url":"https://avixdigital.com/"}}]}</script>				</header>
+
 				<div class="avix-pt__timeline" data-pt-timeline style="--pt-ratio: 1400 / 2110;">
 					<svg class="avix-pt__svg" viewBox="0 0 1400 2110" preserveAspectRatio="none" aria-hidden="true" focusable="false">
 						<path class="avix-pt__track" d="M 0 50 L 1200 50 Q 1350 50, 1350 200 L 1350 400 Q 1350 550, 1200 550 L 200 550 Q 50 550, 50 700 L 50 900 Q 50 1050, 200 1050 L 1200 1050 Q 1350 1050, 1350 1200 L 1350 1400 Q 1350 1550, 1200 1550 L 200 1550 Q 50 1550, 50 1700 L 50 1900 Q 50 2050, 200 2050 L 1000 2050"/>
 						<path class="avix-pt__draw" d="M 0 50 L 1200 50 Q 1350 50, 1350 200 L 1350 400 Q 1350 550, 1200 550 L 200 550 Q 50 550, 50 700 L 50 900 Q 50 1050, 200 1050 L 1200 1050 Q 1350 1050, 1350 1200 L 1350 1400 Q 1350 1550, 1200 1550 L 200 1550 Q 50 1550, 50 1700 L 50 1900 Q 50 2050, 200 2050 L 1000 2050" data-pt-draw/>
 					</svg>
+
 					<div class="avix-pt__rail" data-pt-rail aria-hidden="true">
 						<span class="avix-pt__rail-draw" data-pt-rail-draw></span>
 						<span class="avix-pt__ledge"></span>
 					</div>
+
 					<ol class="avix-pt__steps">
 													<li class="avix-pt__step avix-pt__step--left" data-pt-step style="--pt-top: 14.218%;">
 																	<p class="avix-pt__tag" data-pt-reveal><b>01 /</b> Strategy</p>
@@ -673,6 +1113,7 @@ body { margin: 0; background: #f5f3ef; }
 																									<p class="avix-pt__desc" data-pt-reveal style="--pt-delay: 200ms;">Before going live, we conduct rigorous QA testing to ensure peak performance across all devices. Post-launch, we provide ongoing support and technical optimization to drive sustainable e-commerce scaling and lasting business impact.</p>
 															</li>
 											</ol>
+
 											<div class="avix-pt__buddy" data-pt-buddy aria-hidden="true">
 							<span class="avix-pt__sprite">
 								<svg viewBox="0 0 10 12" focusable="false">
@@ -691,7 +1132,7 @@ body { margin: 0; background: #f5f3ef; }
 															</div>
 			</div>
 		</section>
-<div class="demo-spacer">Next section</div>
+		<div class="demo-spacer">Next section</div>
 <script>
 /*!
  * Avix Digital · Process Timeline
@@ -755,6 +1196,7 @@ body { margin: 0; background: #f5f3ef; }
 		this.root.classList.add('is-live');
 		this.splitTitle();
 		this.observeReveals();
+		this.observeView();
 
 		window.addEventListener('scroll', this.onScroll, { passive: true });
 		window.addEventListener('resize', this.onResize, { passive: true });
@@ -768,24 +1210,74 @@ body { margin: 0; background: #f5f3ef; }
 	};
 
 	// Word-by-word title reveal. The text stays in the HTML for SEO / no-JS.
+	// Words are split on whitespace only, so "[highlight]." stays one word;
+	// highlighted runs keep their span (cloned per word).
 	Timeline.prototype.splitTitle = function () {
 		var title = this.root.querySelector('[data-pt-words]');
 		if (!title || title.getAttribute('data-pt-split')) {
 			return;
 		}
-		var words = title.textContent.trim().split(/\s+/);
+		var words = [];
+		var current = null;
+		Array.prototype.forEach.call(title.childNodes, function (node) {
+			var wrapper = node.nodeType === 1 ? node : null;
+			(node.textContent || '').split(/(\s+)/).forEach(function (part) {
+				if (!part) {
+					return;
+				}
+				if (/^\s+$/.test(part)) {
+					current = null;
+					return;
+				}
+				if (!current) {
+					current = [];
+					words.push(current);
+				}
+				current.push({ text: part, wrapper: wrapper });
+			});
+		});
+		if (!words.length) {
+			return;
+		}
+
 		title.setAttribute('aria-label', title.textContent.trim().replace(/\s+/g, ' '));
-		title.textContent = '';
-		words.forEach(function (word, index) {
+		var fragment = document.createDocumentFragment();
+		words.forEach(function (runs, index) {
 			var span = document.createElement('span');
 			span.className = 'avix-pt__word';
 			span.setAttribute('aria-hidden', 'true');
 			span.style.setProperty('--pt-delay', index * 40 + 'ms');
-			span.textContent = word + (index < words.length - 1 ? ' ' : '');
-			title.appendChild(span);
+			runs.forEach(function (run) {
+				var text = document.createTextNode(run.text);
+				if (run.wrapper) {
+					var clone = run.wrapper.cloneNode(false);
+					clone.appendChild(text);
+					span.appendChild(clone);
+				} else {
+					span.appendChild(text);
+				}
+			});
+			if (index) {
+				fragment.appendChild(document.createTextNode(' '));
+			}
+			fragment.appendChild(span);
 		});
+		title.textContent = '';
+		title.appendChild(fragment);
 		title.setAttribute('data-pt-split', '1');
 		title.classList.add('is-split');
+	};
+
+	// Loops (glow, the waving tile) pause while the section is off screen.
+	Timeline.prototype.observeView = function () {
+		if (!('IntersectionObserver' in window)) {
+			return;
+		}
+		var root = this.root;
+		this.viewObserver = new window.IntersectionObserver(function (entries) {
+			root.classList.toggle('is-offscreen', !entries[entries.length - 1].isIntersecting);
+		}, { rootMargin: '100px 0px' });
+		this.viewObserver.observe(root);
 	};
 
 	Timeline.prototype.observeReveals = function () {
@@ -989,6 +1481,9 @@ body { margin: 0; background: #f5f3ef; }
 		if (this.revealObserver) {
 			this.revealObserver.disconnect();
 		}
+		if (this.viewObserver) {
+			this.viewObserver.disconnect();
+		}
 		if (this.frame) {
 			window.cancelAnimationFrame(this.frame);
 		}
@@ -1036,6 +1531,7 @@ body { margin: 0; background: #f5f3ef; }
 		window.addEventListener('elementor/frontend/init', hookElementor);
 	}
 })(window, document);
+
 
 </script>
 </body>

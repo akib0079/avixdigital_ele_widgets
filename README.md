@@ -9,7 +9,8 @@ Custom Elementor widgets for avixdigital.com. Tested on WordPress 7.1 + Elemento
 | **Selected Work Stack** | Sticky scroll stack of case studies. Each card slides over the last one, which tilts back and dims. Includes a live `01 — 03` progress readout and an optional cursor bubble. |
 | **Testimonial Stack** | Review slider where each new card drops onto a pile. Real reviews, verifiable Fiverr/Upwork badges, autoplay with a progress bar. |
 | **Site Footer** | Rounded footer in dark or light style: big CTA with a tilted pill, brand + socials, two link columns, direct contact with copy-to-clipboard, partner badges. |
-| **Process Timeline** | "Our Methodology" section: a line draws itself as you scroll, the Avix pixel character walks it, lights up each step and sits down at the end of the line. |
+| **Process Timeline** | "Our Methodology" section: a line draws itself as you scroll, the Avix pixel character walks it, lights up each step and sits down at the end of the line. A team row under the title puts real faces next to the process. |
+| **FAQ & Quote** | Minimal FAQ accordion for just above the footer, with FAQPage structured data and a small "Request a quote" card the pixel character sits on. |
 | **Impact Numbers** | "Numbers behind the work": minimal centered pill + 3 numbers with hairline dividers and a count-up. An optional editorial layout adds a heading and rules. Light, warm-grey or dark theme. |
 
 No jQuery, GSAP or other libraries. Assets load only on pages that use the widget: about 9 KB gzipped for the stack, 4 KB for the numbers.
@@ -37,7 +38,7 @@ Replaces the HTML hero. Every text, link, image, icon and colour is editable, an
 - **Buttons**: the main CTA plus an optional quieter second link (e.g. "See our work" → `#work`).
 - **Trust dock**: add, remove or reorder items, each with an icon and an optional proof link (your Fiverr or partner profile).
 - **Background**: a real `<img>` with responsive sizes that loads first, since it's the biggest thing on the first screen. Turn off **Load image first** if the banner isn't at the top of the page. An image given only as a URL is matched to your media library, so it still gets responsive sizes. Focus point, overlay colours, slow zoom, glass pixels, pixel trail (square size, radius, strength), mouse parallax and the entrance animation are all switchable.
-- **Performance**: effects share one animation loop that stops when nothing moves, and everything, CSS animations included, pauses once the banner is scrolled past or the tab is hidden. Measured in Chrome against the HTML version: script time while idle 5.5 → 0.04 ms per second; after scrolling past, 0.
+- **Performance**: effects share one animation loop that stops when nothing moves, and everything, CSS animations included, pauses once the banner is scrolled past or the tab is hidden. Measured in Chrome against the HTML version: script time while idle 5.5 → 0.04 ms per second; after scrolling past, 0. Since 1.3.0 the character's glow pulses on the GPU, which cut the remaining idle main-thread work from about 32 to under 1 ms per second.
 - Reduced-motion visitors get a still banner (the avatar still says hi). The entrance doesn't replay on every change in the Elementor editor. On phones the tags hide, the dock stacks, glass blur is dropped (costly on phone GPUs) and a tap sends a small pixel ripple.
 
 ## Services Showcase
@@ -104,6 +105,24 @@ Replaces the HTML services section.
 - The character walks the line while it draws (legs stepping), lights up each step it reaches, and at the end **sits on the end of the line and chills**: legs dangling and swinging, arms resting, glancing around. A small "Let's start yours →" bubble appears next to it (text and link editable, or switch it off).
 - On narrow screens the line becomes a straight rail with a short ledge at the bottom for the character to sit on.
 - Steps are rendered once for all screen sizes (the old HTML duplicated them for mobile).
+- **Title highlight**: wrap words in `[square brackets]` to colour them (default: `[high-converting]`). Colour under Style → *Title [highlight]*. The word-by-word reveal keeps the highlight.
+- **Team row** (Content → **Team**): add each person's photo, name, role and an optional profile link (LinkedIn or a bio page). The row appears under the title once a member is added; in the editor, dashed placeholders show where the photos go.
+  - Names and roles show in a tooltip on hover, or always under the photos (*Names & roles*). The image alt text always carries them.
+  - No photo yet? The person's initials are shown instead.
+  - The Avix pixel character gets its own tile in the row: standing on a little orange ledge, it waves every few seconds and waves non-stop when hovered. Switch it off under *Pixel character tile*.
+  - Short text beside the photos plus an optional link (e.g. "Meet the team" → About page).
+  - **SEO**: Person structured data (JSON-LD) for each named member: name, role, photo, profile link and your site as employer. Photos load lazily with responsive sizes.
+- **Performance**: the character's breathing glow now pulses on the GPU instead of repainting every frame (idle main-thread time on screen: about 32 → 1 ms per second), and all loops pause once the section is off screen.
+
+## FAQ & Quote
+
+- Put it **just above the footer** in a full-width container with no padding. Dark or light style (Style → Section → *Style*), and every colour can be overridden.
+- **Questions** are a list: question, answer (rich text, so links to your service pages work) and an optional **Anchor**. Linking to `/page/#pricing` opens that answer and scrolls to it. Without an anchor, one is made from the question (e.g. `#faq-how-much-does-a-project-cost`).
+- Built on native `<details>`: works without JavaScript, answers stay in the HTML for search engines, and the browser's find-in-page opens the matching answer. One answer open at a time (switchable), the first open by default, smooth open/close in browsers that support it.
+- **SEO**: section heading (H2), each question an H3 (changeable), and FAQPage structured data printed once per page. Honest caveat: since 2023 Google only shows FAQ rich results for well-known government and health sites, so don't expect the dropdowns in Google results. The markup still helps Bing and AI answer engines understand the page, and the content itself ranks like any other text.
+- **Quote card**: title, one line of text, a **Request a quote** button (full width on phones) and small print. The default copy ("Still have questions?") is deliberately different from the footer's CTA so the two don't repeat each other. Leave any text empty to hide it, or switch the whole card off. On wide screens the card stays in view while visitors read long answers.
+- **Pixel character** sits on the card's top edge, legs dangling over it, glancing around; it waves when the card is hovered or the button is focused. It pops in the first time the section is seen. Still for reduced-motion visitors.
+- Default questions are general agency questions (pricing, timelines, Shopify Plus/Webflow, migrations, support). Edit them to match how you actually work.
 
 ## Fonts & colours
 
@@ -114,8 +133,9 @@ The widgets default to the brand system: Space Grotesk for display, Inter for te
 ```
 avix-elementor-widgets/
 ├── avix-elementor-widgets.php          bootstrap: checks Elementor, registers category, widgets, assets
+├── includes/trait-media.php            shared helper: matches URL-only images to the media library
 ├── includes/widgets/class-<slug>.php   one class per widget: hero, services, selected-work,
-│                                       impact-numbers, testimonial-stack, site-footer, process-timeline
+│                                       impact-numbers, testimonial-stack, site-footer, process-timeline, faq
 └── assets/
     ├── css/<slug>.css
     └── js/<slug>.js

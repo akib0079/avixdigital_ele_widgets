@@ -19,6 +19,8 @@ defined( 'ABSPATH' ) || exit;
 
 class Services extends Widget_Base {
 
+	use Media;
+
 	public function get_name(): string {
 		return 'avix-services';
 	}
@@ -796,7 +798,7 @@ class Services extends Widget_Base {
 				'desc'      => $this->accent_html( (string) ( $row['description'] ?? '' ), false ),
 				'link'      => ! empty( $row['link']['url'] ) ? $row['link'] : null,
 				'link_text' => trim( (string) ( $row['link_text'] ?? '' ) ),
-				'image_id'  => absint( $image['id'] ?? 0 ) ? absint( $image['id'] ) : $this->attachment_id( $image['url'] ?? '' ),
+				'image_id'  => $this->media_id( $image ),
 				'image_url' => (string) ( $image['url'] ?? '' ),
 				'label'     => trim( (string) ( $row['label'] ?? '' ) ),
 			);
@@ -895,28 +897,6 @@ class Services extends Widget_Base {
 			);
 		}
 		return '';
-	}
-
-	/**
-	 * Media-library ID for an image given only by URL (e.g. the defaults), so it
-	 * still gets responsive srcset sizes. Also matches resized names like
-	 * "photo-2048x1143.webp". Cached per request.
-	 */
-	private function attachment_id( $url ) {
-		static $cache = array();
-		$url = (string) $url;
-		if ( '' === $url || ! function_exists( 'attachment_url_to_postid' ) ) {
-			return 0;
-		}
-		if ( ! isset( $cache[ $url ] ) ) {
-			$id = attachment_url_to_postid( $url );
-			if ( ! $id ) {
-				$full = preg_replace( '/-\d+x\d+(\.[a-z0-9]+)$/i', '$1', $url );
-				$id   = $full !== $url ? attachment_url_to_postid( $full ) : 0;
-			}
-			$cache[ $url ] = (int) $id;
-		}
-		return $cache[ $url ];
 	}
 
 	/**
