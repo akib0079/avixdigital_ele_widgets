@@ -508,6 +508,10 @@
 	line-height: 1.4;
 }
 
+.avix-rv-card__loc {
+	display: none;
+}
+
 .avix-rv-card__mark {
 	flex: 0 0 auto;
 	color: var(--rv-accent);
@@ -766,21 +770,6 @@
 	}
 }
 
-.avix-rv__count {
-	min-width: 62px;
-	color: var(--rv-muted);
-	font-family: var(--rv-font-display);
-	font-size: 13px;
-	font-weight: 600;
-	font-variant-numeric: tabular-nums;
-	letter-spacing: 0.04em;
-	text-align: center;
-}
-
-.avix-rv__count b {
-	color: var(--rv-ink);
-	font-weight: 600;
-}
 
 .avix-rv__toggle {
 	display: grid;
@@ -903,35 +892,88 @@
 		display: none;
 	}
 
+	/* Phones: a profile row (portrait tile beside logo, name, role and
+	   country) above the review. The tile keeps a natural 4:5 headshot crop
+	   instead of zooming a portrait into a wide banner. */
 	.avix-rv-card__shell {
-		grid-template-columns: minmax(0, 1fr);
-		grid-template-rows: auto 1fr;
-		gap: 8px;
-		padding: 8px;
+		grid-template-columns: 84px minmax(0, 1fr);
+		grid-template-rows: auto;
+		grid-template-areas:
+			"visual top"
+			"rule rule"
+			"quote quote"
+			"foot foot";
+		gap: 0 16px;
+		padding: 20px 20px 22px;
 		border-radius: 24px;
-	}
-
-	.avix-rv-card__visual {
-		min-height: 0;
-		aspect-ratio: 5 / 3.1;
-		border-radius: 18px;
-	}
-
-	.avix-rv-card__monogram {
-		font-size: clamp(88px, 30cqi, 124px);
+		background: var(--rv-card);
 	}
 
 	.avix-rv-card__content {
-		padding: 22px 20px 20px;
-		border-radius: 18px;
+		display: contents;
+	}
+
+	.avix-rv-card__visual {
+		grid-area: visual;
+		align-self: center;
+		width: 84px;
+		height: 104px;
+		min-height: 0;
+		border-radius: 16px;
+		box-shadow: 0 10px 24px rgba(47, 37, 28, 0.14);
+	}
+
+	.avix-rv-card__place {
+		display: none;
+	}
+
+	.avix-rv-card__monogram {
+		right: 0;
+		bottom: 8px;
+		left: 0;
+		font-size: 44px;
+		text-align: center;
+	}
+
+	.avix-rv-card__top {
+		grid-area: top;
+		align-self: center;
+		min-width: 0;
+	}
+
+	.avix-rv .avix-rv-card__logo {
+		height: 26px;
+		max-height: 26px;
+		margin-bottom: 8px;
+	}
+
+	.avix-rv .avix-rv-card__name {
+		font-size: 18px;
+	}
+
+	.avix-rv .avix-rv-card__meta {
+		font-size: 13px;
+	}
+
+	.avix-rv-card__loc {
+		display: inline;
 	}
 
 	.avix-rv-card__mark {
-		font-size: 60px;
+		font-size: 48px;
 	}
 
 	.avix-rv .avix-rv-card__rule {
-		margin: 18px 0 18px;
+		grid-area: rule;
+		margin: 18px 0 16px;
+	}
+
+	.avix-rv .avix-rv-card__quote {
+		grid-area: quote;
+	}
+
+	.avix-rv-card__foot {
+		grid-area: foot;
 	}
 
 	.avix-rv .avix-rv-card__quote {

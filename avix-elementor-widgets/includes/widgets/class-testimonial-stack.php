@@ -596,7 +596,6 @@ class Testimonial_Stack extends Widget_Base {
 									<button class="avix-rv__seg<?php echo 0 === $i ? ' is-active' : ''; ?>" type="button" data-rv-seg aria-label="<?php echo esc_attr( sprintf( __( 'Show review %d', 'avix-widgets' ), $i + 1 ) ); ?>"><i></i></button>
 								<?php endfor; ?>
 							</div>
-							<span class="avix-rv__count" aria-hidden="true"><b data-rv-current>01</b> / <?php echo esc_html( sprintf( '%02d', $total ) ); ?></span>
 							<button class="avix-rv__toggle" type="button" data-rv-toggle aria-label="<?php esc_attr_e( 'Pause autoplay', 'avix-widgets' ); ?>" data-label-pause="<?php esc_attr_e( 'Pause autoplay', 'avix-widgets' ); ?>" data-label-play="<?php esc_attr_e( 'Start autoplay', 'avix-widgets' ); ?>">
 								<svg class="avix-rv__icon-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5v14M15 5v14"/></svg>
 								<svg class="avix-rv__icon-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10.5-6.5L8 5.5Z"/></svg>
@@ -699,7 +698,7 @@ class Testimonial_Stack extends Widget_Base {
 								<img class="avix-rv-card__logo" src="<?php echo esc_url( $logo ); ?>" alt="" loading="lazy" decoding="async">
 							<?php endif; ?>
 							<p class="avix-rv-card__name"><?php echo esc_html( $name ); ?></p>
-							<p class="avix-rv-card__meta"><?php echo esc_html( $this->meta_line( $role, $platform ) ); ?></p>
+							<p class="avix-rv-card__meta"><?php echo esc_html( $this->meta_line( $role, $platform ) ); ?><?php if ( '' !== $location ) : ?><span class="avix-rv-card__loc"> · <?php echo esc_html( $location ); ?></span><?php endif; ?></p>
 						</div>
 						<span class="avix-rv-card__mark" aria-hidden="true">&rdquo;</span>
 					</div>

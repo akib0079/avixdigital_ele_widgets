@@ -12,7 +12,8 @@ Custom Elementor widgets for avixdigital.com. Tested on WordPress 7.1 + Elemento
 | **Process Timeline** | "Our Methodology" section: a line draws itself as you scroll, the Avix pixel character walks it, lights up each step and sits down at the end of the line. A team row under the title puts real faces next to the process. |
 | **FAQ & Quote** | Minimal FAQ accordion for just above the footer, with FAQPage structured data and a small "Request a quote" card the pixel character sits on. |
 | **Compare & CEO Quote** | "Same budget. Better outcome.": a compact typical-agency-vs-Avix face-off and the CEO quote card. Pixel Akib flies between them on rocket boots, zaps the old habits, cheers the Avix side and perches on the real photo. |
-| **Impact Numbers** | "Numbers behind the work": minimal centered pill + 3 numbers with hairline dividers and a count-up. An optional editorial layout adds a heading and rules. Light, warm-grey or dark theme. |
+| **Impact Numbers** | "Numbers behind the work": minimal centered pill + numbers with hairline dividers, a count-up and brand icons that draw themselves in. An optional editorial layout adds a heading and rules. Light, warm-grey or dark theme. |
+| **Client Logos** | "Trusted by 200+ clients": a logo belt the Avix pixel character rides. Hover or tap a logo and it hops over to tell that client's story (what was built, where, and a case-study link) in a speech bubble. |
 
 No jQuery, GSAP or other libraries. Assets load only on pages that use the widget: about 9 KB gzipped for the stack, 4 KB for the numbers.
 
@@ -80,12 +81,26 @@ Replaces the HTML services section.
 - **Layout**: *Minimal* (default) or *Editorial*. Title and text are optional in both; leave them empty for the minimal look.
 - Numbers accept decimals (`5.0`) plus a prefix/suffix; the suffix can be full size (`+`) or small (`/5`).
 - The final numbers are in the HTML, so search engines, screen readers and no-JS visitors see real values. The count-up is only visual.
+- **Icons** (1.5.0): 13 Avix duotone line icons (ink lines, orange detail) on a soft orange tile: clients, launches, reviews, globe, rating star, awards, years, code, stores, growth, happy clients, verified, time. Each number's **Icon** defaults to *Auto*, which picks one from the label ("Clients…" → people, "Projects delivered" → rocket, "…reviews" → speech bubble with a star, "Countries…" → globe), so numbers you already have get fitting icons without editing. Pick another per number, upload any Elementor/Font Awesome icon (*Custom icon…*) or choose *No icon*. **Numbers → Show icons** turns them all off; **Icon style** switches between *Soft tile* and *Plain*. On scroll the lines draw themselves in and the orange detail pops; on hover the tile lifts and tilts.
+- **Phones**: the minimal layout shows the numbers as a 2 × 2 grid with hairlines (an odd last number spans the row), instead of one tall column.
+
+## Client Logos
+
+Replaces the logo marquee. The idea: every logo is a real launch, and the Avix pixel character is the guide who knows each one's story.
+
+- **The belt**: logos glide past on white tiles (grey until hovered, switchable), with a dashed conveyor line underneath. The character walks against the belt like a treadmill and hops forward to stay in view.
+- **Hover a logo** (or Tab to it): the belt eases to a stop, the tile lifts into full colour, the character hops onto it and a speech bubble says who the client is, what we built, where they are, and links to the case study. Move away and the belt carries on.
+- **Phones**: the first tap tells the story, a second tap on the same logo opens the case study, a tap anywhere else closes it. The bubble closes by itself after 6 s.
+- **First visit**: the character says "Psst… hover a logo 👀" (or "tap a logo" on touch screens) once. Both lines are editable under **Pixel Character**.
+- **Clients** (Content → Clients): logo, name, *What we built*, *Country / city* and an optional *Case study link* per client. The bubble only says what you fill in. **Logo size** enlarges a logo whose image file has a lot of empty space around it (the defaults are already tuned: Rehall and OvaBalance 300%, World of Alps 180%, FCTRY 170%).
+- **Review badge** under the belt: rating, text and link (default: 5.0 ★ "150+ real reviews on Fiverr" → your Fiverr profile). A pause button stops the belt for anyone who wants it still.
+- Light or dark style; every colour can be overridden. Reduced-motion visitors get a still row. The loop only runs while the section is on screen.
 
 ## Testimonial Stack
 
 - Ships with the six reviews already published on avixdigital.com, word for word. Cards are minimal by default (name, line, review); switch on **Slider → Stars & source badge** to add a rating and a "Verified on Fiverr ↗" link per card.
 - **Review source** per card: Fiverr, Upwork, or "Verified client" (no platform badge). Only pick Fiverr/Upwork for reviews that actually came from there.
-- **Client photo**: only real photos of that client, with permission. Without one the card shows an Avix-branded monogram. Upload 4:5 (1600×2000 works well) and use **Photo focus** if the face gets cropped on phones. **Slider → Client photo style**: *As uploaded* for portraits you've already styled, or *Auto brand look* to turn a normal photo black & white under the orange glow. **Client logo**: shown above the name.
+- **Client photo**: only real photos of that client, with permission. Without one the card shows an Avix-branded monogram. Upload 4:5 (1600×2000 works well) and use **Photo focus** if the face gets cropped on phones. On phones (1.5.0) the photo becomes a small profile tile beside the logo, name, role and country, so the review text gets the room. **Slider → Client photo style**: *As uploaded* for portraits you've already styled, or *Auto brand look* to turn a normal photo black & white under the orange glow. **Client logo**: shown above the name.
 - Autoplay (7s) pauses on hover, keyboard focus, when scrolled off screen or the tab is hidden, and is off for reduced-motion visitors and inside the editor. Visitors can also swipe/drag, use arrow keys, click the progress segments, or pause.
 
 ## Site Footer
@@ -159,10 +174,10 @@ avix-elementor-widgets/
 ├── includes/trait-media.php            shared helper: matches URL-only images to the media library
 ├── includes/widgets/class-<slug>.php   one class per widget: hero, services, selected-work,
 │                                       impact-numbers, testimonial-stack, site-footer, process-timeline, faq,
-│                                       compare-quote
+│                                       compare-quote, client-logos
 └── assets/
     ├── css/<slug>.css
     └── js/<slug>.js
 ```
 
-To add the next section (logos, CEO quote, pricing, marquee, reviews): add a widget class under `includes/widgets/`, its CSS/JS under `assets/` with the same slug, and one line in the `$widgets` list in `avix-elementor-widgets.php`.
+To add the next section (pricing, marquee): add a widget class under `includes/widgets/`, its CSS/JS under `assets/` with the same slug, and one line in the `$widgets` list in `avix-elementor-widgets.php`.

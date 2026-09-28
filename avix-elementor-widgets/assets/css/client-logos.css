@@ -1,0 +1,615 @@
+/*!
+ * Avix Digital · Client Logos
+ * A conveyor belt of client logos. The Avix pixel character rides it,
+ * hops forward to stay in view, and tells the story of any logo you hover
+ * or tap in a speech bubble. Layout follows the widget width.
+ */
+
+.avix-cl {
+	--cl-bg: #ffffff;
+	--cl-ink: #1a1a1a;
+	--cl-muted: #6b665f;
+	--cl-line: #ece6de;
+	--cl-accent: #fb6007;
+	--cl-accent-text: #c64700;
+	--cl-tile: #ffffff;
+	--cl-tile-line: #ece6de;
+	--cl-bubble: #111111;
+	--cl-bubble-ink: #ffffff;
+	--cl-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--cl-font-body: "Inter", Arial, sans-serif;
+	--cl-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--cl-max: 1200px;
+	--cl-tile-h: 96px;
+	--cl-gap: 16px;
+	--cl-buddy-w: 30px;
+	--cl-stage-top: 128px;
+
+	container: avix-cl / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(88px, 9vw, 128px) 0 clamp(88px, 9vw, 120px);
+	overflow: clip;
+	color: var(--cl-ink);
+	background: var(--cl-bg);
+	font-family: var(--cl-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-cl--dark {
+	--cl-bg: #0b0b0c;
+	--cl-ink: #ffffff;
+	--cl-muted: #a39e97;
+	--cl-line: rgba(255, 255, 255, 0.1);
+	--cl-accent-text: #ff8a3d;
+	--cl-tile-line: rgba(255, 255, 255, 0.08);
+	--cl-bubble: #ffffff;
+	--cl-bubble-ink: #111111;
+}
+
+.avix-cl *,
+.avix-cl *::before,
+.avix-cl *::after {
+	box-sizing: border-box;
+}
+
+.avix-cl__frame {
+	width: min(calc(100% - 48px), var(--cl-max));
+	margin-inline: auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-cl__head {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+}
+
+.avix-cl .avix-cl__eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	margin: 0 0 22px;
+	padding: 8px 15px 8px 12px;
+	border: 1px solid var(--cl-line);
+	border-radius: 999px;
+	color: var(--cl-muted);
+	background: color-mix(in srgb, var(--cl-ink) 3%, var(--cl-bg));
+	font-family: var(--cl-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	line-height: 1;
+}
+
+.avix-cl .avix-cl__eyebrow::before {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--cl-accent);
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--cl-accent) 16%, transparent);
+	content: "";
+}
+
+.avix-cl .avix-cl__title {
+	max-width: 20ch;
+	margin: 0;
+	padding: 0;
+	color: var(--cl-ink);
+	font-family: var(--cl-font-display);
+	font-size: clamp(32px, 4.4cqi, 52px);
+	font-weight: 600;
+	letter-spacing: -0.045em;
+	line-height: 1.05;
+	text-wrap: balance;
+}
+
+.avix-cl__accent {
+	color: var(--cl-accent);
+}
+
+.avix-cl .avix-cl__sub {
+	max-width: 46ch;
+	margin: 16px 0 0;
+	color: var(--cl-muted);
+	font-family: var(--cl-font-body);
+	font-size: clamp(15px, 1.4cqi, 17px);
+	line-height: 1.6;
+}
+
+/* ---------- Belt ---------- */
+
+.avix-cl__stage {
+	position: relative;
+	margin-top: clamp(8px, 1.5cqi, 20px);
+	padding-top: var(--cl-stage-top);
+}
+
+.avix-cl__viewport {
+	position: relative;
+	overflow: hidden;
+	padding: 10px 0 26px;
+	-webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+	mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+}
+
+.avix-cl__track {
+	display: flex;
+	width: max-content;
+	gap: var(--cl-gap);
+	will-change: transform;
+}
+
+.avix-cl .avix-cl__set {
+	display: flex;
+	gap: var(--cl-gap);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-cl .avix-cl__set li {
+	margin: 0;
+	padding: 0;
+}
+
+.avix-cl .avix-cl__set li::before,
+.avix-cl .avix-cl__set li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-cl .avix-cl__tile {
+	position: relative;
+	display: grid;
+	min-width: 176px;
+	height: var(--cl-tile-h);
+	place-items: center;
+	margin: 0;
+	padding: 18px 30px;
+	border: 1px solid var(--cl-tile-line);
+	border-radius: 20px;
+	color: inherit;
+	background: var(--cl-tile);
+	box-shadow: 0 1px 2px rgba(26, 26, 26, 0.04);
+	font: inherit;
+	text-decoration: none;
+	cursor: pointer;
+	transition: transform 360ms var(--cl-ease), box-shadow 360ms var(--cl-ease), border-color 260ms ease;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.avix-cl .avix-cl__tile img {
+	display: block;
+	width: auto;
+	max-width: 148px;
+	height: auto;
+	max-height: 46px;
+	margin: 0;
+	object-fit: contain;
+	transform: scale(var(--cl-zoom, 1));
+	transition: filter 360ms ease, opacity 360ms ease;
+}
+
+.avix-cl--mono .avix-cl__tile img {
+	filter: grayscale(1);
+	opacity: 0.72;
+}
+
+.avix-cl .avix-cl__tile-name {
+	color: var(--cl-ink);
+	font-family: var(--cl-font-display);
+	font-size: 18px;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+}
+
+.avix-cl .avix-cl__tile.is-active,
+.avix-cl .avix-cl__tile:focus-visible {
+	border-color: color-mix(in srgb, var(--cl-accent) 45%, var(--cl-tile-line));
+	box-shadow: 0 16px 34px -12px color-mix(in srgb, var(--cl-accent) 45%, transparent);
+	transform: translateY(-4px);
+}
+
+.avix-cl .avix-cl__tile.is-active img,
+.avix-cl .avix-cl__tile:focus-visible img {
+	filter: none;
+	opacity: 1;
+}
+
+.avix-cl .avix-cl__tile:focus-visible {
+	outline: 2px solid var(--cl-accent);
+	outline-offset: 3px;
+}
+
+@media (hover: hover) {
+	.avix-cl .avix-cl__tile:hover img {
+		filter: none;
+		opacity: 1;
+	}
+}
+
+/* The belt surface: a dashed line that moves with the tiles. */
+.avix-cl__belt {
+	position: absolute;
+	right: 0;
+	bottom: 8px;
+	left: 0;
+	height: 2px;
+	background: repeating-linear-gradient(90deg, var(--cl-line) 0 14px, transparent 14px 26px);
+	background-position: var(--cl-x, 0px) 0;
+	-webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+	mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+	pointer-events: none;
+}
+
+/* ---------- The pixel character ---------- */
+
+.avix-cl__buddy {
+	--cl-buddy-h: calc(var(--cl-buddy-w) * 1.2);
+	position: absolute;
+	top: calc(var(--cl-stage-top) + 10px - var(--cl-buddy-h));
+	left: 0;
+	z-index: 5;
+	width: var(--cl-buddy-w);
+	height: var(--cl-buddy-h);
+	margin-left: calc(var(--cl-buddy-w) / -2);
+	visibility: hidden;
+	pointer-events: none;
+	will-change: transform;
+	filter: drop-shadow(0 0 9px color-mix(in srgb, var(--cl-accent) 70%, transparent));
+}
+
+.avix-cl.is-ready .avix-cl__buddy {
+	visibility: visible;
+}
+
+.avix-cl__sprite {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform-origin: 50% 100%;
+	transition: transform 180ms var(--cl-ease);
+}
+
+.avix-cl__buddy.is-land .avix-cl__sprite {
+	transform: scale(1.18, 0.82);
+}
+
+.avix-cl__sprite svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--cl-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-cl__sprite rect {
+	transform-box: view-box;
+}
+
+/* Treadmill walk while the belt carries it. */
+.avix-cl__buddy.is-walk .avix-cl__b-leg--l {
+	animation: avix-cl-step 0.42s steps(1) infinite;
+}
+
+.avix-cl__buddy.is-walk .avix-cl__b-leg--r {
+	animation: avix-cl-step 0.42s steps(1) -0.21s infinite;
+}
+
+/* Mid-air: legs tucked, arms up. */
+.avix-cl__buddy.is-hop .avix-cl__b-leg {
+	transform: translate(0, -2px);
+}
+
+.avix-cl__buddy.is-hop .avix-cl__b-arm {
+	transform: translate(0, -2px);
+}
+
+/* Presenting a client: raised arm bobs. */
+.avix-cl__buddy.is-talk .avix-cl__b-arm--r {
+	animation: avix-cl-wave 0.5s steps(1) infinite;
+}
+
+.avix-cl__buddy.is-idle .avix-cl__b-head {
+	animation: avix-cl-look 6s steps(1) infinite;
+}
+
+@keyframes avix-cl-step {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-cl-wave {
+	0% { transform: translate(0, -3px); }
+	50% { transform: translate(0, -2px); }
+}
+
+@keyframes avix-cl-look {
+	0% { transform: translate(0, 0); }
+	55% { transform: translate(-1px, 0); }
+	70% { transform: translate(1px, 0); }
+	85% { transform: translate(0, 0); }
+}
+
+/* ---------- Speech bubble ---------- */
+
+.avix-cl__bubble {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 6;
+	width: max-content;
+	max-width: min(300px, calc(100% - 24px));
+	padding: 13px 16px 14px;
+	border-radius: 16px;
+	color: var(--cl-bubble-ink);
+	background: var(--cl-bubble);
+	box-shadow: 0 18px 40px -14px rgba(0, 0, 0, 0.45);
+	font-family: var(--cl-font-body);
+	opacity: 0;
+	pointer-events: none;
+	transform: translate3d(var(--cl-bx, 0px), calc(var(--cl-by, 0px) + 8px), 0) scale(0.92);
+	transform-origin: var(--cl-tail, 50%) 100%;
+	transition: opacity 220ms ease, transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.avix-cl__bubble.is-open {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translate3d(var(--cl-bx, 0px), var(--cl-by, 0px), 0) scale(1);
+}
+
+/* Tail pointing at the character. */
+.avix-cl__bubble::after {
+	position: absolute;
+	top: 100%;
+	left: var(--cl-tail, 50%);
+	width: 14px;
+	height: 8px;
+	background: var(--cl-bubble);
+	clip-path: polygon(0 0, 100% 0, 50% 100%);
+	transform: translateX(-50%);
+	content: "";
+}
+
+.avix-cl .avix-cl__bubble-name {
+	display: block;
+	margin: 0;
+	font-family: var(--cl-font-display);
+	font-size: 16px;
+	font-weight: 600;
+	letter-spacing: -0.015em;
+	line-height: 1.25;
+}
+
+.avix-cl .avix-cl__bubble-meta {
+	display: block;
+	margin: 4px 0 0;
+	color: color-mix(in srgb, var(--cl-bubble-ink) 70%, transparent);
+	font-size: 13px;
+	line-height: 1.45;
+}
+
+.avix-cl .avix-cl__bubble-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 9px;
+	color: var(--cl-accent);
+	font-size: 13px;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.avix-cl .avix-cl__bubble-link:hover {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.avix-cl__bubble-link svg {
+	width: 13px;
+	height: 13px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.avix-cl__bubble [hidden] {
+	display: none;
+}
+
+/* ---------- Footer: proof badge + pause ---------- */
+
+.avix-cl__foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	margin-top: clamp(28px, 3.5cqi, 44px);
+}
+
+.avix-cl .avix-cl__proof {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 11px 18px;
+	border: 1px solid var(--cl-line);
+	border-radius: 999px;
+	color: var(--cl-ink);
+	background: var(--cl-bg);
+	box-shadow: 0 6px 18px -10px rgba(26, 26, 26, 0.2);
+	font-family: var(--cl-font-body);
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1;
+	text-decoration: none;
+	transition: border-color 220ms ease, transform 300ms var(--cl-ease);
+}
+
+.avix-cl a.avix-cl__proof:hover {
+	border-color: color-mix(in srgb, var(--cl-accent) 45%, var(--cl-line));
+	color: var(--cl-ink);
+	transform: translateY(-2px);
+}
+
+.avix-cl .avix-cl__proof strong {
+	font-family: var(--cl-font-display);
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.avix-cl__stars {
+	display: inline-flex;
+	gap: 2px;
+	color: var(--cl-accent);
+}
+
+.avix-cl__stars svg {
+	width: 14px;
+	height: 14px;
+	fill: currentColor;
+}
+
+.avix-cl__fi {
+	display: grid;
+	width: 20px;
+	height: 20px;
+	place-items: center;
+	padding-bottom: 1px;
+	border-radius: 50%;
+	color: #ffffff;
+	background: #1dbf73;
+	font-family: Arial, sans-serif;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: -0.04em;
+}
+
+.avix-cl .avix-cl__toggle {
+	display: grid;
+	width: 34px;
+	height: 34px;
+	place-items: center;
+	margin: 0;
+	padding: 0;
+	border: 1px solid var(--cl-line);
+	border-radius: 50%;
+	color: var(--cl-muted);
+	background: transparent;
+	cursor: pointer;
+	transition: color 200ms ease, border-color 200ms ease;
+}
+
+.avix-cl .avix-cl__toggle:hover {
+	border-color: var(--cl-ink);
+	color: var(--cl-ink);
+}
+
+.avix-cl .avix-cl__toggle:focus-visible {
+	outline: 2px solid var(--cl-accent);
+	outline-offset: 3px;
+}
+
+.avix-cl__toggle svg {
+	width: 13px;
+	height: 13px;
+	fill: currentColor;
+}
+
+.avix-cl__toggle .avix-cl__play,
+.avix-cl.is-user-paused .avix-cl__toggle .avix-cl__pause {
+	display: none;
+}
+
+.avix-cl.is-user-paused .avix-cl__toggle .avix-cl__play {
+	display: block;
+}
+
+.avix-cl__sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	clip-path: inset(50%);
+}
+
+/* ---------- Narrow widget ---------- */
+
+@container avix-cl (max-width: 640px) {
+	/* Container queries style descendants only: tokens are reset on the inner wrapper. */
+	.avix-cl__inner {
+		--cl-tile-h: 78px;
+		--cl-gap: 12px;
+		--cl-buddy-w: 26px;
+		--cl-stage-top: 152px;
+	}
+
+	.avix-cl__frame {
+		width: min(calc(100% - 32px), var(--cl-max));
+	}
+
+	.avix-cl .avix-cl__tile {
+		min-width: 136px;
+		padding: 14px 20px;
+		border-radius: 16px;
+	}
+
+	.avix-cl .avix-cl__tile img {
+		max-width: 112px;
+		max-height: 36px;
+	}
+
+	.avix-cl__viewport,
+	.avix-cl__belt {
+		-webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+		mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+	}
+
+	.avix-cl .avix-cl__proof {
+		font-size: 13px;
+	}
+
+	.avix-cl__stage {
+		margin-top: 0;
+	}
+
+	.avix-cl__bubble {
+		padding: 11px 14px 12px;
+		border-radius: 14px;
+	}
+
+	.avix-cl .avix-cl__bubble-name {
+		font-size: 15px;
+	}
+
+	.avix-cl .avix-cl__bubble-meta {
+		margin-top: 3px;
+		font-size: 12.5px;
+	}
+
+	.avix-cl .avix-cl__bubble-link {
+		margin-top: 7px;
+		font-size: 12.5px;
+	}
+}
+
+/* Reduced motion: a still, scrollable row; the character just sits. */
+@media (prefers-reduced-motion: reduce) {
+	.avix-cl *,
+	.avix-cl *::before,
+	.avix-cl *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+	}
+}

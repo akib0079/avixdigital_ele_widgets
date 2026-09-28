@@ -11,10 +11,6 @@
 	var reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
 	var SWIPE_DISTANCE = 70;
 
-	function pad(value) {
-		return value < 10 ? '0' + value : String(value);
-	}
-
 	function isEditMode() {
 		return !!(window.elementorFrontend && typeof window.elementorFrontend.isEditMode === 'function' && window.elementorFrontend.isEditMode());
 	}
@@ -31,7 +27,6 @@
 		this.stage = root.querySelector('[data-rv-stage]');
 		this.slides = Array.prototype.slice.call(root.querySelectorAll('[data-rv-slide]'));
 		this.segments = Array.prototype.slice.call(root.querySelectorAll('[data-rv-seg]'));
-		this.current = root.querySelector('[data-rv-current]');
 		this.status = root.querySelector('[data-rv-status]');
 		this.toggle = root.querySelector('[data-rv-toggle]');
 		this.count = this.slides.length;
@@ -315,9 +310,6 @@
 		});
 		this.restartSegment();
 
-		if (this.current) {
-			this.current.textContent = pad(this.index + 1);
-		}
 		if (announce && this.status) {
 			this.status.textContent = this.status.getAttribute('data-template').replace('%1$s', this.index + 1).replace('%2$s', this.count);
 		}
