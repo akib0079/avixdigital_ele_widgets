@@ -1,0 +1,1160 @@
+/*!
+ * Avix Digital · Smart Header
+ * Fixed header: see-through at the top (light or dark text to match the
+ * page), a frosted bar after scrolling, hides while scrolling down. The
+ * "Available" notch is home to the pixel character, who says hi.
+ */
+
+.avix-sh {
+	--sh-accent: #fb6007;
+	--sh-accent-hover: #e25504;
+	--sh-logo-h: 40px;
+	--sh-side: 5%;
+	--sh-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--sh-font-body: "Inter", Arial, sans-serif;
+	--sh-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 9999;
+	width: 100%;
+	border-bottom: 1px solid transparent;
+	color: var(--sh-ink);
+	background: transparent;
+	font-family: var(--sh-font-body);
+	-webkit-font-smoothing: antialiased;
+	transition: transform 0.45s var(--sh-ease), background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.avix-sh *,
+.avix-sh *::before,
+.avix-sh *::after,
+.avix-sh-menu *,
+.avix-sh-menu *::before,
+.avix-sh-menu *::after {
+	box-sizing: border-box;
+}
+
+/* Tones: "on dark" = white text and the white logo; "on light" = dark text and the dark logo. */
+.avix-sh--on-dark {
+	--sh-ink: #ffffff;
+	--sh-notch-bg: #ffffff;
+	--sh-notch-ink: #111111;
+	--sh-panel-bg: rgba(20, 21, 24, 0.96);
+	--sh-panel-ink: #ffffff;
+	--sh-panel-muted: #a4a4aa;
+	--sh-panel-line: rgba(255, 255, 255, 0.09);
+	--sh-panel-hover: rgba(255, 255, 255, 0.06);
+}
+
+.avix-sh--on-light {
+	--sh-ink: #1a1a1a;
+	--sh-notch-bg: #111111;
+	--sh-notch-ink: #ffffff;
+	--sh-panel-bg: rgba(255, 255, 255, 0.98);
+	--sh-panel-ink: #111111;
+	--sh-panel-muted: #66615b;
+	--sh-panel-line: rgba(0, 0, 0, 0.07);
+	--sh-panel-hover: rgba(0, 0, 0, 0.035);
+}
+
+/* After scrolling: a frosted bar. */
+.avix-sh.is-scrolled.avix-sh--on-dark {
+	border-bottom-color: rgba(255, 255, 255, 0.08);
+	background-color: rgba(10, 11, 13, 0.9);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+	-webkit-backdrop-filter: blur(14px) saturate(140%);
+	backdrop-filter: blur(14px) saturate(140%);
+}
+
+.avix-sh.is-scrolled.avix-sh--on-light {
+	border-bottom-color: rgba(0, 0, 0, 0.07);
+	background-color: rgba(255, 255, 255, 0.88);
+	box-shadow: 0 10px 30px rgba(20, 16, 12, 0.07);
+	-webkit-backdrop-filter: blur(14px) saturate(160%);
+	backdrop-filter: blur(14px) saturate(160%);
+}
+
+.avix-sh.is-hidden {
+	transform: translateY(-100%);
+}
+
+/* Over the open mobile menu: no bar of its own. */
+.avix-sh.is-menu-open {
+	border-bottom-color: transparent;
+	background-color: transparent;
+	box-shadow: none;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+	transform: none;
+}
+
+body.admin-bar .avix-sh {
+	top: 32px;
+}
+
+@media (max-width: 782px) {
+	body.admin-bar .avix-sh {
+		top: 46px;
+	}
+}
+
+/* In the Elementor editor it sits in the page so it can be selected and edited. */
+.elementor-editor-active .avix-sh {
+	position: relative;
+	top: 0;
+	transform: none;
+}
+
+/* ---------- Bar ---------- */
+
+.avix-sh__bar {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	gap: 24px;
+	padding: 24px var(--sh-side) 20px;
+	transition: padding 0.4s var(--sh-ease);
+}
+
+.avix-sh__notch ~ .avix-sh__bar {
+	padding-top: 45px;
+}
+
+.avix-sh.is-scrolled .avix-sh__bar {
+	padding-top: 14px;
+	padding-bottom: 14px;
+}
+
+/* ---------- Logo (light/dark swap) ---------- */
+
+.avix-sh .avix-sh__logo {
+	display: grid;
+	justify-self: start;
+	align-items: center;
+	line-height: 0;
+	text-decoration: none;
+}
+
+.avix-sh .avix-sh__logo-img {
+	display: block;
+	grid-area: 1 / 1;
+	width: auto;
+	max-width: none;
+	height: var(--sh-logo-h);
+	margin: 0;
+	object-fit: contain;
+	transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+.avix-sh--on-dark .avix-sh__logo-img--on-light,
+.avix-sh--on-light .avix-sh__logo-img--on-dark {
+	visibility: hidden;
+	opacity: 0;
+}
+
+.avix-sh__logo-text {
+	color: var(--sh-ink);
+	font-family: var(--sh-font-display);
+	font-size: 22px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+/* ---------- Menu ---------- */
+
+.avix-sh__nav {
+	justify-self: center;
+}
+
+.avix-sh .avix-sh__menu {
+	display: flex;
+	align-items: center;
+	gap: clamp(22px, 2.7vw, 40px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-sh .avix-sh__menu > li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-sh .avix-sh__menu > li::before,
+.avix-sh .avix-sh__menu > li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-sh .avix-sh__link {
+	position: relative;
+	display: inline-flex;
+	min-height: 0;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+	padding: 6px 0;
+	border: 0;
+	border-radius: 0;
+	color: var(--sh-ink);
+	background: none;
+	box-shadow: none;
+	font-family: var(--sh-font-body);
+	font-size: 16px;
+	font-weight: 500;
+	letter-spacing: 0;
+	line-height: 1.2;
+	text-decoration: none;
+	text-transform: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: color 0.3s ease;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.avix-sh .avix-sh__link:hover,
+.avix-sh .avix-sh__link:focus,
+.avix-sh .avix-sh__link:active {
+	color: var(--sh-ink);
+	background: none;
+	box-shadow: none;
+}
+
+.avix-sh .avix-sh__link:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid var(--sh-accent);
+	outline-offset: 4px;
+}
+
+.avix-sh__link::after {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	width: 0;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--sh-accent);
+	transform: translateX(-50%);
+	transition: width 0.3s var(--sh-ease);
+	content: "";
+}
+
+.avix-sh__link:hover::after,
+.avix-sh__link.is-current::after,
+.avix-sh__drop.is-open > .avix-sh__link::after {
+	width: 100%;
+}
+
+.avix-sh__chevron {
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 2.5;
+	transition: transform 0.3s var(--sh-ease);
+}
+
+.avix-sh__drop.is-open .avix-sh__chevron {
+	transform: rotate(180deg);
+}
+
+/* ---------- Services dropdown ---------- */
+
+.avix-sh__drop {
+	position: relative;
+}
+
+.avix-sh__panel {
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	z-index: 5;
+	display: flex;
+	width: 400px;
+	flex-direction: column;
+	gap: 2px;
+	margin-top: 16px;
+	padding: 10px;
+	border: 1px solid var(--sh-panel-line);
+	border-radius: 18px;
+	color: var(--sh-panel-ink);
+	background: var(--sh-panel-bg);
+	box-shadow: 0 26px 60px -20px rgba(0, 0, 0, 0.4), 0 0 0 1px color-mix(in srgb, var(--sh-accent) 6%, transparent);
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, 10px) scale(0.98);
+	transform-origin: 50% 0;
+	transition: opacity 0.22s ease, transform 0.35s var(--sh-ease), visibility 0s linear 0.35s;
+	-webkit-backdrop-filter: blur(18px);
+	backdrop-filter: blur(18px);
+}
+
+/* Keeps the hover alive across the gap. */
+.avix-sh__panel::before {
+	position: absolute;
+	right: 0;
+	bottom: 100%;
+	left: 0;
+	height: 18px;
+	content: "";
+}
+
+.avix-sh__drop.is-open .avix-sh__panel {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+	transform: translate(-50%, 0) scale(1);
+	transition: opacity 0.22s ease, transform 0.35s var(--sh-ease), visibility 0s;
+}
+
+.avix-sh .avix-sh__item {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 14px;
+	margin: 0;
+	padding: 12px;
+	border-radius: 12px;
+	color: var(--sh-panel-ink);
+	text-decoration: none;
+	transition: background-color 0.2s ease;
+}
+
+.avix-sh .avix-sh__item:hover,
+.avix-sh .avix-sh__item:focus-visible {
+	color: var(--sh-panel-ink);
+	background: var(--sh-panel-hover);
+}
+
+.avix-sh .avix-sh__item:focus-visible {
+	outline: 2px solid var(--sh-accent);
+	outline-offset: -2px;
+}
+
+.avix-sh__item-text {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.avix-sh__item-title {
+	color: var(--sh-panel-ink);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.25;
+}
+
+.avix-sh__item-desc {
+	color: var(--sh-panel-muted);
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 1.45;
+	white-space: normal;
+}
+
+.avix-sh__item-arrow {
+	display: flex;
+	color: var(--sh-accent);
+	opacity: 0;
+	transform: translateX(-6px);
+	transition: opacity 0.2s ease, transform 0.3s var(--sh-ease);
+}
+
+.avix-sh__item-arrow svg,
+.avix-sh__cta-icon svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 2.4;
+}
+
+.avix-sh__item:hover .avix-sh__item-arrow,
+.avix-sh__item:focus-visible .avix-sh__item-arrow {
+	opacity: 1;
+	transform: none;
+}
+
+/* Real platform logos on white app-icon tiles. */
+.avix-sh__tile {
+	display: grid;
+	flex: none;
+	width: 44px;
+	height: 44px;
+	place-items: center;
+	border-radius: 12px;
+	color: var(--sh-accent);
+	background: #ffffff;
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07), 0 6px 14px -8px rgba(0, 0, 0, 0.35);
+	transition: transform 0.35s var(--sh-ease);
+}
+
+.avix-sh__tile svg {
+	display: block;
+	width: 22px;
+	height: 22px;
+}
+
+.avix-sh__tile--figma svg {
+	width: auto;
+	height: 22px;
+}
+
+/* Custom code: a dark terminal-style tile with orange brackets. */
+.avix-sh__tile--code {
+	background: #111111;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 6px 14px -8px rgba(0, 0, 0, 0.5);
+}
+
+.avix-sh__tile i,
+.avix-sh__tile--custom svg {
+	width: 20px;
+	height: 20px;
+	color: var(--sh-accent);
+	fill: currentColor;
+	font-size: 20px;
+	line-height: 20px;
+	text-align: center;
+}
+
+.avix-sh__item:hover .avix-sh__tile,
+.avix-sh-menu__sublink:hover .avix-sh__tile {
+	transform: translateY(-2px) rotate(-5deg);
+}
+
+/* ---------- Button + toggle ---------- */
+
+.avix-sh__actions {
+	display: flex;
+	justify-self: end;
+	align-items: center;
+	gap: 16px;
+}
+
+.avix-sh .avix-sh__cta {
+	display: inline-flex;
+	align-items: center;
+	padding: 11px 24px;
+	border: 0;
+	border-radius: 999px;
+	color: #ffffff;
+	background: var(--sh-accent);
+	box-shadow: 0 8px 18px -8px color-mix(in srgb, var(--sh-accent) 80%, transparent);
+	font-family: var(--sh-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background-color 0.3s ease, transform 0.4s var(--sh-ease), padding 0.4s var(--sh-ease), box-shadow 0.4s ease;
+}
+
+.avix-sh .avix-sh__cta:hover,
+.avix-sh .avix-sh__cta:focus-visible {
+	padding-right: 20px;
+	color: #ffffff;
+	background: var(--sh-accent-hover);
+	box-shadow: 0 12px 22px -10px color-mix(in srgb, var(--sh-accent) 90%, transparent);
+	transform: translateY(-2px);
+}
+
+.avix-sh .avix-sh__cta:focus-visible {
+	outline: 2px solid var(--sh-ink);
+	outline-offset: 3px;
+}
+
+.avix-sh__cta-icon {
+	display: inline-flex;
+	width: 0;
+	overflow: hidden;
+	opacity: 0;
+	transform: translateX(-12px);
+	transition: width 0.4s var(--sh-ease), opacity 0.3s ease, transform 0.4s var(--sh-ease), margin 0.4s var(--sh-ease);
+}
+
+.avix-sh__cta:hover .avix-sh__cta-icon,
+.avix-sh__cta:focus-visible .avix-sh__cta-icon {
+	width: 16px;
+	margin-left: 8px;
+	opacity: 1;
+	transform: none;
+}
+
+.avix-sh .avix-sh__toggle {
+	position: relative;
+	display: none;
+	width: 40px;
+	min-width: 0;
+	height: 40px;
+	min-height: 0;
+	margin: 0 -6px 0 0;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	color: var(--sh-ink);
+	background: none;
+	box-shadow: none;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.avix-sh .avix-sh__toggle:hover,
+.avix-sh .avix-sh__toggle:focus {
+	color: var(--sh-ink);
+	background: none;
+}
+
+.avix-sh .avix-sh__toggle:focus-visible {
+	outline: 2px solid var(--sh-accent);
+	outline-offset: 2px;
+}
+
+/* Staggered lines that fold into an X. */
+.avix-sh__toggle-line {
+	position: absolute;
+	right: 8px;
+	height: 2px;
+	border-radius: 2px;
+	background: currentColor;
+	transition: top 0.35s var(--sh-ease), width 0.35s var(--sh-ease), transform 0.35s var(--sh-ease), opacity 0.2s ease;
+}
+
+.avix-sh__toggle-line:nth-child(1) {
+	top: 13px;
+	width: 13px;
+}
+
+.avix-sh__toggle-line:nth-child(2) {
+	top: 19px;
+	width: 24px;
+}
+
+.avix-sh__toggle-line:nth-child(3) {
+	top: 25px;
+	width: 8px;
+}
+
+.avix-sh.is-menu-open .avix-sh__toggle-line:nth-child(1),
+.avix-sh.is-menu-open .avix-sh__toggle-line:nth-child(3) {
+	top: 19px;
+	width: 24px;
+}
+
+.avix-sh.is-menu-open .avix-sh__toggle-line:nth-child(1) {
+	transform: rotate(45deg);
+}
+
+.avix-sh.is-menu-open .avix-sh__toggle-line:nth-child(2) {
+	opacity: 0;
+	transform: scaleX(0.2);
+}
+
+.avix-sh.is-menu-open .avix-sh__toggle-line:nth-child(3) {
+	transform: rotate(-45deg);
+}
+
+/* ---------- The notch ---------- */
+
+.avix-sh .avix-sh__notch {
+	--sh-corner: 20px;
+	--pal-w: 20px;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	padding: 8px 30px 12px;
+	border-radius: 0 0 20px 20px;
+	color: var(--sh-notch-ink);
+	background: var(--sh-notch-bg);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+	font-family: var(--sh-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	white-space: nowrap;
+	transform: translateX(-50%);
+	transition: transform 0.45s var(--sh-ease), opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+.avix-sh .avix-sh__notch.has-pal {
+	padding-right: calc(var(--pal-w) * 2.5);
+}
+
+a.avix-sh__notch:hover,
+a.avix-sh__notch:focus {
+	color: var(--sh-notch-ink);
+}
+
+/* Inverted corners, so the notch flows out of the top edge. */
+.avix-sh__notch::before,
+.avix-sh__notch::after {
+	position: absolute;
+	top: 0;
+	width: var(--sh-corner);
+	height: var(--sh-corner);
+	pointer-events: none;
+	content: "";
+}
+
+.avix-sh__notch::before {
+	left: calc(var(--sh-corner) * -1);
+	background: radial-gradient(circle at 0 100%, transparent calc(var(--sh-corner) - 0.5px), var(--sh-notch-bg) var(--sh-corner));
+}
+
+.avix-sh__notch::after {
+	right: calc(var(--sh-corner) * -1);
+	background: radial-gradient(circle at 100% 100%, transparent calc(var(--sh-corner) - 0.5px), var(--sh-notch-bg) var(--sh-corner));
+}
+
+.avix-sh.is-scrolled .avix-sh__notch,
+.avix-sh.is-menu-open .avix-sh__notch {
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, -115%);
+}
+
+.avix-sh__dot {
+	width: 8px;
+	height: 8px;
+	flex: none;
+	border-radius: 50%;
+	background: #51ca58;
+	animation: avix-sh-dot 1.5s ease-in infinite;
+}
+
+.avix-sh__notch-short {
+	display: none;
+}
+
+/* The pixel character: seat on the notch's lower edge, legs dangling out. */
+.avix-sh__pal {
+	position: absolute;
+	right: var(--pal-w);
+	bottom: calc(var(--pal-w) * -0.5);
+	width: var(--pal-w);
+	height: calc(var(--pal-w) * 1.2);
+	pointer-events: none;
+}
+
+.avix-sh__sprite {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform-origin: 50% 100%;
+}
+
+.avix-sh__sprite svg,
+.avix-sh__hi {
+	display: block;
+	overflow: visible;
+	fill: var(--sh-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-sh__sprite svg {
+	width: 100%;
+	height: 100%;
+}
+
+.avix-sh__sprite rect {
+	transform-box: view-box;
+}
+
+.avix-sh__b-leg--l {
+	animation: avix-sh-leg 1.6s steps(1) infinite;
+}
+
+.avix-sh__b-leg--r {
+	animation: avix-sh-leg 1.6s steps(1) -0.8s infinite;
+}
+
+.avix-sh__b-head {
+	animation: avix-sh-look 7s steps(1) infinite;
+}
+
+.avix-sh__pal.is-look-l .avix-sh__b-head {
+	animation: none;
+	transform: translate(-1px, 0);
+}
+
+.avix-sh__pal.is-look-r .avix-sh__b-head {
+	animation: none;
+	transform: translate(1px, 0);
+}
+
+/* Saying hi: a little hop, a wave, and "hi" in pixel letters above its head. No bubble. */
+.avix-sh__hi {
+	position: absolute;
+	bottom: calc(100% + var(--pal-w) * 0.15);
+	left: 50%;
+	width: calc(var(--pal-w) * 0.5);
+	height: calc(var(--pal-w) * 0.5);
+	transform: translateX(-50%);
+}
+
+.avix-sh__hi g {
+	opacity: 0;
+	transform-box: fill-box;
+	transform-origin: 50% 100%;
+}
+
+.avix-sh__pal.is-hi .avix-sh__hi-h {
+	animation: avix-sh-pop 1.9s var(--sh-ease) both;
+}
+
+.avix-sh__pal.is-hi .avix-sh__hi-i {
+	animation: avix-sh-pop 1.9s var(--sh-ease) 0.12s both;
+}
+
+.avix-sh__pal.is-hi .avix-sh__sprite {
+	animation: avix-sh-hop 0.5s steps(1);
+}
+
+.avix-sh__pal.is-hi .avix-sh__b-arm--r {
+	animation: avix-sh-wave 0.36s steps(1) 4;
+}
+
+.avix-sh__pal.is-hi .avix-sh__b-head {
+	animation: none;
+	transform: translate(1px, 0);
+}
+
+.avix-sh.is-off .avix-sh__pal *,
+.avix-sh.is-scrolled .avix-sh__pal * {
+	animation-play-state: paused;
+}
+
+/* ---------- Mobile menu ---------- */
+
+.avix-sh-menu {
+	--sh-accent: #fb6007;
+	--sh-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	position: fixed;
+	inset: 0;
+	z-index: 9998;
+	display: none;
+	flex-direction: column;
+	padding: 124px 7% 48px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	color: var(--m-ink);
+	background: var(--m-bg);
+	font-family: "Inter", Arial, sans-serif;
+	visibility: hidden;
+	opacity: 0;
+	clip-path: circle(0 at var(--sh-mx, calc(100% - 40px)) var(--sh-my, 40px));
+	transition: clip-path 0.7s cubic-bezier(0.75, 0, 0.25, 1), opacity 0.4s ease, visibility 0s linear 0.7s;
+}
+
+.avix-sh-menu--dark {
+	--m-bg: #050608;
+	--m-ink: #ffffff;
+	--m-muted: #a0a5aa;
+	--m-line: rgba(255, 255, 255, 0.1);
+}
+
+.avix-sh-menu--light {
+	--m-bg: #ffffff;
+	--m-ink: #111111;
+	--m-muted: #66615b;
+	--m-line: rgba(0, 0, 0, 0.08);
+}
+
+.avix-sh-menu.is-open {
+	visibility: visible;
+	opacity: 1;
+	clip-path: circle(150vmax at var(--sh-mx, calc(100% - 40px)) var(--sh-my, 40px));
+	transition: clip-path 0.7s cubic-bezier(0.75, 0, 0.25, 1), opacity 0.3s ease, visibility 0s;
+}
+
+body.admin-bar .avix-sh-menu {
+	padding-top: 156px;
+}
+
+.avix-sh-menu .avix-sh-menu__list {
+	display: flex;
+	flex-direction: column;
+	gap: 22px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-sh-menu .avix-sh-menu__item {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-sh-menu__item::before,
+.avix-sh-menu__item::marker {
+	display: none;
+	content: none;
+}
+
+.avix-sh-menu__item,
+.avix-sh-menu__actions {
+	opacity: 0;
+	transform: translateY(26px);
+	transition: opacity 0.5s ease, transform 0.5s var(--sh-ease);
+}
+
+.avix-sh-menu.is-open .avix-sh-menu__item,
+.avix-sh-menu.is-open .avix-sh-menu__actions {
+	opacity: 1;
+	transform: none;
+	transition-delay: calc(var(--i, 0) * 70ms + 150ms);
+}
+
+.avix-sh-menu .avix-sh-menu__link {
+	display: flex;
+	width: 100%;
+	min-height: 0;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	color: var(--m-ink);
+	background: none;
+	box-shadow: none;
+	font-family: "Space Grotesk", "Inter", Arial, sans-serif;
+	font-size: 30px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.1;
+	text-align: left;
+	text-decoration: none;
+	text-transform: none;
+	cursor: pointer;
+	transition: color 0.2s ease, transform 0.2s ease;
+	-webkit-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.avix-sh-menu .avix-sh-menu__link:hover,
+.avix-sh-menu .avix-sh-menu__link:focus-visible,
+.avix-sh-menu .avix-sh-menu__link.is-current,
+.avix-sh-menu .avix-sh-menu__acc[aria-expanded="true"] {
+	color: var(--sh-accent);
+	background: none;
+}
+
+.avix-sh-menu .avix-sh-menu__link:active {
+	transform: scale(0.98);
+}
+
+.avix-sh-menu .avix-sh-menu__link:focus,
+.avix-sh-menu .avix-sh-menu__sublink:focus {
+	outline: none;
+}
+
+.avix-sh-menu .avix-sh-menu__link:focus-visible,
+.avix-sh-menu .avix-sh-menu__sublink:focus-visible,
+.avix-sh-menu .avix-sh-menu__whatsapp:focus-visible,
+.avix-sh-menu .avix-sh-menu__book:focus-visible {
+	border-radius: 6px;
+	outline: 2px solid var(--sh-accent);
+	outline-offset: 4px;
+}
+
+.avix-sh-menu .avix-sh__chevron {
+	width: 24px;
+	height: 24px;
+}
+
+.avix-sh-menu__acc[aria-expanded="true"] .avix-sh__chevron {
+	transform: rotate(180deg);
+}
+
+/* Accordion that animates its real height. */
+.avix-sh-menu__sub {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 0.4s var(--sh-ease);
+}
+
+.avix-sh-menu__sub.is-open {
+	grid-template-rows: 1fr;
+}
+
+.avix-sh-menu__sub-inner {
+	display: flex;
+	min-height: 0;
+	flex-direction: column;
+	gap: 14px;
+	margin-left: 4px;
+	padding-left: 16px;
+	overflow: hidden;
+	border-left: 2px solid color-mix(in srgb, var(--sh-accent) 25%, transparent);
+}
+
+.avix-sh-menu__sub-inner > :first-child {
+	margin-top: 18px;
+}
+
+.avix-sh-menu__sub-inner > :last-child {
+	margin-bottom: 6px;
+}
+
+.avix-sh-menu .avix-sh-menu__sublink {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: var(--m-muted);
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1.3;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.avix-sh-menu .avix-sh-menu__sublink:hover,
+.avix-sh-menu .avix-sh-menu__sublink:focus-visible,
+.avix-sh-menu .avix-sh-menu__sublink.is-current {
+	color: var(--m-ink);
+}
+
+.avix-sh-menu .avix-sh__tile {
+	width: 36px;
+	height: 36px;
+	border-radius: 10px;
+}
+
+.avix-sh-menu .avix-sh__tile svg {
+	width: 18px;
+	height: 18px;
+}
+
+.avix-sh-menu .avix-sh__tile--figma svg {
+	width: auto;
+}
+
+.avix-sh-menu__actions {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	margin-top: 40px;
+	padding-top: 28px;
+	border-top: 1px solid var(--m-line);
+}
+
+.avix-sh-menu .avix-sh-menu__whatsapp {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	color: var(--m-ink);
+	font-size: 18px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.avix-sh-menu .avix-sh-menu__whatsapp:hover {
+	color: #25d366;
+}
+
+.avix-sh-menu__whatsapp svg {
+	width: 24px;
+	height: 24px;
+	fill: #25d366;
+}
+
+.avix-sh-menu .avix-sh-menu__book {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 17px 24px;
+	border-radius: 999px;
+	color: #ffffff;
+	background: var(--sh-accent);
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1;
+	text-align: center;
+	text-decoration: none;
+	transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.avix-sh-menu .avix-sh-menu__book:hover {
+	color: #ffffff;
+	background: #e25504;
+}
+
+.avix-sh-menu .avix-sh-menu__book:active {
+	transform: scale(0.98);
+}
+
+html.avix-sh-lock,
+html.avix-sh-lock body {
+	overflow: hidden;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (min-width: 1440px) {
+	.avix-sh {
+		--sh-side: 65px;
+	}
+}
+
+@media (max-width: 1100px) {
+	.avix-sh .avix-sh__menu {
+		gap: 22px;
+	}
+
+	.avix-sh .avix-sh__link {
+		font-size: 15px;
+	}
+}
+
+@media (max-width: 900px) {
+	.avix-sh {
+		--sh-logo-h: 34px;
+	}
+
+	.avix-sh__bar {
+		grid-template-columns: 1fr auto;
+	}
+
+	.avix-sh__nav,
+	.avix-sh .avix-sh__cta {
+		display: none;
+	}
+
+	.avix-sh .avix-sh__toggle {
+		display: block;
+	}
+
+	.avix-sh-menu {
+		display: flex;
+	}
+
+	.avix-sh .avix-sh__notch {
+		--sh-corner: 16px;
+		--pal-w: 16px;
+		gap: 8px;
+		padding: 6px 20px 8px;
+		border-radius: 0 0 16px 16px;
+		font-size: 12px;
+	}
+}
+
+@media (max-width: 600px) {
+	.avix-sh__notch-text.has-short .avix-sh__notch-full {
+		display: none;
+	}
+
+	.avix-sh__notch-text.has-short .avix-sh__notch-short {
+		display: inline;
+	}
+}
+
+@media (max-width: 480px) {
+	.avix-sh__notch ~ .avix-sh__bar {
+		padding-top: 38px;
+	}
+
+	.avix-sh__bar {
+		padding-bottom: 12px;
+	}
+
+	.avix-sh .avix-sh__notch {
+		--sh-corner: 12px;
+		--pal-w: 14px;
+		gap: 6px;
+		padding: 5px 15px 7px;
+		border-radius: 0 0 12px 12px;
+		font-size: 11px;
+	}
+
+	.avix-sh__dot {
+		width: 6px;
+		height: 6px;
+	}
+
+	.avix-sh-menu {
+		padding-top: 110px;
+	}
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-sh-dot {
+	0%,
+	100% {
+		opacity: 1;
+		box-shadow: 0 0 8px rgba(81, 202, 88, 0.6);
+	}
+
+	50% {
+		opacity: 0.35;
+		box-shadow: 0 0 2px rgba(81, 202, 88, 0.1);
+	}
+}
+
+@keyframes avix-sh-leg {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-sh-look {
+	0% { transform: translate(0, 0); }
+	62% { transform: translate(-1px, 0); }
+	74% { transform: translate(1px, 0); }
+	86% { transform: translate(0, 0); }
+}
+
+@keyframes avix-sh-wave {
+	0% { transform: translate(0, -3px); }
+	50% { transform: translate(0, -2px); }
+}
+
+@keyframes avix-sh-hop {
+	0% { transform: translateY(0); }
+	20% { transform: translateY(-3px); }
+	60% { transform: translateY(0); }
+}
+
+@keyframes avix-sh-pop {
+	0% { opacity: 0; transform: translateY(1px) scale(0.3); }
+	12% { opacity: 1; transform: translateY(-0.5px) scale(1.3); }
+	22% { opacity: 1; transform: none; }
+	80% { opacity: 1; transform: none; }
+	100% { opacity: 0; transform: translateY(-1.5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-sh,
+	.avix-sh *,
+	.avix-sh-menu,
+	.avix-sh-menu * {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-sh__pal.is-hi .avix-sh__hi g {
+		opacity: 1;
+	}
+}

@@ -4,6 +4,7 @@ Custom Elementor widgets for avixdigital.com. Tested on WordPress 7.1 + Elemento
 
 | Widget | What it is |
 | --- | --- |
+| **Smart Header** | The site header: see-through at the top with light or dark text (and the matching logo) to suit the page, a frosted bar after scrolling, hides while scrolling down. The "Available for New Projects" notch is where the pixel character hangs out and says hi. Services dropdown with real platform logos, full-screen mobile menu. |
 | **Intro Text** | The brand intro under the hero: the tagline and CEO line fade in word by word from a soft blur, keywords fan out project pictures, and the Avix pixel character plays on the logo (peeks over it, sits on it, runs on it while it rolls, flips off it). |
 | **Hero Banner** | The homepage welcome: parallax background with rounded glass pixels and a pixel trail under the cursor, a headline with the tilted orange highlight and round icon, and the Avix pixel character sitting on the headline, waving hello and chilling. |
 | **Services Showcase** | Service list that expands on hover or tap, a 3D preview card in a browser frame that swaps per service, and the Avix pixel character flying on rocket boots to the service being viewed. |
@@ -25,6 +26,23 @@ No jQuery, GSAP or other libraries. Assets load only on pages that use the widge
 3. Put each widget in a **full-width container with 0 padding**. Each widget handles its own content width (1200px) and side spacing.
 
 The files in `preview/` are standalone copies of the rendered output (e.g. `preview/hero.html`), handy for sharing or quick checks.
+
+## Smart Header
+
+Replaces the HTML header. Put it in your header template (ThemeREX Layouts or Elementor Theme Builder) in a full-width container with no padding. It keeps the id `#avix-smart-header`, so the Footer still lines up with it and Selected Work still follows it when it hides.
+
+- **Light & dark** (Content → Light & Dark):
+  - *At the top of the page* (default **Auto**): the header is see-through, and Auto checks what's behind it. A photo, video or dark section gets white text and the white logo; a light page gets dark text and the dark logo. To force it on a page, add the attribute `data-avix-header="dark"` (or `"light"`) to a section (Advanced → Attributes).
+  - *After scrolling*: a frosted **Dark** or **Light** bar, with the logo swapping to match.
+  - *Mobile menu*: dark or light.
+  - *Hide while scrolling down*: slides away while reading, back as soon as the visitor scrolls up.
+- **Logos** (Content → Logo): a white logo for dark backgrounds and a dark logo for light ones; they cross-fade as the header changes.
+- **Notch & pixel character**: the white pill ("Available for New Projects", blinking green dot, optional link and a shorter text for phones) turns dark on light pages. The Avix character sits on its lower edge with its legs dangling, glances toward the mouse, and every few seconds (*Says hi every*, default 9 s, a little random) hops, waves and says **hi** in pixel letters above its head, with no bubble. It also says hi when the notch is hovered or tapped. The notch slides away once the page scrolls.
+- **Menu** (Content → Menu): add, remove or reorder items; one item can be the *Services dropdown*. The current page is underlined in orange.
+- **Services dropdown** (Content → Services Dropdown): each service gets a real logo on an app-style tile: *Custom code* (orange brackets on a dark tile), Shopify, WordPress, Webflow, Figma, Elementor, React, Next.js, Node.js, or your own icon. Title, description and link are editable. It opens on hover, click or keyboard (Enter/Space, arrow down to the first item, Escape to close) and is frosted dark over dark pages, white on light ones.
+- **Button & mobile menu**: the orange "Contact Us" button (arrow slides in on hover); on phones a full-screen menu opens in a circle from the menu button, items slide in one by one, Services is an accordion with the same logos, then WhatsApp and "Book an Appointment". It closes with the X, Escape, or after tapping a link.
+- **Accessibility**: a real `<header>` and `<nav>`; the dropdown and menu buttons announce open/closed; the current page is marked for screen readers. Reduced-motion visitors get no animation.
+- In the Elementor editor the header sits in the page (not fixed) so it's easy to select and edit.
 
 ## Intro Text
 
@@ -198,9 +216,10 @@ The widgets default to the brand system: Space Grotesk for display, Inter for te
 avix-elementor-widgets/
 ├── avix-elementor-widgets.php          bootstrap: checks Elementor, registers category, widgets, assets
 ├── includes/trait-media.php            shared helper: matches URL-only images to the media library
+├── includes/brand-icons.php            shared platform logos (Shopify, WordPress, Webflow, Figma…)
 ├── includes/widgets/class-<slug>.php   one class per widget: hero, services, selected-work,
 │                                       impact-numbers, testimonial-stack, site-footer, process-timeline, faq,
-│                                       compare-quote, client-logos, intro-text
+│                                       compare-quote, client-logos, intro-text, smart-header
 └── assets/
     ├── css/<slug>.css
     └── js/<slug>.js
