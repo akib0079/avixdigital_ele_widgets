@@ -1,0 +1,68 @@
+@font-face{font-family:Inter;src:url('assets/inter.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:swap}
+@font-face{font-family:'Space Grotesk';src:url('assets/space-grotesk.woff2') format('woff2');font-style:normal;font-weight:300 700;font-display:swap}
+
+/* Preview reset. The section owns its full-width background. */
+body{margin:0;background:#fff;-webkit-font-smoothing:antialiased}
+.preview-skip{position:fixed;left:20px;top:12px;transform:translateY(-200%);z-index:20;padding:12px;background:#10282f;color:#fff;border-radius:8px;font:14px Inter,Arial,sans-serif}
+.preview-skip:focus{transform:none}
+.avix-about :is(a,button):focus-visible{outline:3px solid #b74200;outline-offset:5px}
+/* Hero component. No global resets or framework dependencies. */
+.avix-about{--aa-accent:#c54804;--aa-ink:#10282f;--aa-muted:#536267;--aa-green:#23784b;--pf-icon-color:#43da7a;--pf-icon-stroke-width:1;--aa-item:172px;--aa-period:688px;--aa-duration:28s;--aa-hub-half:92px;container:avix-about / inline-size;position:relative;isolation:isolate;width:100%;padding-bottom:54px;background:linear-gradient(180deg,#ffe2cb 0,#fff4eb 165px,#fffaf6 320px,#fff 510px);color:var(--aa-ink);font-family:Inter,Arial,sans-serif;text-align:center}
+.avix-about *,.avix-about *:before,.avix-about *:after{box-sizing:border-box}
+.avix-about__intro{max-width:1264px;margin:0 auto;padding:96px 32px 0}
+.avix-about__eyebrow{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:0 0 32px;padding:6px 20px;border:1px solid #fb60074d;border-radius:999px;background:#fb60070d;font-size:12px;line-height:1.4;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.avix-about__eyebrow>span{width:7px;height:7px;background:#fb6007;border-radius:50%;box-shadow:none}
+.avix-about h1{margin:0;font-family:'Space Grotesk',Inter,Arial,sans-serif;font-size:clamp(45px,7.5cqi,80px);font-weight:700;letter-spacing:-.022em;line-height:1.15;text-wrap:balance}
+.avix-about h1 em{color:var(--aa-accent);font-style:normal}
+.avix-about__description{margin:28px auto 0;max-width:650px;color:var(--aa-muted);font-size:clamp(16px,1.5cqi,18px);line-height:1.7;font-weight:400;text-wrap:pretty}
+.avix-about__cta{position:relative;z-index:0;display:inline-flex;align-items:center;justify-content:center;gap:16px;overflow:hidden;margin-top:32px;padding:8px 8px 8px 28px;border:1px solid var(--aa-ink);border-radius:999px;background:var(--aa-ink);color:#fff;box-shadow:0 8px 22px #10282f1c;text-decoration:none;font-size:clamp(14px,1.2cqi,16px);font-weight:600;letter-spacing:.04em;line-height:1.2;text-transform:uppercase;transition:color 400ms ease,transform 400ms ease,box-shadow 400ms ease,border-color 400ms ease}
+.avix-about__cta::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:var(--aa-accent);transform:translateX(-101%);transition:transform 450ms cubic-bezier(.25,1,.5,1)}
+.avix-about__cta-text{white-space:nowrap}
+.avix-about__cta-icon{display:flex;flex:0 0 auto;align-items:center;justify-content:center;width:clamp(40px,4cqi,48px);height:clamp(40px,4cqi,48px);border-radius:50%;background:#fb6007;color:#fff;transition:background-color 400ms ease,transform 400ms cubic-bezier(.25,1,.5,1)}
+.avix-about__cta-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform 400ms ease}
+@media(hover:hover){
+  .avix-about__cta:hover{border-color:var(--aa-accent);color:#fff;box-shadow:0 12px 26px #c5480426;transform:translateY(-3px)}
+  .avix-about__cta:hover::after{transform:none}
+  .avix-about__cta:hover .avix-about__cta-icon{background:#0a0b0d;transform:scale(1.05)}
+  .avix-about__cta:hover svg{transform:translate(3px,-3px)}
+}
+.avix-about__note{margin:13px 0 0;color:var(--aa-muted);font-size:12px;line-height:1.6}
+.avix-about__expertise{width:min(1480px,calc(100% - 64px));margin:62px auto 0}
+.avix-about__rail-heading p{margin:0;color:var(--aa-ink);font-size:13px;line-height:1.7;font-weight:550;letter-spacing:.015em}
+.avix-about__rail-heading span{color:var(--aa-muted);font-weight:400}
+.avix-about__marquee{position:relative;height:188px;margin-top:24px;display:none;overflow:hidden;overflow:clip}
+.avix-about.is-enhanced .avix-about__marquee{display:block}
+.avix-about__line{position:absolute;left:4%;right:4%;top:79px;height:1px;background:#eef0f0}
+.avix-about__lane{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.avix-about__lane--incoming{clip-path:inset(0 calc(50% + var(--aa-hub-half)) 0 0);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 calc(50% - var(--aa-hub-half) - 28px),transparent calc(50% - var(--aa-hub-half)));-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 calc(50% - var(--aa-hub-half) - 28px),transparent calc(50% - var(--aa-hub-half)))}
+.avix-about__lane--outgoing{clip-path:inset(0 0 0 calc(50% + var(--aa-hub-half)));mask-image:linear-gradient(90deg,transparent calc(50% + var(--aa-hub-half)),#000 calc(50% + var(--aa-hub-half) + 28px),#000 90%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent calc(50% + var(--aa-hub-half)),#000 calc(50% + var(--aa-hub-half) + 28px),#000 90%,transparent)}
+.avix-about__track{display:flex;width:max-content;height:100%;align-items:flex-start;animation:avix-about-flow var(--aa-duration) linear infinite;will-change:transform}
+.avix-about__group{display:flex;flex-shrink:0}
+.avix-about__platform{width:var(--aa-item);flex:none;display:flex;align-items:center;flex-direction:column;padding-top:55px;gap:14px}
+.avix-about__platform svg{display:block;width:48px;height:48px;background:#fff;box-shadow:0 0 0 13px #fff}
+.avix-about__platform-name{font-size:12px;line-height:1.6;font-weight:500;color:#5b696d}
+.avix-about__lane--outgoing .avix-about__platform svg{width:44px;height:44px;margin:2px}
+.avix-about__hub{position:absolute;top:0;left:50%;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;width:160px;height:160px;transform:translateX(-50%);border:1px solid #dfe4e5;border-radius:22px;background:#fff;box-shadow:0 8px 24px #10282f0d,0 0 0 12px #fff}
+.avix-about__hub img{display:block;width:74px;height:74px;object-fit:contain}
+.avix-about__hub span{font-size:12px;font-weight:500;letter-spacing:.01em;color:var(--aa-ink)}
+.avix-about__platforms{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 30px;margin:25px 0;padding:0;list-style:none;font-size:14px;font-weight:500;line-height:1.8}
+.avix-about__static-check{margin-right:8px;color:var(--aa-green)}
+.avix-about.is-enhanced .avix-about__platforms{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.avix-about__rail-footer{display:flex;align-items:center;justify-content:center;position:relative;min-height:40px;margin-top:0;gap:16px}
+.avix-about__rail-footer p{margin:0;font-size:12px;line-height:1.7;color:var(--aa-muted)}
+.avix-about__rail-footer p>span{color:var(--aa-ink)}
+.avix-about__pause{position:absolute;right:0;display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:8px 10px;border:0;border-radius:6px;background:transparent;color:#536267;font:inherit;font-size:11px;line-height:1.5;cursor:pointer}
+.avix-about__pause[hidden]{display:none}
+.avix-about__pause:hover{background:#f3f5f5;color:#10282f}
+.avix-about__pause svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5}
+.avix-about__pause .play-icon{display:none}
+.avix-about.is-paused .avix-about__track{animation-play-state:paused}
+.avix-about.is-paused .pause-icon{display:none}
+.avix-about.is-paused .play-icon{display:block}
+@keyframes avix-about-flow{from{transform:translateX(calc(-1 * var(--aa-period)))}to{transform:translateX(0)}}
+@container avix-about (max-width:1000px){.avix-about__intro{padding:80px 36px 0}.avix-about h1{font-size:clamp(45px,7.5cqi,80px)}.avix-about__desktop-break{display:none}.avix-about__description{max-width:620px}.avix-about__expertise{margin-top:54px}.avix-about__pause{position:static}.avix-about__rail-footer{justify-content:space-between}}
+@container avix-about (max-width:600px){.avix-about__expertise{--aa-item:112px;--aa-period:448px;--aa-duration:24s;--aa-hub-half:62px}.avix-about__intro{padding:64px 22px 0}.avix-about__eyebrow{font-size:10px;margin-bottom:25px}.avix-about h1{font-size:clamp(32px,9.5cqi,37px);line-height:1.25;letter-spacing:-.018em}.avix-about__description{margin-top:22px;font-size:15px;line-height:1.65}.avix-about__cta{margin-top:28px;font-size:14px}.avix-about__note{font-size:11px;max-width:270px;margin:13px auto 0}.avix-about__expertise{width:calc(100% - 24px);margin-top:44px}.avix-about__rail-heading p{font-size:12px}.avix-about__marquee{height:148px;margin-top:22px}.avix-about__hub{width:108px;height:118px;border-radius:18px;gap:9px;box-shadow:0 6px 18px #10282f0d,0 0 0 8px #fff}.avix-about__hub img{width:50px;height:50px}.avix-about__hub span{font-size:10px}.avix-about__line{top:57px}.avix-about__platform{padding-top:37px;gap:13px}.avix-about__platform svg{width:40px;height:40px;box-shadow:0 0 0 8px #fff}.avix-about__lane--outgoing .avix-about__platform svg{width:36px;height:36px;margin:2px}.avix-about__platform-name{font-size:10px}.avix-about__rail-footer{justify-content:center;flex-direction:column;gap:3px}.avix-about__rail-footer p{font-size:11px}.avix-about__pause{font-size:10px;min-height:40px}.avix-about.is-enhanced .avix-about__platforms{position:static;display:grid;grid-template-columns:repeat(2,max-content);width:auto;height:auto;padding:0;margin:0 0 20px;overflow:visible;clip-path:none;white-space:normal;gap:7px 25px;text-align:left;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.avix-about__track{animation:none}.avix-about.is-enhanced .avix-about__marquee{display:none}.avix-about.is-enhanced .avix-about__platforms{position:static;width:auto;height:auto;padding:0;margin:26px 0;overflow:visible;clip-path:none;white-space:normal}.avix-about__pause{display:none}.avix-about__cta,.avix-about__cta::after,.avix-about__cta-icon,.avix-about__cta svg{transition:none}.avix-about__cta:hover,.avix-about__cta:hover .avix-about__cta-icon,.avix-about__cta:hover svg{transform:none}}
+
+
+@container avix-about (max-width:420px){.avix-about__cta{gap:12px;padding-left:22px}}

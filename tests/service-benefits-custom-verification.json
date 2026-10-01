@@ -1,0 +1,141 @@
+{
+  "checks": [
+    {
+      "label": "Chrome: approved image spacing survives Elementor CSS",
+      "passed": true
+    },
+    {
+      "label": "Chrome: saved style controls apply {\"heading\":\"46px\",\"radius\":\"25px\",\"gap\":\"30px\",\"background\":\"rgb(250, 251, 252)\",\"imageRadius\":\"19px\",\"cards\":4,\"customAvatar\":true,\"librarySource\":\"http://127.0.0.1:4174/wp-content/uploads/2026/10/avix-benefit-test-1024x683.webp 1024w, http://127.0.0.1:4174/wp-content/uploads/2026/10/avix-benefit-test-300x200.webp 300w, http://127.0.0.1:4174/wp-content/uploads/2026/10/avix-benefit-test-768x512.webp 768w, http://127.0.0.1:4174/wp-content/uploads/2026/10/avix-benefit-test.webp 1152w\",\"text\":\"Custom service offering\"}",
+      "passed": true
+    },
+    {
+      "label": "Chrome: edited cards, media and avatar render",
+      "passed": true
+    },
+    {
+      "label": "Chrome: per-card link hover colour applies",
+      "passed": true
+    },
+    {
+      "label": "Chrome: external link options apply",
+      "passed": true
+    },
+    {
+      "label": "Chrome: mobile heading override",
+      "passed": true
+    },
+    {
+      "label": "Chrome: mobile card spacing override",
+      "passed": true
+    },
+    {
+      "label": "Chrome: custom mobile reflows",
+      "passed": true
+    },
+    {
+      "label": "Chrome: disabled card motion",
+      "passed": true
+    },
+    {
+      "label": "Chrome: disabled greeting",
+      "passed": true
+    },
+    {
+      "label": "Chrome: multiple instances have unique identifiers",
+      "passed": true
+    },
+    {
+      "label": "Chrome: second instance greeting",
+      "passed": true
+    },
+    {
+      "label": "Chrome: replacement markup initializes",
+      "passed": true
+    },
+    {
+      "label": "Chrome: replaced greeting still finishes",
+      "passed": true
+    },
+    {
+      "label": "Chrome: motion preference change clears greeting",
+      "passed": true
+    },
+    {
+      "label": "Chrome: guide layout without avatar",
+      "passed": true
+    },
+    {
+      "label": "Chrome: existing About Hero still renders",
+      "passed": true
+    },
+    {
+      "label": "WebKit: approved image spacing survives Elementor CSS",
+      "passed": true
+    },
+    {
+      "label": "WebKit: saved style controls apply {\"heading\":\"46px\",\"radius\":\"25px\",\"gap\":\"30px\",\"background\":\"rgb(250, 251, 252)\",\"imageRadius\":\"19px\",\"cards\":4,\"customAvatar\":true,\"librarySource\":\"http://127.0.0.1:4174/wp-content/uploads/2026/10/avix-benefit-test-1024x683.webp 1024w, http://127.0.0.1:4174/wp-content/uploads/2026/10/avix-benefit-test-300x200.webp 300w, http://127.0.0.1:4174/wp-content/uploads/2026/10/avix-benefit-test-768x512.webp 768w, http://127.0.0.1:4174/wp-content/uploads/2026/10/avix-benefit-test.webp 1152w\",\"text\":\"Custom service offering\"}",
+      "passed": true
+    },
+    {
+      "label": "WebKit: edited cards, media and avatar render",
+      "passed": true
+    },
+    {
+      "label": "WebKit: per-card link hover colour applies",
+      "passed": true
+    },
+    {
+      "label": "WebKit: external link options apply",
+      "passed": true
+    },
+    {
+      "label": "WebKit: mobile heading override",
+      "passed": true
+    },
+    {
+      "label": "WebKit: mobile card spacing override",
+      "passed": true
+    },
+    {
+      "label": "WebKit: custom mobile reflows",
+      "passed": true
+    },
+    {
+      "label": "WebKit: disabled card motion",
+      "passed": true
+    },
+    {
+      "label": "WebKit: disabled greeting",
+      "passed": true
+    },
+    {
+      "label": "WebKit: multiple instances have unique identifiers",
+      "passed": true
+    },
+    {
+      "label": "WebKit: second instance greeting",
+      "passed": true
+    },
+    {
+      "label": "WebKit: replacement markup initializes",
+      "passed": true
+    },
+    {
+      "label": "WebKit: replaced greeting still finishes",
+      "passed": true
+    },
+    {
+      "label": "WebKit: motion preference change clears greeting",
+      "passed": true
+    },
+    {
+      "label": "WebKit: guide layout without avatar",
+      "passed": true
+    },
+    {
+      "label": "WebKit: existing About Hero still renders",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

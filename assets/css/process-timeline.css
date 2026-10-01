@@ -1,0 +1,1028 @@
+/*!
+ * Avix Digital · Process Timeline
+ * A serpentine line draws itself as you scroll; the Avix pixel character
+ * walks it, lights up each step, and sits down at the end of the line.
+ * One set of step markup serves both layouts (container queries).
+ */
+
+.avix-pt {
+	--pt-bg: #050608;
+	--pt-ink: #ffffff;
+	--pt-muted: #a0a5aa;
+	--pt-line: rgba(255, 255, 255, 0.08);
+	--pt-accent: #fb6007;
+	--pt-grid: rgba(255, 255, 255, 0.022);
+	--pt-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--pt-font-body: "Inter", Arial, sans-serif;
+	--pt-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--pt-max: 1400px;
+	--pt-gutter: 5%;
+	--pt-buddy-w: clamp(26px, 2.3vw, 36px);
+	--pt-tile: clamp(56px, 7cqi, 88px);
+
+	container: avix-pt / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(110px, 11vw, 150px) 0 clamp(80px, 8vw, 110px);
+	overflow: clip;
+	color: var(--pt-ink);
+	background-color: var(--pt-bg);
+	background-image:
+		linear-gradient(var(--pt-grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--pt-grid) 1px, transparent 1px);
+	background-position: center top;
+	background-size: 80px 80px;
+	font-family: var(--pt-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-pt--no-grid {
+	background-image: none;
+}
+
+.avix-pt *,
+.avix-pt *::before,
+.avix-pt *::after {
+	box-sizing: border-box;
+}
+
+/* Ambient corner glows */
+.avix-pt::before,
+.avix-pt::after {
+	position: absolute;
+	z-index: 0;
+	width: 800px;
+	height: 800px;
+	border-radius: 50%;
+	pointer-events: none;
+	content: "";
+}
+
+.avix-pt::before {
+	top: -200px;
+	right: -300px;
+	background: radial-gradient(circle, color-mix(in srgb, var(--pt-accent) 6%, transparent) 0%, transparent 65%);
+}
+
+.avix-pt::after {
+	bottom: 5%;
+	left: -300px;
+	background: radial-gradient(circle, color-mix(in srgb, var(--pt-accent) 4%, transparent) 0%, transparent 65%);
+}
+
+.avix-pt--no-glow::before,
+.avix-pt--no-glow::after {
+	display: none;
+}
+
+.avix-pt__frame {
+	position: relative;
+	z-index: 1;
+	width: min(calc(100% - var(--pt-gutter) * 2), var(--pt-max));
+	margin-inline: auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-pt__head {
+	margin-bottom: clamp(70px, 8cqi, 120px);
+}
+
+.avix-pt .avix-pt__tag {
+	display: inline-flex;
+	width: fit-content;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 24px;
+	padding: 6px 16px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 999px;
+	color: #e0e0e0;
+	background: rgba(255, 255, 255, 0.08);
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+	font-family: var(--pt-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1.4;
+	text-transform: uppercase;
+	transition: color 500ms ease, border-color 500ms ease, background-color 500ms ease, box-shadow 500ms ease;
+}
+
+.avix-pt__tag b {
+	color: var(--pt-accent);
+	font-weight: 600;
+}
+
+.avix-pt .avix-pt__title {
+	max-width: 1000px;
+	margin: 0;
+	padding: 0;
+	color: var(--pt-ink);
+	font-family: var(--pt-font-display);
+	font-size: clamp(34px, 4.6cqi, 64px);
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.15;
+}
+
+.avix-pt .avix-pt__accent {
+	color: var(--pt-hl, var(--pt-accent));
+}
+
+.avix-pt__word {
+	display: inline-block;
+	white-space: pre;
+}
+
+/* ---------- Team row under the title ---------- */
+
+.avix-pt__team {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 24px clamp(28px, 3.4cqi, 52px);
+	margin-top: clamp(34px, 4cqi, 52px);
+}
+
+.avix-pt .avix-pt__faces {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: clamp(8px, 0.9cqi, 12px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-pt .avix-pt__member {
+	--pt-tip-left: 50%;
+	--pt-tip-x: -50%;
+	--pt-tip-arrow: 50%;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-pt .avix-pt__member:first-child {
+	--pt-tip-left: 0px;
+	--pt-tip-x: 0px;
+	--pt-tip-arrow: calc(var(--pt-tile) / 2);
+}
+
+.avix-pt .avix-pt__member::before,
+.avix-pt .avix-pt__member::marker {
+	display: none;
+	content: none;
+}
+
+.avix-pt .avix-pt__face {
+	position: relative;
+	display: block;
+	width: var(--pt-tile);
+	height: var(--pt-tile);
+	overflow: hidden;
+	border-radius: 24%;
+	color: inherit;
+	background: #15171b;
+	text-decoration: none;
+	transition: transform 450ms var(--pt-ease), box-shadow 450ms ease;
+}
+
+/* Hairline ring drawn above the photo. */
+.avix-pt__face::after {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+	pointer-events: none;
+	content: "";
+	transition: box-shadow 450ms ease;
+}
+
+.avix-pt .avix-pt__photo {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	object-fit: cover;
+	transition: transform 600ms var(--pt-ease);
+}
+
+.avix-pt__monogram {
+	display: grid;
+	width: 100%;
+	height: 100%;
+	place-items: center;
+	color: var(--pt-ink);
+	background: linear-gradient(145deg, color-mix(in srgb, var(--pt-accent) 24%, #15171b) 0%, #15171b 72%);
+	font-family: var(--pt-font-display);
+	font-size: calc(var(--pt-tile) * 0.32);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1;
+}
+
+@media (hover: hover) {
+	.avix-pt__member:hover .avix-pt__face {
+		box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+		transform: translateY(-4px);
+	}
+
+	.avix-pt__member:hover .avix-pt__photo {
+		transform: scale(1.06);
+	}
+}
+
+.avix-pt__member:hover .avix-pt__face::after,
+.avix-pt__member:focus-within .avix-pt__face::after {
+	box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--pt-accent) 75%, transparent);
+}
+
+.avix-pt a.avix-pt__face:focus-visible {
+	outline: 2px solid var(--pt-accent);
+	outline-offset: 3px;
+}
+
+/* Name / role tooltip */
+.avix-pt__who {
+	position: absolute;
+	bottom: calc(100% + 12px);
+	left: var(--pt-tip-left);
+	z-index: 40;
+	display: grid;
+	gap: 2px;
+	padding: 8px 12px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 10px;
+	color: var(--pt-ink);
+	background: #141518;
+	box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+	font-family: var(--pt-font-body);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.35;
+	text-align: left;
+	white-space: nowrap;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(var(--pt-tip-x), 6px) scale(0.96);
+	transform-origin: var(--pt-tip-arrow) 100%;
+	transition: opacity 200ms ease, transform 300ms var(--pt-ease);
+}
+
+.avix-pt__who::after {
+	position: absolute;
+	top: 100%;
+	left: var(--pt-tip-arrow);
+	width: 9px;
+	height: 9px;
+	border-right: 1px solid rgba(255, 255, 255, 0.12);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	background: #141518;
+	content: "";
+	transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.avix-pt__who b {
+	color: var(--pt-ink);
+	font-family: var(--pt-font-display);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.avix-pt__who span {
+	color: var(--pt-muted);
+}
+
+.avix-pt__member:focus-within .avix-pt__who {
+	opacity: 1;
+	transform: translate(var(--pt-tip-x), 0) scale(1);
+}
+
+@media (hover: hover) {
+	.avix-pt__member:hover .avix-pt__who {
+		opacity: 1;
+		transform: translate(var(--pt-tip-x), 0) scale(1);
+	}
+}
+
+/* Names always visible, under each photo. */
+.avix-pt .avix-pt__team--named .avix-pt__who {
+	position: static;
+	width: var(--pt-tile);
+	margin-top: 10px;
+	padding: 0;
+	border: 0;
+	background: none;
+	box-shadow: none;
+	font-size: 11.5px;
+	white-space: normal;
+	opacity: 1;
+	overflow-wrap: anywhere;
+	transform: none;
+}
+
+.avix-pt .avix-pt__team--named .avix-pt__who::after {
+	display: none;
+}
+
+.avix-pt .avix-pt__team--named .avix-pt__member--mascot .avix-pt__who b {
+	color: var(--pt-muted);
+	font-family: var(--pt-font-body);
+	font-size: inherit;
+	font-weight: 500;
+}
+
+/* The pixel character's own tile: standing on a short ledge, waving. */
+.avix-pt .avix-pt__member--mascot .avix-pt__face {
+	display: grid;
+	place-items: end center;
+	background:
+		radial-gradient(circle at 50% 115%, color-mix(in srgb, var(--pt-accent) 40%, transparent) 0%, transparent 62%),
+		#101114;
+}
+
+.avix-pt__member--mascot .avix-pt__face::before {
+	position: absolute;
+	right: 24%;
+	bottom: calc(16% - 2px);
+	left: 24%;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--pt-accent);
+	box-shadow: 0 0 10px color-mix(in srgb, var(--pt-accent) 60%, transparent);
+	content: "";
+}
+
+.avix-pt__mascot {
+	display: block;
+	width: 36%;
+	aspect-ratio: 10 / 12;
+	margin-bottom: 16%;
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--pt-accent) 70%, transparent));
+}
+
+.avix-pt__mascot svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--pt-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-pt__mascot rect {
+	transform-box: view-box;
+}
+
+.avix-pt__mascot .avix-pt__b-arm--r {
+	animation: avix-pt-hi 5s steps(1) 1.2s infinite;
+}
+
+.avix-pt__mascot .avix-pt__b-head {
+	animation: avix-pt-look 7s steps(1) 3.5s infinite;
+}
+
+@media (hover: hover) {
+	.avix-pt__member--mascot:hover .avix-pt__b-arm--r {
+		animation: avix-pt-wave 0.5s steps(1) infinite;
+	}
+}
+
+/* Builder-only placeholders until a member is added. */
+.avix-pt .avix-pt__member--empty .avix-pt__face {
+	border: 1.5px dashed rgba(255, 255, 255, 0.2);
+	background: transparent;
+}
+
+.avix-pt__plus {
+	display: grid;
+	width: 100%;
+	height: 100%;
+	place-items: center;
+	color: rgba(255, 255, 255, 0.45);
+	font-size: calc(var(--pt-tile) * 0.36);
+	font-weight: 300;
+	line-height: 1;
+}
+
+.avix-pt__plus::before {
+	content: "+";
+}
+
+.avix-pt__team-copy {
+	flex: 1 1 260px;
+	max-width: 400px;
+}
+
+.avix-pt .avix-pt__team-text {
+	margin: 0;
+	color: var(--pt-muted);
+	font-family: var(--pt-font-body);
+	font-size: clamp(15px, 1.2cqi, 17px);
+	line-height: 1.6;
+}
+
+.avix-pt .avix-pt__team-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 14px;
+	color: var(--pt-ink);
+	font-family: var(--pt-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	transition: color 250ms ease;
+}
+
+.avix-pt .avix-pt__team-link:hover {
+	color: var(--pt-accent);
+	text-decoration: none;
+}
+
+.avix-pt .avix-pt__team-link:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid var(--pt-accent);
+	outline-offset: 4px;
+}
+
+.avix-pt__team-link svg {
+	width: 15px;
+	height: 15px;
+	color: var(--pt-accent);
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 300ms var(--pt-ease);
+}
+
+.avix-pt .avix-pt__team-link:hover svg {
+	transform: translateX(3px);
+}
+
+/* Faces pop in one after another when the row reveals. */
+.avix-pt.is-live .avix-pt__team .avix-pt__member {
+	opacity: 0;
+	transform: translateY(14px) scale(0.9);
+	transition: opacity 600ms ease, transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	transition-delay: calc(220ms + var(--pt-i, 0) * 80ms);
+}
+
+.avix-pt.is-live .avix-pt__team.is-shown .avix-pt__member {
+	opacity: 1;
+	transform: none;
+}
+
+/* ---------- Timeline (wide layout) ---------- */
+
+.avix-pt__timeline {
+	position: relative;
+	aspect-ratio: var(--pt-ratio, 1400 / 2100);
+}
+
+.avix-pt__svg {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	pointer-events: none;
+}
+
+.avix-pt__track {
+	fill: none;
+	stroke: var(--pt-line);
+	stroke-width: 2;
+}
+
+.avix-pt__draw {
+	fill: none;
+	stroke: var(--pt-accent);
+	stroke-width: 4;
+	stroke-linecap: round;
+	opacity: 0;
+	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--pt-accent) 50%, transparent));
+}
+
+.avix-pt.is-live .avix-pt__draw {
+	opacity: 1;
+}
+
+/* Mobile rail (hidden on the wide layout) */
+.avix-pt__rail {
+	display: none;
+}
+
+.avix-pt .avix-pt__steps {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-pt .avix-pt__step {
+	position: absolute;
+	top: var(--pt-top);
+	z-index: 10;
+	width: 42%;
+	margin: 0;
+	padding: 20px;
+	border-radius: 16px;
+	background: radial-gradient(circle at center, var(--pt-bg) 0%, transparent 80%);
+	transform: translateY(-50%);
+	transition: transform 400ms var(--pt-ease), filter 400ms ease, opacity 600ms ease;
+}
+
+.avix-pt .avix-pt__step::before,
+.avix-pt .avix-pt__step::marker {
+	display: none;
+	content: none;
+}
+
+.avix-pt__step--left {
+	left: 6%;
+}
+
+.avix-pt__step--right {
+	right: 6%;
+}
+
+.avix-pt .avix-pt__step-title {
+	margin: 0 0 15px;
+	padding: 0;
+	color: var(--pt-ink);
+	font-family: var(--pt-font-display);
+	font-size: clamp(24px, 2.5cqi, 36px);
+	font-weight: 600;
+	letter-spacing: -0.015em;
+	line-height: 1.25;
+}
+
+.avix-pt .avix-pt__desc {
+	margin: 0;
+	color: var(--pt-muted);
+	font-family: var(--pt-font-body);
+	font-size: clamp(15px, 1.2cqi, 17px);
+	line-height: 1.7;
+}
+
+@media (hover: hover) {
+	.avix-pt .avix-pt__step:hover {
+		z-index: 20;
+		filter: drop-shadow(0 15px 30px color-mix(in srgb, var(--pt-accent) 10%, transparent));
+		transform: translateY(-52%) scale(1.02);
+	}
+}
+
+/* Steps light up as the character reaches them. */
+.avix-pt.is-live .avix-pt__step {
+	opacity: 0.4;
+}
+
+.avix-pt.is-live .avix-pt__step.is-reached {
+	opacity: 1;
+}
+
+.avix-pt.is-live .avix-pt__step.is-current .avix-pt__tag {
+	border-color: color-mix(in srgb, var(--pt-accent) 45%, transparent);
+	color: #ffffff;
+	background: color-mix(in srgb, var(--pt-accent) 14%, transparent);
+	box-shadow: 0 0 24px color-mix(in srgb, var(--pt-accent) 22%, transparent);
+}
+
+/* ---------- Reveal ---------- */
+
+.avix-pt.is-live [data-pt-reveal] {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+	transition-delay: var(--pt-delay, 0ms);
+}
+
+.avix-pt.is-live [data-pt-reveal].is-shown {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-pt.is-live .avix-pt__title.is-split {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-pt.is-live .avix-pt__title.is-split .avix-pt__word {
+	opacity: 0;
+	filter: blur(8px);
+	transform: translateY(20px) scale(0.95) rotate(2deg);
+	transition: transform 800ms var(--pt-ease), opacity 800ms ease, filter 800ms ease;
+	transition-delay: var(--pt-delay, 0ms);
+}
+
+.avix-pt.is-live .avix-pt__title.is-split.is-shown .avix-pt__word {
+	opacity: 1;
+	filter: blur(0);
+	transform: none;
+}
+
+/* ---------- The pixel character ---------- */
+
+.avix-pt__buddy {
+	--pt-buddy-h: calc(var(--pt-buddy-w) * 1.2);
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 30;
+	width: var(--pt-buddy-w);
+	height: var(--pt-buddy-h);
+	margin: calc(var(--pt-buddy-h) / -2) 0 0 calc(var(--pt-buddy-w) / -2);
+	visibility: hidden;
+	pointer-events: none;
+	will-change: transform;
+}
+
+.avix-pt.is-live .avix-pt__buddy {
+	visibility: visible;
+}
+
+/* Breathing glow: an opacity-only pulse runs on the compositor, unlike an
+   animated filter, which repaints every frame. */
+.avix-pt__buddy::before {
+	position: absolute;
+	inset: -70% -90%;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--pt-accent) 55%, transparent) 0%, color-mix(in srgb, var(--pt-accent) 18%, transparent) 55%, transparent 100%);
+	opacity: 0;
+	pointer-events: none;
+	content: "";
+	transition: opacity 450ms ease;
+}
+
+.avix-pt__buddy.is-on::before {
+	opacity: 0.45;
+	animation: avix-pt-glow 2s ease-in-out infinite alternate;
+}
+
+.avix-pt__sprite {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform: scale(0);
+	transform-origin: 50% 100%;
+	transition: transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.avix-pt__buddy.is-on .avix-pt__sprite {
+	transform: scale(1);
+}
+
+/* Sitting: the seat (row 7 of 12) moves onto the line, legs hang past it. */
+.avix-pt__buddy.is-chill .avix-pt__sprite {
+	transform: translateY(calc(var(--pt-buddy-h) / -12)) scale(1);
+}
+
+.avix-pt__sprite svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--pt-accent);
+	shape-rendering: crispEdges;
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--pt-accent) 80%, transparent));
+}
+
+.avix-pt__sprite rect {
+	transform-box: view-box;
+	transition: transform 240ms steps(2);
+}
+
+/* Walking: legs step while the line is drawing. */
+.avix-pt__buddy.is-walking .avix-pt__b-leg--l {
+	animation: avix-pt-step 0.32s steps(1) infinite;
+}
+
+.avix-pt__buddy.is-walking .avix-pt__b-leg--r {
+	animation: avix-pt-step 0.32s steps(1) -0.16s infinite;
+}
+
+/* Chilling: arms rest on the ledge, legs swing, head glances around. */
+.avix-pt__buddy.is-chill .avix-pt__b-arm {
+	transform: translate(0, 1px);
+}
+
+.avix-pt__buddy.is-chill .avix-pt__b-leg--l {
+	animation: avix-pt-step 1.5s steps(1) infinite;
+}
+
+.avix-pt__buddy.is-chill .avix-pt__b-leg--r {
+	animation: avix-pt-step 1.5s steps(1) -0.75s infinite;
+}
+
+.avix-pt__buddy.is-chill .avix-pt__b-head {
+	animation: avix-pt-look 7s steps(1) 1.2s infinite;
+}
+
+@keyframes avix-pt-step {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-pt-look {
+	0% { transform: translate(0, 0); }
+	60% { transform: translate(-1px, 0); }
+	72% { transform: translate(1px, 0); }
+	84% { transform: translate(0, 0); }
+}
+
+/* Three quick waves, then a rest. */
+@keyframes avix-pt-hi {
+	0% { transform: translate(0, -3px); }
+	5% { transform: translate(0, -2px); }
+	10% { transform: translate(0, -3px); }
+	15% { transform: translate(0, -2px); }
+	20% { transform: translate(0, -3px); }
+	25%, 100% { transform: translate(0, 0); }
+}
+
+@keyframes avix-pt-wave {
+	0% { transform: translate(0, -3px); }
+	50% { transform: translate(0, -2px); }
+}
+
+@keyframes avix-pt-glow {
+	from { opacity: 0.25; }
+	to { opacity: 0.7; }
+}
+
+/* ---------- Speech bubble at the end of the line ---------- */
+
+.avix-pt .avix-pt__bubble {
+	position: absolute;
+	top: var(--pt-end-y);
+	left: var(--pt-end-x);
+	z-index: 25;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 11px 16px 11px 18px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 16px 16px 4px 16px;
+	color: var(--pt-ink);
+	background: rgba(20, 20, 22, 0.86);
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
+	box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+	font-family: var(--pt-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	white-space: nowrap;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(calc(-100% - 24px), calc(-100% - 14px)) scale(0.85);
+	transform-origin: 100% 100%;
+	transition: opacity 300ms ease, transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 250ms ease, background-color 250ms ease;
+}
+
+.avix-pt .avix-pt__bubble--right {
+	border-radius: 16px 16px 16px 4px;
+	transform: translate(24px, calc(-100% - 14px)) scale(0.85);
+	transform-origin: 0 100%;
+}
+
+.avix-pt.is-chill .avix-pt__bubble {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translate(calc(-100% - 24px), calc(-100% - 14px)) scale(1);
+	transition-delay: 550ms;
+}
+
+.avix-pt.is-chill .avix-pt__bubble--right {
+	transform: translate(24px, calc(-100% - 14px)) scale(1);
+}
+
+.avix-pt .avix-pt__bubble:hover,
+.avix-pt .avix-pt__bubble:focus-visible {
+	border-color: color-mix(in srgb, var(--pt-accent) 60%, transparent);
+	color: var(--pt-ink);
+	background: rgba(30, 30, 32, 0.95);
+	text-decoration: none;
+}
+
+.avix-pt .avix-pt__bubble:focus-visible {
+	outline: 2px solid var(--pt-accent);
+	outline-offset: 3px;
+}
+
+.avix-pt__bubble svg {
+	width: 15px;
+	height: 15px;
+	color: var(--pt-accent);
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 300ms var(--pt-ease);
+}
+
+.avix-pt .avix-pt__bubble:hover svg {
+	transform: translateX(3px);
+}
+
+/* Nothing loops while the section is off screen. */
+.avix-pt.is-offscreen *,
+.avix-pt.is-offscreen *::before,
+.avix-pt.is-offscreen *::after {
+	animation-play-state: paused !important;
+}
+
+/* ---------- Narrow widget: straight rail on the left ---------- */
+
+@container avix-pt (max-width: 900px) {
+	.avix-pt__frame {
+		/* Rail stops this far above the timeline bottom; the ledge sits there, clear of the text. */
+		--pt-rail-bottom: 56px;
+		--pt-ledge: 72px;
+	}
+
+	.avix-pt__head {
+		margin-bottom: 60px;
+	}
+
+	.avix-pt .avix-pt__title {
+		font-size: clamp(30px, 6cqi, 48px);
+		line-height: 1.2;
+	}
+
+	.avix-pt__timeline {
+		aspect-ratio: auto;
+		padding: 4px 0 calc(var(--pt-rail-bottom) + 76px) 34px;
+	}
+
+	.avix-pt__svg {
+		display: none;
+	}
+
+	.avix-pt__rail {
+		position: absolute;
+		top: 0;
+		bottom: var(--pt-rail-bottom);
+		left: 0;
+		display: block;
+		width: 2px;
+		border-radius: 2px;
+		background: var(--pt-line);
+		pointer-events: none;
+	}
+
+	.avix-pt__rail-draw {
+		position: absolute;
+		top: 0;
+		left: -1px;
+		display: block;
+		width: 4px;
+		height: 0;
+		border-radius: 2px;
+		background: var(--pt-accent);
+		box-shadow: 0 0 10px color-mix(in srgb, var(--pt-accent) 50%, transparent);
+	}
+
+	/* The short ledge the character sits on. */
+	.avix-pt__ledge {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		display: block;
+		width: var(--pt-ledge);
+		height: 2px;
+		border-radius: 2px;
+		background: var(--pt-line);
+	}
+
+	.avix-pt__ledge::after {
+		position: absolute;
+		inset: -1px 0;
+		display: block;
+		width: 0;
+		border-radius: 2px;
+		background: var(--pt-accent);
+		box-shadow: 0 0 10px color-mix(in srgb, var(--pt-accent) 50%, transparent);
+		content: "";
+		transition: width 450ms var(--pt-ease);
+	}
+
+	.avix-pt.is-chill .avix-pt__ledge::after {
+		width: 100%;
+	}
+
+	.avix-pt .avix-pt__step {
+		position: relative;
+		top: auto;
+		right: auto;
+		left: auto;
+		width: auto;
+		padding: 0 0 56px 12px;
+		background: none;
+		transform: none;
+	}
+
+	.avix-pt .avix-pt__step:last-child {
+		padding-bottom: 0;
+	}
+
+	.avix-pt .avix-pt__step-title {
+		font-size: clamp(22px, 4.6cqi, 28px);
+		margin-bottom: 12px;
+		line-height: 1.3;
+	}
+
+	.avix-pt .avix-pt__desc {
+		font-size: 15px;
+		line-height: 1.6;
+	}
+
+	@media (hover: hover) {
+		.avix-pt .avix-pt__step:hover {
+			transform: translateX(6px);
+		}
+	}
+
+	.avix-pt .avix-pt__bubble,
+	.avix-pt .avix-pt__bubble--right {
+		top: auto;
+		bottom: calc(var(--pt-rail-bottom) + 14px);
+		left: calc(var(--pt-ledge) + 22px);
+		border-radius: 16px 16px 16px 4px;
+		transform: translateY(0) scale(0.85);
+		transform-origin: 0 100%;
+	}
+
+	.avix-pt.is-chill .avix-pt__bubble,
+	.avix-pt.is-chill .avix-pt__bubble--right {
+		transform: translateY(0) scale(1);
+	}
+}
+
+@container avix-pt (max-width: 600px) {
+	.avix-pt .avix-pt__title {
+		font-size: clamp(28px, 8.6cqi, 34px);
+		letter-spacing: -0.02em;
+	}
+
+	.avix-pt .avix-pt__tag {
+		margin-bottom: 18px;
+		padding: 5px 13px;
+		font-size: 11px;
+	}
+
+	.avix-pt__team {
+		gap: 20px;
+		margin-top: 30px;
+	}
+
+	.avix-pt__team-copy {
+		flex-basis: 100%;
+		max-width: 34em;
+	}
+
+	.avix-pt .avix-pt__step {
+		padding-bottom: 48px;
+		padding-left: 8px;
+	}
+
+	.avix-pt .avix-pt__bubble {
+		padding: 10px 14px;
+		font-size: 13px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-pt *,
+	.avix-pt *::before,
+	.avix-pt *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-pt.is-live .avix-pt__title.is-split .avix-pt__word {
+		filter: none;
+	}
+
+	/* A still hello instead of the wave. */
+	.avix-pt__mascot .avix-pt__b-arm--r {
+		transform: translate(0, -3px);
+	}
+}

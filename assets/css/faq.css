@@ -1,0 +1,565 @@
+/*!
+ * Avix Digital · FAQ & Quote
+ * Native <details> accordion (crawlable, find-in-page friendly) with a small
+ * quote card the pixel character sits on. No JS needed to read or open it.
+ */
+
+.avix-faq {
+	--faq-bg: #050608;
+	--faq-ink: #ffffff;
+	--faq-muted: #a0a5aa;
+	--faq-line: rgba(255, 255, 255, 0.09);
+	--faq-card: #0e0f12;
+	--faq-card-line: rgba(255, 255, 255, 0.08);
+	--faq-icon-line: rgba(255, 255, 255, 0.16);
+	--faq-accent: #fb6007;
+	--faq-accent-ink: #ffffff;
+	--faq-tag-bg: rgba(255, 255, 255, 0.08);
+	--faq-tag-ink: #e0e0e0;
+	--faq-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--faq-font-body: "Inter", Arial, sans-serif;
+	--faq-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--faq-max: 1200px;
+	--faq-buddy-w: 28px;
+
+	container: avix-faq / inline-size;
+	position: relative;
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	padding: clamp(90px, 10vw, 140px) 0;
+	color: var(--faq-ink);
+	background: var(--faq-bg);
+	font-family: var(--faq-font-body);
+	-webkit-font-smoothing: antialiased;
+	interpolate-size: allow-keywords;
+}
+
+.avix-faq--light {
+	--faq-bg: #f5f3ef;
+	--faq-ink: #1a1a1a;
+	--faq-muted: #6b665f;
+	--faq-line: rgba(26, 26, 26, 0.1);
+	--faq-card: #ffffff;
+	--faq-card-line: rgba(26, 26, 26, 0.08);
+	--faq-icon-line: rgba(26, 26, 26, 0.18);
+	--faq-tag-bg: rgba(26, 26, 26, 0.05);
+	--faq-tag-ink: #3a3733;
+}
+
+.avix-faq *,
+.avix-faq *::before,
+.avix-faq *::after {
+	box-sizing: border-box;
+}
+
+.avix-faq__frame {
+	display: grid;
+	grid-template-areas:
+		"head list"
+		"cta list";
+	grid-template-rows: auto 1fr;
+	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+	column-gap: clamp(48px, 7cqi, 120px);
+	width: min(calc(100% - 10%), var(--faq-max));
+	margin-inline: auto;
+}
+
+.avix-faq--solo .avix-faq__frame {
+	grid-template-areas: "head list";
+	grid-template-rows: auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-faq__head {
+	grid-area: head;
+}
+
+.avix-faq .avix-faq__tag {
+	display: inline-flex;
+	width: fit-content;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 24px;
+	padding: 6px 16px;
+	border: 1px solid var(--faq-line);
+	border-radius: 999px;
+	color: var(--faq-tag-ink);
+	background: var(--faq-tag-bg);
+	font-family: var(--faq-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+.avix-faq__tag b {
+	color: var(--faq-accent);
+	font-weight: 600;
+}
+
+.avix-faq .avix-faq__title {
+	margin: 0;
+	padding: 0;
+	color: var(--faq-ink);
+	font-family: var(--faq-font-display);
+	font-size: clamp(34px, 4.4cqi, 56px);
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.1;
+}
+
+.avix-faq .avix-faq__accent {
+	color: var(--faq-hl, var(--faq-accent));
+}
+
+.avix-faq .avix-faq__intro {
+	max-width: 30em;
+	margin: 20px 0 0;
+	color: var(--faq-muted);
+	font-size: clamp(15px, 1.25cqi, 17px);
+	line-height: 1.65;
+}
+
+/* ---------- Accordion ---------- */
+
+.avix-faq__list {
+	grid-area: list;
+	border-top: 1px solid var(--faq-line);
+}
+
+.avix-faq .avix-faq__item {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-bottom: 1px solid var(--faq-line);
+	scroll-margin-top: 110px;
+}
+
+.avix-faq .avix-faq__q {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	margin: 0;
+	padding: 26px 0;
+	color: var(--faq-ink);
+	cursor: pointer;
+	list-style: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.avix-faq__q::-webkit-details-marker {
+	display: none;
+}
+
+.avix-faq__q::marker {
+	content: "";
+}
+
+.avix-faq .avix-faq__q:focus-visible {
+	border-radius: 8px;
+	outline: 2px solid var(--faq-accent);
+	outline-offset: 4px;
+}
+
+.avix-faq .avix-faq__q-text {
+	margin: 0;
+	padding: 0;
+	color: inherit;
+	font-family: var(--faq-font-display);
+	font-size: clamp(18px, 1.7cqi, 22px);
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	line-height: 1.35;
+}
+
+/* Plus that turns into a minus. */
+.avix-faq__icon {
+	position: relative;
+	flex: 0 0 auto;
+	width: 34px;
+	height: 34px;
+	border: 1px solid var(--faq-icon-line);
+	border-radius: 50%;
+	color: var(--faq-ink);
+	transition: color 300ms ease, background-color 300ms ease, border-color 300ms ease, transform 450ms var(--faq-ease);
+}
+
+.avix-faq__icon::before,
+.avix-faq__icon::after {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 12px;
+	height: 1.5px;
+	margin: -0.75px 0 0 -6px;
+	border-radius: 2px;
+	background: currentColor;
+	content: "";
+	transition: transform 450ms var(--faq-ease);
+}
+
+.avix-faq__icon::after {
+	transform: rotate(90deg);
+}
+
+@media (hover: hover) {
+	.avix-faq__q:hover .avix-faq__icon {
+		border-color: var(--faq-accent);
+	}
+}
+
+.avix-faq__item[open] > .avix-faq__q .avix-faq__icon {
+	border-color: var(--faq-accent);
+	color: var(--faq-accent-ink);
+	background: var(--faq-accent);
+	transform: rotate(180deg);
+}
+
+.avix-faq__item[open] > .avix-faq__q .avix-faq__icon::after {
+	transform: rotate(0deg);
+}
+
+.avix-faq .avix-faq__a {
+	padding: 0 64px 28px 0;
+	color: var(--faq-muted);
+	font-size: 16px;
+	line-height: 1.7;
+}
+
+.avix-faq__a > :first-child {
+	margin-top: 0;
+}
+
+.avix-faq__a > :last-child {
+	margin-bottom: 0;
+}
+
+.avix-faq .avix-faq__a p {
+	margin: 0 0 1em;
+}
+
+.avix-faq .avix-faq__a ul,
+.avix-faq .avix-faq__a ol {
+	margin: 0 0 1em;
+	padding-left: 1.2em;
+}
+
+.avix-faq .avix-faq__a a {
+	color: var(--faq-ink);
+	text-decoration: underline;
+	text-decoration-color: var(--faq-accent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+
+.avix-faq .avix-faq__a a:hover {
+	color: var(--faq-accent);
+}
+
+/* Smooth open/close where supported (Chrome 131+); instant elsewhere. */
+.avix-faq__item::details-content {
+	block-size: 0;
+	overflow-y: clip;
+	opacity: 0;
+	transition: block-size 450ms var(--faq-ease), opacity 300ms ease, content-visibility 450ms allow-discrete;
+}
+
+.avix-faq__item[open]::details-content {
+	block-size: auto;
+	opacity: 1;
+}
+
+/* ---------- Quote card ---------- */
+
+.avix-faq__cta {
+	position: relative;
+	grid-area: cta;
+	align-self: start;
+	margin-top: 48px;
+	padding: 28px;
+	border: 1px solid var(--faq-card-line);
+	border-radius: 20px;
+	background:
+		radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--faq-accent) 12%, transparent) 0%, transparent 60%),
+		var(--faq-card);
+}
+
+.avix-faq .avix-faq__cta-title {
+	margin: 0 0 8px;
+	padding-right: calc(var(--faq-buddy-w) + 24px);
+	color: var(--faq-ink);
+	font-family: var(--faq-font-display);
+	font-size: 20px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.3;
+}
+
+.avix-faq .avix-faq__cta-text {
+	margin: 0 0 22px;
+	color: var(--faq-muted);
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+.avix-faq .avix-faq__btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 48px;
+	padding: 14px 22px;
+	border-radius: 999px;
+	color: var(--faq-accent-ink);
+	background: var(--faq-accent);
+	font-family: var(--faq-font-body);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	transition: transform 300ms var(--faq-ease), box-shadow 300ms ease;
+}
+
+.avix-faq .avix-faq__btn:hover,
+.avix-faq .avix-faq__btn:focus-visible {
+	color: var(--faq-accent-ink);
+	box-shadow: 0 12px 30px color-mix(in srgb, var(--faq-accent) 38%, transparent);
+	text-decoration: none;
+	transform: translateY(-2px);
+}
+
+.avix-faq .avix-faq__btn:focus-visible {
+	outline: 2px solid var(--faq-accent);
+	outline-offset: 3px;
+}
+
+.avix-faq__btn svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 300ms var(--faq-ease);
+}
+
+.avix-faq .avix-faq__btn:hover svg {
+	transform: translateX(3px);
+}
+
+.avix-faq .avix-faq__note {
+	margin: 14px 0 0;
+	color: var(--faq-muted);
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+/* ---------- The pixel character, sitting on the card edge ---------- */
+
+.avix-faq__buddy {
+	--faq-buddy-h: calc(var(--faq-buddy-w) * 1.2);
+	position: absolute;
+	top: 0;
+	right: 32px;
+	z-index: 2;
+	width: var(--faq-buddy-w);
+	height: var(--faq-buddy-h);
+	/* Seat (row 7 of 12) on the edge; legs hang over the card. */
+	margin-top: calc(var(--faq-buddy-h) * -7 / 12);
+	pointer-events: none;
+	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--faq-accent) 70%, transparent));
+}
+
+.avix-faq__sprite {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform-origin: 50% 60%;
+}
+
+.avix-faq__sprite svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--faq-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-faq__sprite rect {
+	transform-box: view-box;
+}
+
+.avix-faq__b-arm {
+	transform: translate(0, 1px);
+}
+
+.avix-faq__b-leg--l {
+	animation: avix-faq-swing 1.5s steps(1) infinite;
+}
+
+.avix-faq__b-leg--r {
+	animation: avix-faq-swing 1.5s steps(1) -0.75s infinite;
+}
+
+.avix-faq__b-head {
+	animation: avix-faq-look 7s steps(1) 2s infinite;
+}
+
+.avix-faq__cta:hover .avix-faq__b-arm--r,
+.avix-faq__cta:focus-within .avix-faq__b-arm--r {
+	animation: avix-faq-wave 0.5s steps(1) infinite;
+}
+
+@keyframes avix-faq-swing {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-faq-look {
+	0% { transform: translate(0, 0); }
+	60% { transform: translate(-1px, 0); }
+	72% { transform: translate(1px, 0); }
+	84% { transform: translate(0, 0); }
+}
+
+@keyframes avix-faq-wave {
+	0% { transform: translate(0, -3px); }
+	50% { transform: translate(0, -2px); }
+}
+
+/* ---------- Reveal (only once JS is running) ---------- */
+
+.avix-faq.is-live [data-faq-reveal] {
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+	transition-delay: var(--faq-delay, 0ms);
+}
+
+.avix-faq.is-live.is-in [data-faq-reveal] {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-faq.is-live .avix-faq__sprite {
+	transform: translateY(60%) scale(0);
+	transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 700ms;
+}
+
+.avix-faq.is-live.is-in .avix-faq__sprite {
+	transform: none;
+}
+
+/* Deep link (#anchor): no animation, so the scroll lands exactly. */
+.avix-faq.is-jump [data-faq-reveal] {
+	transition: none;
+}
+
+/* Separate rule: browsers without ::details-content drop only this one. */
+.avix-faq.is-jump .avix-faq__item::details-content {
+	transition: none;
+}
+
+/* Nothing loops while the section is off screen. */
+.avix-faq.is-offscreen *,
+.avix-faq.is-offscreen *::before,
+.avix-faq.is-offscreen *::after {
+	animation-play-state: paused !important;
+}
+
+/* ---------- Wide: the quote card follows you down the questions ---------- */
+
+@container avix-faq (min-width: 901px) {
+	.avix-faq__cta {
+		position: sticky;
+		top: 110px;
+	}
+}
+
+/* ---------- Narrow: one column, card after the questions ---------- */
+
+@container avix-faq (max-width: 900px) {
+	.avix-faq__frame,
+	.avix-faq--solo .avix-faq__frame {
+		grid-template-areas:
+			"head"
+			"list"
+			"cta";
+		grid-template-rows: auto;
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-faq__list {
+		margin-top: 44px;
+	}
+
+	.avix-faq .avix-faq__title {
+		font-size: clamp(30px, 6cqi, 44px);
+	}
+}
+
+@container avix-faq (max-width: 600px) {
+	.avix-faq__frame {
+		width: calc(100% - 40px);
+	}
+
+	.avix-faq .avix-faq__tag {
+		margin-bottom: 18px;
+		padding: 5px 13px;
+		font-size: 11px;
+	}
+
+	.avix-faq .avix-faq__title {
+		font-size: clamp(28px, 8.6cqi, 34px);
+		letter-spacing: -0.02em;
+	}
+
+	.avix-faq__list {
+		margin-top: 36px;
+	}
+
+	.avix-faq .avix-faq__q {
+		gap: 16px;
+		padding: 22px 0;
+	}
+
+	.avix-faq .avix-faq__q-text {
+		font-size: 17px;
+	}
+
+	.avix-faq__icon {
+		width: 30px;
+		height: 30px;
+	}
+
+	.avix-faq .avix-faq__a {
+		padding-right: 0;
+		font-size: 15px;
+	}
+
+	.avix-faq__cta {
+		margin-top: 40px;
+		padding: 24px 22px;
+	}
+
+	.avix-faq .avix-faq__btn {
+		width: 100%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-faq *,
+	.avix-faq *::before,
+	.avix-faq *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+}

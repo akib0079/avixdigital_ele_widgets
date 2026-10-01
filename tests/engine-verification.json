@@ -1,0 +1,71 @@
+{
+  "checks": [
+    {
+      "engine": "WebKit",
+      "width": 1440,
+      "height": 900,
+      "overflow": false,
+      "marqueeBottom": 781.40625,
+      "heading": "60.48px",
+      "brokenImages": 0
+    },
+    {
+      "engine": "WebKit",
+      "width": 1366,
+      "height": 768,
+      "overflow": false,
+      "marqueeBottom": 696.328125,
+      "heading": "57.372002px",
+      "brokenImages": 0
+    },
+    {
+      "engine": "WebKit",
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "marqueeBottom": 812.40625,
+      "heading": "40px",
+      "brokenImages": 0
+    },
+    {
+      "engine": "WebKit",
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "marqueeBottom": 655.828125,
+      "heading": "33.150002px",
+      "brokenImages": 0
+    },
+    {
+      "engine": "WebKit",
+      "width": 375,
+      "height": 667,
+      "overflow": false,
+      "marqueeBottom": 529.015625,
+      "heading": "30px",
+      "brokenImages": 0
+    },
+    {
+      "engine": "WebKit",
+      "width": 320,
+      "height": 568,
+      "overflow": false,
+      "marqueeBottom": 482.78125,
+      "heading": "26px",
+      "brokenImages": 0
+    },
+    {
+      "engine": "WebKit",
+      "width": 844,
+      "height": 390,
+      "overflow": false,
+      "marqueeBottom": 495.3125,
+      "heading": "40px",
+      "brokenImages": 0
+    }
+  ],
+  "errors": [],
+  "unavailable": [
+    "Firefox: launch unavailable (browserType.launch: spawn UNKNOWN)"
+  ]
+}

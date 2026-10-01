@@ -1,0 +1,28 @@
+const {chromium}=require('C:/Users/MT/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const fs=require('fs');
+let browser;
+(async()=>{
+ browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+ const page=await browser.newPage({viewport:{width:1440,height:1000}});
+ const pending=new Set(),errors=[];
+ page.on('request',request=>pending.add(request));
+ page.on('requestfinished',request=>pending.delete(request));
+ page.on('requestfailed',request=>{pending.delete(request);errors.push(new URL(request.url()).pathname+': '+request.failure().errorText)});
+ page.on('pageerror',error=>errors.push(error.message));
+ const credentials=JSON.parse(fs.readFileSync(__dirname+'/local-credentials.json','utf8'));
+ await page.goto('http://127.0.0.1:4174/wp-login.php');
+ await page.locator('#user_login').fill(credentials.username);await page.locator('#user_pass').fill(credentials.password);
+ await Promise.all([page.waitForURL('**/wp-admin/**'),page.locator('#wp-submit').click()]);
+ const pages=JSON.parse(fs.readFileSync(__dirname+'/service-benefits-elementor-verification.json','utf8')).pages;
+ await page.goto('http://127.0.0.1:4174/wp-admin/post.php?post='+pages.default+'&action=elementor',{waitUntil:'domcontentloaded',timeout:60000});
+ await page.frameLocator('#elementor-preview-iframe').locator('.avix-benefits').waitFor({timeout:60000});
+ await page.locator('#elementor-loading').waitFor({state:'hidden',timeout:120000});
+ await page.frameLocator('#elementor-preview-iframe').locator('.avix-benefits__title').click();
+ await page.locator('[data-setting="title"]').waitFor();
+ console.log('Pending', [...pending].map(request=>{const url=new URL(request.url());return url.host+url.pathname}));
+ console.log('Errors',errors);
+ console.log('Frames',page.frames().map(frame=>frame.url()));
+ console.log((await page.locator('body').innerText()).slice(0,6000));
+ await page.screenshot({path:__dirname+'/benefits-editor-initial.png',fullPage:true});
+ await browser.close();
+})().catch(error=>{console.error(error.message);process.exitCode=1}).finally(()=>browser&&browser.close());

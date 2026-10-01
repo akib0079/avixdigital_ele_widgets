@@ -1,0 +1,25 @@
+{
+    "wordpress": "7.1.2",
+    "elementor": "4.3.3",
+    "plugin": "1.9.0",
+    "control_count": 472,
+    "checks": {
+        "Real Elementor renders the widget": true,
+        "Default booking button renders": true,
+        "Approved badge SVG is rendered": true,
+        "Hero contains no header": true,
+        "Four editable default platforms": true,
+        "Text, media and URL accept dynamic tags": true,
+        "Responsive style controls registered": true,
+        "HTML in dynamic text is escaped": true,
+        "Unsafe booking URL omitted": true,
+        "Headline tag is allowlisted": true,
+        "Hidden sections and empty button are omitted": true,
+        "Heading identifiers are unique by instance": true
+    },
+    "pages": {
+        "default": 5,
+        "custom": 6,
+        "static": 7
+    }
+}

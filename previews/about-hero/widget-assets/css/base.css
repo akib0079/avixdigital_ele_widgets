@@ -1,0 +1,36 @@
+/*!
+ * Avix Digital · shared base for all widgets
+ *
+ * The widget sections use `container-type: inline-size`, which removes their
+ * content from width calculations. Inside Elementor flex containers that made
+ * the widget wrapper lay out as if it were very narrow, leaving thousands of
+ * pixels of empty space below each section on phones. A definite width fixes
+ * it. :where() keeps specificity at zero, so a custom width set in Elementor's
+ * Advanced tab still wins.
+ */
+:where(.elementor-widget[class*="elementor-widget-avix-"]) {
+	width: 100%;
+}
+
+/*
+ * Algenix (and other themes) paint every <blockquote> with a background,
+ * padding and colour. Widgets opt out with .is-style-plain.has-background,
+ * which those theme rules skip, plus this reset.
+ */
+.elementor-widget[class*="elementor-widget-avix-"] blockquote.is-style-plain {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	background-color: transparent;
+	box-shadow: none;
+	overflow: visible;
+	quotes: none;
+}
+
+.elementor-widget[class*="elementor-widget-avix-"] blockquote.is-style-plain::before,
+.elementor-widget[class*="elementor-widget-avix-"] blockquote.is-style-plain::after {
+	display: none;
+	content: none;
+}

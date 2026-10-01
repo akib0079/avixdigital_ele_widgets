@@ -1,0 +1,952 @@
+/*!
+ * Avix Digital · Services Showcase
+ * Services expand on hover / tap, a 3D preview card swaps per service and
+ * the Avix pixel character flies on rocket boots to the active one. The
+ * background only animates transform (no blur filters). Layout follows the
+ * widget's own width (container queries).
+ */
+
+.avix-sv {
+	--sv-bg: #030407;
+	--sv-accent: #fb6007;
+	--sv-ink: #ffffff;
+	--sv-muted: #a0a5aa;
+	--sv-line: rgba(255, 255, 255, 0.3);
+	--sv-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--sv-font-body: "Inter", Arial, sans-serif;
+	--sv-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--sv-max: 1400px;
+	--sv-ratio: 16 / 10;
+	--sv-gutter: clamp(40px, 4.6cqi, 66px);
+	--sv-avatar-w: clamp(24px, 2.4cqi, 34px);
+	--sv-index-w: 0px;
+	--sv-shift: 12px;
+
+	container: avix-sv / inline-size;
+	position: relative;
+	isolation: isolate;
+	display: block;
+	width: 100%;
+	padding: clamp(90px, 9vw, 130px) 0 clamp(100px, 11vw, 170px);
+	overflow: hidden;
+	overflow: clip;
+	color: var(--sv-ink);
+	background-color: var(--sv-bg);
+	font-family: var(--sv-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-sv *,
+.avix-sv *::before,
+.avix-sv *::after {
+	box-sizing: border-box;
+}
+
+.avix-sv--indexed {
+	--sv-index-w: 40px;
+}
+
+/* ---------- Background: soft glows (transform-only drift), grid, spotlight ---------- */
+
+.avix-sv__bg {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.avix-sv__glow {
+	position: absolute;
+	display: block;
+	border-radius: 50%;
+	will-change: transform;
+	animation: avix-sv-drift 22s ease-in-out infinite alternate;
+}
+
+.avix-sv__glow--1 {
+	top: -24%;
+	right: -14%;
+	width: min(760px, 70vw);
+	aspect-ratio: 1;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--sv-accent) 17%, transparent), transparent);
+}
+
+.avix-sv__glow--2 {
+	bottom: -30%;
+	left: -16%;
+	width: min(660px, 64vw);
+	aspect-ratio: 1;
+	background: radial-gradient(closest-side, rgba(204, 41, 0, 0.2), transparent);
+	animation-duration: 27s;
+	animation-delay: -9s;
+}
+
+/* Follows the active service. */
+.avix-sv__spot {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+	width: 620px;
+	height: 620px;
+	margin: -310px 0 0 -310px;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--sv-accent) 11%, transparent), transparent);
+	opacity: 0;
+	transition: opacity 600ms ease;
+	will-change: translate;
+}
+
+.avix-sv.is-ready .avix-sv__spot {
+	opacity: 1;
+}
+
+.avix-sv--no-glow .avix-sv__glow,
+.avix-sv--no-glow .avix-sv__spot {
+	display: none;
+}
+
+.avix-sv__grid {
+	position: absolute;
+	inset: 0;
+	display: block;
+	background-image:
+		linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+	background-size: 70px 70px;
+	-webkit-mask-image: radial-gradient(ellipse at center, #000 10%, transparent 80%);
+	mask-image: radial-gradient(ellipse at center, #000 10%, transparent 80%);
+}
+
+.avix-sv--no-grid .avix-sv__grid {
+	display: none;
+}
+
+/* ---------- Header ---------- */
+
+.avix-sv__frame {
+	position: relative;
+	z-index: 1;
+	width: min(92%, var(--sv-max));
+	margin-inline: auto;
+}
+
+.avix-sv__head {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 18px;
+	margin-bottom: clamp(56px, 7cqi, 100px);
+	text-align: center;
+}
+
+.avix-sv--head-left .avix-sv__head {
+	align-items: flex-start;
+	text-align: left;
+}
+
+.avix-sv .avix-sv__tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 6px 16px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 999px;
+	color: #e0e0e0;
+	background: rgba(255, 255, 255, 0.06);
+	font-family: var(--sv-font-display);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+.avix-sv__tag b {
+	color: var(--sv-accent);
+	font-weight: 600;
+}
+
+.avix-sv .avix-sv__headline {
+	margin: 0;
+	padding: 0;
+	color: var(--sv-ink);
+	font-family: var(--sv-font-display);
+	font-size: clamp(32px, 3.6cqi, 50px);
+	font-weight: 600;
+	letter-spacing: -0.025em;
+	line-height: 1.15;
+	text-wrap: balance;
+}
+
+.avix-sv__accent {
+	color: var(--sv-accent);
+}
+
+.avix-sv .avix-sv__intro {
+	max-width: 60ch;
+	margin: 0;
+	color: var(--sv-muted);
+	font-family: var(--sv-font-body);
+	font-size: clamp(15px, 1.2cqi, 17px);
+	line-height: 1.65;
+}
+
+/* ---------- Layout ---------- */
+
+.avix-sv__inner {
+	display: grid;
+	grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+	align-items: center;
+	gap: clamp(40px, 5.5cqi, 84px);
+}
+
+.avix-sv__list {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.avix-sv--guide .avix-sv__list {
+	padding-left: var(--sv-gutter);
+}
+
+/* ---------- Service rows ---------- */
+
+.avix-sv .avix-sv__heading {
+	margin: 0;
+	padding: 0;
+	font-size: 16px;
+	line-height: 1;
+}
+
+/* Heavy reset: theme and Elementor kit button styles must not leak in. */
+.avix-sv .avix-sv__heading .avix-sv__toggle {
+	all: unset;
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	box-sizing: border-box;
+	width: 100%;
+	padding: 14px 0;
+	color: var(--sv-ink);
+	cursor: pointer;
+	text-align: left;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.avix-sv .avix-sv__heading .avix-sv__toggle:focus-visible {
+	border-radius: 6px;
+	outline: 2px solid var(--sv-accent);
+	outline-offset: 4px;
+}
+
+.avix-sv__index {
+	flex: 0 0 var(--sv-index-w);
+	padding-top: 0.55em;
+	color: color-mix(in srgb, var(--sv-ink) 38%, transparent);
+	font-family: var(--sv-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1;
+	transition: color 400ms ease;
+}
+
+.avix-sv__item.is-active .avix-sv__index {
+	color: var(--sv-accent);
+}
+
+/* Closed: outlined. Open: white ink sweeps in left to right. */
+.avix-sv .avix-sv__name {
+	display: inline-block;
+	flex: 1 1 auto;
+	min-width: 0;
+	padding-right: 0.7em;
+	color: transparent;
+	background: linear-gradient(90deg, var(--sv-ink) 0 47%, transparent 53% 100%) 100% 0 / 202% 100% no-repeat;
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-stroke: 1px var(--sv-line);
+	font-family: var(--sv-font-display);
+	font-size: clamp(30px, 3.6cqi, 54px);
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	line-height: 1.02;
+	text-transform: uppercase;
+	overflow-wrap: anywhere;
+	transition: background-position 700ms var(--sv-ease), -webkit-text-stroke-color 400ms ease, transform 450ms var(--sv-ease);
+}
+
+.avix-sv--muted .avix-sv__name {
+	background-image: linear-gradient(90deg, var(--sv-ink) 0 47%, color-mix(in srgb, var(--sv-ink) 30%, transparent) 53% 100%);
+	-webkit-text-stroke: 0 transparent;
+}
+
+.avix-sv__item.is-active .avix-sv__name {
+	background-position: 0 0;
+	-webkit-text-stroke-color: transparent;
+	transform: translateX(var(--sv-shift));
+}
+
+@media (hover: hover) {
+	.avix-sv--outline .avix-sv__item:not(.is-active) .avix-sv__toggle:hover .avix-sv__name {
+		-webkit-text-stroke-color: color-mix(in srgb, var(--sv-accent) 75%, transparent);
+	}
+
+	.avix-sv--muted .avix-sv__item:not(.is-active) .avix-sv__toggle:hover .avix-sv__name {
+		background-image: linear-gradient(90deg, var(--sv-ink) 0 47%, color-mix(in srgb, var(--sv-ink) 55%, transparent) 53% 100%);
+	}
+}
+
+/* The ↗ rides on the last word (see .avix-sv__tail). */
+.avix-sv__tail {
+	white-space: nowrap;
+}
+
+.avix-sv__arrow {
+	display: inline-block;
+	width: 0.52em;
+	height: 0.52em;
+	margin-left: 0.18em;
+	vertical-align: top;
+	color: var(--sv-accent);
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	opacity: 0;
+	transform: translate(-0.2em, 0.2em);
+	transition: opacity 400ms ease, transform 450ms var(--sv-ease);
+}
+
+.avix-sv__item.is-active .avix-sv__arrow {
+	opacity: 1;
+	transform: none;
+}
+
+/* Expanding panel. Without JS every panel stays open, so nothing is hidden. */
+.avix-sv__panel {
+	display: grid;
+	grid-template-rows: 1fr;
+	transition: grid-template-rows 450ms var(--sv-ease);
+}
+
+.avix-sv.is-ready .avix-sv__panel {
+	grid-template-rows: 0fr;
+}
+
+.avix-sv.is-ready .avix-sv__item.is-active .avix-sv__panel {
+	grid-template-rows: 1fr;
+}
+
+.avix-sv__panel-inner {
+	min-height: 0;
+	overflow: hidden;
+	padding-left: calc(var(--sv-index-w) + var(--sv-shift));
+}
+
+.avix-sv__panel-inner > * {
+	transition: opacity 450ms ease 80ms, transform 500ms var(--sv-ease) 80ms;
+}
+
+.avix-sv.is-ready .avix-sv__item:not(.is-active) .avix-sv__panel-inner > * {
+	opacity: 0;
+	transform: translateY(-8px);
+	transition-delay: 0ms;
+}
+
+.avix-sv .avix-sv__desc {
+	max-width: 52ch;
+	margin: 6px 0 0;
+	padding: 0;
+	color: var(--sv-muted);
+	font-family: var(--sv-font-body);
+	font-size: clamp(15px, 1.15cqi, 16.5px);
+	line-height: 1.65;
+}
+
+.avix-sv__desc .avix-sv__accent {
+	font-weight: 600;
+}
+
+.avix-sv .avix-sv__more {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 16px 0 10px;
+	color: var(--sv-accent);
+	font-family: var(--sv-font-body);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.3;
+	text-decoration: none;
+}
+
+.avix-sv__more svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 300ms var(--sv-ease);
+}
+
+.avix-sv .avix-sv__more:hover,
+.avix-sv .avix-sv__more:focus {
+	color: var(--sv-accent);
+	text-decoration: none;
+}
+
+.avix-sv .avix-sv__more:hover svg {
+	transform: translateX(4px);
+}
+
+.avix-sv .avix-sv__more:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid var(--sv-accent);
+	outline-offset: 4px;
+}
+
+.avix-sv__sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	clip-path: inset(50%);
+}
+
+/* Narrow layouts show each preview inside its panel instead. */
+.avix-sv__mobile-shot {
+	display: none;
+}
+
+/* Rows glide in once, the first time the section is seen. */
+.avix-sv.is-armed .avix-sv__item {
+	opacity: 0;
+	transform: translateY(24px);
+}
+
+.avix-sv.is-armed.is-in .avix-sv__item {
+	opacity: 1;
+	transform: none;
+	transition: opacity 700ms ease, transform 800ms var(--sv-ease);
+	transition-delay: calc(var(--sv-i, 0) * 90ms);
+}
+
+/* ---------- The guide: rail, dots, rocket-boot avatar ---------- */
+
+.avix-sv__guide {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: var(--sv-gutter);
+	pointer-events: none;
+}
+
+.avix-sv__rail {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: calc(50% - 1px);
+	display: block;
+	width: 2px;
+	border-radius: 2px;
+	background: color-mix(in srgb, var(--sv-ink) 9%, transparent);
+	-webkit-mask-image: linear-gradient(transparent, #000 6%, #000 94%, transparent);
+	mask-image: linear-gradient(transparent, #000 6%, #000 94%, transparent);
+}
+
+.avix-sv__rail-fill {
+	position: absolute;
+	inset: 0;
+	display: block;
+	background: linear-gradient(transparent, var(--sv-accent));
+	box-shadow: 0 0 10px color-mix(in srgb, var(--sv-accent) 60%, transparent);
+	transform: scaleY(0);
+	transform-origin: 50% 0;
+}
+
+/* Pixel-square stops, one per service (JS places them on each name). */
+.avix-sv__dot {
+	position: absolute;
+	top: -4px;
+	left: calc(50% - 4px);
+	display: block;
+	width: 8px;
+	height: 8px;
+	border: 2px solid color-mix(in srgb, var(--sv-ink) 28%, transparent);
+	background: var(--sv-bg);
+	opacity: 0;
+	transition: border-color 300ms ease, background-color 300ms ease, box-shadow 300ms ease;
+}
+
+.avix-sv.is-ready .avix-sv__dot {
+	opacity: 1;
+}
+
+.avix-sv__dot.is-lit {
+	border-color: var(--sv-accent);
+	background: var(--sv-accent);
+	box-shadow: 0 0 12px var(--sv-accent);
+}
+
+.avix-sv__exhaust {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	image-rendering: pixelated;
+}
+
+.avix-sv__avatar,
+.avix-sv__ghost {
+	position: absolute;
+	top: 0;
+	left: calc(50% - var(--sv-avatar-w) / 2);
+	display: block;
+	width: var(--sv-avatar-w);
+	height: calc(var(--sv-avatar-w) * 1.2);
+	opacity: 0;
+	transform-origin: 50% 90%;
+	will-change: translate;
+}
+
+.avix-sv.is-ready .avix-sv__avatar {
+	opacity: 1;
+	transition: opacity 400ms ease;
+}
+
+.avix-sv__bob {
+	display: block;
+	width: 100%;
+	height: 100%;
+	filter: drop-shadow(0 0 10px color-mix(in srgb, var(--sv-accent) 75%, transparent));
+	animation: avix-sv-bob 2.4s ease-in-out infinite;
+}
+
+.avix-sv__avatar svg,
+.avix-sv__ghost svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--sv-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-sv__avatar rect,
+.avix-sv__ghost rect {
+	transform-box: view-box;
+	transition: transform 160ms steps(2), opacity 120ms steps(1);
+}
+
+.avix-sv__b-point,
+.avix-sv__ghost .avix-sv__b-point {
+	opacity: 0;
+}
+
+/* Resting at a service: points at it, with a little poke. */
+.avix-sv__avatar.is-pointing .avix-sv__b-arm--r {
+	opacity: 0;
+}
+
+.avix-sv__avatar.is-pointing .avix-sv__b-point {
+	opacity: 1;
+	animation: avix-sv-poke 1.1s steps(1) infinite;
+}
+
+/* Flying up: full thrust, arms down. Flying down: jets idle, arms up. */
+.avix-sv__avatar.is-up .avix-sv__b-arm {
+	transform: translate(0, 1px);
+}
+
+.avix-sv__avatar.is-down .avix-sv__b-arm {
+	transform: translate(0, -2px);
+}
+
+.avix-sv__jet {
+	fill: #ffb547;
+	transform-box: fill-box;
+	transform-origin: 50% 0;
+	animation: avix-sv-jet 0.18s steps(2) infinite;
+}
+
+.avix-sv__core {
+	fill: #fff3d1;
+	transform-box: fill-box;
+	transform-origin: 50% 0;
+	animation: avix-sv-jet 0.18s steps(2) -0.09s infinite;
+}
+
+.avix-sv__avatar.is-up .avix-sv__jet,
+.avix-sv__avatar.is-up .avix-sv__core {
+	animation-name: avix-sv-thrust;
+}
+
+.avix-sv__avatar.is-down .avix-sv__jet,
+.avix-sv__avatar.is-down .avix-sv__core {
+	animation-name: avix-sv-idle-jet;
+}
+
+.avix-sv__ghost svg {
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--sv-accent) 60%, transparent));
+}
+
+/* ---------- Preview card ---------- */
+
+.avix-sv__visual {
+	position: sticky;
+	top: 14vh;
+	align-self: center;
+	perspective: 1400px;
+}
+
+.avix-sv__stage {
+	position: relative;
+	display: grid;
+	transform: rotateY(-6deg) rotateX(4deg) rotateZ(-1deg);
+	transform-style: preserve-3d;
+	will-change: transform;
+}
+
+.avix-sv .avix-sv__card {
+	--sv-from: 28px;
+	position: relative;
+	grid-area: 1 / 1;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	border-radius: 14px;
+	background: #0d0f14;
+	box-shadow: -18px 30px 60px rgba(0, 0, 0, 0.55), 0 0 40px color-mix(in srgb, var(--sv-accent) 10%, transparent);
+	opacity: 0;
+	visibility: hidden;
+	transform: translate3d(0, var(--sv-from), -80px) scale(0.95);
+	transition: opacity 400ms ease, transform 700ms var(--sv-ease), visibility 0s linear 700ms;
+}
+
+.avix-sv .avix-sv__card.is-active {
+	z-index: 2;
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition: opacity 450ms ease 60ms, transform 700ms var(--sv-ease), visibility 0s;
+}
+
+.avix-sv .avix-sv__card.is-leaving {
+	z-index: 1;
+	visibility: visible;
+	transform: translate3d(0, calc(var(--sv-from) * -1), -150px) rotateX(8deg) scale(0.92);
+}
+
+.avix-sv .avix-sv__card.is-before {
+	transition: none;
+}
+
+.avix-sv--frame-browser .avix-sv__card {
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: #111318;
+}
+
+.avix-sv--frame-border .avix-sv__card {
+	border: 6px solid #ffffff;
+	border-radius: 12px;
+}
+
+.avix-sv__chrome {
+	display: none;
+}
+
+.avix-sv--frame-browser .avix-sv__chrome {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	height: 38px;
+	padding: 0 14px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+	background: #17191f;
+}
+
+.avix-sv__chrome i {
+	flex: 0 0 auto;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: #ff5f57;
+	opacity: 0.85;
+}
+
+.avix-sv__chrome i:nth-child(2) {
+	background: #febc2e;
+}
+
+.avix-sv__chrome i:nth-child(3) {
+	background: #28c840;
+}
+
+.avix-sv__url {
+	overflow: hidden;
+	max-width: 72%;
+	margin: 0 auto;
+	padding: 5px 14px;
+	border-radius: 999px;
+	color: #a0a5aa;
+	background: rgba(255, 255, 255, 0.06);
+	font-family: var(--sv-font-body);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.2;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.avix-sv__url::before {
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	margin-right: 8px;
+	background: var(--sv-accent);
+	content: "";
+	vertical-align: 1px;
+}
+
+.avix-sv__shot {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: var(--sv-ratio);
+	background: #0b0d12;
+}
+
+.avix-sv .avix-sv__img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: cover;
+}
+
+.avix-sv__glare {
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	display: block;
+	width: 200%;
+	height: 200%;
+	background: radial-gradient(circle at center, rgba(255, 255, 255, 0.16), transparent 40%);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 400ms ease;
+	will-change: translate;
+}
+
+.avix-sv__visual.is-tilting .avix-sv__glare {
+	opacity: 1;
+}
+
+.avix-sv__placeholder {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	gap: 6px;
+	padding: 8%;
+	background:
+		radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--sv-accent) 22%, transparent), transparent 55%),
+		linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 28px 28px,
+		linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 28px 28px,
+		#0d0f14;
+}
+
+.avix-sv__placeholder span {
+	color: var(--sv-accent);
+	font-family: var(--sv-font-display);
+	font-size: clamp(40px, 5cqi, 72px);
+	font-weight: 700;
+	line-height: 1;
+}
+
+.avix-sv__placeholder b {
+	color: var(--sv-ink);
+	font-family: var(--sv-font-display);
+	font-size: clamp(20px, 2.2cqi, 30px);
+	font-weight: 700;
+	line-height: 1.1;
+	text-transform: uppercase;
+}
+
+.avix-sv .avix-sv__label {
+	position: absolute;
+	bottom: 16px;
+	left: 16px;
+	z-index: 2;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 8px 14px;
+	border-radius: 999px;
+	color: #ffffff;
+	background: rgba(10, 11, 13, 0.75);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+	font-family: var(--sv-font-body);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.avix-sv__label::before {
+	width: 7px;
+	height: 7px;
+	background: var(--sv-accent);
+	content: "";
+}
+
+/* JS pauses everything while the section is off screen or the tab is hidden. */
+.avix-sv.is-paused *,
+.avix-sv.is-paused *::before,
+.avix-sv.is-paused *::after {
+	animation-play-state: paused !important;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-sv-drift {
+	from { transform: translate(0, 0) scale(1); }
+	to { transform: translate(-60px, 70px) scale(1.12); }
+}
+
+@keyframes avix-sv-bob {
+	0%,
+	100% { transform: translateY(0); }
+	50% { transform: translateY(-6px); }
+}
+
+@keyframes avix-sv-poke {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(1px, 0); }
+}
+
+@keyframes avix-sv-jet {
+	0% { transform: scaleY(0.7); }
+	50% { transform: scaleY(1.1); }
+}
+
+@keyframes avix-sv-thrust {
+	0% { transform: scaleY(1.6); }
+	50% { transform: scaleY(2.3); }
+}
+
+@keyframes avix-sv-idle-jet {
+	0% { transform: scaleY(0.3); }
+	50% { transform: scaleY(0.5); }
+}
+
+/* ---------- Narrower widget ---------- */
+
+@container avix-sv (max-width: 1024px) {
+	.avix-sv__inner {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-sv__visual {
+		display: none;
+	}
+
+	.avix-sv__mobile-shot {
+		position: relative;
+		display: block;
+		overflow: hidden;
+		max-width: 640px;
+		margin: 8px 0 12px;
+		aspect-ratio: var(--sv-ratio);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 12px;
+		background: #0b0d12;
+	}
+
+	.avix-sv .avix-sv__name {
+		font-size: clamp(28px, 6cqi, 48px);
+	}
+}
+
+/* Tablets: description and preview side by side inside the open panel. */
+@container avix-sv (min-width: 601px) and (max-width: 1024px) {
+	.avix-sv__panel-inner {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+		grid-template-rows: auto 1fr;
+		align-items: start;
+		column-gap: clamp(20px, 4cqi, 40px);
+	}
+
+	.avix-sv__mobile-shot {
+		grid-row: 1 / span 2;
+		grid-column: 2;
+		margin: 8px 0 14px;
+	}
+
+	.avix-sv .avix-sv__desc,
+	.avix-sv .avix-sv__more {
+		grid-column: 1;
+		justify-self: start;
+	}
+}
+
+@container avix-sv (max-width: 600px) {
+	.avix-sv__frame {
+		--sv-shift: 0px;
+		width: calc(100% - 36px);
+	}
+
+	.avix-sv--indexed .avix-sv__frame {
+		--sv-index-w: 30px;
+	}
+
+	.avix-sv__head {
+		margin-bottom: 48px;
+	}
+
+	.avix-sv .avix-sv__name {
+		font-size: clamp(24px, 7.6cqi, 34px);
+		letter-spacing: -0.02em;
+	}
+
+	.avix-sv__index {
+		padding-top: 0.4em;
+		font-size: 11px;
+	}
+
+	.avix-sv .avix-sv__heading .avix-sv__toggle {
+		padding: 12px 0;
+	}
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-sv *,
+	.avix-sv *::before,
+	.avix-sv *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+}

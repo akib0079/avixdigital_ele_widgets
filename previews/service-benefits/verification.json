@@ -1,0 +1,1111 @@
+{
+  "layouts": [
+    {
+      "engine": "Chrome",
+      "width": 1920,
+      "overflow": false,
+      "columns": 3,
+      "titleSize": "52px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 353,
+          "clientWidth": 353
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 353,
+          "clientWidth": 353
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 353,
+          "clientWidth": 353
+        }
+      ],
+      "cardHeights": [
+        550.15625,
+        550.15625,
+        550.15625
+      ],
+      "linkY": [
+        847.375,
+        847.375,
+        847.375
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "Chrome",
+      "width": 1440,
+      "overflow": false,
+      "columns": 3,
+      "titleSize": "48.848px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 353,
+          "clientWidth": 353
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 353,
+          "clientWidth": 353
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 353,
+          "clientWidth": 353
+        }
+      ],
+      "cardHeights": [
+        550.15625,
+        550.15625,
+        550.15625
+      ],
+      "linkY": [
+        839.90625,
+        839.90625,
+        839.90625
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "Chrome",
+      "width": 1024,
+      "overflow": false,
+      "columns": 3,
+      "titleSize": "36px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 257,
+          "clientWidth": 257
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 257,
+          "clientWidth": 257
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 257,
+          "clientWidth": 257
+        }
+      ],
+      "cardHeights": [
+        490.953125,
+        490.953125,
+        490.953125
+      ],
+      "linkY": [
+        754.390625,
+        754.390625,
+        754.390625
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "Chrome",
+      "width": 960,
+      "overflow": false,
+      "columns": 3,
+      "titleSize": "36px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 235,
+          "clientWidth": 235
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 235,
+          "clientWidth": 235
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 235,
+          "clientWidth": 235
+        }
+      ],
+      "cardHeights": [
+        502.21875,
+        502.21875,
+        502.21875
+      ],
+      "linkY": [
+        765.65625,
+        765.65625,
+        765.65625
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "Chrome",
+      "width": 768,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "36px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        }
+      ],
+      "cardHeights": [
+        264.046875,
+        264.046875,
+        264.046875
+      ],
+      "linkY": [
+        414.484375,
+        698.53125,
+        982.578125
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "Chrome",
+      "width": 640,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "38px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-1152.webp",
+          "naturalWidth": 526,
+          "clientWidth": 526
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-1152.webp",
+          "naturalWidth": 526,
+          "clientWidth": 526
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-1152.webp",
+          "naturalWidth": 526,
+          "clientWidth": 526
+        }
+      ],
+      "cardHeights": [
+        611.453125,
+        611.453125,
+        611.453125
+      ],
+      "linkY": [
+        -522.359375,
+        109.09375,
+        740.546875
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "Chrome",
+      "width": 600,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "38px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-1152.webp",
+          "naturalWidth": 509,
+          "clientWidth": 510
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-1152.webp",
+          "naturalWidth": 509,
+          "clientWidth": 510
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-1152.webp",
+          "naturalWidth": 509,
+          "clientWidth": 510
+        }
+      ],
+      "cardHeights": [
+        600.796875,
+        600.796875,
+        600.796875
+      ],
+      "linkY": [
+        -557.015625,
+        63.78125,
+        684.578125
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "Chrome",
+      "width": 430,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "30px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 340,
+          "clientWidth": 340
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 340,
+          "clientWidth": 340
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 340,
+          "clientWidth": 340
+        }
+      ],
+      "cardHeights": [
+        513.703125,
+        513.703125,
+        513.703125
+      ],
+      "linkY": [
+        -346.796875,
+        186.90625,
+        720.609375
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "Chrome",
+      "width": 390,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "30px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        }
+      ],
+      "cardHeights": [
+        487.046875,
+        513.296875,
+        487.046875
+      ],
+      "linkY": [
+        -377.453125,
+        155.84375,
+        662.890625
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "Chrome",
+      "width": 360,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "30px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 270,
+          "clientWidth": 270
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 270,
+          "clientWidth": 270
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 270,
+          "clientWidth": 270
+        }
+      ],
+      "cardHeights": [
+        493.296875,
+        493.296875,
+        493.296875
+      ],
+      "linkY": [
+        -449.703125,
+        63.59375,
+        576.890625
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "Chrome",
+      "width": 320,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "30px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 230,
+          "clientWidth": 230
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 230,
+          "clientWidth": 230
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 230,
+          "clientWidth": 230
+        }
+      ],
+      "cardHeights": [
+        523.921875,
+        492.875,
+        466.625
+      ],
+      "linkY": [
+        -472.078125,
+        40.796875,
+        527.421875
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 1920,
+      "overflow": false,
+      "columns": 3,
+      "titleSize": "52px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 352,
+          "clientWidth": 353
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 352,
+          "clientWidth": 353
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 352,
+          "clientWidth": 353
+        }
+      ],
+      "cardHeights": [
+        550.15625,
+        550.15625,
+        550.15625
+      ],
+      "linkY": [
+        847.375,
+        847.375,
+        847.375
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 1440,
+      "overflow": false,
+      "columns": 3,
+      "titleSize": "48.848px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 352,
+          "clientWidth": 353
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 352,
+          "clientWidth": 353
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 352,
+          "clientWidth": 353
+        }
+      ],
+      "cardHeights": [
+        550.15625,
+        550.15625,
+        550.15625
+      ],
+      "linkY": [
+        839.90625,
+        839.90625,
+        839.90625
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 1024,
+      "overflow": false,
+      "columns": 3,
+      "titleSize": "36px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 256,
+          "clientWidth": 257
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 256,
+          "clientWidth": 257
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 256,
+          "clientWidth": 257
+        }
+      ],
+      "cardHeights": [
+        490.953125,
+        490.953125,
+        490.953125
+      ],
+      "linkY": [
+        754.390625,
+        754.390625,
+        754.390625
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 960,
+      "overflow": false,
+      "columns": 3,
+      "titleSize": "36px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 235,
+          "clientWidth": 235
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 235,
+          "clientWidth": 235
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 235,
+          "clientWidth": 235
+        }
+      ],
+      "cardHeights": [
+        502.21875,
+        502.21875,
+        502.21875
+      ],
+      "linkY": [
+        765.65625,
+        765.65625,
+        765.65625
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 768,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "36px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        }
+      ],
+      "cardHeights": [
+        264.046875,
+        264.046875,
+        264.046875
+      ],
+      "linkY": [
+        414.484375,
+        698.53125,
+        982.578125
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 640,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "38px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-1152.webp",
+          "naturalWidth": 526,
+          "clientWidth": 526
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-1152.webp",
+          "naturalWidth": 526,
+          "clientWidth": 526
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-1152.webp",
+          "naturalWidth": 526,
+          "clientWidth": 526
+        }
+      ],
+      "cardHeights": [
+        611.453125,
+        611.453125,
+        611.453125
+      ],
+      "linkY": [
+        -523.359375,
+        108.09375,
+        739.546875
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 600,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "38px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-1152.webp",
+          "naturalWidth": 509,
+          "clientWidth": 510
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-1152.webp",
+          "naturalWidth": 509,
+          "clientWidth": 510
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-1152.webp",
+          "naturalWidth": 509,
+          "clientWidth": 510
+        }
+      ],
+      "cardHeights": [
+        600.796875,
+        600.796875,
+        600.796875
+      ],
+      "linkY": [
+        -557.015625,
+        63.78125,
+        684.578125
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 430,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "30px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 340,
+          "clientWidth": 340
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 340,
+          "clientWidth": 340
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 340,
+          "clientWidth": 340
+        }
+      ],
+      "cardHeights": [
+        513.703125,
+        513.703125,
+        513.703125
+      ],
+      "linkY": [
+        -346.796875,
+        186.90625,
+        720.609375
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 390,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "30px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 300,
+          "clientWidth": 300
+        }
+      ],
+      "cardHeights": [
+        487.046875,
+        513.296875,
+        487.046875
+      ],
+      "linkY": [
+        -377.453125,
+        155.84375,
+        662.890625
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 360,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "30px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 270,
+          "clientWidth": 270
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 270,
+          "clientWidth": 270
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 270,
+          "clientWidth": 270
+        }
+      ],
+      "cardHeights": [
+        493.296875,
+        493.296875,
+        493.296875
+      ],
+      "linkY": [
+        -449.703125,
+        63.59375,
+        576.890625
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    },
+    {
+      "engine": "WebKit",
+      "width": 320,
+      "overflow": false,
+      "columns": 1,
+      "titleSize": "30px",
+      "headingLevels": [
+        "H2",
+        "H3",
+        "H3",
+        "H3"
+      ],
+      "images": [
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-3-768.webp",
+          "naturalWidth": 230,
+          "clientWidth": 230
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-2-768.webp",
+          "naturalWidth": 230,
+          "clientWidth": 230
+        },
+        {
+          "source": "http://127.0.0.1:4173/service-benefits/assets/service-1-768.webp",
+          "naturalWidth": 230,
+          "clientWidth": 230
+        }
+      ],
+      "cardHeights": [
+        523.921875,
+        492.875,
+        466.625
+      ],
+      "linkY": [
+        -472.078125,
+        40.796875,
+        527.421875
+      ],
+      "clippedLinks": false,
+      "targetHeights": [
+        44,
+        44,
+        44,
+        44
+      ],
+      "fonts": true,
+      "header": false
+    }
+  ],
+  "interactions": [
+    {
+      "engine": "Chrome",
+      "passed": [
+        "underline hover",
+        "plain links",
+        "keyboard focus",
+        "service destinations",
+        "finite avatar greeting",
+        "reduced motion",
+        "embedded columns",
+        "custom text/type"
+      ]
+    },
+    {
+      "engine": "WebKit",
+      "passed": [
+        "underline hover",
+        "plain links",
+        "keyboard focus",
+        "service destinations",
+        "finite avatar greeting",
+        "reduced motion",
+        "embedded columns",
+        "custom text/type"
+      ]
+    }
+  ],
+  "errors": []
+}

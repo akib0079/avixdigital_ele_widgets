@@ -1,0 +1,37 @@
+{
+    "wordpress": "7.1.2",
+    "elementor": "4.3.3",
+    "plugin": "1.10.0",
+    "control_count": 409,
+    "checks": {
+        "Three approved cards render through real Elementor": true,
+        "Bundled artwork includes responsive derivatives": true,
+        "Existing avatar rendered": true,
+        "Dynamic title": true,
+        "Dynamic description": true,
+        "Dynamic help_link": true,
+        "Dynamic avatar": true,
+        "Dynamic card title": true,
+        "Dynamic card description": true,
+        "Dynamic card image_alt": true,
+        "Dynamic card link_text": true,
+        "Dynamic card image": true,
+        "Dynamic card link": true,
+        "Responsive typography and padding controls": true,
+        "Dynamic text escaped": true,
+        "Unsafe links omitted": true,
+        "Heading tags allowlisted": true,
+        "Empty and hidden sections handled": true,
+        "Identifiers unique by instance": true,
+        "External links get appropriate relation attributes": true,
+        "Dynamic tag resolves at render time": true,
+        "Media library artwork uses responsive sources and metadata alt": true
+    },
+    "pages": {
+        "default": 10,
+        "custom": 11,
+        "static": 12,
+        "multiple": 13,
+        "no_avatar": 14
+    }
+}

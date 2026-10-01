@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "label": "Heading control updates the actual Elementor preview",
+      "passed": true
+    },
+    {
+      "label": "Style control updates the actual preview",
+      "passed": true
+    },
+    {
+      "label": "Repeater control updates the actual preview",
+      "passed": true
+    },
+    {
+      "label": "Greeting initializes after actual editor content replacement",
+      "passed": true
+    },
+    {
+      "label": "Editor greeting remains finite",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

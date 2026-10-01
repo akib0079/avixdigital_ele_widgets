@@ -6,3 +6,24 @@
 
 # Dependencies
 node_modules/
+
+# Disposable local WordPress installation and private test state
+/tests/wordpress/
+/tests/local-credentials.json
+/tests/php.ini
+*.log
+*.sqlite
+*.sqlite3
+*.db
+*.sql
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Editor and operating-system state
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini

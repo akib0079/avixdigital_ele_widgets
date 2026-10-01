@@ -1,0 +1,643 @@
+/*!
+ * Avix Digital · Impact Numbers
+ */
+
+.avix-impact {
+	--ai-bg: #ffffff;
+	--ai-ink: #1a1a1a;
+	--ai-muted: #66615b;
+	--ai-line: #e7e3dc;
+	--ai-accent: #fb6007;
+	--ai-accent-text: #c64700;
+	--ai-pill-bg: #f7f5f2;
+	--ai-pill-line: #e5e1db;
+	--ai-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--ai-font-body: "Inter", Arial, sans-serif;
+	--ai-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--ai-max: 1200px;
+	--ai-gutter: 24px;
+	--ai-cols: 4;
+	--ai-gap: clamp(20px, 3cqi, 48px);
+	--ai-icon-ink: var(--ai-ink);
+	--ai-icon-bg: color-mix(in srgb, var(--ai-accent) 7%, var(--ai-bg));
+	--ai-icon-line: color-mix(in srgb, var(--ai-accent) 18%, var(--ai-bg));
+
+	container: avix-impact / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(88px, 10vw, 144px) 0 clamp(96px, 11vw, 160px);
+	overflow: clip;
+	color: var(--ai-ink);
+	background: var(--ai-bg);
+	font-family: var(--ai-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-impact--divider {
+	border-top: 1px solid var(--ai-line);
+}
+
+.avix-impact--soft {
+	--ai-bg: #f5f3ef;
+	--ai-line: #e1dcd4;
+	--ai-pill-bg: #ffffff;
+	--ai-pill-line: #e1dcd4;
+}
+
+.avix-impact--dark {
+	--ai-bg: #111111;
+	--ai-ink: #ffffff;
+	--ai-muted: #a8a39c;
+	--ai-line: rgba(255, 255, 255, 0.14);
+	--ai-accent-text: #ff7a2c;
+	--ai-pill-bg: rgba(255, 255, 255, 0.06);
+	--ai-pill-line: rgba(255, 255, 255, 0.12);
+	--ai-icon-bg: color-mix(in srgb, var(--ai-accent) 12%, var(--ai-bg));
+	--ai-icon-line: color-mix(in srgb, var(--ai-accent) 30%, var(--ai-bg));
+}
+
+/* Soft brand glow in the dark theme. */
+.avix-impact--dark::before {
+	position: absolute;
+	top: -30%;
+	right: -10%;
+	width: min(720px, 70vw);
+	aspect-ratio: 1;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(251, 96, 7, 0.18), rgba(251, 96, 7, 0) 66%);
+	pointer-events: none;
+	content: "";
+}
+
+.avix-impact *,
+.avix-impact *::before,
+.avix-impact *::after {
+	box-sizing: border-box;
+}
+
+.avix-impact__frame {
+	position: relative;
+	width: min(calc(100% - var(--ai-gutter) * 2), var(--ai-max));
+	margin-inline: auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-impact__head {
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+	align-items: end;
+	gap: 28px clamp(40px, 7cqi, 112px);
+	margin-bottom: clamp(56px, 7cqi, 96px);
+}
+
+.avix-impact--head-center .avix-impact__head {
+	grid-template-columns: minmax(0, 1fr);
+	justify-items: center;
+	text-align: center;
+}
+
+.avix-impact--head-center .avix-impact__text {
+	max-width: 56ch;
+}
+
+.avix-impact__eyebrow {
+	display: inline-flex;
+	width: fit-content;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 24px;
+	padding: 9px 14px;
+	border: 1px solid var(--ai-pill-line);
+	border-radius: 999px;
+	color: var(--ai-muted);
+	background: var(--ai-pill-bg);
+	font-family: var(--ai-font-body);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1;
+}
+
+.avix-impact__eyebrow::before {
+	width: 6px;
+	height: 6px;
+	flex: 0 0 auto;
+	border-radius: 50%;
+	background: var(--ai-accent);
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--ai-accent) 18%, transparent);
+	content: "";
+}
+
+.avix-impact .avix-impact__title {
+	max-width: 16ch;
+	margin: 0;
+	padding: 0;
+	color: var(--ai-ink);
+	font-family: var(--ai-font-display);
+	font-size: clamp(36px, 4.8cqi, 60px);
+	font-weight: 600;
+	letter-spacing: -0.05em;
+	line-height: 1;
+	text-wrap: balance;
+}
+
+.avix-impact--head-center .avix-impact__title {
+	max-width: 20ch;
+}
+
+.avix-impact__title-accent {
+	color: var(--ai-accent);
+}
+
+.avix-impact .avix-impact__text {
+	max-width: 42ch;
+	margin: 0;
+	color: var(--ai-muted);
+	font-family: var(--ai-font-body);
+	font-size: clamp(15px, 1.5cqi, 17px);
+	line-height: 1.65;
+}
+
+/* ---------- Metrics ---------- */
+
+.avix-impact .avix-impact__grid {
+	display: grid;
+	grid-template-columns: repeat(var(--ai-cols), minmax(0, 1fr));
+	gap: 48px var(--ai-gap);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-impact .avix-impact__item {
+	position: relative;
+	min-width: 0;
+	margin: 0;
+	padding: 30px 0 0;
+	border-top: 1px solid var(--ai-line);
+}
+
+.avix-impact .avix-impact__item::marker {
+	content: none;
+}
+
+/* Accent segment that draws in on reveal. */
+.avix-impact__item::before {
+	position: absolute;
+	top: -1px;
+	left: 0;
+	width: 56px;
+	height: 2px;
+	background: var(--ai-accent);
+	transform-origin: 0 50%;
+	content: "";
+}
+
+.avix-impact__index {
+	display: block;
+	margin-bottom: clamp(28px, 3.4cqi, 44px);
+	color: var(--ai-muted);
+	font-family: var(--ai-font-body);
+	font-size: 11px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.14em;
+	line-height: 1;
+}
+
+.avix-impact .avix-impact__value {
+	display: flex;
+	align-items: flex-start;
+	margin: 0;
+	color: var(--ai-ink);
+	font-family: var(--ai-font-display);
+	font-size: clamp(56px, 8cqi, 112px);
+	font-weight: 500;
+	letter-spacing: -0.07em;
+	line-height: 0.84;
+	white-space: nowrap;
+}
+
+.avix-impact__affix {
+	color: var(--ai-accent);
+	font-weight: 400;
+}
+
+.avix-impact__affix--prefix {
+	margin-right: 0.04em;
+}
+
+.avix-impact__affix--suffix {
+	margin-left: 0.04em;
+}
+
+.avix-impact__affix--small {
+	font-size: 0.5em;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	transform: translateY(0.12em);
+}
+
+.avix-impact .avix-impact__label {
+	margin: 22px 0 0;
+	color: var(--ai-ink);
+	font-family: var(--ai-font-body);
+	font-size: clamp(15px, 1.5cqi, 17px);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.35;
+}
+
+.avix-impact .avix-impact__desc {
+	max-width: 30ch;
+	margin: 8px 0 0;
+	color: var(--ai-muted);
+	font-family: var(--ai-font-body);
+	font-size: 14px;
+	line-height: 1.55;
+}
+
+/* ---------- Icons: ink lines with orange details on a soft tile ---------- */
+
+.avix-impact__icon {
+	position: relative;
+	display: grid;
+	width: 72px;
+	height: 72px;
+	place-items: center;
+	margin: 0 0 clamp(26px, 3cqi, 38px);
+	border-radius: 22px;
+	color: var(--ai-icon-ink);
+	background: var(--ai-icon-bg);
+	box-shadow: inset 0 0 0 1px var(--ai-icon-line), 0 14px 28px -18px color-mix(in srgb, var(--ai-accent) 70%, transparent);
+	transition: transform 520ms var(--ai-ease), box-shadow 520ms var(--ai-ease);
+}
+
+/* A quiet highlight on the tile's top edge. */
+.avix-impact__icon::before {
+	position: absolute;
+	inset: 1px;
+	border-radius: 21px;
+	background: linear-gradient(180deg, color-mix(in srgb, #ffffff 55%, transparent), transparent 55%);
+	opacity: 0.7;
+	pointer-events: none;
+	content: "";
+}
+
+.avix-impact--dark .avix-impact__icon::before {
+	opacity: 0.06;
+}
+
+.avix-impact__icon svg {
+	position: relative;
+	display: block;
+	width: 36px;
+	height: 36px;
+	overflow: visible;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.45;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.avix-impact__icon .a {
+	stroke: var(--ai-accent);
+}
+
+.avix-impact__icon .af {
+	fill: var(--ai-accent);
+	stroke: var(--ai-accent);
+	stroke-width: 1;
+	transform-box: fill-box;
+	transform-origin: 50% 50%;
+}
+
+/* The globe's location dot gets a ring in the tile colour so it sits on top of the lines. */
+.avix-impact__icon .pin {
+	stroke: var(--ai-icon-bg);
+	stroke-width: 1.8;
+	paint-order: stroke;
+}
+
+.avix-impact__icon--custom i,
+.avix-impact__icon--custom svg {
+	width: 32px;
+	height: 32px;
+	color: var(--ai-accent);
+	fill: currentColor;
+	stroke: none;
+	font-size: 30px;
+	line-height: 32px;
+	text-align: center;
+}
+
+.avix-impact--icon-plain .avix-impact__icon {
+	width: max-content;
+	height: auto;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+}
+
+.avix-impact--icon-plain .avix-impact__icon::before {
+	display: none;
+}
+
+.avix-impact--icon-plain .avix-impact__icon svg {
+	width: 44px;
+	height: 44px;
+	stroke-width: 1.35;
+}
+
+.avix-impact--icon-plain .avix-impact__icon .pin {
+	stroke: var(--ai-bg);
+}
+
+@media (hover: hover) {
+	.avix-impact__item:hover .avix-impact__icon {
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ai-accent) 40%, var(--ai-bg)), 0 18px 32px -16px color-mix(in srgb, var(--ai-accent) 80%, transparent);
+		transform: translateY(-4px) rotate(-4deg);
+	}
+
+	.avix-impact--icon-plain .avix-impact__item:hover .avix-impact__icon {
+		box-shadow: none;
+	}
+
+	.avix-impact__item:hover .avix-impact__icon .af {
+		transform: scale(1.18);
+		transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+}
+
+/* ---------- Minimal layout: centered pill, 3 columns, hairline dividers ---------- */
+
+.avix-impact--eyebrow-only .avix-impact__head {
+	margin-bottom: clamp(52px, 6cqi, 82px);
+}
+
+.avix-impact--eyebrow-only .avix-impact__eyebrow {
+	margin-bottom: 0;
+}
+
+.avix-impact--minimal .avix-impact__grid {
+	gap: 0;
+}
+
+.avix-impact--minimal .avix-impact__item {
+	padding: 0 clamp(12px, 2.5cqi, 36px);
+	border-top: 0;
+	text-align: center;
+}
+
+.avix-impact--minimal .avix-impact__item::before {
+	display: none;
+}
+
+.avix-impact--minimal .avix-impact__icon {
+	margin-inline: auto;
+}
+
+.avix-impact--minimal .avix-impact__item + .avix-impact__item::after {
+	position: absolute;
+	top: 10%;
+	bottom: 10%;
+	left: 0;
+	width: 1px;
+	background: var(--ai-line);
+	content: "";
+}
+
+.avix-impact--minimal .avix-impact__value {
+	justify-content: center;
+	font-size: clamp(64px, 9cqi, 112px);
+	font-weight: 550;
+	letter-spacing: -0.075em;
+	line-height: 0.82;
+}
+
+.avix-impact--minimal .avix-impact__affix {
+	font-weight: 500;
+}
+
+.avix-impact--minimal .avix-impact__label {
+	margin-top: 25px;
+	color: var(--ai-muted);
+	font-weight: 400;
+	letter-spacing: 0;
+	line-height: 1.5;
+}
+
+.avix-impact--minimal .avix-impact__desc {
+	margin-inline: auto;
+}
+
+/* ---------- Reveal ---------- */
+
+.avix-impact.is-armed .avix-impact__head,
+.avix-impact.is-armed .avix-impact__item {
+	opacity: 0;
+	transform: translate3d(0, 26px, 0);
+	transition: opacity 800ms var(--ai-ease), transform 900ms var(--ai-ease);
+	transition-delay: calc(var(--ai-i, 0) * 110ms + 120ms);
+}
+
+.avix-impact.is-armed .avix-impact__head {
+	transition-delay: 0ms;
+}
+
+.avix-impact.is-armed .avix-impact__item::before {
+	transform: scaleX(0);
+	transition: transform 1100ms var(--ai-ease);
+	transition-delay: calc(var(--ai-i, 0) * 110ms + 320ms);
+}
+
+.avix-impact.is-armed.is-visible .avix-impact__head,
+.avix-impact.is-armed.is-visible .avix-impact__item {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-impact.is-armed.is-visible .avix-impact__item::before {
+	transform: scaleX(1);
+}
+
+/* Icons draw themselves in, then the orange detail pops. */
+.avix-impact.is-armed .avix-impact__icon svg > :not(.af) {
+	opacity: 0;
+	stroke-dasharray: 1 1;
+	stroke-dashoffset: 1;
+	transition: stroke-dashoffset 1300ms var(--ai-ease), opacity 200ms linear;
+	transition-delay: calc(var(--ai-i, 0) * 110ms + 420ms);
+}
+
+.avix-impact.is-armed .avix-impact__icon .af {
+	opacity: 0;
+	transform: scale(0.3);
+	transition: opacity 240ms ease, transform 620ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	transition-delay: calc(var(--ai-i, 0) * 110ms + 1100ms);
+}
+
+.avix-impact.is-armed.is-visible .avix-impact__icon svg > :not(.af) {
+	opacity: 1;
+	stroke-dashoffset: 0;
+}
+
+.avix-impact.is-armed.is-visible .avix-impact__icon .af {
+	opacity: 1;
+	transform: none;
+}
+
+/* ---------- Responsive (widget width) ---------- */
+
+@container avix-impact (max-width: 899px) {
+	.avix-impact__head {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 20px;
+	}
+
+	.avix-impact .avix-impact__grid {
+		grid-template-columns: repeat(min(var(--ai-cols), 2), minmax(0, 1fr));
+		gap: 44px 24px;
+	}
+
+	.avix-impact .avix-impact__value {
+		font-size: clamp(48px, 11cqi, 88px);
+	}
+}
+
+@container avix-impact (max-width: 559px) {
+	.avix-impact__frame {
+		width: min(calc(100% - 32px), var(--ai-max));
+	}
+
+	.avix-impact .avix-impact__title {
+		font-size: clamp(32px, 9.5cqi, 42px);
+	}
+
+	.avix-impact .avix-impact__grid {
+		gap: 36px 18px;
+	}
+
+	.avix-impact .avix-impact__item {
+		padding-top: 22px;
+	}
+
+	.avix-impact__index {
+		margin-bottom: 22px;
+	}
+
+	.avix-impact .avix-impact__value {
+		font-size: clamp(40px, 13.5cqi, 64px);
+	}
+
+	.avix-impact .avix-impact__label {
+		margin-top: 16px;
+		font-size: 14px;
+	}
+
+	.avix-impact .avix-impact__desc {
+		font-size: 13px;
+	}
+}
+
+@container avix-impact (max-width: 899px) {
+	.avix-impact--minimal .avix-impact__grid {
+		grid-template-columns: repeat(var(--ai-cols), minmax(0, 1fr));
+		gap: 0;
+	}
+
+	.avix-impact--minimal .avix-impact__value {
+		font-size: clamp(48px, 9.5cqi, 88px);
+	}
+}
+
+@container avix-impact (max-width: 559px) {
+	/* Phones: a 2 × 2 grid with hairlines, so the icons don't make the section tall. */
+	.avix-impact--minimal .avix-impact__grid {
+		grid-template-columns: repeat(min(var(--ai-cols), 2), minmax(0, 1fr));
+	}
+
+	.avix-impact--minimal .avix-impact__item {
+		padding: 34px 10px;
+	}
+
+	.avix-impact--minimal .avix-impact__item:nth-child(n + 3) {
+		border-top: 1px solid var(--ai-line);
+	}
+
+	.avix-impact--minimal .avix-impact__item + .avix-impact__item::after {
+		display: none;
+	}
+
+	.avix-impact--minimal .avix-impact__item:nth-child(even)::after {
+		position: absolute;
+		top: 28px;
+		bottom: 28px;
+		left: 0;
+		display: block;
+		width: 1px;
+		background: var(--ai-line);
+		content: "";
+	}
+
+	/* An odd last number spans the row. */
+	.avix-impact--minimal .avix-impact__item:last-child:nth-child(odd):not(:first-child) {
+		grid-column: 1 / -1;
+	}
+
+	.avix-impact--minimal .avix-impact__value {
+		font-size: clamp(44px, 14.5cqi, 64px);
+	}
+
+	.avix-impact--minimal .avix-impact__label {
+		margin-top: 14px;
+		font-size: 14px;
+		line-height: 1.45;
+	}
+
+	.avix-impact__icon {
+		width: 56px;
+		height: 56px;
+		margin-bottom: 20px;
+		border-radius: 18px;
+	}
+
+	.avix-impact__icon::before {
+		border-radius: 17px;
+	}
+
+	.avix-impact__icon svg {
+		width: 28px;
+		height: 28px;
+	}
+}
+
+@container avix-impact (max-width: 339px) {
+	.avix-impact .avix-impact__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-impact--minimal .avix-impact__item + .avix-impact__item {
+		border-top: 1px solid var(--ai-line);
+	}
+
+	.avix-impact--minimal .avix-impact__item:nth-child(even)::after {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-impact.is-armed .avix-impact__head,
+	.avix-impact.is-armed .avix-impact__item,
+	.avix-impact.is-armed .avix-impact__item::before,
+	.avix-impact.is-armed .avix-impact__icon svg > *,
+	.avix-impact__icon {
+		opacity: 1;
+		stroke-dashoffset: 0;
+		transform: none;
+		transition: none;
+	}
+}

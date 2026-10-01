@@ -1,0 +1,1040 @@
+/*!
+ * Avix Digital · Compare & CEO Quote
+ * A compact face-off (typical agency vs Avix) and the CEO quote card.
+ * Pixel Akib rides rocket boots between them: zaps the old habits, cheers
+ * the Avix side and perches on the real photo. Container queries only.
+ */
+
+.avix-cq {
+	--cq-bg: #050608;
+	--cq-ink: #ffffff;
+	--cq-muted: #a0a5aa;
+	--cq-line: rgba(255, 255, 255, 0.08);
+	--cq-accent: #fb6007;
+	--cq-grid: rgba(255, 255, 255, 0.022);
+	--cq-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--cq-font-body: "Inter", Arial, sans-serif;
+	--cq-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--cq-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--cq-max: 1080px;
+	--cq-seam: 104px;
+	--cq-rail-x: 16px;
+	--cq-buddy-w: 30px;
+	--cq-photo: clamp(168px, 21cqi, 220px);
+
+	container: avix-cq / inline-size;
+	position: relative;
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	padding: clamp(90px, 10vw, 140px) 0;
+	overflow: clip;
+	color: var(--cq-ink);
+	background-color: var(--cq-bg);
+	background-image:
+		linear-gradient(var(--cq-grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--cq-grid) 1px, transparent 1px);
+	background-position: center top;
+	background-size: 80px 80px;
+	font-family: var(--cq-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-cq--no-grid {
+	background-image: none;
+}
+
+.avix-cq *,
+.avix-cq *::before,
+.avix-cq *::after {
+	box-sizing: border-box;
+}
+
+.avix-cq__frame {
+	position: relative;
+	width: min(calc(100% - 10%), var(--cq-max));
+	margin-inline: auto;
+}
+
+.avix-cq__sr {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ---------- Header ---------- */
+
+.avix-cq__head {
+	margin-bottom: clamp(40px, 5cqi, 64px);
+	text-align: center;
+}
+
+.avix-cq .avix-cq__tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 22px;
+	padding: 6px 16px;
+	border: 1px solid var(--cq-line);
+	border-radius: 999px;
+	color: #e0e0e0;
+	background: rgba(255, 255, 255, 0.08);
+	font-family: var(--cq-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+.avix-cq__tag b {
+	color: var(--cq-accent);
+	font-weight: 600;
+}
+
+.avix-cq .avix-cq__title {
+	margin: 0;
+	padding: 0;
+	color: var(--cq-ink);
+	font-family: var(--cq-font-display);
+	font-size: clamp(38px, 5.6cqi, 76px);
+	font-weight: 600;
+	letter-spacing: -0.035em;
+	line-height: 1.02;
+}
+
+.avix-cq .avix-cq__accent {
+	color: var(--cq-accent);
+}
+
+/* ---------- Face-off ---------- */
+
+.avix-cq__compare {
+	position: relative;
+}
+
+.avix-cq__heads,
+.avix-cq .avix-cq__row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) var(--cq-seam) minmax(0, 1fr);
+	align-items: center;
+}
+
+.avix-cq__pill {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 64px;
+	padding: 12px 20px;
+	border-radius: 16px;
+	font-family: var(--cq-font-display);
+	font-size: clamp(16px, 1.7cqi, 20px);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	text-align: center;
+}
+
+.avix-cq__pill--them {
+	border: 1px solid var(--cq-line);
+	color: var(--cq-ink);
+	background: #111216;
+}
+
+.avix-cq__pill--us {
+	color: #ffffff;
+	background: var(--cq-accent);
+	box-shadow: 0 20px 50px -18px color-mix(in srgb, var(--cq-accent) 70%, transparent);
+}
+
+.avix-cq__pill--us svg {
+	flex: 0 0 auto;
+	width: 22px;
+	height: 22px;
+	fill: currentColor;
+}
+
+.avix-cq__vs {
+	position: relative;
+	z-index: 2;
+	display: grid;
+	width: 56px;
+	height: 56px;
+	justify-self: center;
+	place-items: center;
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	border-radius: 50%;
+	color: var(--cq-ink);
+	background: #0b0c0f;
+	box-shadow: 0 0 0 6px var(--cq-bg);
+	font-family: var(--cq-font-display);
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+.avix-cq .avix-cq__rows {
+	position: relative;
+	margin: 14px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* The seam Pixel Akib flies along. */
+.avix-cq__rows::before {
+	position: absolute;
+	top: -6px;
+	bottom: 0;
+	left: 50%;
+	width: 1px;
+	background: linear-gradient(transparent, var(--cq-line) 12%, var(--cq-line) 88%, transparent);
+	content: "";
+}
+
+.avix-cq .avix-cq__row {
+	--cq-rail: wide;
+	position: relative;
+	isolation: isolate;
+	min-height: 62px;
+	margin: 0;
+	padding: 12px 0;
+	list-style: none;
+	cursor: default;
+}
+
+.avix-cq .avix-cq__row::marker {
+	content: "";
+}
+
+/* Hover band */
+.avix-cq .avix-cq__row::after {
+	position: absolute;
+	inset: 3px -14px;
+	z-index: -1;
+	border-radius: 14px;
+	background: rgba(255, 255, 255, 0.035);
+	opacity: 0;
+	content: "";
+	transition: opacity 300ms ease;
+}
+
+.avix-cq .avix-cq__row.is-active::after {
+	opacity: 1;
+}
+
+.avix-cq .avix-cq__them,
+.avix-cq .avix-cq__us {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0;
+	font-family: var(--cq-font-body);
+	font-size: clamp(15px, 1.4cqi, 17px);
+	line-height: 1.4;
+}
+
+.avix-cq .avix-cq__them {
+	justify-content: flex-end;
+	padding-right: 8px;
+	color: var(--cq-muted);
+	text-align: right;
+}
+
+.avix-cq .avix-cq__us {
+	grid-column: 3;
+	padding-left: 8px;
+	color: color-mix(in srgb, var(--cq-ink) 88%, transparent);
+	transition: color 400ms ease;
+}
+
+.avix-cq__icon {
+	position: relative;
+	display: grid;
+	flex: 0 0 auto;
+	width: 24px;
+	height: 24px;
+	place-items: center;
+	border-radius: 50%;
+	transition: background-color 300ms ease, color 300ms ease;
+}
+
+.avix-cq__icon svg {
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.6;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.avix-cq__them .avix-cq__icon {
+	color: rgba(255, 255, 255, 0.45);
+	background: rgba(255, 255, 255, 0.05);
+}
+
+.avix-cq__us .avix-cq__icon {
+	color: var(--cq-accent);
+	background: color-mix(in srgb, var(--cq-accent) 16%, transparent);
+}
+
+/* The strike Pixel Akib zaps through the old habit. */
+.avix-cq__them .avix-cq__txt {
+	background: linear-gradient(var(--cq-accent), var(--cq-accent)) no-repeat right 62% / 0% 2px;
+	transition: background-size 450ms var(--cq-ease), color 400ms ease;
+}
+
+.avix-cq .avix-cq__row.is-zapped .avix-cq__them .avix-cq__txt {
+	color: color-mix(in srgb, var(--cq-muted) 70%, transparent);
+	background-size: 100% 2px;
+}
+
+.avix-cq .avix-cq__row.is-zapped .avix-cq__us {
+	color: var(--cq-ink);
+}
+
+.avix-cq__row.is-zapped .avix-cq__us .avix-cq__icon {
+	color: #ffffff;
+	background: var(--cq-accent);
+}
+
+/* Beam from the character to the × */
+.avix-cq .avix-cq__row::before {
+	position: absolute;
+	top: 50%;
+	left: calc(50% - var(--cq-seam) / 2 - 10px);
+	width: calc(var(--cq-seam) / 2 + 10px - var(--cq-buddy-w) / 2 - 4px);
+	height: 2px;
+	margin-top: -1px;
+	border-radius: 2px;
+	background: linear-gradient(90deg, #fff3e0, var(--cq-accent));
+	box-shadow: 0 0 10px var(--cq-accent);
+	opacity: 0;
+	content: "";
+	transform: scaleX(0);
+	transform-origin: 100% 50%;
+	pointer-events: none;
+}
+
+.avix-cq .avix-cq__row.is-zapping::before {
+	animation: avix-cq-beam 460ms ease-out;
+}
+
+.avix-cq__row.is-zapping .avix-cq__them .avix-cq__icon {
+	animation: avix-cq-hit 520ms ease-out 140ms;
+}
+
+/* Sparks off the × when it gets hit */
+.avix-cq__them .avix-cq__icon::before,
+.avix-cq__them .avix-cq__icon::after {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 4px;
+	height: 4px;
+	margin: -2px 0 0 -2px;
+	background: var(--cq-accent);
+	opacity: 0;
+	content: "";
+}
+
+.avix-cq__row.is-zapping .avix-cq__them .avix-cq__icon::before {
+	animation: avix-cq-spark-a 520ms ease-out 160ms;
+}
+
+.avix-cq__row.is-zapping .avix-cq__them .avix-cq__icon::after {
+	animation: avix-cq-spark-b 520ms ease-out 160ms;
+}
+
+.avix-cq__row.is-won .avix-cq__us .avix-cq__icon {
+	animation: avix-cq-pop 560ms var(--cq-pop);
+}
+
+/* ---------- CEO quote ---------- */
+
+.avix-cq .avix-cq__quote {
+	position: relative;
+	isolation: isolate;
+	display: grid;
+	text-align: left;
+	grid-template-columns: var(--cq-photo) minmax(0, 1fr);
+	align-items: center;
+	gap: clamp(24px, 3.6cqi, 48px);
+	max-width: 940px;
+	margin: clamp(64px, 8cqi, 104px) auto 0;
+	padding: 14px clamp(24px, 4cqi, 48px) 14px 14px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 28px;
+	background:
+		radial-gradient(90% 130% at 0% 100%, rgba(193, 54, 18, 0.42) 0%, transparent 62%),
+		radial-gradient(70% 100% at 100% 0%, color-mix(in srgb, var(--cq-accent) 22%, transparent) 0%, transparent 62%),
+		linear-gradient(135deg, #1b0d0a 0%, #0f0b0b 55%, #170b08 100%);
+	box-shadow: 0 40px 90px -40px rgba(193, 54, 18, 0.55);
+}
+
+.avix-cq--cool .avix-cq__quote {
+	background: #0d0e11;
+	box-shadow: none;
+}
+
+.avix-cq .avix-cq__quote--text {
+	grid-template-columns: minmax(0, 1fr);
+	padding: clamp(28px, 4cqi, 48px);
+}
+
+.avix-cq__photo {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: 1;
+	border-radius: 18px;
+	background: var(--cq-accent);
+}
+
+.avix-cq .avix-cq__media {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	object-fit: cover;
+}
+
+.avix-cq__body {
+	padding: 18px 0;
+}
+
+.avix-cq .avix-cq__words {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	quotes: none;
+}
+
+.avix-cq .avix-cq__words::before,
+.avix-cq .avix-cq__words::after {
+	display: none;
+	content: none;
+}
+
+.avix-cq .avix-cq__quote .avix-cq__words,
+.avix-cq .avix-cq__quote .avix-cq__words p {
+	color: var(--cq-ink);
+	text-align: inherit;
+}
+
+.avix-cq .avix-cq__words p {
+	margin: 0;
+	color: var(--cq-ink);
+	font-family: var(--cq-font-display);
+	font-size: clamp(19px, 2.2cqi, 28px);
+	font-style: normal;
+	font-weight: 500;
+	letter-spacing: -0.015em;
+	line-height: 1.35;
+	text-wrap: pretty;
+}
+
+.avix-cq .avix-cq__words p::before {
+	content: "“";
+}
+
+.avix-cq .avix-cq__words p::after {
+	content: "”";
+}
+
+.avix-cq .avix-cq__by {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 12px;
+	margin: 24px 0 0;
+}
+
+.avix-cq .avix-cq__name {
+	color: var(--cq-ink);
+	font-family: var(--cq-font-display);
+	font-size: clamp(17px, 1.7cqi, 21px);
+	font-style: normal;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+.avix-cq .avix-cq__name-link {
+	color: inherit;
+	text-decoration: none;
+	background: linear-gradient(var(--cq-accent), var(--cq-accent)) no-repeat 0 100% / 0% 1.5px;
+	transition: background-size 300ms var(--cq-ease);
+}
+
+.avix-cq .avix-cq__name-link:hover,
+.avix-cq .avix-cq__name-link:focus-visible {
+	color: inherit;
+	background-size: 100% 1.5px;
+}
+
+.avix-cq .avix-cq__name-link:focus-visible {
+	border-radius: 3px;
+	outline: 2px solid var(--cq-accent);
+	outline-offset: 3px;
+}
+
+.avix-cq__dot {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: var(--cq-muted);
+}
+
+.avix-cq__role {
+	color: color-mix(in srgb, var(--cq-ink) 70%, transparent);
+	font-size: 15px;
+}
+
+/* ---------- Pixel Akib ---------- */
+
+.avix-cq__buddy {
+	--cq-buddy-h: calc(var(--cq-buddy-w) * 1.2);
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 30;
+	width: var(--cq-buddy-w);
+	height: var(--cq-buddy-h);
+	margin: calc(var(--cq-buddy-h) / -2) 0 0 calc(var(--cq-buddy-w) / -2);
+	visibility: hidden;
+	pointer-events: none;
+	will-change: transform;
+}
+
+.avix-cq.is-ready .avix-cq__buddy {
+	visibility: visible;
+}
+
+.avix-cq .avix-cq__hit {
+	position: relative;
+	display: block;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	color: inherit;
+	background: none;
+	box-shadow: none;
+	cursor: pointer;
+	pointer-events: auto;
+	touch-action: manipulation;
+	transform-origin: 50% 100%;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Bigger target than the sprite. */
+.avix-cq .avix-cq__hit::before {
+	position: absolute;
+	inset: -12px -10px;
+	content: "";
+}
+
+.avix-cq .avix-cq__hit:hover,
+.avix-cq .avix-cq__hit:focus {
+	background: none;
+}
+
+.avix-cq .avix-cq__hit:focus-visible {
+	outline: 2px solid var(--cq-accent);
+	outline-offset: 6px;
+}
+
+.avix-cq__bob {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform-origin: 50% 60%;
+}
+
+.avix-cq__sprite {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	fill: var(--cq-accent);
+	shape-rendering: crispEdges;
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--cq-accent) 75%, transparent));
+}
+
+/* Pixel art snaps between poses: no transitions on the parts. */
+.avix-cq__sprite rect,
+.avix-cq__sprite g {
+	transform-box: view-box;
+}
+
+.avix-cq .avix-cq__b-eye {
+	fill: #1b0d05;
+}
+
+/* The rocket boots */
+.avix-cq .avix-cq__boot {
+	fill: #ffe7d1;
+}
+
+.avix-cq__buddy.is-left .avix-cq__sprite {
+	scale: -1 1;
+}
+
+.avix-cq__b-point {
+	opacity: 0;
+}
+
+/*
+ * Sitting: the seat (row 7 of 12) rests on the edge, legs dangle and swing,
+ * now and then a glance. JS flips these classes twice a second instead of
+ * running CSS loops, so a character just sitting there costs nothing.
+ */
+.avix-cq__buddy.is-sit .avix-cq__b-arm {
+	transform: translate(0, 1px);
+}
+
+.avix-cq__buddy.is-sit.is-step .avix-cq__b-leg--l,
+.avix-cq__buddy.is-sit:not(.is-step) .avix-cq__b-leg--r {
+	transform: translate(0, -1px);
+}
+
+.avix-cq__buddy.is-sit.is-glance .avix-cq__b-head,
+.avix-cq__buddy.is-sit.is-glance .avix-cq__b-eye {
+	transform: translate(-1px, 0);
+}
+
+/* Hovering on idle jets */
+.avix-cq__buddy.is-hover .avix-cq__sprite {
+	animation: avix-cq-bob 1.1s ease-in-out infinite;
+}
+
+/* Flames grow down from the boot soles (fill-box beats the view-box rule above). */
+.avix-cq__sprite .avix-cq__jet,
+.avix-cq__sprite .avix-cq__core {
+	transform: scaleY(0);
+	transform-box: fill-box;
+	transform-origin: 50% 0;
+}
+
+.avix-cq .avix-cq__jet {
+	fill: #ffb347;
+}
+
+.avix-cq .avix-cq__core {
+	fill: #fff6d6;
+}
+
+.avix-cq__buddy.is-hover .avix-cq__jet,
+.avix-cq__buddy.is-hover .avix-cq__core,
+.avix-cq__buddy.is-zap .avix-cq__jet,
+.avix-cq__buddy.is-zap .avix-cq__core,
+.avix-cq__buddy.is-cheer .avix-cq__jet,
+.avix-cq__buddy.is-cheer .avix-cq__core {
+	animation: avix-cq-idle-jet 0.16s steps(2) infinite;
+}
+
+.avix-cq__buddy.is-fly .avix-cq__jet,
+.avix-cq__buddy.is-fly .avix-cq__core {
+	animation: avix-cq-jet 0.1s steps(2) infinite;
+}
+
+.avix-cq__buddy.is-fly.is-rise .avix-cq__jet {
+	animation-name: avix-cq-thrust;
+}
+
+/* Flying: streamlined going up, arms out coming down. */
+.avix-cq__buddy.is-fly.is-rise .avix-cq__b-arm {
+	transform: translate(0, 1px);
+}
+
+.avix-cq__buddy.is-fly.is-fall .avix-cq__b-arm {
+	transform: translate(0, -2px);
+}
+
+/* Zap: arm out like a blaster, a little recoil. */
+.avix-cq__buddy.is-zap .avix-cq__b-arm--r {
+	opacity: 0;
+}
+
+.avix-cq__buddy.is-zap .avix-cq__b-point {
+	opacity: 1;
+	animation: avix-cq-recoil 260ms steps(2) 2;
+}
+
+/* Cheer: both arms up. */
+.avix-cq__buddy.is-cheer .avix-cq__b-arm {
+	transform: translate(0, -3px);
+}
+
+.avix-cq__buddy.is-wave .avix-cq__b-arm--r,
+.avix-cq__buddy.is-sit .avix-cq__hit:hover .avix-cq__b-arm--r,
+.avix-cq__buddy.is-hover .avix-cq__hit:hover .avix-cq__b-arm--r {
+	animation: avix-cq-wave 0.5s steps(1) infinite;
+}
+
+.avix-cq__buddy.is-flip .avix-cq__sprite {
+	animation: avix-cq-flip 720ms var(--cq-ease);
+}
+
+.avix-cq__buddy.is-land .avix-cq__hit {
+	animation: avix-cq-land 420ms var(--cq-ease);
+}
+
+/* Landing puffs */
+.avix-cq__puffs {
+	position: absolute;
+	top: 58%;
+	left: 50%;
+	pointer-events: none;
+}
+
+.avix-cq__puffs i {
+	position: absolute;
+	width: 4px;
+	height: 4px;
+	background: rgba(255, 255, 255, 0.7);
+	opacity: 0;
+}
+
+.avix-cq__buddy.is-land .avix-cq__puffs i:nth-child(1) {
+	animation: avix-cq-puff-l 420ms ease-out;
+}
+
+.avix-cq__buddy.is-land .avix-cq__puffs i:nth-child(2) {
+	animation: avix-cq-puff-r 420ms ease-out;
+}
+
+.avix-cq__buddy.is-land .avix-cq__puffs i:nth-child(3) {
+	animation: avix-cq-puff-u 420ms ease-out;
+}
+
+/* Exhaust and confetti pixels (positioned by JS). */
+.avix-cq__spark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 29;
+	width: 4px;
+	height: 4px;
+	margin: -2px 0 0 -2px;
+	background: #ffb347;
+	opacity: 0;
+	pointer-events: none;
+}
+
+/* Speech bubble */
+.avix-cq__bubble {
+	position: absolute;
+	bottom: calc(100% + 14px);
+	left: 50%;
+	z-index: 3;
+	width: max-content;
+	max-width: min(240px, 72cqi);
+	padding: 9px 14px;
+	border-radius: 14px;
+	color: #141414;
+	background: #ffffff;
+	box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+	font-family: var(--cq-font-body);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.35;
+	text-align: left;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, 6px) scale(0.9);
+	transform-origin: 50% 100%;
+	transition: opacity 200ms ease, transform 320ms var(--cq-pop);
+}
+
+.avix-cq__buddy[data-side="right"] .avix-cq__bubble {
+	left: -4px;
+	border-bottom-left-radius: 4px;
+	transform: translate(0, 6px) scale(0.9);
+	transform-origin: 0 100%;
+}
+
+.avix-cq__buddy[data-side="left"] .avix-cq__bubble {
+	right: -4px;
+	left: auto;
+	border-bottom-right-radius: 4px;
+	transform: translate(0, 6px) scale(0.9);
+	transform-origin: 100% 100%;
+}
+
+.avix-cq__buddy.is-talking .avix-cq__bubble {
+	opacity: 1;
+	transform: translate(-50%, 0) scale(1);
+}
+
+.avix-cq__buddy.is-talking[data-side="right"] .avix-cq__bubble,
+.avix-cq__buddy.is-talking[data-side="left"] .avix-cq__bubble {
+	transform: translate(0, 0) scale(1);
+}
+
+/* ---------- Reveal (only once JS is running) ---------- */
+
+.avix-cq.is-live [data-cq-reveal] {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+	transition-delay: var(--cq-delay, 0ms);
+}
+
+.avix-cq.is-live [data-cq-reveal].is-shown {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-cq.is-live .avix-cq__row {
+	opacity: 0;
+	transform: translateY(12px);
+	transition: opacity 600ms ease, transform 700ms var(--cq-ease);
+	transition-delay: calc(240ms + var(--cq-i, 0) * 70ms);
+}
+
+.avix-cq.is-live .avix-cq__compare.is-shown .avix-cq__row {
+	opacity: 1;
+	transform: none;
+}
+
+/* Nothing loops while the section is off screen. */
+.avix-cq.is-offscreen *,
+.avix-cq.is-offscreen *::before,
+.avix-cq.is-offscreen *::after {
+	animation-play-state: paused !important;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-cq-beam {
+	0% { opacity: 1; transform: scaleX(0); }
+	45% { opacity: 1; transform: scaleX(1); }
+	100% { opacity: 0; transform: scaleX(1); }
+}
+
+@keyframes avix-cq-hit {
+	0% { color: #ffffff; background: var(--cq-accent); transform: scale(1.25); }
+	100% { transform: scale(1); }
+}
+
+@keyframes avix-cq-spark-a {
+	0% { opacity: 1; transform: translate(0, 0); }
+	100% { opacity: 0; transform: translate(-14px, -12px); }
+}
+
+@keyframes avix-cq-spark-b {
+	0% { opacity: 1; transform: translate(0, 0); }
+	100% { opacity: 0; transform: translate(-12px, 13px); }
+}
+
+@keyframes avix-cq-pop {
+	0% { transform: scale(0.5); }
+	60% { transform: scale(1.3); }
+	100% { transform: scale(1); }
+}
+
+@keyframes avix-cq-bob {
+	0%, 100% { translate: 0 0; }
+	50% { translate: 0 -3px; }
+}
+
+@keyframes avix-cq-idle-jet {
+	0% { transform: scaleY(0.45); }
+	50% { transform: scaleY(0.7); }
+}
+
+@keyframes avix-cq-jet {
+	0% { transform: scaleY(1); }
+	50% { transform: scaleY(1.5); }
+}
+
+@keyframes avix-cq-thrust {
+	0% { transform: scaleY(1.5); }
+	50% { transform: scaleY(2.1); }
+}
+
+@keyframes avix-cq-recoil {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(-1px, 0); }
+}
+
+@keyframes avix-cq-wave {
+	0% { transform: translate(0, -3px); }
+	50% { transform: translate(0, -2px); }
+}
+
+@keyframes avix-cq-flip {
+	0% { rotate: 0deg; }
+	100% { rotate: 360deg; }
+}
+
+@keyframes avix-cq-land {
+	0% { transform: scale(1.15, 0.8); }
+	55% { transform: scale(0.94, 1.08); }
+	100% { transform: none; }
+}
+
+@keyframes avix-cq-puff-l {
+	0% { opacity: 0.9; transform: translate(-2px, 0); }
+	100% { opacity: 0; transform: translate(-16px, -3px) scale(0.4); }
+}
+
+@keyframes avix-cq-puff-r {
+	0% { opacity: 0.9; transform: translate(-2px, 0); }
+	100% { opacity: 0; transform: translate(12px, -3px) scale(0.4); }
+}
+
+@keyframes avix-cq-puff-u {
+	0% { opacity: 0.7; transform: translate(-2px, 0); }
+	100% { opacity: 0; transform: translate(-2px, -12px) scale(0.4); }
+}
+
+/* ---------- Narrow: stacked rows, the character flies a left rail ---------- */
+
+@container avix-cq (max-width: 720px) {
+	.avix-cq__heads {
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		gap: 8px;
+	}
+
+	.avix-cq__pill {
+		min-height: 50px;
+		padding: 10px 12px;
+		border-radius: 14px;
+		font-size: 14px;
+	}
+
+	.avix-cq__pill--us svg {
+		width: 16px;
+		height: 16px;
+	}
+
+	.avix-cq__vs {
+		width: 42px;
+		height: 42px;
+		box-shadow: 0 0 0 4px var(--cq-bg);
+		font-size: 12px;
+	}
+
+	.avix-cq .avix-cq__rows {
+		margin-top: 18px;
+	}
+
+	.avix-cq__rows::before {
+		left: var(--cq-rail-x);
+	}
+
+	.avix-cq .avix-cq__row {
+		--cq-rail: narrow;
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: 6px;
+		min-height: 0;
+		padding: 14px 0 14px calc(var(--cq-rail-x) + 28px);
+	}
+
+	.avix-cq .avix-cq__row::after {
+		inset: 2px -8px 2px calc(var(--cq-rail-x) + 16px);
+	}
+
+	.avix-cq .avix-cq__them {
+		flex-direction: row-reverse;
+		justify-content: flex-end;
+		padding: 0;
+		font-size: 14px;
+		text-align: left;
+	}
+
+	.avix-cq .avix-cq__us {
+		grid-column: auto;
+		padding: 0;
+		font-size: 16px;
+	}
+
+	.avix-cq__them .avix-cq__icon {
+		width: 20px;
+		height: 20px;
+	}
+
+	.avix-cq__them .avix-cq__txt {
+		background-position: left 62%;
+	}
+
+	.avix-cq .avix-cq__row::before {
+		top: 14px;
+		left: calc(var(--cq-rail-x) + var(--cq-buddy-w) / 2 + 2px);
+		width: calc(28px - var(--cq-buddy-w) / 2 - 2px);
+		margin-top: 9px;
+		transform-origin: 0 50%;
+	}
+
+	.avix-cq .avix-cq__quote {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 6px;
+		padding: 14px 14px 10px;
+		border-radius: 24px;
+	}
+
+	/* Stacked card: photo, quote and name centred. */
+	.avix-cq .avix-cq__quote {
+		justify-items: center;
+		text-align: center;
+	}
+
+	.avix-cq__photo {
+		width: 132px;
+		border-radius: 16px;
+	}
+
+	.avix-cq__body {
+		padding: 12px 8px 14px;
+	}
+
+	.avix-cq .avix-cq__by {
+		justify-content: center;
+	}
+}
+
+@container avix-cq (max-width: 480px) {
+	.avix-cq__frame {
+		width: calc(100% - 40px);
+	}
+
+	.avix-cq .avix-cq__tag {
+		margin-bottom: 18px;
+		padding: 5px 13px;
+		font-size: 11px;
+	}
+
+	.avix-cq__pill {
+		padding: 8px 10px;
+		font-size: 13px;
+	}
+
+	.avix-cq .avix-cq__us {
+		font-size: 15px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-cq *,
+	.avix-cq *::before,
+	.avix-cq *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+}
