@@ -462,44 +462,15 @@ class Smart_Header extends Widget_Base {
 		$this->start_controls_section( 'section_behaviour', array( 'label' => esc_html__( 'Light & Dark', 'avix-widgets' ) ) );
 
 		$this->add_control(
-			'top_style',
+			'light_mode',
 			array(
-				'label'       => esc_html__( 'At the top of the page', 'avix-widgets' ),
-				'description' => esc_html__( 'The header is see-through at the top. Auto looks at what is behind it (a dark hero or photo gets white text and the white logo; a light page gets dark text and the dark logo). Add data-avix-header="dark" or "light" to any section to force it.', 'avix-widgets' ),
-				'type'        => Controls_Manager::SELECT,
-				'default'     => 'auto',
-				'options'     => array(
-					'auto'  => esc_html__( 'Auto (match the page)', 'avix-widgets' ),
-					'dark'  => esc_html__( 'Over a dark background', 'avix-widgets' ),
-					'light' => esc_html__( 'Over a light background', 'avix-widgets' ),
-				),
-			)
-		);
-
-		$this->add_control(
-			'scrolled_style',
-			array(
-				'label'       => esc_html__( 'After scrolling', 'avix-widgets' ),
-				'description' => esc_html__( 'The frosted bar the header turns into once the page scrolls.', 'avix-widgets' ),
-				'type'        => Controls_Manager::SELECT,
-				'default'     => 'dark',
-				'options'     => array(
-					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
-					'light' => esc_html__( 'Light', 'avix-widgets' ),
-				),
-			)
-		);
-
-		$this->add_control(
-			'mobile_style',
-			array(
-				'label'   => esc_html__( 'Mobile menu', 'avix-widgets' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => 'dark',
-				'options' => array(
-					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
-					'light' => esc_html__( 'Light', 'avix-widgets' ),
-				),
+				'label'        => esc_html__( 'Light mode', 'avix-widgets' ),
+				'description'  => esc_html__( 'Off (Dark): for dark heroes like the homepage. See-through with white text, the white logo and a white notch; a dark bar after scrolling, a dark dropdown and mobile menu. On (Light): for light pages. Dark text, the dark logo and a dark notch; a white bar after scrolling, a white dropdown and mobile menu.', 'avix-widgets' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Light', 'avix-widgets' ),
+				'label_off'    => esc_html__( 'Dark', 'avix-widgets' ),
+				'return_value' => 'yes',
+				'default'      => '',
 			)
 		);
 
@@ -510,7 +481,6 @@ class Smart_Header extends Widget_Base {
 				'description' => esc_html__( 'Slides away while reading and comes back as soon as the visitor scrolls up.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
-				'separator'   => 'before',
 			)
 		);
 
@@ -580,20 +550,15 @@ class Smart_Header extends Widget_Base {
 			)
 		);
 		$every    = isset( $s['hi_every']['size'] ) && '' !== $s['hi_every']['size'] ? (float) $s['hi_every']['size'] : 9;
-		$top      = in_array( $s['top_style'], array( 'auto', 'dark', 'light' ), true ) ? $s['top_style'] : 'auto';
-		$scrolled = 'light' === $s['scrolled_style'] ? 'light' : 'dark';
-		$mobile   = 'light' === $s['mobile_style'] ? 'light' : 'dark';
+		$tone     = 'yes' === ( $s['light_mode'] ?? '' ) ? 'light' : 'dark';
 
 		$this->add_render_attribute(
 			'root',
 			array(
-				'class'       => array( 'avix-sh', 'avix-sh--on-' . ( 'light' === $top ? 'light' : 'dark' ) ),
-				'id'          => 'avix-smart-header',
+				'class'        => array( 'avix-sh', 'avix-sh--on-' . $tone ),
+				'id'           => 'avix-smart-header',
 				'data-avix-sh' => wp_json_encode(
 					array(
-						'top'      => $top,
-						'scrolled' => $scrolled,
-						'mobile'   => $mobile,
 						'hide'     => 'yes' === $s['hide_on_scroll'],
 						'current'  => 'yes' === $s['mark_current'],
 						'hiEvery'  => max( 0, min( 60, $every ) ),
@@ -633,7 +598,7 @@ class Smart_Header extends Widget_Base {
 			</div>
 		</header>
 		<?php
-		$this->render_mobile_menu( $s, $services, $id, $mobile );
+		$this->render_mobile_menu( $s, $services, $id, $tone );
 	}
 
 	private function render_notch( array $s ) {

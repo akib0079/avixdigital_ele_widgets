@@ -59,6 +59,7 @@ class About_Hero extends Widget_Base {
 
 		$this->section( 'layout_style', 'Section & layout' );
 		$this->add_control( 'layout_help', array( 'type' => Controls_Manager::RAW_HTML, 'raw' => esc_html__( 'Set the parent Elementor container to Full Width with zero padding for edge-to-edge layout. This widget contains no header.', 'avix-widgets' ), 'content_classes' => 'elementor-panel-alert elementor-panel-alert-info' ) );
+		$this->add_control( 'clear_header', array( 'label' => esc_html__( 'Clear the fixed header', 'avix-widgets' ), 'description' => esc_html__( 'Adds the Smart Header\'s height to the top spacing, so the eyebrow and headline never sit under the menu. Turn off if this hero is not at the top of the page.', 'avix-widgets' ), 'type' => Controls_Manager::SWITCHER, 'default' => 'yes' ) );
 		$this->add_group_control( Group_Control_Background::get_type(), array( 'name' => 'background', 'types' => array( 'classic', 'gradient' ), 'selector' => '{{WRAPPER}} .avix-about' ) );
 		$this->add_responsive_control( 'minimum_height', array( 'label' => esc_html__( 'Minimum section height', 'avix-widgets' ), 'type' => Controls_Manager::SLIDER, 'size_units' => array( 'vh', 'svh', 'px' ), 'range' => array( 'vh' => array( 'min' => 30, 'max' => 150 ), 'svh' => array( 'min' => 30, 'max' => 150 ), 'px' => array( 'min' => 200, 'max' => 1600 ) ), 'selectors' => array( '{{WRAPPER}} .avix-about' => 'min-height: {{SIZE}}{{UNIT}};' ) ) );
 		foreach ( array(
@@ -149,7 +150,7 @@ class About_Hero extends Widget_Base {
 		$id = 'avix-about-title-' . $this->get_id();
 		$items = array_values( array_filter( (array) ( $s['platforms'] ?? array() ), static function ( $item ) { return is_array( $item ) && '' !== trim( (string) ( $item['name'] ?? '' ) ); } ) );
 		$config = array( 'animate' => 'yes' === ( $s['animate'] ?? '' ), 'pauseHover' => 'yes' === ( $s['pause_hover'] ?? '' ), 'pause' => (string) ( $s['pause_text'] ?? 'Pause animation' ), 'resume' => (string) ( $s['resume_text'] ?? 'Resume animation' ) );
-		$classes = 'avix-about' . ( 'yes' !== ( $s['show_labels'] ?? '' ) ? ' avix-about--no-labels' : '' ) . ( 'yes' !== ( $s['show_mobile_list'] ?? '' ) ? ' avix-about--no-mobile-list' : '' );
+		$classes = 'avix-about' . ( 'no' !== ( $s['clear_header'] ?? 'yes' ) && '' !== ( $s['clear_header'] ?? 'yes' ) ? ' avix-about--under-header' : '' ) . ( 'yes' !== ( $s['show_labels'] ?? '' ) ? ' avix-about--no-labels' : '' ) . ( 'yes' !== ( $s['show_mobile_list'] ?? '' ) ? ' avix-about--no-mobile-list' : '' );
 		?>
 		<section class="<?php echo esc_attr( $classes ); ?>" data-avix-about="<?php echo esc_attr( wp_json_encode( $config ) ); ?>" <?php echo '' !== trim( $title ) ? 'aria-labelledby="' . esc_attr( $id ) . '"' : 'aria-label="' . esc_attr__( 'About Avix Digital', 'avix-widgets' ) . '"'; ?>>
 			<div class="avix-about__intro">

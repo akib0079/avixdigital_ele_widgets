@@ -1,8 +1,8 @@
 /*!
  * Avix Digital · Smart Header
  * Scroll states (see-through → frosted bar, hides while scrolling down),
- * light/dark matching with logo swap, services dropdown, full-screen mobile
- * menu, and the pixel character in the notch that says hi now and then.
+ * services dropdown, full-screen mobile menu, and the pixel character in the
+ * notch that says hi now and then. Light or dark is set in Elementor.
  */
 (function (window, document) {
 	'use strict';
@@ -13,19 +13,6 @@
 
 	function isEditMode() {
 		return !!(window.elementorFrontend && typeof window.elementorFrontend.isEditMode === 'function' && window.elementorFrontend.isEditMode());
-	}
-
-	function parseColor(value) {
-		var match = /rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s/]+([\d.]+%?))?\s*\)/.exec(value || '');
-		if (!match) {
-			return null;
-		}
-		var alpha = match[4] === undefined ? 1 : match[4].indexOf('%') > -1 ? parseFloat(match[4]) / 100 : parseFloat(match[4]);
-		return { r: +match[1], g: +match[2], b: +match[3], a: alpha };
-	}
-
-	function isDark(color) {
-		return (0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b) / 255 < 0.55;
 	}
 
 	// Same page? Compares origin + path, ignoring a trailing slash, query and hash.
@@ -56,7 +43,6 @@
 		this.notch = root.querySelector('[data-sh-notch]');
 		this.pal = root.querySelector('[data-sh-pal]');
 		this.drops = Array.prototype.slice.call(root.querySelectorAll('[data-sh-drop]'));
-		this.topTone = config.top === 'light' ? 'light' : 'dark';
 		this.lastY = window.pageYOffset || 0;
 		this.hidden = false;
 		this.open = false;
@@ -69,13 +55,9 @@
 		var self = this;
 		window.addEventListener('scroll', this.onScroll, { passive: true });
 		window.addEventListener('resize', this.onScroll, { passive: true });
-		window.addEventListener('load', function () {
-			self.update(true);
-		});
-		// Late content (sliders, lazy images) can change what's behind the header.
-		window.setTimeout(function () {
-			self.update(true);
-		}, 700);
+		window.addEventListener('resize', function () {
+			self.measured = false;
+		}, { passive: true });
 
 		this.bindDrops();
 		this.bindMenu();
@@ -101,10 +83,10 @@
 			}
 		});
 
-		this.update(true);
+		this.update();
 	};
 
-	/* ---------- Scroll & tone ---------- */
+	/* ---------- Scroll ---------- */
 
 	Header.prototype.onScroll = function () {
 		if (this.ticking) {
@@ -114,11 +96,11 @@
 		var self = this;
 		window.requestAnimationFrame(function () {
 			self.ticking = false;
-			self.update(false);
+			self.update();
 		});
 	};
 
-	Header.prototype.update = function (force) {
+	Header.prototype.update = function () {
 		if (!this.root.isConnected) {
 			this.destroy();
 			return;
@@ -129,7 +111,14 @@
 			return;
 		}
 		var scrolled = y > 50 && !this.edit;
-		this.root.classList.toggle('is-scrolled', scrolled);
+		// Only touch the DOM when the state actually changes.
+		if (scrolled !== this.scrolled) {
+			this.root.classList.toggle('is-scrolled', scrolled);
+		}
+		// Height at the top of the page, for sections that sit under the header.
+		if (!scrolled && !this.edit && !this.measured) {
+			this.publishHeight();
+		}
 
 		if (this.config.hide && !this.edit) {
 			if (y <= 10) {
@@ -139,75 +128,24 @@
 			} else if (y < this.lastY - 3) {
 				this.hidden = false;
 			}
-			this.root.classList.toggle('is-hidden', this.hidden);
+			if (this.hidden !== this.wasHidden) {
+				this.root.classList.toggle('is-hidden', this.hidden);
+				this.wasHidden = this.hidden;
+			}
 			if (this.hidden) {
 				this.drops.forEach(this.closeDrop, this);
 			}
 		}
 		this.lastY = y;
-
-		// See-through at the top: match what's behind it.
-		if (!scrolled && this.config.top === 'auto' && (force || Math.abs(y - (this.detectedAt || 0)) > 24)) {
-			this.detectedAt = y;
-			this.topTone = this.detect();
-		}
 		this.scrolled = scrolled;
-		this.applyTone();
 	};
 
-	Header.prototype.applyTone = function () {
-		var tone = this.open ? this.config.mobile : this.scrolled ? this.config.scrolled : this.topTone;
-		tone = tone === 'light' ? 'light' : 'dark';
-		this.root.classList.toggle('avix-sh--on-dark', tone === 'dark');
-		this.root.classList.toggle('avix-sh--on-light', tone === 'light');
-	};
-
-	// Samples three points behind the bar and takes the majority.
-	Header.prototype.detect = function () {
-		if (!document.elementsFromPoint || !this.bar) {
-			return this.topTone;
+	Header.prototype.publishHeight = function () {
+		var height = Math.round(this.root.offsetHeight);
+		if (height > 20) {
+			this.measured = true;
+			document.documentElement.style.setProperty('--avix-header-h', height + 'px');
 		}
-		var rect = this.bar.getBoundingClientRect();
-		var y = Math.max(1, Math.min(window.innerHeight - 2, rect.top + rect.height * 0.55));
-		var width = document.documentElement.clientWidth;
-		var dark = 0;
-		var self = this;
-		[0.12, 0.5, 0.88].forEach(function (fraction) {
-			if (self.toneAt(width * fraction, y) === 'dark') {
-				dark++;
-			}
-		});
-		return dark >= 2 ? 'dark' : 'light';
-	};
-
-	Header.prototype.toneAt = function (x, y) {
-		var stack = document.elementsFromPoint(x, y);
-		for (var i = 0; i < stack.length; i++) {
-			var element = stack[i];
-			if (this.root.contains(element) || (this.menu && this.menu.contains(element))) {
-				continue;
-			}
-			var forced = element.closest && element.closest('[data-avix-header]');
-			if (forced) {
-				var value = forced.getAttribute('data-avix-header');
-				if (value === 'dark' || value === 'light') {
-					return value;
-				}
-			}
-			var tag = element.tagName;
-			if (tag === 'IMG' || tag === 'VIDEO' || tag === 'CANVAS' || tag === 'IFRAME' || tag === 'PICTURE') {
-				return 'dark';
-			}
-			var style = window.getComputedStyle(element);
-			if (style.backgroundImage && style.backgroundImage.indexOf('url(') > -1) {
-				return 'dark';
-			}
-			var color = parseColor(style.backgroundColor);
-			if (color && color.a >= 0.5) {
-				return isDark(color) ? 'dark' : 'light';
-			}
-		}
-		return 'light';
 	};
 
 	/* ---------- Dropdown ---------- */
@@ -365,7 +303,6 @@
 		this.toggle.setAttribute('aria-expanded', 'true');
 		this.toggle.setAttribute('aria-label', this.toggle.getAttribute('data-label-close') || 'Close menu');
 		document.documentElement.classList.add('avix-sh-lock');
-		this.applyTone();
 		var first = this.menu.querySelector('.avix-sh-menu__link');
 		if (first) {
 			window.setTimeout(function () {
@@ -385,7 +322,7 @@
 		this.toggle.setAttribute('aria-expanded', 'false');
 		this.toggle.setAttribute('aria-label', this.toggle.getAttribute('data-label-open') || 'Open menu');
 		document.documentElement.classList.remove('avix-sh-lock');
-		this.update(true);
+		this.update();
 		if (returnFocus) {
 			this.toggle.focus();
 		}

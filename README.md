@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.10.0**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.11.0**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.10.0.zip](dist/avix-elementor-widgets-1.10.0.zip).
+1. Download [avix-elementor-widgets-1.11.0.zip](dist/avix-elementor-widgets-1.11.0.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -14,7 +14,7 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 
 | Widget | Purpose |
 | --- | --- |
-| About Hero | Full-width about-page introduction, booking CTA, white brand tile and expertise marquee with check badges. |
+| About Hero | Full-width about-page introduction, booking CTA, white brand tile and expertise marquee with check badges. *Clear the fixed header* (on by default) starts it below the Smart Header. |
 | Service Benefits | Editable service cards, responsive artwork, plain underline links and the Avix avatar guide. |
 | Hero Banner | Homepage introduction and pixel character interactions. |
 | Services Showcase | Service presentation. |
@@ -27,7 +27,8 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 | Compare & CEO Quote | Service comparison and CEO message. |
 | Client Logos | Client brand presentation. |
 | Intro Text | Introductory copy. |
-| Smart Header | Site navigation. |
+| Smart Header | Site navigation. One **Light mode** switch per header: off for dark heroes (white text, white logo, white notch), on for light pages (dark text, dark logo, dark notch). The notch is a single seamless shape, and the pixel character sits on it saying hi. |
+| Team | Portrait cards for the people behind the projects, with a playful tilt on hover, and the pixel character's own card: it looks at whoever is hovered and jumps when its card is hovered. |
 
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
