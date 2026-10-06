@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.11.0**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.12.0**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.11.0.zip](dist/avix-elementor-widgets-1.11.0.zip).
+1. Download [avix-elementor-widgets-1.12.0.zip](dist/avix-elementor-widgets-1.12.0.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -29,6 +29,14 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 | Intro Text | Introductory copy. |
 | Smart Header | Site navigation. One **Light mode** switch per header: off for dark heroes (white text, white logo, white notch), on for light pages (dark text, dark logo, dark notch). The notch is a single seamless shape, and the pixel character sits on it saying hi. |
 | Team | Portrait cards for the people behind the projects, with a playful tilt on hover, and the pixel character's own card: it looks at whoever is hovered and jumps when its card is hovered. |
+| Page Hero | Inner-page hero (Services) in a rounded stage, light or dark, with breadcrumb, two buttons, a proof row and an orbit of platform logos around the pixel character, which looks at whichever logo is hovered. Clears the fixed header. |
+| Service Index | Numbered service rows with platform icons and tags. On desktop a preview image follows the cursor with the pixel character riding on it; on phones the rows become image cards. |
+| Story | Manifesto statement whose words fill in as you scroll, with inline image pills, plus a wide photo with a stats panel the pixel character sits on. |
+| Founder | Founder note with photo, quote, badges and an accessible video modal (YouTube, Vimeo or MP4, loaded only on play). The pixel character peeks over the photo. |
+| Values | "How we work" principles in a bento grid with pixel-art icons. The pixel character hops to whichever card is hovered. |
+| Journey | Milestones on a track the pixel character walks along as you scroll, lighting each milestone and planting a flag at the end. Vertical on phones. |
+| Careers | Hiring card with perks, optional open roles and a "We're hiring" sign held by the pixel character. |
+| Post Grid | Blog listing: header, featured post, category filters, cards with reading time, an in-grid call to action and AJAX "Load more" (works without JavaScript too). |
 
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 

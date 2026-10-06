@@ -1,0 +1,1288 @@
+/*!
+ * Avix Digital · Service Index
+ * An editorial index of services: numbered rows with hairlines on desktop,
+ * where a preview card (with the pixel character riding on top) docks inside
+ * the hovered row, in the column the visitor is not reading; image-topped cards on touch
+ * screens and in narrow columns.
+ * Layout follows the widget width (container queries), cards are the base.
+ */
+
+.avix-si {
+	--si-bg: #ffffff;
+	--si-ink: #1a1a1a;
+	--si-muted: #5c5f66;
+	--si-line: rgba(26, 26, 26, 0.1);
+	--si-chip-line: rgba(26, 26, 26, 0.14);
+	--si-accent: #fb6007;
+	/* 4.7:1 on the card colour, 5.2:1 on white: small orange text stays AA. */
+	--si-accent-text: #c04400;
+	/* Derived, so a custom Accent gets a matching (slightly darker) hover. */
+	--si-accent-hover: color-mix(in srgb, var(--si-accent) 88%, #000000);
+	--si-tint: #fff5ee;
+	--si-card: #f7f5f2;
+	--si-tile: #ffffff;
+	--si-foot: #f7f5f2;
+	--si-shot-bg: #f3efea;
+	--si-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--si-font-body: "Inter", Arial, sans-serif;
+	--si-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--si-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--si-max: 1280px;
+	/* 40px = 4px per sprite cell: whole pixels, so the character stays crisp. */
+	--si-pal-w: 40px;
+	--si-preview-w: 360px;
+	--si-preview-ratio: 18 / 13;
+	--si-card-ratio: 16 / 10;
+
+	container: avix-si / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(80px, 9vw, 136px) 0;
+	overflow: hidden;
+	overflow: clip;
+	color: var(--si-ink);
+	background: var(--si-bg);
+	font-family: var(--si-font-body);
+	/* The theme sets a light 300 body weight and negative tracking: restate both. */
+	font-weight: 400;
+	letter-spacing: normal;
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-si--dark {
+	--si-bg: #050608;
+	--si-ink: #f5f3ef;
+	--si-muted: rgba(255, 255, 255, 0.62);
+	--si-line: rgba(255, 255, 255, 0.1);
+	--si-chip-line: rgba(255, 255, 255, 0.16);
+	--si-accent-text: #ff8a3d;
+	--si-tint: color-mix(in srgb, var(--si-accent) 7%, transparent);
+	--si-card: #111214;
+	--si-tile: rgba(255, 255, 255, 0.06);
+	--si-foot: #111214;
+	--si-shot-bg: #16171a;
+	--si-grid: rgba(255, 255, 255, 0.022);
+	background-image:
+		linear-gradient(var(--si-grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--si-grid) 1px, transparent 1px);
+	background-position: center top;
+	background-size: 80px 80px;
+}
+
+/* Dark theme: the same ambient orange corner glow as Services and Process. */
+.avix-si--dark::before {
+	position: absolute;
+	top: -260px;
+	right: -260px;
+	width: 760px;
+	height: 760px;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--si-accent) 14%, transparent), transparent);
+	content: "";
+	pointer-events: none;
+	animation: avix-si-glow 7s ease-in-out infinite alternate;
+}
+
+/* The character takes the widget's accent colour. */
+.avix-si .avix-pal {
+	--pal-color: var(--si-accent);
+}
+
+.avix-si *,
+.avix-si *::before,
+.avix-si *::after {
+	box-sizing: border-box;
+}
+
+/* Container queries style descendants only: tokens are reset on the inner wrapper. */
+.avix-si__inner {
+	--si-gutter: 24px;
+	position: relative;
+	width: min(calc(100% - var(--si-gutter) * 2), var(--si-max));
+	margin-inline: auto;
+}
+
+.avix-si__sr {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ---------- Header ---------- */
+
+.avix-si__head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 24px;
+	margin-bottom: clamp(40px, 6cqi, 80px);
+}
+
+.avix-si .avix-si__eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 22px;
+	padding: 0;
+	color: var(--si-ink);
+	font-family: var(--si-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	line-height: 1.3;
+	text-transform: uppercase;
+}
+
+/* The eyebrow's "pixel": a tiny square, like one cell of the character. */
+.avix-si .avix-si__eyebrow::before {
+	width: 8px;
+	height: 8px;
+	flex: none;
+	background: var(--si-accent);
+	content: "";
+}
+
+.avix-si .avix-si__title {
+	max-width: 17ch;
+	margin: 0;
+	padding: 0;
+	color: var(--si-ink);
+	font-family: var(--si-font-display);
+	font-size: clamp(34px, 5.2cqi, 64px);
+	font-weight: 600;
+	letter-spacing: -0.035em;
+	line-height: 1.04;
+	text-transform: none;
+	text-wrap: balance;
+}
+
+.avix-si__accent {
+	color: var(--si-accent);
+}
+
+.avix-si__head-side {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 22px;
+}
+
+.avix-si .avix-si__text {
+	max-width: 46ch;
+	margin: 0;
+	padding: 0;
+	color: var(--si-muted);
+	font-size: clamp(15px, 1.35cqi, 17px);
+	font-weight: 400;
+	letter-spacing: normal;
+	line-height: 1.7;
+	text-wrap: pretty;
+}
+
+.avix-si .avix-si__head-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 0;
+	border: 0;
+	color: var(--si-ink);
+	background: linear-gradient(currentColor, currentColor) 0 calc(100% - 9px) / 100% 1px no-repeat;
+	box-shadow: none;
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: normal;
+	line-height: 1.2;
+	text-decoration: none;
+	text-transform: none;
+	transition: background-size 0.4s var(--si-ease), color 0.2s ease;
+}
+
+.avix-si .avix-si__head-link svg {
+	width: 16px;
+	height: 16px;
+	flex: none;
+	fill: none;
+	stroke: var(--si-accent);
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.35s var(--si-ease);
+}
+
+.avix-si .avix-si__head-link:hover,
+.avix-si .avix-si__head-link:focus,
+.avix-si .avix-si__head-link:active {
+	color: var(--si-ink);
+	text-decoration: none;
+}
+
+.avix-si .avix-si__head-link:focus-visible {
+	outline: 2px solid var(--si-accent);
+	outline-offset: 4px;
+	border-radius: 4px;
+}
+
+/* ---------- Rows: cards first (touch, tablets, narrow columns) ---------- */
+
+.avix-si__list {
+	position: relative;
+}
+
+.avix-si .avix-si__rows {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-si .avix-si__row {
+	position: relative;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	grid-template-areas:
+		"media media"
+		"num   cat"
+		"name  name"
+		"icons icons"
+		"body  body";
+	grid-template-rows: auto auto auto auto 1fr;
+	align-content: stretch;
+	align-items: center;
+	margin: 0;
+	padding: 10px 10px 22px;
+	border: 1px solid var(--si-line);
+	border-radius: 24px;
+	color: inherit;
+	background: var(--si-card);
+	list-style: none;
+}
+
+.avix-si .avix-si__row::before,
+.avix-si .avix-si__row::marker {
+	display: none;
+	content: none;
+}
+
+.avix-si__media {
+	position: relative;
+	grid-area: media;
+	aspect-ratio: var(--si-card-ratio);
+	margin-bottom: 20px;
+	overflow: hidden;
+	border-radius: 16px;
+	background: var(--si-shot-bg);
+}
+
+.avix-si .avix-si__media img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: cover;
+	object-position: var(--si-focus, 50% 50%);
+	transition: transform 0.8s var(--si-ease);
+}
+
+.avix-si .avix-si__num {
+	grid-area: num;
+	margin: 0 10px 0 12px;
+	color: var(--si-muted);
+	font-family: var(--si-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+	line-height: 1.3;
+}
+
+.avix-si--no-number .avix-si__num {
+	display: none;
+}
+
+.avix-si .avix-si__cat {
+	grid-area: cat;
+	margin: 0;
+	padding: 0;
+	color: var(--si-accent-text);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	line-height: 1.3;
+	text-transform: uppercase;
+}
+
+.avix-si--no-number .avix-si__cat {
+	margin-left: 12px;
+}
+
+.avix-si .avix-si__name {
+	grid-area: name;
+	margin: 12px 12px 0;
+	padding: 0;
+	color: var(--si-ink);
+	font-family: var(--si-font-display);
+	font-size: clamp(24px, 6.4cqi, 30px);
+	font-weight: 600;
+	letter-spacing: -0.03em;
+	line-height: 1.08;
+	text-transform: none;
+	text-wrap: balance;
+}
+
+/* A long unbroken word (or a hyphenated compound) breaks instead of running out of the card. */
+.avix-si .avix-si__name,
+.avix-si .avix-si__cat {
+	overflow-wrap: anywhere;
+	hyphens: manual;
+}
+
+.avix-si__name-in {
+	display: inline-block;
+	max-width: 100%;
+	transition: transform 0.55s var(--si-ease);
+}
+
+/* The body fills the card so every card's link sits on the same baseline. */
+.avix-si__body {
+	display: flex;
+	grid-area: body;
+	min-width: 0;
+	flex-direction: column;
+	align-items: flex-start;
+	align-self: stretch;
+	margin: 14px 12px 0;
+}
+
+.avix-si .avix-si__desc {
+	max-width: 52ch;
+	margin: 0;
+	padding: 0;
+	color: var(--si-muted);
+	font-size: 15.5px;
+	font-weight: 400;
+	letter-spacing: normal;
+	line-height: 1.65;
+	text-wrap: pretty;
+}
+
+.avix-si .avix-si__icons,
+.avix-si .avix-si__tags {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	max-width: 100%;
+	margin: 18px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-si .avix-si__icons {
+	grid-area: icons;
+	margin: 16px 12px 0;
+}
+
+.avix-si .avix-si__icons li::before,
+.avix-si .avix-si__icons li::marker,
+.avix-si .avix-si__tags li::before,
+.avix-si .avix-si__tags li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-si .avix-si__icon {
+	position: relative;
+	display: grid;
+	width: 34px;
+	height: 34px;
+	margin: 0;
+	padding: 0;
+	place-items: center;
+	border: 1px solid var(--si-chip-line);
+	border-radius: 10px;
+	color: var(--si-ink);
+	background: var(--si-tile);
+}
+
+.avix-si .avix-si__icon svg {
+	display: block;
+	width: 18px;
+	height: 18px;
+}
+
+/* Next.js is black: keep it legible on the dark theme. */
+.avix-si--dark .avix-si__icon--nextjs path {
+	fill: #ffffff;
+}
+
+/*
+ * Dark theme keeps one tile style: WordPress blue falls under 3:1 on the dark
+ * tile, so its glyph turns white (like Next.js); Elementor keeps its crimson
+ * disc with a thin white ring to lift it off the tile.
+ */
+.avix-si--dark .avix-si__icon--wordpress path {
+	fill: #ffffff;
+}
+
+.avix-si--dark .avix-si__icon--elementor svg {
+	border-radius: 50%;
+	box-shadow: 0 0 0 1px #ffffff;
+}
+
+.avix-si .avix-si__tag {
+	margin: 0;
+	padding: 6px 12px;
+	border: 1px solid var(--si-chip-line);
+	border-radius: 999px;
+	color: var(--si-ink);
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.3;
+	white-space: nowrap;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* One link per service; its ::after stretches over the whole card or row. */
+.avix-si .avix-si__link {
+	position: static;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	margin-top: auto;
+	padding: 14px 0 0;
+	border: 0;
+	color: var(--si-ink);
+	background: none;
+	box-shadow: none;
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: normal;
+	line-height: 1.3;
+	text-decoration: none;
+	text-transform: none;
+}
+
+.avix-si .avix-si__link::after {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	border-radius: inherit;
+	content: "";
+}
+
+.avix-si .avix-si__link:hover,
+.avix-si .avix-si__link:focus,
+.avix-si .avix-si__link:active {
+	color: var(--si-ink);
+	background: none;
+	text-decoration: none;
+}
+
+.avix-si .avix-si__link svg {
+	width: 18px;
+	height: 18px;
+	flex: none;
+	fill: none;
+	stroke: var(--si-accent);
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.35s var(--si-ease);
+}
+
+.avix-si .avix-si__link:focus {
+	outline: none;
+}
+
+.avix-si .avix-si__link:focus-visible::after {
+	outline: 2px solid var(--si-accent);
+	outline-offset: 3px;
+	border-radius: 24px;
+}
+
+.avix-si__go {
+	display: none;
+}
+
+/* Branded stand-in when a service has no image: the label at the top. */
+.avix-si__ph {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 22px;
+	color: #ffffff;
+	background:
+		linear-gradient(90deg, rgba(5, 6, 8, 0.86) 1px, transparent 1px) 0 0 / 14px 14px,
+		linear-gradient(rgba(5, 6, 8, 0.86) 1px, transparent 1px) 0 0 / 14px 14px,
+		radial-gradient(120% 90% at 100% 0%, var(--si-accent) 0%, color-mix(in srgb, var(--si-accent) 30%, #050608) 45%, #050608 80%);
+}
+
+/* Cards: the pixel character typing at a light laptop, seated on a floor line. */
+.avix-si__ph-floor {
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	align-self: stretch;
+	min-height: 2px;
+	padding-left: 6px;
+	border-bottom: 2px solid rgba(255, 255, 255, 0.18);
+}
+
+.avix-si .avix-si__ph-pal {
+	--pal-w: 40px;
+	/* A light laptop reads as a screen on the dark tile (a dark one read as a hole). */
+	--pal-prop: #f3efea;
+	filter: drop-shadow(0 6px 10px color-mix(in srgb, var(--si-accent) 45%, transparent));
+}
+
+.avix-si__ph-label {
+	max-width: 14ch;
+	color: #ffffff;
+	font-family: var(--si-font-display);
+	font-size: clamp(22px, 6cqi, 28px);
+	font-weight: 600;
+	letter-spacing: -0.03em;
+	line-height: 1.05;
+	overflow-wrap: anywhere;
+}
+
+/* The desktop preview is only used by the row layout below. */
+.avix-si__preview {
+	display: none;
+}
+
+/* ---------- Footer note ---------- */
+
+.avix-si__foot {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 18px;
+	--si-foot-pad-x: 20px;
+	margin-top: 56px;
+	padding: 24px var(--si-foot-pad-x) 20px;
+	border: 1px solid var(--si-line);
+	border-radius: 24px;
+	background: var(--si-foot);
+}
+
+.avix-si__foot.has-pal {
+	margin-top: calc(56px + var(--si-pal-w) * 1.2);
+}
+
+/* Only a button (no question or text): no empty pill around it. The character stands over its label. */
+.avix-si .avix-si__foot.avix-si__foot--bare {
+	--si-foot-pad-x: 24px;
+	padding: 0;
+	border: 0;
+	background: none;
+}
+
+.avix-si .avix-si__foot--bare .avix-si__foot-link {
+	width: auto;
+}
+
+.avix-si .avix-si__foot-pal {
+	--pal-w: var(--si-pal-w);
+	position: absolute;
+	bottom: 100%;
+	/* Lines up with the first letter of the note. */
+	left: var(--si-foot-pad-x);
+	margin-bottom: 1px;
+	transition: opacity 0.3s ease, transform 0.45s var(--si-ease);
+}
+
+.avix-si--dark .avix-si__foot-pal,
+.avix-si--dark .avix-si__pal {
+	--pal-prop: #ffffff;
+}
+
+/* While the preview card is out, the footer character has hopped onto it. */
+.avix-si.is-riding .avix-si__foot-pal {
+	opacity: 0;
+	transform: translateY(-40%);
+}
+
+.avix-si .avix-si__foot-text {
+	flex: 1 1 auto;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	color: var(--si-muted);
+	font-size: 15.5px;
+	font-weight: 400;
+	letter-spacing: normal;
+	line-height: 1.6;
+	text-wrap: pretty;
+}
+
+.avix-si .avix-si__foot-title {
+	display: block;
+	color: var(--si-ink);
+	font-family: var(--si-font-display);
+	font-size: 18px;
+	font-weight: 600;
+	letter-spacing: -0.015em;
+	line-height: 1.35;
+}
+
+.avix-si .avix-si__foot-link {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: space-between;
+	gap: 14px;
+	width: 100%;
+	min-height: 52px;
+	margin: 0;
+	padding: 8px 8px 8px 24px;
+	border: 0;
+	border-radius: 999px;
+	color: #ffffff;
+	background: var(--si-accent);
+	box-shadow: 0 12px 26px -12px color-mix(in srgb, var(--si-accent) 80%, transparent);
+	/* White on orange is AA only as large text: 19px bold, like the footer notes. */
+	font-size: 19px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	text-decoration: none;
+	text-transform: none;
+	transition: background-color 0.25s ease, transform 0.35s var(--si-ease), box-shadow 0.35s var(--si-ease);
+}
+
+.avix-si .avix-si__foot-link:hover,
+.avix-si .avix-si__foot-link:focus,
+.avix-si .avix-si__foot-link:active {
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.avix-si .avix-si__foot-link:focus-visible {
+	outline: 2px solid var(--si-accent);
+	outline-offset: 4px;
+}
+
+.avix-si__foot-icon {
+	display: grid;
+	width: 36px;
+	height: 36px;
+	flex: none;
+	place-items: center;
+	border-radius: 50%;
+	background: #ffffff;
+}
+
+.avix-si .avix-si__foot-icon svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: var(--si-accent);
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.35s var(--si-ease);
+}
+
+/* ---------- Hover (fine pointers) ---------- */
+
+@media (hover: hover) {
+	.avix-si .avix-si__head-link:hover {
+		background-size: 0 1px;
+	}
+
+	.avix-si .avix-si__head-link:hover svg {
+		transform: translate(3px, -3px);
+	}
+
+	.avix-si .avix-si__row:hover .avix-si__media img {
+		transform: scale(1.04);
+	}
+
+	.avix-si .avix-si__row:hover .avix-si__link svg {
+		transform: translateX(4px);
+	}
+
+	.avix-si .avix-si__foot-link:hover {
+		background: var(--si-accent-hover);
+		box-shadow: 0 16px 30px -12px color-mix(in srgb, var(--si-accent) 90%, transparent);
+		transform: translateY(-2px);
+	}
+
+	.avix-si .avix-si__foot-link:hover .avix-si__foot-icon svg {
+		transform: translate(2px, -2px);
+	}
+}
+
+/* ---------- Reveal ---------- */
+
+/* Each part fades in as it enters; JS staggers parts entering together (--si-d). */
+.avix-si.is-armed [data-si-reveal],
+.avix-si.is-armed .avix-si__row {
+	opacity: 0;
+	transform: translateY(26px);
+	transition: opacity 0.7s ease, transform 0.8s var(--si-ease);
+	transition-delay: var(--si-d, 0ms);
+}
+
+.avix-si.is-armed [data-si-reveal].is-in,
+.avix-si.is-armed .avix-si__row.is-in {
+	opacity: 1;
+	transform: none;
+}
+
+/* The character and the glow must keep pace with their page: pause loops while off screen. */
+.avix-si.is-off::before,
+.avix-si.is-off .avix-pal,
+.avix-si.is-off .avix-pal * {
+	animation-play-state: paused !important;
+}
+
+/* Breathing glow: an opacity-only pulse runs on the compositor, unlike an animated filter. */
+@keyframes avix-si-glow {
+	from {
+		opacity: 0.7;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+/* ---------- Container: two-up cards ---------- */
+
+@container avix-si (min-width: 601px) {
+	.avix-si__inner {
+		--si-gutter: 24px;
+	}
+
+	.avix-si .avix-si__rows {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 20px;
+	}
+
+	.avix-si .avix-si__name {
+		font-size: clamp(26px, 3.6cqi, 32px);
+	}
+
+	/* An odd last card spans the row, image beside the text. */
+	.avix-si .avix-si__row:last-child:nth-child(odd) {
+		grid-column: 1 / -1;
+		grid-template-columns: minmax(0, 1.05fr) auto minmax(0, 1fr);
+		grid-template-areas:
+			"media num   cat"
+			"media name  name"
+			"media icons icons"
+			"media body  body";
+		grid-template-rows: auto auto auto 1fr;
+		align-items: start;
+		padding: 10px 22px 10px 10px;
+	}
+
+	.avix-si .avix-si__row:last-child:nth-child(odd) .avix-si__media {
+		margin: 0 16px 0 0;
+	}
+
+	.avix-si .avix-si__row:last-child:nth-child(odd) .avix-si__num,
+	.avix-si .avix-si__row:last-child:nth-child(odd) .avix-si__cat {
+		margin-top: 22px;
+	}
+
+	.avix-si .avix-si__foot {
+		flex-direction: row;
+		align-items: center;
+		gap: 24px;
+		--si-foot-pad-x: 28px;
+		padding: 14px 14px 14px var(--si-foot-pad-x);
+		border-radius: 999px;
+	}
+
+	.avix-si .avix-si__foot-title {
+		display: inline;
+		margin-right: 4px;
+	}
+
+	.avix-si .avix-si__foot-link {
+		width: auto;
+	}
+}
+
+@container avix-si (min-width: 901px) {
+	.avix-si__head {
+		margin-bottom: clamp(48px, 6cqi, 88px);
+	}
+
+	/* Same two columns as the cards below, so the text starts on card 2's edge. */
+	.avix-si--head-split .avix-si__head {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		align-items: end;
+		gap: 24px 20px;
+	}
+
+	.avix-si--head-split .avix-si__head-side {
+		padding-bottom: 6px;
+	}
+
+	.avix-si--head-stacked .avix-si__title {
+		max-width: 22ch;
+	}
+}
+
+@container avix-si (max-width: 420px) {
+	.avix-si__inner {
+		--si-gutter: 16px;
+	}
+
+	.avix-si .avix-si__row {
+		padding: 8px 8px 20px;
+		border-radius: 22px;
+	}
+
+	.avix-si__media {
+		border-radius: 15px;
+	}
+
+	.avix-si .avix-si__num {
+		margin-left: 10px;
+	}
+
+	.avix-si .avix-si__name,
+	.avix-si .avix-si__icons,
+	.avix-si__body {
+		margin-inline: 10px;
+	}
+
+	.avix-si .avix-si__tag {
+		padding: 5px 9px;
+		font-size: 12.5px;
+	}
+}
+
+/*
+ * ---------- Rows: the desktop index ----------
+ * Only for a mouse or trackpad and a wide widget; everything else keeps the
+ * cards above. Grid: [number] [category + name] [text + chips] [arrow].
+ */
+@media (hover: hover) and (pointer: fine) {
+	@container avix-si (min-width: 901px) {
+		/* One set of tracks for the header and the rows, so they share verticals. */
+		.avix-si__inner {
+			--si-cols: clamp(48px, 6cqi, 88px) minmax(0, 1.12fr) minmax(0, 1fr) 64px;
+			--si-col-gap: clamp(24px, 3.4cqi, 56px);
+			/* How far the hover band reaches past the text: up to 20px, always leaving 12px of page. */
+			--si-band: clamp(8px, (100cqi - min(100cqi - var(--si-gutter) * 2, var(--si-max))) / 2 - 12px, 20px);
+		}
+
+		/* Numbers off: drop their track so names line up with the title. */
+		.avix-si--no-number .avix-si__inner {
+			--si-cols: minmax(0, 1.12fr) minmax(0, 1fr) 64px;
+		}
+
+		.avix-si--head-split .avix-si__head {
+			grid-template-columns: var(--si-cols);
+			column-gap: var(--si-col-gap);
+		}
+
+		.avix-si--head-split .avix-si__head-main {
+			grid-column: 1 / 3;
+		}
+
+		/* The header text starts exactly where the rows' text column starts. */
+		.avix-si--head-split .avix-si__head-side {
+			grid-column: 3 / 5;
+		}
+
+		.avix-si--no-number.avix-si--head-split .avix-si__head-main {
+			grid-column: 1 / 2;
+		}
+
+		.avix-si--no-number.avix-si--head-split .avix-si__head-side {
+			grid-column: 2 / 4;
+		}
+
+		.avix-si .avix-si__rows {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+			border-top: 1px solid var(--si-line);
+		}
+
+		.avix-si .avix-si__row,
+		.avix-si .avix-si__row:last-child:nth-child(odd) {
+			grid-column: auto;
+			grid-template-columns: var(--si-cols);
+			grid-template-areas:
+				"num cat   body go"
+				"num name  body go"
+				"num icons body go";
+			grid-template-rows: auto auto 1fr;
+			align-items: start;
+			column-gap: var(--si-col-gap);
+			/* Tall enough for the riding character to stand between two rows' text. */
+			padding: clamp(38px, 3.4cqi, 48px) 0;
+			border: 0;
+			border-bottom: 1px solid var(--si-line);
+			border-radius: 0;
+			background: none;
+			isolation: isolate;
+		}
+
+		.avix-si--no-number .avix-si__row,
+		.avix-si--no-number .avix-si__row:last-child:nth-child(odd) {
+			grid-template-areas:
+				"cat   body go"
+				"name  body go"
+				"icons body go";
+		}
+
+		/* The hover tint: a soft band slightly wider than the row, so the text never moves. */
+		.avix-si .avix-si__row::before {
+			position: absolute;
+			inset: -1px calc(-1 * var(--si-band));
+			z-index: -1;
+			display: block;
+			border-radius: 22px;
+			background: var(--si-tint);
+			opacity: 0;
+			transform: scaleY(0.92);
+			transition: opacity 0.35s ease, transform 0.5s var(--si-ease);
+			content: "";
+			pointer-events: none;
+		}
+
+		.avix-si .avix-si__media {
+			display: none;
+		}
+
+		/* Number, category and the text's first line share one baseline. */
+		.avix-si .avix-si__num,
+		.avix-si .avix-si__cat,
+		.avix-si__body {
+			align-self: baseline;
+		}
+
+		.avix-si .avix-si__num {
+			margin: 0;
+			padding: 0;
+			color: var(--si-muted);
+			font-size: 13px;
+			font-weight: 500;
+			line-height: 1.3;
+			transition: color 0.3s ease;
+		}
+
+		.avix-si .avix-si__cat,
+		.avix-si--no-number .avix-si__cat {
+			margin: 0 0 16px;
+			color: var(--si-accent-text);
+		}
+
+		.avix-si .avix-si__name {
+			max-width: 15ch;
+			margin: 0;
+			font-size: clamp(30px, 3.6cqi, 46px);
+			line-height: 1.04;
+		}
+
+		/* Post titles: a calmer size and a longer measure. */
+		.avix-si--long-names .avix-si__name {
+			max-width: 22ch;
+			font-size: clamp(26px, 2.6cqi, 34px);
+			line-height: 1.1;
+		}
+
+		.avix-si .avix-si__icons {
+			margin: 22px 0 0;
+		}
+
+		.avix-si__body {
+			display: block;
+			margin: 0;
+		}
+
+		/* At most five lines here, so balance evens out the rag without a cost. */
+		.avix-si .avix-si__desc {
+			font-size: clamp(15px, 1.25cqi, 16.5px);
+			text-wrap: balance;
+		}
+
+		/* The link label lives on the preview card here; screen readers still get it. */
+		.avix-si .avix-si__link {
+			display: block;
+			height: 0;
+			min-height: 0;
+			margin: 0;
+			padding: 0;
+		}
+
+		.avix-si .avix-si__link-text,
+		.avix-si .avix-si__link svg {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0 0 0 0);
+			white-space: nowrap;
+		}
+
+		.avix-si .avix-si__link::after {
+			inset: -1px calc(-1 * var(--si-band));
+			z-index: 3;
+		}
+
+		.avix-si .avix-si__link:focus-visible::after {
+			outline-offset: 0;
+			border-radius: 22px;
+		}
+
+		.avix-si__go {
+			display: grid;
+			grid-area: go;
+			width: 64px;
+			height: 64px;
+			align-self: center;
+			place-items: center;
+			border: 1px solid var(--si-chip-line);
+			border-radius: 50%;
+			color: var(--si-ink);
+			transition: background-color 0.35s ease, border-color 0.35s ease, color 0.35s ease, transform 0.5s var(--si-ease);
+		}
+
+		.avix-si .avix-si__go svg {
+			width: 22px;
+			height: 22px;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 2;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+			transition: transform 0.5s var(--si-ease);
+		}
+
+		/* Hover and keyboard focus share the active look. */
+		.avix-si .avix-si__row.has-link:hover::before,
+		.avix-si .avix-si__row:focus-within::before {
+			opacity: 1;
+			transform: none;
+		}
+
+		.avix-si .avix-si__row.has-link:hover .avix-si__name-in,
+		.avix-si .avix-si__row:focus-within .avix-si__name-in {
+			transform: translateX(12px);
+		}
+
+		.avix-si .avix-si__row.has-link:hover .avix-si__num,
+		.avix-si .avix-si__row:focus-within .avix-si__num {
+			color: var(--si-accent-text);
+		}
+
+		.avix-si .avix-si__row.has-link:hover .avix-si__go,
+		.avix-si .avix-si__row:focus-within .avix-si__go {
+			border-color: var(--si-accent);
+			color: #ffffff;
+			background: var(--si-accent);
+			transform: scale(1.05);
+		}
+
+		.avix-si .avix-si__row.has-link:hover .avix-si__go svg,
+		.avix-si .avix-si__row:focus-within .avix-si__go svg {
+			transform: rotate(45deg);
+		}
+
+		/* ----- The floating preview ----- */
+
+		.avix-si--preview .avix-si__preview {
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 5;
+			display: block;
+			width: var(--si-preview-w);
+			pointer-events: none;
+			visibility: hidden;
+			transition: visibility 0s linear 0.3s;
+		}
+
+		/* JS sizes the card once per list (width capped by the docking column, height by the shortest row). */
+		.avix-si--preview .avix-si__preview.is-sized {
+			width: var(--si-card-w);
+		}
+
+		/* Layers only while someone is hovering, not for every idle instance. */
+		.avix-si.is-previewing .avix-si__preview,
+		.avix-si.is-previewing .avix-si__rider {
+			will-change: transform;
+		}
+
+		.avix-si.is-previewing .avix-si__preview {
+			visibility: visible;
+			transition-delay: 0s;
+		}
+
+		.avix-si__swing {
+			transform-origin: 50% 0;
+		}
+
+		.avix-si__pop {
+			position: relative;
+			opacity: 0;
+			transform: scale(0.82);
+			transform-origin: 50% 60%;
+			transition: opacity 0.22s ease, transform 0.45s var(--si-pop);
+		}
+
+		.avix-si.is-previewing .avix-si__pop {
+			opacity: 1;
+			transform: none;
+		}
+
+		/* Never scaled: the image crops to the height JS gives it, the chip keeps its size. */
+		.avix-si__card {
+			position: relative;
+			aspect-ratio: var(--si-preview-ratio);
+			overflow: hidden;
+			border-radius: 20px;
+			background: var(--si-shot-bg);
+			box-shadow:
+				0 34px 64px -28px rgba(16, 16, 16, 0.42),
+				0 2px 8px rgba(16, 16, 16, 0.08);
+		}
+
+		.avix-si__preview.is-sized .avix-si__card {
+			height: var(--si-card-h);
+			aspect-ratio: auto;
+		}
+
+		.avix-si--dark .avix-si__card {
+			box-shadow:
+				0 34px 70px -24px rgba(0, 0, 0, 0.8),
+				0 0 0 1px rgba(255, 255, 255, 0.08);
+		}
+
+		.avix-si__shot {
+			position: absolute;
+			inset: 0;
+			opacity: 0;
+			transform: scale(1.08);
+			transition: opacity 0.35s ease, transform 0.7s var(--si-ease);
+		}
+
+		.avix-si__shot.is-active {
+			opacity: 1;
+			transform: none;
+		}
+
+		.avix-si .avix-si__shot img {
+			display: block;
+			width: 100%;
+			max-width: none;
+			height: 100%;
+			margin: 0;
+			border: 0;
+			border-radius: 0;
+			object-fit: cover;
+			object-position: var(--si-focus, 50% 50%);
+		}
+
+		/* No image: the label sits at the top, clear of the link chip. */
+		.avix-si__shot .avix-si__ph {
+			justify-content: flex-start;
+		}
+
+		.avix-si__chip {
+			position: absolute;
+			bottom: 12px;
+			left: 12px;
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			max-width: calc(100% - 24px);
+			padding: 8px 12px 8px 14px;
+			border-radius: 999px;
+			color: #1a1a1a;
+			background: #ffffff;
+			box-shadow: 0 8px 20px -8px rgba(16, 16, 16, 0.35);
+			font-size: 13px;
+			font-weight: 600;
+			line-height: 1.2;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.avix-si__chip svg {
+			width: 14px;
+			height: 14px;
+			flex: none;
+			fill: none;
+			stroke: var(--si-accent);
+			stroke-width: 2.6;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+		}
+
+		/* The rider stands on the card's top edge; JS slides it along the edge. */
+		.avix-si__rider {
+			position: absolute;
+			bottom: 100%;
+			left: 50%;
+			z-index: 2;
+			margin-left: calc(var(--si-pal-w) * -0.5);
+			line-height: 0;
+			/* Counter-rotated by JS around its feet, so it stays upright on a leaning card. */
+			transform-origin: 50% 100%;
+		}
+
+		.avix-si .avix-si__pal {
+			--pal-w: var(--si-pal-w);
+			filter: drop-shadow(0 4px 6px color-mix(in srgb, var(--si-accent) 35%, transparent));
+		}
+	}
+}
+
+/* ---------- Editor ---------- */
+
+.avix-si.is-editor .avix-si__row,
+.avix-si.is-editor [data-si-reveal] {
+	opacity: 1;
+	transform: none;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-si::before,
+	.avix-si *,
+	.avix-si *::before,
+	.avix-si *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-si.is-armed [data-si-reveal],
+	.avix-si.is-armed .avix-si__row {
+		opacity: 1;
+		transform: none;
+	}
+}

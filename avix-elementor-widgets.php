@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Avix Digital Elementor Widgets
  * Plugin URI:        https://avixdigital.com
- * Description:       Custom Elementor widgets for avixdigital.com: Service Benefits, About Hero, Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline, FAQ & Quote, Compare & CEO Quote and Client Logos.
- * Version:           1.11.0
+ * Description:       Custom Elementor widgets for avixdigital.com: Service Benefits, About Hero, Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline, FAQ & Quote, Compare & CEO Quote, Client Logos, Intro Text, Smart Header, Team, Page Hero, Service Index, Story, Founder, Values, Journey, Careers and Post Grid.
+ * Version:           1.12.0
  * Author:            Avix Digital
  * Author URI:        https://avixdigital.com
  * Text Domain:       avix-widgets
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AVIX_EW_VERSION', '1.11.0' );
+define( 'AVIX_EW_VERSION', '1.12.0' );
 define( 'AVIX_EW_FILE', __FILE__ );
 define( 'AVIX_EW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AVIX_EW_URL', plugin_dir_url( __FILE__ ) );
@@ -31,9 +31,11 @@ final class Avix_Elementor_Widgets {
 	const CATEGORY      = 'avix-digital';
 
 	/**
-	 * Widget slug => [ file, class ]. New widgets only need an entry here.
+	 * Widget slug => [ file, class, shared assets ]. New widgets only need an
+	 * entry here. Shared assets (see $shared) load before the widget's own CSS
+	 * and JS.
 	 *
-	 * @var array<string, array{0:string,1:string}>
+	 * @var array<string, array{0:string,1:string,2?:string[]}>
 	 */
 	private static $widgets = array(
 		'service-benefits'  => array( 'includes/widgets/class-service-benefits.php', '\\AvixWidgets\\Widgets\\Service_Benefits' ),
@@ -51,6 +53,23 @@ final class Avix_Elementor_Widgets {
 		'intro-text'        => array( 'includes/widgets/class-intro-text.php', '\AvixWidgets\Widgets\Intro_Text' ),
 		'smart-header'      => array( 'includes/widgets/class-smart-header.php', '\AvixWidgets\Widgets\Smart_Header' ),
 		'team'              => array( 'includes/widgets/class-team.php', '\AvixWidgets\Widgets\Team' ),
+		'page-hero'         => array( 'includes/widgets/class-page-hero.php', '\AvixWidgets\Widgets\Page_Hero', array( 'pixel-pal' ) ),
+		'service-index'     => array( 'includes/widgets/class-service-index.php', '\AvixWidgets\Widgets\Service_Index', array( 'pixel-pal' ) ),
+		'story'             => array( 'includes/widgets/class-story.php', '\AvixWidgets\Widgets\Story', array( 'pixel-pal' ) ),
+		'founder'           => array( 'includes/widgets/class-founder.php', '\AvixWidgets\Widgets\Founder', array( 'pixel-pal' ) ),
+		'values'            => array( 'includes/widgets/class-values.php', '\AvixWidgets\Widgets\Values', array( 'pixel-pal' ) ),
+		'journey'           => array( 'includes/widgets/class-journey.php', '\AvixWidgets\Widgets\Journey', array( 'pixel-pal' ) ),
+		'careers'           => array( 'includes/widgets/class-careers.php', '\AvixWidgets\Widgets\Careers', array( 'pixel-pal' ) ),
+		'post-grid'         => array( 'includes/widgets/class-post-grid.php', '\AvixWidgets\Widgets\Post_Grid', array( 'pixel-pal' ) ),
+	);
+
+	/**
+	 * Assets several widgets share: slug => has a script.
+	 *
+	 * @var array<string, bool>
+	 */
+	private static $shared = array(
+		'pixel-pal' => true,
 	);
 
 	public static function init() {
@@ -66,6 +85,11 @@ final class Avix_Elementor_Widgets {
 		if ( ! defined( 'ELEMENTOR_VERSION' ) || version_compare( ELEMENTOR_VERSION, self::MIN_ELEMENTOR, '<' ) ) {
 			add_action( 'admin_notices', array( __CLASS__, 'notice_old_elementor' ) );
 			return;
+		}
+
+		// Front-end AJAX endpoints (e.g. loading more posts) run without Elementor's widget registry.
+		if ( file_exists( AVIX_EW_PATH . 'includes/ajax.php' ) ) {
+			require_once AVIX_EW_PATH . 'includes/ajax.php';
 		}
 
 		add_action( 'elementor/elements/categories_registered', array( __CLASS__, 'register_category' ) );
@@ -97,10 +121,21 @@ final class Avix_Elementor_Widgets {
 	public static function register_widgets( $widgets_manager ) {
 		require_once AVIX_EW_PATH . 'includes/trait-media.php';
 		require_once AVIX_EW_PATH . 'includes/brand-icons.php';
-		foreach ( self::$widgets as $widget ) {
-			require_once AVIX_EW_PATH . $widget[0];
-			$class = $widget[1];
-			$widgets_manager->register( new $class() );
+		require_once AVIX_EW_PATH . 'includes/pixel-pal.php';
+		foreach ( self::$widgets as $slug => $widget ) {
+			// One broken or missing widget file must not take the whole site down.
+			try {
+				if ( ! file_exists( AVIX_EW_PATH . $widget[0] ) ) {
+					continue;
+				}
+				require_once AVIX_EW_PATH . $widget[0];
+				$class = $widget[1];
+				$widgets_manager->register( new $class() );
+			} catch ( \Throwable $error ) {
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'Avix widget "' . $slug . '" failed to load: ' . $error->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				}
+			}
 		}
 	}
 
@@ -113,17 +148,51 @@ final class Avix_Elementor_Widgets {
 
 	public static function register_styles() {
 		self::register_style( 'avix-widgets-base', 'assets/css/base.css' );
-		foreach ( array_keys( self::$widgets ) as $slug ) {
+		foreach ( array_keys( self::$shared ) as $slug ) {
 			self::register_style( 'avix-' . $slug, 'assets/css/' . $slug . '.css', array( 'avix-widgets-base' ) );
+		}
+		foreach ( self::$widgets as $slug => $widget ) {
+			self::register_style( 'avix-' . $slug, 'assets/css/' . $slug . '.css', array_merge( array( 'avix-widgets-base' ), self::shared_handles( $widget ) ) );
 		}
 	}
 
 	public static function register_scripts() {
-		foreach ( array_keys( self::$widgets ) as $slug ) {
-			$relative = 'assets/js/' . $slug . '.js';
-			self::$assets[ 'avix-' . $slug ] = $relative;
-			wp_register_script( 'avix-' . $slug, AVIX_EW_URL . $relative, array(), self::asset_version( $relative ), true );
+		foreach ( self::$shared as $slug => $has_script ) {
+			if ( $has_script ) {
+				self::register_script( 'avix-' . $slug, 'assets/js/' . $slug . '.js' );
+			}
 		}
+		foreach ( self::$widgets as $slug => $widget ) {
+			$deps = array_values(
+				array_filter(
+					self::shared_handles( $widget ),
+					static function ( $handle ) {
+						return ! empty( self::$shared[ substr( $handle, 5 ) ] );
+					}
+				)
+			);
+			self::register_script( 'avix-' . $slug, 'assets/js/' . $slug . '.js', $deps );
+		}
+	}
+
+	/**
+	 * Handles of the shared assets a widget uses, e.g. [ 'avix-pixel-pal' ].
+	 *
+	 * @param array $widget Widget map entry.
+	 */
+	private static function shared_handles( array $widget ) {
+		$handles = array();
+		foreach ( (array) ( $widget[2] ?? array() ) as $slug ) {
+			if ( isset( self::$shared[ $slug ] ) ) {
+				$handles[] = 'avix-' . $slug;
+			}
+		}
+		return $handles;
+	}
+
+	private static function register_script( $handle, $relative, array $deps = array() ) {
+		self::$assets[ $handle ] = $relative;
+		wp_register_script( $handle, AVIX_EW_URL . $relative, $deps, self::asset_version( $relative ), true );
 	}
 
 	private static function register_style( $handle, $relative, array $deps = array() ) {
