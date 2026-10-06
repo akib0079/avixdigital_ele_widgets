@@ -787,8 +787,15 @@
 	-webkit-line-clamp: 3;
 }
 
-.avix-pg .avix-pg__card-title .avix-pg__link {
+/*
+ * The underline lives on an inline span: the line clamp turns the link itself
+ * into a block, so an underline on the link ran the full card width under the
+ * last line. On the span it draws under each line of the words, line by line.
+ */
+.avix-pg .avix-pg__card-title .avix-pg__link-text {
 	background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
 	transition: background-size 0.45s var(--pg-ease);
 }
 
@@ -837,7 +844,7 @@
 		transform: scale(1.045);
 	}
 
-	.avix-pg__card:hover .avix-pg__card-title .avix-pg__link {
+	.avix-pg__card:hover .avix-pg__card-title .avix-pg__link-text {
 		background-size: 100% 1px;
 	}
 
@@ -853,6 +860,10 @@
 }
 
 /* Keyboard focus shows the same cues as hover. */
+.avix-pg__card:focus-within .avix-pg__card-title .avix-pg__link-text {
+	background-size: 100% 1px;
+}
+
 .avix-pg__card:focus-within .avix-pg__read-icon {
 	border-color: var(--pg-accent);
 	background: var(--pg-accent);

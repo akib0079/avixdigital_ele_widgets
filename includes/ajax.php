@@ -266,7 +266,7 @@ if ( ! class_exists( __NAMESPACE__ . '\\Post_Cards' ) ) {
 			}
 
 			return sprintf(
-				'<article class="%1$s" data-pg-card>%2$s<div class="avix-pg__body">%3$s<%4$s class="avix-pg__card-title"><a class="avix-pg__link" href="%5$s">%6$s</a></%4$s>%7$s<span class="avix-pg__read" aria-hidden="true">%8$s<span class="avix-pg__read-icon">%9$s</span></span></div></article>',
+				'<article class="%1$s" data-pg-card>%2$s<div class="avix-pg__body">%3$s<%4$s class="avix-pg__card-title"><a class="avix-pg__link" href="%5$s"><span class="avix-pg__link-text">%6$s</span></a></%4$s>%7$s<span class="avix-pg__read" aria-hidden="true">%8$s<span class="avix-pg__read-icon">%9$s</span></span></div></article>',
 				esc_attr( $classes ),
 				$media,
 				self::meta( $post, $args, $term ),
