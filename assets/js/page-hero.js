@@ -41,6 +41,7 @@
 		this.pal = config.pal ? root.querySelector('.avix-ph__pal') : null;
 		this.hub = root.querySelector('[data-ph-hub]');
 		this.cta = root.querySelector('[data-ph-cta]');
+		this.stat = root.querySelector('[data-ph-stat]');
 		this.pause = root.querySelector('[data-ph-pause]');
 		this.pauseText = root.querySelector('[data-ph-pause-text]');
 		this.orbit = root.querySelector('[data-ph-orbit]');
@@ -55,6 +56,7 @@
 		this.onChipTap = this.onChipTap.bind(this);
 		this.onCtaEnter = this.onCtaEnter.bind(this);
 		this.onCtaLeave = this.onCtaLeave.bind(this);
+		this.onStatEnter = this.onStatEnter.bind(this);
 		this.onHub = this.onHub.bind(this);
 		this.onPause = this.onPause.bind(this);
 		this.onOrbitDown = this.onOrbitDown.bind(this);
@@ -127,6 +129,12 @@
 			this.cta.addEventListener('pointerleave', this.onCtaLeave);
 			this.cta.addEventListener('focus', this.onCtaEnter);
 			this.cta.addEventListener('blur', this.onCtaLeave);
+		}
+
+		// The character glances at the stat chip on the image when it is hovered.
+		if (this.stat && this.pal) {
+			this.stat.addEventListener('pointerenter', this.onStatEnter);
+			this.stat.addEventListener('pointerleave', this.onCtaLeave);
 		}
 
 		if (this.hub && this.pal) {
@@ -370,6 +378,10 @@
 		}
 	};
 
+	PageHero.prototype.onStatEnter = function () {
+		this.look(this.stat);
+	};
+
 	PageHero.prototype.onHub = function () {
 		if (!this.canMove() || this.timers.hub) {
 			return;
@@ -421,6 +433,10 @@
 			this.cta.removeEventListener('pointerleave', this.onCtaLeave);
 			this.cta.removeEventListener('focus', this.onCtaEnter);
 			this.cta.removeEventListener('blur', this.onCtaLeave);
+		}
+		if (this.stat && this.pal) {
+			this.stat.removeEventListener('pointerenter', this.onStatEnter);
+			this.stat.removeEventListener('pointerleave', this.onCtaLeave);
 		}
 		if (this.hub && this.pal) {
 			this.hub.removeEventListener('pointerenter', this.onHub);

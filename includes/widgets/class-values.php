@@ -3,6 +3,9 @@
  * Values: "How we work" principles as a bento grid of cards. Each card has a
  * pixel icon that builds itself from falling pixels, and the Avix pixel
  * character hops onto the top edge of whichever card is hovered or focused.
+ * The "side" header layout turns it into a split feature section: a sticky
+ * text column with rich paragraphs (and an optional faint watermark) on the
+ * left, the cards stacked as rows on the right.
  *
  * @package AvixWidgets
  */
@@ -19,6 +22,8 @@ use Elementor\Widget_Base;
 defined( 'ABSPATH' ) || exit;
 
 class Values extends Widget_Base {
+
+	use Media;
 
 	/**
 	 * Saved values of icons that were renamed, mapped to their current key.
@@ -129,6 +134,72 @@ class Values extends Widget_Base {
 			'.#.##.#.',
 			'...##...',
 		),
+		'cart'    => array(
+			'##......',
+			'.#......',
+			'.#######',
+			'.#ooooo#',
+			'.#ooooo#',
+			'..#####.',
+			'........',
+			'..#...#.',
+		),
+		'layout'  => array(
+			'########',
+			'#oooooo#',
+			'########',
+			'#o.#...#',
+			'#..#...#',
+			'#o.#...#',
+			'#..#...#',
+			'########',
+		),
+		'globe'   => array(
+			'..####..',
+			'.#.oo.#.',
+			'#.o..o.#',
+			'#oooooo#',
+			'#.o..o.#',
+			'#.o..o.#',
+			'.#.oo.#.',
+			'..####..',
+		),
+		'code'    => array(
+			'.....o..',
+			'.....o..',
+			'.#..o.#.',
+			'#...o..#',
+			'#..o...#',
+			'.#.o..#.',
+			'..o.....',
+			'..o.....',
+		),
+		'pulse'   => array(
+			'...o....',
+			'...o....',
+			'..o.o...',
+			'..o.o...',
+			'##..o.##',
+			'....oo..',
+			'....o...',
+			'........',
+		),
+	);
+
+	/**
+	 * Tags allowed in the header text: highlights and simple inline links.
+	 */
+	const TEXT_TAGS = array(
+		'strong' => array(),
+		'b'      => array(),
+		'em'     => array(),
+		'i'      => array(),
+		'br'     => array(),
+		'a'      => array(
+			'href'   => true,
+			'target' => true,
+			'rel'    => true,
+		),
 	);
 
 	public function get_name(): string {
@@ -218,24 +289,119 @@ class Values extends Widget_Base {
 		$this->add_control(
 			'text',
 			array(
-				'label'   => esc_html__( 'Text', 'avix-widgets' ),
-				'type'    => Controls_Manager::TEXTAREA,
-				'rows'    => 3,
-				'default' => esc_html__( 'The way we run every project, whether it’s a Shopify store, a WordPress or Webflow site, or a custom web app.', 'avix-widgets' ),
-				'dynamic' => array( 'active' => true ),
+				'label'       => esc_html__( 'Text', 'avix-widgets' ),
+				'description' => esc_html__( 'With the text beside the cards: leave an empty line between paragraphs and wrap words in <strong>…</strong> to make them stand out; simple links work too.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXTAREA,
+				'rows'        => 5,
+				'default'     => esc_html__( 'The way we run every project, whether it’s a Shopify store, a WordPress or Webflow site, or a custom web app.', 'avix-widgets' ),
+				'dynamic'     => array( 'active' => true ),
 			)
 		);
 
 		$this->add_control(
 			'head_layout',
 			array(
-				'label'   => esc_html__( 'Header layout', 'avix-widgets' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => 'split',
-				'options' => array(
+				'label'       => esc_html__( 'Header layout', 'avix-widgets' ),
+				'description' => esc_html__( 'Text beside the cards puts the eyebrow, title and text in a column on the left and stacks the cards as rows on the right (one column under each other on tablets and phones).', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'split',
+				'options'     => array(
 					'split'   => esc_html__( 'Title left, text right', 'avix-widgets' ),
 					'stacked' => esc_html__( 'Text under the title', 'avix-widgets' ),
+					'side'    => esc_html__( 'Text beside the cards', 'avix-widgets' ),
 				),
+			)
+		);
+
+		$this->add_control(
+			'side_sticky',
+			array(
+				'label'       => esc_html__( 'Keep the text in view', 'avix-widgets' ),
+				'description' => esc_html__( 'On desktop the text column stays on screen while visitors scroll past the cards (only when it fits the screen).', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+				'condition'   => array( 'head_layout' => 'side' ),
+			)
+		);
+
+		$this->add_responsive_control(
+			'side_width',
+			array(
+				'label'       => esc_html__( 'Text column width', 'avix-widgets' ),
+				'description' => esc_html__( 'Share of the content width on desktop; the cards take the rest.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SLIDER,
+				'size_units'  => array( '%' ),
+				'range'       => array(
+					'%' => array(
+						'min' => 30,
+						'max' => 60,
+					),
+				),
+				'condition'   => array( 'head_layout' => 'side' ),
+				'selectors'   => array( '{{WRAPPER}} .avix-vl' => '--vl-side-w: {{SIZE}}%;' ),
+			)
+		);
+
+		$this->add_control(
+			'watermark_heading',
+			array(
+				'label'     => esc_html__( 'Watermark', 'avix-widgets' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			)
+		);
+
+		$this->add_control(
+			'watermark',
+			array(
+				'label'       => esc_html__( 'Watermark image (optional)', 'avix-widgets' ),
+				'description' => esc_html__( 'A large, very faint image behind the text, e.g. the Avix logo. It bleeds off the left edge and never covers the cards.', 'avix-widgets' ),
+				'type'        => Controls_Manager::MEDIA,
+				'dynamic'     => array( 'active' => true ),
+			)
+		);
+
+		$this->add_control(
+			'watermark_mono',
+			array(
+				'label'     => esc_html__( 'Show it in grey', 'avix-widgets' ),
+				'type'      => Controls_Manager::SWITCHER,
+				'default'   => 'yes',
+				'condition' => array( 'watermark[url]!' => '' ),
+			)
+		);
+
+		$this->add_control(
+			'watermark_opacity',
+			array(
+				'label'     => esc_html__( 'Watermark strength', 'avix-widgets' ),
+				'type'      => Controls_Manager::SLIDER,
+				'range'     => array(
+					'px' => array(
+						'min'  => 0.02,
+						'max'  => 0.4,
+						'step' => 0.01,
+					),
+				),
+				'condition' => array( 'watermark[url]!' => '' ),
+				'selectors' => array( '{{WRAPPER}} .avix-vl' => '--vl-mark-o: {{SIZE}};' ),
+			)
+		);
+
+		$this->add_responsive_control(
+			'watermark_width',
+			array(
+				'label'      => esc_html__( 'Watermark width', 'avix-widgets' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px' ),
+				'range'      => array(
+					'px' => array(
+						'min' => 160,
+						'max' => 1600,
+					),
+				),
+				'condition'  => array( 'watermark[url]!' => '' ),
+				'selectors'  => array( '{{WRAPPER}} .avix-vl' => '--vl-mark-w: {{SIZE}}{{UNIT}};' ),
 			)
 		);
 
@@ -264,6 +430,11 @@ class Values extends Widget_Base {
 					'heart'   => esc_html__( 'Heart', 'avix-widgets' ),
 					'eye'     => esc_html__( 'Eye', 'avix-widgets' ),
 					'gear'    => esc_html__( 'Gear', 'avix-widgets' ),
+					'cart'    => esc_html__( 'Shopping cart', 'avix-widgets' ),
+					'layout'  => esc_html__( 'Page layout', 'avix-widgets' ),
+					'globe'   => esc_html__( 'Globe', 'avix-widgets' ),
+					'code'    => esc_html__( 'Code', 'avix-widgets' ),
+					'pulse'   => esc_html__( 'Pulse line', 'avix-widgets' ),
 					'custom'  => esc_html__( 'Custom icon…', 'avix-widgets' ),
 					'none'    => esc_html__( 'No icon', 'avix-widgets' ),
 				),
@@ -662,8 +833,24 @@ class Values extends Widget_Base {
 		$text     = trim( (string) ( $s['text'] ?? '' ) );
 		$tag      = Utils::validate_html_tag( $s['title_tag'] ?? 'h2' );
 		$title_id = 'avix-vl-title-' . $this->get_id();
-		$layout   = 'stacked' === ( $s['head_layout'] ?? '' ) ? 'stacked' : 'split';
+		$layout   = in_array( $s['head_layout'] ?? '', array( 'stacked', 'side' ), true ) ? $s['head_layout'] : 'split';
+		$side     = 'side' === $layout;
+		$sticky   = $side && 'yes' === ( $s['side_sticky'] ?? '' );
+		$mark     = $this->watermark_html( $s );
 		$spans    = self::spans( $items );
+
+		// Rich text (paragraphs, highlights, links) belongs to the side layout;
+		// the bento layouts print the text escaped, exactly as they always did.
+		if ( '' === $text ) {
+			$text_html = '';
+		} elseif ( $side ) {
+			$text_html = $this->text_html( $text );
+		} else {
+			$text_html = '<p class="avix-vl__text">' . esc_html( $text ) . '</p>';
+		}
+		// Decided on the sanitised text, so markup that strips to nothing never
+		// leaves an empty header column behind.
+		$has_head = '' !== $eyebrow . $title . $text_html;
 
 		$classes = array( 'avix-vl', 'avix-vl--head-' . $layout );
 		if ( 'dark' === ( $s['theme'] ?? '' ) ) {
@@ -672,20 +859,40 @@ class Values extends Widget_Base {
 		if ( $pal ) {
 			$classes[] = 'avix-vl--pal';
 		}
+		if ( $sticky ) {
+			$classes[] = 'avix-vl--sticky';
+		}
+		// No header: the cards take the whole width (side layout) and keep the
+		// character's headroom with a watermark before them. Only these new
+		// options add the class, so existing output is unchanged.
+		if ( ! $has_head && ( $side || '' !== $mark ) ) {
+			$classes[] = 'avix-vl--bare';
+		}
+		if ( '' !== $mark ) {
+			$classes[] = 'avix-vl--mark';
+			if ( 'yes' === ( $s['watermark_mono'] ?? '' ) ) {
+				$classes[] = 'avix-vl--mark-mono';
+			}
+		}
+
+		// Existing layouts keep exactly the config they always had.
+		$config = array(
+			'pal'   => $pal,
+			'hop'   => $pal && 'yes' === ( $s['pal_hop'] ?? '' ),
+			'hi'    => $pal && 'yes' === ( $s['pal_hi'] ?? '' ),
+			'wave'  => $pal && 'yes' === ( $s['pal_wave'] ?? '' ),
+			'build' => 'yes' === ( $s['show_build'] ?? '' ),
+		);
+		if ( $side ) {
+			$config['side']   = true;
+			$config['sticky'] = $sticky;
+		}
 
 		$this->add_render_attribute(
 			'root',
 			array(
 				'class'        => $classes,
-				'data-avix-vl' => wp_json_encode(
-					array(
-						'pal'   => $pal,
-						'hop'   => $pal && 'yes' === ( $s['pal_hop'] ?? '' ),
-						'hi'    => $pal && 'yes' === ( $s['pal_hi'] ?? '' ),
-						'wave'  => $pal && 'yes' === ( $s['pal_wave'] ?? '' ),
-						'build' => 'yes' === ( $s['show_build'] ?? '' ),
-					)
-				),
+				'data-avix-vl' => wp_json_encode( $config ),
 			)
 		);
 		if ( '' !== $title ) {
@@ -696,7 +903,12 @@ class Values extends Widget_Base {
 		?>
 		<section <?php $this->print_render_attribute_string( 'root' ); ?>>
 			<div class="avix-vl__inner">
-				<?php if ( '' !== $eyebrow || '' !== $title || '' !== $text ) : ?>
+				<?php
+				if ( '' !== $mark ) {
+					echo $mark; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in watermark_html().
+				}
+				?>
+				<?php if ( $has_head ) : ?>
 					<header class="avix-vl__head">
 						<?php if ( '' !== $eyebrow || '' !== $title ) : ?>
 							<div class="avix-vl__head-main">
@@ -708,9 +920,11 @@ class Values extends Widget_Base {
 								<?php endif; ?>
 							</div>
 						<?php endif; ?>
-						<?php if ( '' !== $text ) : ?>
-							<p class="avix-vl__text"><?php echo esc_html( $text ); ?></p>
-						<?php endif; ?>
+						<?php
+						if ( '' !== $text_html ) {
+							echo $text_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above or in text_html().
+						}
+						?>
 					</header>
 				<?php endif; ?>
 
@@ -777,6 +991,11 @@ class Values extends Widget_Base {
 		}
 		if ( $has_link ) {
 			$classes[] = 'has-link';
+		}
+		// Row cards keep the title clear of the corner number (side layout only,
+		// so the bento markup stays exactly as before).
+		if ( $has_num && 'side' === ( $s['head_layout'] ?? '' ) ) {
+			$classes[] = 'has-num';
 		}
 		?>
 		<article class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" data-vl-card>
@@ -980,6 +1199,69 @@ class Values extends Widget_Base {
 			$out[ $i ] = array( $desktop[ $i ] ?? 2, $tablet[ $i ] ?? 1 );
 		}
 		return $out;
+	}
+
+	/**
+	 * Side-layout header text: paragraphs are split on empty lines and keep
+	 * only the TEXT_TAGS highlights and links. Each paragraph is balanced on
+	 * its own, so an unclosed <strong> never leaks into the next paragraph or
+	 * the cards.
+	 *
+	 * @param string $text Header text.
+	 */
+	private function text_html( $text ) {
+		$paras = preg_split( '/\R[ \t]*\R\s*/u', trim( (string) $text ) );
+		$html  = array();
+		foreach ( (array) $paras as $para ) {
+			$para = trim( force_balance_tags( wp_kses( $para, self::TEXT_TAGS ) ) );
+			if ( '' !== $para ) {
+				$html[] = $para;
+			}
+		}
+		if ( ! $html ) {
+			return '';
+		}
+		if ( 1 === count( $html ) ) {
+			return '<p class="avix-vl__text">' . $html[0] . '</p>';
+		}
+		return '<div class="avix-vl__text avix-vl__text--rich"><p>' . implode( '</p><p>', $html ) . '</p></div>';
+	}
+
+	/**
+	 * The optional watermark behind the text: decorative, so empty alt and
+	 * hidden from assistive tech.
+	 *
+	 * @param array $s Widget settings.
+	 */
+	private function watermark_html( array $s ) {
+		$media = (array) ( $s['watermark'] ?? array() );
+		$url   = trim( (string) ( $media['url'] ?? '' ) );
+		if ( '' === $url ) {
+			return '';
+		}
+		$img = '';
+		$id  = $this->media_id( $media );
+		if ( $id ) {
+			// The hint matches the width CSS draws it at: the width setting when
+			// there is one, else 1100px (720px in narrow containers).
+			$width = (int) ( $s['watermark_width']['size'] ?? 0 );
+			$img   = wp_get_attachment_image(
+				$id,
+				'full',
+				false,
+				array(
+					'class'    => 'avix-vl__mark-img',
+					'alt'      => '',
+					'loading'  => 'lazy',
+					'decoding' => 'async',
+					'sizes'    => $width > 0 ? $width . 'px' : '(max-width: 600px) 720px, 1100px',
+				)
+			);
+		}
+		if ( '' === $img ) {
+			$img = sprintf( '<img class="avix-vl__mark-img" src="%s" alt="" loading="lazy" decoding="async">', esc_url( $url ) );
+		}
+		return '<span class="avix-vl__mark" aria-hidden="true">' . $img . '</span>';
 	}
 
 	/**

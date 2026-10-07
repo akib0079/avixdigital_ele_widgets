@@ -8,6 +8,9 @@
  * another row it pops out and back in on the new card, so it never passes in
  * front of text. Transform and opacity only, one rAF loop that runs only
  * during a move, and nothing ticks while off screen or in a hidden tab.
+ * Side layout: the cards are rows beside a sticky text column; the character
+ * hops between rows while the columns sit side by side, and Elementor wrappers
+ * whose overflow would break the sticky column are switched to clip.
  */
 (function (window, document) {
 	'use strict';
@@ -24,6 +27,8 @@
 	var POP_OUT_MS = 150;
 	var POP_GAP_MS = 60;
 	var POP_IN_MS = 240;
+	var STICK_ROOM = 40;
+	var ELEMENTOR_WRAPPERS = '.elementor-element, .e-con, .e-con-inner, .elementor-container, .elementor-column, .elementor-widget-wrap, .elementor-widget-container, .elementor-section';
 	var instances = [];
 
 	function isEditMode() {
@@ -68,8 +73,12 @@
 		this.stopWave = null;
 		this.visible = true;
 		this.press = null;
+		this.side = !!config.side;
+		this.sticky = this.side && !!config.sticky;
+		this.clipped = [];
 
 		this.onResize = this.onResize.bind(this);
+		this.onStickResize = this.onStickResize.bind(this);
 		this.onVisibility = this.onVisibility.bind(this);
 		this.onLeave = this.onLeave.bind(this);
 		this.onFocusOut = this.onFocusOut.bind(this);
@@ -115,6 +124,13 @@
 			this.observeItems();
 		}
 		document.addEventListener('visibilitychange', this.onVisibility);
+
+		if (this.sticky && !this.editor) {
+			this.releaseOverflowAncestors();
+			this.updateStick();
+			window.addEventListener('resize', this.onStickResize, { passive: true });
+			window.addEventListener('load', this.onStickResize);
+		}
 
 		if (!this.pal) {
 			this.bindCards();
@@ -195,6 +211,60 @@
 			this.destroy();
 		}
 		return this.alive;
+	};
+
+	/* ---------- Side layout: sticky text column ---------- */
+
+	// Sticky breaks under overflow:hidden ancestors. Elementor wrappers are
+	// flex/grid boxes, so swapping hidden for clip keeps the clipping without
+	// creating a scroll container. Theme wrappers are only reported.
+	Values.prototype.releaseOverflowAncestors = function () {
+		for (var node = this.root.parentElement; node && node !== document.body && node !== document.documentElement; node = node.parentElement) {
+			var style = window.getComputedStyle(node);
+			if (!/(hidden|auto|scroll)/.test(style.overflowX + style.overflowY)) {
+				continue;
+			}
+			if (!/(auto|scroll)/.test(style.overflowX + style.overflowY) && node.matches && node.matches(ELEMENTOR_WRAPPERS)) {
+				node.style.overflow = 'clip';
+				this.clipped.push(node);
+			} else if (window.console && !this.warned) {
+				this.warned = true;
+				window.console.warn('[Avix Values] An ancestor has overflow "' + style.overflowX + '/' + style.overflowY + '", which stops the sticky text column. Change it to "clip" or "visible".', node);
+			}
+		}
+	};
+
+	// A text column taller than the screen would hide its end: it scrolls
+	// normally instead. Measured with the sticky offset applied (resize only).
+	Values.prototype.updateStick = function () {
+		if (!this.head) {
+			return;
+		}
+		this.root.classList.remove('is-unstick');
+		// Measured against the offset used while the Smart Header shows (the
+		// larger one), even if it is hidden right now.
+		var shown = (parseFloat(window.getComputedStyle(document.documentElement).getPropertyValue('--avix-header-h')) || 0) + (document.body.classList.contains('admin-bar') ? 72 : 40);
+		var top = Math.max(parseFloat(window.getComputedStyle(this.head).top) || 0, shown);
+		var room = window.innerHeight - Math.max(top, STICK_ROOM) - STICK_ROOM;
+		this.root.classList.toggle('is-unstick', this.head.offsetHeight > room);
+	};
+
+	Values.prototype.onStickResize = function () {
+		var self = this;
+		if (this.stickFrame || !this.check()) {
+			return;
+		}
+		this.stickFrame = window.requestAnimationFrame(function () {
+			self.stickFrame = 0;
+			if (self.check()) {
+				self.updateStick();
+			}
+		});
+	};
+
+	// Side layout with the text column beside the cards (not stacked on top).
+	Values.prototype.sideBySide = function () {
+		return !!(this.head && this.board && this.board.offsetLeft >= this.head.offsetLeft + this.head.offsetWidth - 1);
 	};
 
 	/* ---------- Reveal ---------- */
@@ -373,6 +443,11 @@
 		if (!this.pal || !this.config.hop || this.cards.length < 2) {
 			return false;
 		}
+		// Side layout: the rows sit under each other, so it hops between them
+		// while the text column is beside them (desktop), never when stacked.
+		if (this.side) {
+			return this.sideBySide();
+		}
 		// Single column (phones or a narrow column): it stays put.
 		var left = this.box(this.cards[0]).x;
 		for (var i = 1; i < this.cards.length; i++) {
@@ -504,7 +579,8 @@
 				above = true;
 			}
 		});
-		if (!above && this.head) {
+		// The header only limits it when it sits above the cards (not beside).
+		if (!above && this.head && !(this.side && this.sideBySide())) {
 			limit = Math.max(limit, this.head.getBoundingClientRect().bottom - boardTop);
 		}
 		return Math.max(0, y - limit - HOP_CLEAR);
@@ -672,8 +748,11 @@
 		if (this.stopWave) {
 			this.stopWave();
 		}
+		window.cancelAnimationFrame(this.stickFrame);
 		window.removeEventListener('resize', this.onResize);
 		window.removeEventListener('load', this.onResize);
+		window.removeEventListener('resize', this.onStickResize);
+		window.removeEventListener('load', this.onStickResize);
 		document.removeEventListener('visibilitychange', this.onVisibility);
 		this.handlers.forEach(function (h) {
 			h[0].removeEventListener(h[1], h[2], h[3]);

@@ -1,0 +1,600 @@
+/*!
+ * Avix Digital · Ticker
+ * A keyword band that glides by on a single compositor-only CSS animation
+ * (the track slides exactly half its width, so the loop has no seam). The
+ * pixel character rides its top edge. Layout follows the widget width
+ * (container queries).
+ */
+
+.avix-tk {
+	--tk-bg: #ffffff;
+	--tk-band: #fb6007;
+	--tk-ink: #ffffff;
+	--tk-sep: #1a1a1a;
+	--tk-line: transparent;
+	--tk-band-2: #111111;
+	--tk-ink-2: #ffffff;
+	--tk-sep-2: #fb6007;
+	--tk-line-2: transparent;
+	--tk-accent: #fb6007;
+	/* Pause button tint: an ink tint keeps its white icon above 3:1 on orange. */
+	--tk-btn: rgba(17, 17, 17, 0.18);
+	--tk-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--tk-font-body: "Inter", Arial, sans-serif;
+	--tk-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--tk-max: 1200px;
+	--tk-tilt: 0deg;
+	--tk-rise: 0;
+	--tk-dur: 60s;
+
+	container: avix-tk / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(76px, 6.6vw, 96px) 0 clamp(28px, 3.4vw, 48px);
+	overflow: hidden;
+	overflow: clip;
+	color: var(--tk-ink);
+	background: var(--tk-bg);
+	font-family: var(--tk-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-tk--no-pal {
+	padding-top: clamp(28px, 3.4vw, 48px);
+}
+
+/* Seam: the band sits on the bottom edge, between this section and the next. */
+.avix-tk--seam {
+	padding-bottom: 0;
+}
+
+.avix-tk--ink {
+	--tk-btn: color-mix(in srgb, var(--tk-ink) 16%, transparent);
+	--tk-band: #111111;
+	--tk-ink: #ffffff;
+	--tk-sep: #fb6007;
+	--tk-band-2: #fb6007;
+	--tk-ink-2: #ffffff;
+	--tk-sep-2: #1a1a1a;
+}
+
+.avix-tk--light {
+	--tk-btn: color-mix(in srgb, var(--tk-ink) 16%, transparent);
+	--tk-band: #f5f3ef;
+	--tk-ink: #1a1a1a;
+	--tk-sep: #fb6007;
+	--tk-line: rgba(26, 26, 26, 0.08);
+	--tk-band-2: #fb6007;
+	--tk-ink-2: #ffffff;
+	--tk-sep-2: #1a1a1a;
+}
+
+.avix-tk *,
+.avix-tk *::before,
+.avix-tk *::after {
+	box-sizing: border-box;
+}
+
+/*
+ * Container queries style descendants only: width-dependent tokens live on
+ * the inner wrapper. Style-tab controls set the --tk-*-w / --tk-size style
+ * overrides on the root, which win here at every width.
+ */
+.avix-tk__inner {
+	--tk-pal: var(--tk-pal-w, clamp(30px, 3.1cqi, 44px));
+	--tk-py: var(--tk-band-py, clamp(15px, 1.55cqi, 22px));
+	--tk-gap: var(--tk-word-gap, clamp(18px, 2.3cqi, 36px));
+	--tk-edge: clamp(16px, 2cqi, 28px);
+	--tk-over: 0px;
+	position: relative;
+}
+
+/* Screen readers get the words as a plain list; the moving band is hidden. */
+.avix-tk .avix-tk__sr {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
+	list-style: none;
+}
+
+/* ---------- Stage & bands ---------- */
+
+.avix-tk__stage {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	/* A tilted band's ends climb by half its width × sin(tilt): reserve that. */
+	padding-block: calc(var(--tk-rise) * 50cqi);
+}
+
+/* Tilted edge-to-edge bands run a little past both sides so no corner shows. */
+.avix-tk--tilt.avix-tk--bleed .avix-tk__inner {
+	--tk-over: 3cqi;
+}
+
+.avix-tk__band {
+	--tk-sep-c: var(--tk-sep);
+	position: relative;
+	z-index: 1;
+	grid-area: 1 / 1;
+	width: calc(100% + var(--tk-over) * 2);
+	margin-inline: calc(var(--tk-over) * -1);
+	border-block: 1px solid var(--tk-line);
+	color: var(--tk-ink);
+	background: var(--tk-band);
+	rotate: var(--tk-tilt);
+}
+
+.avix-tk--inset .avix-tk__band {
+	width: min(calc(100% - 48px), var(--tk-max));
+	margin-inline: auto;
+	border: 1px solid var(--tk-line);
+	border-radius: 999px;
+}
+
+/* The second band sits behind, in the contrasting colour, running the other way. */
+.avix-tk__band--alt {
+	--tk-sep-c: var(--tk-sep-2);
+	z-index: 0;
+	border-color: var(--tk-line-2);
+	color: var(--tk-ink-2);
+	background: var(--tk-band-2);
+}
+
+/* Level bands stack; tilted bands cross like an X (opposite tilts, same cell). */
+.avix-tk--counter:not(.avix-tk--tilt) .avix-tk__band--alt {
+	grid-area: 2 / 1;
+}
+
+.avix-tk--counter.avix-tk--tilt .avix-tk__band {
+	align-self: start;
+}
+
+/* Crossing bands: the second one sits a little lower, so it still shows on
+   narrow screens where a small tilt barely separates the two. */
+.avix-tk--counter.avix-tk--tilt .avix-tk__band--alt {
+	margin-top: calc(var(--tk-py) * 1.5);
+	rotate: calc(var(--tk-tilt) * -1);
+}
+
+.avix-tk__viewport {
+	position: relative;
+	display: block;
+	padding-block: var(--tk-py);
+	overflow: hidden;
+	border-radius: inherit;
+}
+
+/* The pill fades its words out before they meet the rounded ends. */
+.avix-tk--inset .avix-tk__viewport {
+	-webkit-mask-image: linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+	mask-image: linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+}
+
+/* ---------- Track ---------- */
+
+.avix-tk__track {
+	display: flex;
+	width: max-content;
+	animation: avix-tk-loop var(--tk-dur) linear infinite;
+	will-change: transform;
+}
+
+.avix-tk--dir-right .avix-tk__band--main .avix-tk__track,
+.avix-tk--dir-left .avix-tk__band--alt .avix-tk__track {
+	animation-direction: reverse;
+}
+
+.avix-tk__half,
+.avix-tk__group {
+	display: flex;
+	flex: none;
+	align-items: center;
+}
+
+.avix-tk .avix-tk__group {
+	margin: 0;
+	padding: 0;
+	font-family: var(--tk-font-display);
+	font-size: var(--tk-size, clamp(20px, calc(1.9cqi + 9px), 38px));
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.012em;
+	white-space: nowrap;
+}
+
+/* On the group, not the words, so the Typography control can still override. */
+.avix-tk--upper .avix-tk__group {
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+}
+
+.avix-tk__item {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+}
+
+.avix-tk .avix-tk__word {
+	display: block;
+	margin: 0;
+	padding: 0;
+	color: inherit;
+	font: inherit;
+}
+
+/* Hollow words: the stroke scales with the type, the fill shows the band. */
+.avix-tk--outline .avix-tk__item:nth-child(even) .avix-tk__word {
+	color: transparent;
+	-webkit-text-stroke: max(1.2px, 0.036em) var(--tk-word-c, currentColor);
+}
+
+/*
+ * Variable fonts draw overlapping contours, so a plain stroke shows stray
+ * lines inside A, R or E. Filling with the band colour over a doubled stroke
+ * paints only the outer half: a clean outline of the same weight.
+ */
+@supports (paint-order: stroke fill) {
+	.avix-tk--outline .avix-tk__item:nth-child(even) .avix-tk__word {
+		color: var(--tk-word-fill);
+		-webkit-text-stroke-width: max(2.4px, 0.072em);
+		paint-order: stroke fill;
+	}
+}
+
+.avix-tk--outline .avix-tk__band--main .avix-tk__item:nth-child(even) {
+	--tk-word-c: var(--tk-ink);
+	--tk-word-fill: var(--tk-band);
+}
+
+.avix-tk--outline .avix-tk__band--alt .avix-tk__item:nth-child(even) {
+	--tk-word-c: var(--tk-ink-2);
+	--tk-word-fill: var(--tk-band-2);
+}
+
+/* ---------- Separators ---------- */
+
+.avix-tk__sep {
+	display: block;
+	flex: none;
+	margin-inline: var(--tk-gap);
+	color: var(--tk-sep-c);
+	/* Optically centre on the capitals rather than the line box. */
+	translate: 0 -0.04em;
+}
+
+.avix-tk__sep svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+.avix-tk__sep--pixel {
+	width: 0.42em;
+	height: 0.42em;
+}
+
+.avix-tk__sep--pixel svg {
+	fill: currentColor;
+	shape-rendering: crispEdges;
+}
+
+.avix-tk__sep--dot {
+	width: 0.24em;
+	height: 0.24em;
+	border-radius: 50%;
+	background: currentColor;
+}
+
+.avix-tk__sep--arrow {
+	width: 1.15em;
+	height: 0.42em;
+}
+
+.avix-tk__sep--arrow svg {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.25;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	vector-effect: non-scaling-stroke;
+}
+
+/* ---------- Pixel character ---------- */
+
+/*
+ * It stands on the band's top edge (it rotates with a tilted band) and
+ * walks against the words, so it stays put while they pass under its feet.
+ * No outline filter: it painted notches into the band under the feet and
+ * re-rasterised on every step.
+ */
+.avix-tk .avix-tk__pal {
+	--pal-w: var(--tk-pal);
+	--pal-color: var(--tk-accent);
+	position: absolute;
+	z-index: 3;
+	bottom: 100%;
+	left: calc(var(--tk-over) + (100% - var(--tk-over) * 2) * var(--tk-pal-x, 0.78));
+	translate: -50% 0;
+	transition: opacity 0.5s ease, translate 0.9s cubic-bezier(0.3, 0.9, 0.4, 1);
+}
+
+.avix-tk--inset .avix-tk__pal {
+	left: calc(28px + (100% - 56px) * var(--tk-pal-x, 0.78));
+}
+
+/* Words moving right: it walks the other way. The whole figure mirrors, so
+   the jump keyframes on the sprite keep working; the "hi" mirrors back. */
+.avix-tk--dir-right .avix-tk__pal {
+	scale: -1 1;
+}
+
+.avix-tk--dir-right .avix-tk__pal .avix-pal__hi {
+	scale: -1 1;
+}
+
+/* ---------- Pause button ---------- */
+
+.avix-tk__ctrl {
+	position: absolute;
+	z-index: 2;
+	top: 0;
+	right: var(--tk-over);
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	padding: 0 var(--tk-edge) 0 56px;
+	border-radius: inherit;
+	/* The words fade out under the button instead of running into it. */
+	background: linear-gradient(90deg, transparent 0, var(--tk-band) 48px);
+	pointer-events: none;
+}
+
+.avix-tk--inset .avix-tk__ctrl {
+	padding-right: max(8px, calc(var(--tk-py) - 6px));
+	border-radius: 0 999px 999px 0;
+}
+
+.avix-tk .avix-tk__toggle {
+	position: relative;
+	display: inline-grid;
+	place-items: center;
+	width: 40px;
+	min-width: 0;
+	height: 40px;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	box-shadow: none;
+	color: var(--tk-ink);
+	background: var(--tk-btn);
+	text-transform: none;
+	cursor: pointer;
+	pointer-events: auto;
+	-webkit-appearance: none;
+	appearance: none;
+	transition: color 0.25s ease, background-color 0.25s ease, scale 0.35s var(--tk-ease);
+}
+
+/* 44px tap target around the 40px circle. */
+.avix-tk .avix-tk__toggle::before {
+	content: "";
+	position: absolute;
+	inset: -2px;
+	border-radius: 50%;
+}
+
+.avix-tk .avix-tk__toggle:focus,
+.avix-tk .avix-tk__toggle:active {
+	color: var(--tk-ink);
+	background: var(--tk-btn);
+	box-shadow: none;
+}
+
+.avix-tk .avix-tk__toggle:focus-visible {
+	outline: 2px solid var(--tk-ink);
+	outline-offset: 3px;
+}
+
+@media (hover: hover) {
+	.avix-tk .avix-tk__toggle:hover {
+		color: var(--tk-band);
+		background: var(--tk-ink);
+		scale: 1.06;
+	}
+}
+
+.avix-tk__toggle svg {
+	width: 16px;
+	height: 16px;
+	fill: currentColor;
+}
+
+.avix-tk__toggle .avix-tk__play,
+.avix-tk.is-user-paused .avix-tk__toggle .avix-tk__pause {
+	display: none;
+}
+
+.avix-tk.is-user-paused .avix-tk__toggle .avix-tk__play {
+	display: block;
+}
+
+/* ---------- Pause states ---------- */
+
+/* Without the script, hover or keyboard focus simply holds the band. */
+@media (hover: hover) {
+	.avix-tk:not(.is-ready) .avix-tk__stage:hover .avix-tk__track {
+		animation-play-state: paused;
+	}
+}
+
+.avix-tk:not(.is-ready):focus-within .avix-tk__track,
+.avix-tk.is-held .avix-tk__track {
+	animation-play-state: paused;
+}
+
+/* State override: must beat every animation shorthand (off screen / hidden tab). */
+.avix-tk.is-off .avix-tk__track,
+.avix-tk.is-off .avix-pal,
+.avix-tk.is-off .avix-pal *,
+.avix-tk.is-off .avix-pal *::before,
+.avix-tk.is-off .avix-pal *::after {
+	animation-play-state: paused !important;
+}
+
+/* ---------- Reveal ---------- */
+
+.avix-tk.is-armed .avix-tk__band {
+	opacity: 0;
+	translate: 0 26px;
+	transition: opacity 0.7s ease, translate 0.8s var(--tk-ease);
+}
+
+.avix-tk.is-armed .avix-tk__band--main {
+	transition-delay: 90ms;
+}
+
+.avix-tk.is-armed.is-in .avix-tk__band {
+	opacity: 1;
+	translate: none;
+}
+
+.avix-tk.is-armed .avix-tk__pal {
+	opacity: 0;
+	translate: -50% -140%;
+}
+
+.avix-tk.is-armed.is-in .avix-tk__pal {
+	opacity: 1;
+	translate: -50% 0;
+	transition-delay: 0.45s, 0.45s;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-tk-loop {
+	from {
+		transform: translate3d(0, 0, 0);
+	}
+
+	to {
+		transform: translate3d(-50%, 0, 0);
+	}
+}
+
+/* ---------- Container queries ---------- */
+
+@container avix-tk (max-width: 767px) {
+	.avix-tk__inner {
+		--tk-pal: var(--tk-pal-w, 30px);
+		--tk-edge: 12px;
+	}
+
+	.avix-tk--inset .avix-tk__band {
+		width: calc(100% - 32px);
+	}
+
+	.avix-tk .avix-tk__toggle {
+		width: 34px;
+		height: 34px;
+	}
+
+	.avix-tk .avix-tk__toggle::before {
+		inset: -5px;
+	}
+
+	.avix-tk__toggle svg {
+		width: 14px;
+		height: 14px;
+	}
+
+	.avix-tk__ctrl {
+		padding-left: 40px;
+		background: linear-gradient(90deg, transparent 0, var(--tk-band) 34px);
+	}
+}
+
+@container avix-tk (max-width: 420px) {
+	.avix-tk__inner {
+		--tk-py: var(--tk-band-py, 16px);
+		--tk-gap: var(--tk-word-gap, 16px);
+	}
+}
+
+/* ---------- Editor ---------- */
+
+.elementor-editor-active .avix-tk.is-armed .avix-tk__band,
+.elementor-editor-active .avix-tk.is-armed .avix-tk__pal {
+	opacity: 1;
+	transition: none;
+}
+
+/* ---------- Reduced motion: a still, wrapped row of every word ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-tk *,
+	.avix-tk *::before,
+	.avix-tk *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-tk .avix-tk__track,
+	.avix-tk .avix-tk__half {
+		width: 100%;
+	}
+
+	.avix-tk .avix-tk__half + .avix-tk__half,
+	.avix-tk .avix-tk__group + .avix-tk__group,
+	.avix-tk .avix-tk__ctrl,
+	.avix-tk .avix-tk__item:last-child .avix-tk__sep {
+		display: none;
+	}
+
+	.avix-tk .avix-tk__item {
+		flex: 0 1 auto;
+		min-width: 0;
+	}
+
+	.avix-tk .avix-tk__word {
+		text-align: center;
+	}
+
+	.avix-tk .avix-tk__group {
+		flex: 1 1 auto;
+		flex-wrap: wrap;
+		justify-content: center;
+		row-gap: 0.35em;
+		padding-inline: var(--tk-edge);
+		white-space: normal;
+	}
+
+	.avix-tk--inset .avix-tk__viewport {
+		-webkit-mask-image: none;
+		mask-image: none;
+	}
+
+	.avix-tk.is-armed .avix-tk__band,
+	.avix-tk.is-armed .avix-tk__pal {
+		opacity: 1;
+	}
+
+	.avix-tk.is-armed .avix-tk__band {
+		translate: none;
+	}
+
+	.avix-tk.is-armed .avix-tk__pal {
+		translate: -50% 0;
+	}
+}

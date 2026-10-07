@@ -33,6 +33,12 @@
 	--ph-hub-bg: #ffffff;
 	--ph-tip-bg: #1a1a1a;
 	--ph-tip-ink: #ffffff;
+	/* The stat chip on the image stays a white card on both themes. */
+	--ph-stat-bg: #ffffff;
+	--ph-stat-ink: #1a1a1a;
+	--ph-stat-muted: #5c5f66;
+	--ph-stat-seal: color-mix(in srgb, var(--ph-accent) 16%, #ffffff);
+	--ph-stat-check: var(--ph-accent);
 	--ph-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
 	--ph-font-body: "Inter", Arial, sans-serif;
 	--ph-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -345,6 +351,26 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+/* Three-level trail: the current page's name (it repeats the H1 just
+   below) gives way first, and the middle step is capped at about 40% of
+   the line, so a long parent is cut too but never down to a letter. The
+   ellipsis sits on the inner text, so the link's 44px tap area is never
+   clipped. */
+.avix-ph .avix-ph__crumb--parent {
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: 42%;
+}
+
+.avix-ph .avix-ph__crumb--parent .avix-ph__crumb-link {
+	flex: 0 1 auto;
+	min-width: 0;
+}
+
+.avix-ph .avix-ph__crumb--parent ~ .avix-ph__crumb[aria-current="page"] {
+	flex-shrink: 1000;
 }
 
 .avix-ph .avix-ph__crumb-link {
@@ -1267,6 +1293,48 @@
 	box-shadow: 0 40px 70px -40px rgba(0, 0, 0, 0.8);
 }
 
+/* "Product render" frame (opt-in): a warm, two-layer shadow lifts a white
+   device render off the warm stage without a grey halo, and a hairline
+   keeps the edge crisp where the render's white meets the stage. */
+.avix-ph .avix-ph__media--render .avix-ph__media-frame {
+	position: relative;
+	box-shadow:
+		0 46px 80px -50px color-mix(in srgb, var(--ph-accent) 60%, transparent),
+		0 30px 60px -36px rgba(26, 26, 26, 0.3);
+}
+
+.avix-ph .avix-ph__media--render .avix-ph__media-frame::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	box-shadow: inset 0 0 0 1px rgba(26, 26, 26, 0.07);
+	pointer-events: none;
+}
+
+.avix-ph--dark .avix-ph__media--render .avix-ph__media-frame {
+	box-shadow: 0 40px 70px -40px rgba(0, 0, 0, 0.8);
+}
+
+.avix-ph--dark .avix-ph__media--render .avix-ph__media-frame::after {
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* On a render the pause control is a quiet 40px round icon button (its
+   name stays in aria-label), so no text pill sits on the product. */
+.avix-ph .avix-ph__media--render > .avix-ph__pause,
+.avix-ph .avix-ph__media--render > .avix-ph__pause:focus,
+.avix-ph .avix-ph__media--render > .avix-ph__pause:active {
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+}
+
+.avix-ph .avix-ph__media--render .avix-ph__pause-text {
+	display: none;
+}
+
 .avix-ph .avix-ph__img {
 	display: block;
 	width: 100%;
@@ -1288,6 +1356,138 @@
 	right: 14%;
 	left: auto;
 	margin-left: 0;
+}
+
+/* ---------- Stat chip on the image ---------- */
+
+/* The chip hangs this far below the image; the figure keeps a little more
+   room than that under it, so the chip never crowds the stage's bottom edge
+   and the visual stays balanced against the character's headroom above.
+   Specific enough to beat Elementor's figure margin reset. */
+.avix-ph .avix-ph__media.has-stat {
+	--ph-stat-drop: clamp(14px, 1.9cqi, 26px);
+}
+
+.avix-ph.avix-ph--visual-image .avix-ph__visual .avix-ph__media.has-stat {
+	margin-bottom: calc(var(--ph-stat-drop) * 1.75);
+}
+
+/* A white card on the image's bottom-left corner, hanging over both edges
+   (into the column gap and the stage padding) so it covers as little of the
+   render as possible; the character stands at the top right, so the two
+   never meet. No backdrop blur: it is a solid card. */
+.avix-ph .avix-ph__stat {
+	position: absolute;
+	bottom: calc(-1 * var(--ph-stat-drop));
+	left: calc(-1 * clamp(12px, 2.4cqi, 32px));
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	width: max-content;
+	max-width: min(80%, 340px);
+	margin: 0;
+	padding: 14px 22px 14px 14px;
+	border: 1px solid rgba(26, 26, 26, 0.06);
+	border-radius: 20px;
+	color: var(--ph-stat-ink);
+	background: var(--ph-stat-bg);
+	box-shadow: 0 28px 50px -26px rgba(26, 26, 26, 0.38), 0 4px 12px rgba(26, 26, 26, 0.05);
+	font-family: var(--ph-font-body);
+	line-height: 1.2;
+	text-align: left;
+	text-transform: none;
+}
+
+.avix-ph .avix-ph__stat:not(.has-seal) {
+	padding-left: 22px;
+}
+
+.avix-ph--dark .avix-ph__stat {
+	border-color: transparent;
+	box-shadow: 0 28px 50px -24px rgba(0, 0, 0, 0.75);
+}
+
+.avix-ph .avix-ph__stat-seal {
+	display: block;
+	flex: none;
+	width: 46px;
+	height: 46px;
+}
+
+.avix-ph .avix-ph__seal {
+	--pf-icon-color: var(--ph-stat-seal);
+
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* The orange check fills the seal's cut-out exactly (same 2-unit stroke). */
+.avix-ph .avix-ph__seal-check {
+	fill: none;
+	stroke: var(--ph-stat-check);
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.avix-ph .avix-ph__stat-copy {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 0;
+}
+
+.avix-ph .avix-ph__stat-value {
+	color: var(--ph-stat-ink);
+	font-family: var(--ph-font-display);
+	font-size: clamp(21px, 2.1cqi, 28px);
+	font-weight: 600;
+	line-height: 1.05;
+	letter-spacing: -0.03em;
+	font-variant-numeric: tabular-nums;
+	overflow-wrap: break-word;
+}
+
+.avix-ph .avix-ph__stat-label {
+	color: var(--ph-stat-muted);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.45;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	text-wrap: balance;
+	overflow-wrap: break-word;
+}
+
+/* "A · B" labels set as two lines: the separator is a zero-height block
+   (still read aloud), so the dot never hangs at the end of a line. */
+.avix-ph .avix-ph__stat-sep {
+	display: block;
+	height: 0;
+	overflow: hidden;
+}
+
+/* A label without a value reads as a short statement, not a caption. */
+.avix-ph .avix-ph__stat-label:only-child {
+	color: var(--ph-stat-ink);
+	font-size: 14px;
+	line-height: 1.35;
+	letter-spacing: -0.005em;
+	text-transform: none;
+}
+
+/* With the chip on the bottom-left corner, the pause button moves to the
+   image's top-right corner (under the character's feet), so the two never
+   meet however long the chip's text is. */
+.avix-ph .avix-ph__media.has-stat > .avix-ph__pause,
+.avix-ph .avix-ph__media.has-stat > .avix-ph__pause:focus,
+.avix-ph .avix-ph__media.has-stat > .avix-ph__pause:active {
+	top: 14px;
+	right: 14px;
+	bottom: auto;
 }
 
 /* ---------- Reveal ---------- */
@@ -1375,6 +1575,24 @@
 }
 
 .avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__media-frame {
+	opacity: 1;
+	transform: none;
+}
+
+/* The chip slides in after the image, and its seal lands like a stamp. */
+.avix-ph.is-armed .avix-ph__stat {
+	opacity: 0;
+	transform: translateY(18px);
+	transition: opacity 0.6s ease 0.7s, transform 0.9s var(--ph-ease) 0.7s;
+}
+
+.avix-ph.is-armed .avix-ph__stat-seal {
+	transform: scale(0.4) rotate(-50deg);
+	transition: transform 0.7s var(--ph-pop) 1s;
+}
+
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__stat,
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__stat-seal {
 	opacity: 1;
 	transform: none;
 }
@@ -1474,6 +1692,45 @@
 
 	.avix-ph .avix-ph__btn--ghost {
 		padding: 0 20px 0 22px;
+	}
+
+}
+
+/* Side by side at its narrowest, the image column is small: a tighter chip
+   covers as little of the render as on wide screens. Stacked layouts have
+   a large image again and keep the full chip. */
+@container avix-ph (900px < width <= 1100px) {
+	/* More of the chip hangs below the image than over it. */
+	.avix-ph .avix-ph__media.has-stat {
+		--ph-stat-drop: 28px;
+	}
+
+	.avix-ph .avix-ph__stat {
+		gap: 12px;
+		max-width: min(68%, 280px);
+		padding: 11px 16px 11px 11px;
+		border-radius: 18px;
+	}
+
+	.avix-ph .avix-ph__stat:not(.has-seal) {
+		padding-left: 16px;
+	}
+
+	.avix-ph .avix-ph__stat-seal {
+		width: 38px;
+		height: 38px;
+	}
+
+	.avix-ph .avix-ph__stat-copy {
+		gap: 4px;
+	}
+
+	.avix-ph .avix-ph__stat-value {
+		font-size: clamp(19px, 2cqi, 23px);
+	}
+
+	.avix-ph .avix-ph__stat-label {
+		font-size: 10.5px;
 	}
 }
 
@@ -1638,6 +1895,38 @@
 		border-radius: 22px;
 	}
 
+	/* Phones: the chip sits under the image, full width, so it never
+	   covers the render (and needs no room reserved below the figure). */
+	.avix-ph.avix-ph--visual-image .avix-ph__visual .avix-ph__media.has-stat {
+		margin-bottom: 0;
+	}
+
+	.avix-ph .avix-ph__stat {
+		position: relative;
+		bottom: auto;
+		left: auto;
+		width: auto;
+		max-width: none;
+		margin-top: 12px;
+		padding: 12px 18px 12px 12px;
+		border-color: var(--ph-chip-line);
+		border-radius: 18px;
+		box-shadow: 0 18px 36px -26px rgba(26, 26, 26, 0.3);
+	}
+
+	.avix-ph .avix-ph__stat:not(.has-seal) {
+		padding-left: 18px;
+	}
+
+	.avix-ph .avix-ph__stat-seal {
+		width: 42px;
+		height: 42px;
+	}
+
+	.avix-ph .avix-ph__stat-value {
+		font-size: 22px;
+	}
+
 	/* Icon only on phones: a 40px round button in the corner. */
 	.avix-ph .avix-ph__pause,
 	.avix-ph .avix-ph__pause:focus,
@@ -1679,6 +1968,8 @@
 	.avix-ph.is-armed .avix-ph__chip,
 	.avix-ph.is-armed .avix-ph__hub-tile,
 	.avix-ph.is-armed .avix-ph__media-frame,
+	.avix-ph.is-armed .avix-ph__stat,
+	.avix-ph.is-armed .avix-ph__stat-seal,
 	.avix-ph.is-armed .avix-ph__perch {
 		opacity: 1;
 		transform: none;

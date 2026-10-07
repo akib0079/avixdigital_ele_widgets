@@ -71,6 +71,7 @@ class Journey extends Widget_Base {
 		$this->controls_header();
 		$this->controls_items();
 		$this->controls_track();
+		$this->controls_cta();
 		$this->controls_pal();
 		$this->controls_style();
 	}
@@ -126,6 +127,20 @@ class Journey extends Widget_Base {
 				'rows'    => 3,
 				'default' => esc_html__( 'From our first design and development projects in 2020 to Shopify stores and custom web applications, every project adds to the experience we bring to yours.', 'avix-widgets' ),
 				'dynamic' => array( 'active' => true ),
+			)
+		);
+
+		$this->add_control(
+			'head_layout',
+			array(
+				'label'       => esc_html__( 'Header layout', 'avix-widgets' ),
+				'description' => esc_html__( 'Split puts the title on the left and the text on the right. Centred stacks everything in the middle, which suits a process section with a call to action under the track.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'split',
+				'options'     => array(
+					'split'  => esc_html__( 'Split', 'avix-widgets' ),
+					'center' => esc_html__( 'Centred', 'avix-widgets' ),
+				),
 			)
 		);
 
@@ -331,6 +346,56 @@ class Journey extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	private function controls_cta() {
+		$this->start_controls_section( 'section_cta', array( 'label' => esc_html__( 'Call to Action', 'avix-widgets' ) ) );
+
+		$this->add_control(
+			'cta_note',
+			array(
+				'type'            => Controls_Manager::RAW_HTML,
+				'raw'             => esc_html__( 'A centred pill under the track, e.g. "Tell us about your Shopify project → Contact us". It shows once the button text and link are filled in, and lights up when the character reaches the last step.', 'avix-widgets' ),
+				'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+			)
+		);
+
+		$this->add_control(
+			'cta_text',
+			array(
+				'label'       => esc_html__( 'Text', 'avix-widgets' ),
+				'description' => esc_html__( 'The question or prompt visitors read first. Optional.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'label_block' => true,
+				'default'     => '',
+				'placeholder' => esc_html__( 'Tell us about your project', 'avix-widgets' ),
+				'dynamic'     => array( 'active' => true ),
+			)
+		);
+
+		$this->add_control(
+			'cta_button_text',
+			array(
+				'label'       => esc_html__( 'Button text', 'avix-widgets' ),
+				'description' => esc_html__( 'The orange action at the end of the pill, with an arrow. Keep it short, about 20 characters. Leave empty to hide the pill.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => '',
+				'placeholder' => esc_html__( 'Contact us', 'avix-widgets' ),
+				'dynamic'     => array( 'active' => true ),
+			)
+		);
+
+		$this->add_control(
+			'cta_link',
+			array(
+				'label'       => esc_html__( 'Link', 'avix-widgets' ),
+				'type'        => Controls_Manager::URL,
+				'placeholder' => 'https://avixdigital.com/contact/',
+				'dynamic'     => array( 'active' => true ),
+			)
+		);
+
+		$this->end_controls_section();
+	}
+
 	private function controls_pal() {
 		$this->start_controls_section( 'section_pal', array( 'label' => esc_html__( 'Pixel Character', 'avix-widgets' ) ) );
 
@@ -370,7 +435,7 @@ class Journey extends Widget_Base {
 			'pal_look',
 			array(
 				'label'       => esc_html__( 'Look at hovered cards', 'avix-widgets' ),
-				'description' => esc_html__( 'While it stands still, it glances toward the card under the mouse or keyboard focus.', 'avix-widgets' ),
+				'description' => esc_html__( 'While it stands still, it glances toward the card under the mouse or keyboard focus, and waves at the call to action.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
 				'condition'   => array( 'show_pal' => 'yes' ),
@@ -414,6 +479,8 @@ class Journey extends Widget_Base {
 			'line'        => array( esc_html__( 'Card borders', 'avix-widgets' ), '--jr-line' ),
 			'card'        => array( esc_html__( 'Cards', 'avix-widgets' ), '--jr-card' ),
 			'card_on'     => array( esc_html__( 'Reached cards', 'avix-widgets' ), '--jr-card-on' ),
+			'cta_bg'      => array( esc_html__( 'Call to action background', 'avix-widgets' ), '--jr-cta-bg' ),
+			'cta_line'    => array( esc_html__( 'Call to action border', 'avix-widgets' ), '--jr-cta-line' ),
 		);
 		foreach ( $colors as $key => $color ) {
 			$this->add_control(
@@ -532,6 +599,8 @@ class Journey extends Widget_Base {
 			'label_typography'      => array( esc_html__( 'Milestone labels', 'avix-widgets' ), '{{WRAPPER}} .avix-jr .avix-jr__label' ),
 			'item_title_typography' => array( esc_html__( 'Milestone titles', 'avix-widgets' ), '{{WRAPPER}} .avix-jr .avix-jr__name' ),
 			'item_text_typography'  => array( esc_html__( 'Milestone text', 'avix-widgets' ), '{{WRAPPER}} .avix-jr .avix-jr__text' ),
+			'cta_typography'        => array( esc_html__( 'Call to action text', 'avix-widgets' ), '{{WRAPPER}} .avix-jr .avix-jr__cta-text' ),
+			'cta_button_typography' => array( esc_html__( 'Call to action button', 'avix-widgets' ), '{{WRAPPER}} .avix-jr .avix-jr__cta-action' ),
 		);
 		foreach ( $type as $name => $group ) {
 			$args = array(
@@ -585,6 +654,10 @@ class Journey extends Widget_Base {
 		$eyebrow  = trim( (string) ( $s['eyebrow'] ?? '' ) );
 		$intro    = trim( (string) ( $s['text'] ?? '' ) );
 		$end      = 'yes' === ( $s['show_end'] ?? '' ) ? trim( (string) ( $s['end_label'] ?? '' ) ) : '';
+		$cta_link = (array) ( $s['cta_link'] ?? array() );
+		$cta      = trim( (string) ( $s['cta_button_text'] ?? '' ) );
+		// Gated on the sanitised URL: a disallowed protocol would print href="".
+		$cta = '' !== $cta && '' !== esc_url( trim( (string) ( $cta_link['url'] ?? '' ) ) ) ? $cta : '';
 
 		// Pictures are resolved up front: a missing one gives a text-only card,
 		// and the share of cards with a picture sets the log's rhythm.
@@ -610,6 +683,13 @@ class Journey extends Widget_Base {
 		}
 		if ( '' !== $end ) {
 			$classes[] = 'has-end';
+		}
+		// New options add classes only when used, so existing journeys keep their markup.
+		if ( 'center' === ( $s['head_layout'] ?? '' ) ) {
+			$classes[] = 'avix-jr--center';
+		}
+		if ( '' !== $cta ) {
+			$classes[] = 'has-cta';
 		}
 
 		$config = array(
@@ -684,8 +764,34 @@ class Journey extends Widget_Base {
 						<?php $this->render_end( $end, (array) ( $s['end_link'] ?? array() ) ); ?>
 					<?php endif; ?>
 				</div>
+
+				<?php if ( '' !== $cta ) : ?>
+					<?php $this->render_cta( trim( (string) ( $s['cta_text'] ?? '' ) ), $cta, $cta_link ); ?>
+				<?php endif; ?>
 			</div>
 		</section>
+		<?php
+	}
+
+	/**
+	 * The call-to-action pill under the track: one link, so the whole pill is
+	 * the tap target and reads as one sentence to screen readers.
+	 */
+	private function render_cta( $text, $button, array $link ) {
+		$this->add_render_attribute( 'cta', 'class', '' !== $text ? 'avix-jr__cta-pill' : 'avix-jr__cta-pill avix-jr__cta-pill--solo' );
+		$this->add_link_attributes( 'cta', $link );
+		?>
+		<div class="avix-jr__cta" data-jr-cta>
+			<a <?php $this->print_render_attribute_string( 'cta' ); ?>>
+				<?php if ( '' !== $text ) : ?>
+					<span class="avix-jr__cta-text"><?php echo esc_html( $text ); ?></span>
+				<?php endif; ?>
+				<span class="avix-jr__cta-action">
+					<span><?php echo esc_html( $button ); ?></span>
+					<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+				</span>
+			</a>
+		</div>
 		<?php
 	}
 

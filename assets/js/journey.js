@@ -2,6 +2,8 @@
  * Avix Digital · Journey
  * Scroll walks the pixel character along the milestone track: it pauses on
  * each milestone, lights the ones it has passed and plants a flag at the end.
+ * An optional call to action under the track rises in on its own, and the
+ * character waves at it when it is hovered or focused.
  * One rAF loop runs only while something moves, and scrolling elsewhere on
  * the page never wakes it while the journey is off screen.
  */
@@ -52,6 +54,7 @@
 		this.rider = root.querySelector('[data-jr-rider]');
 		this.pal = this.rider ? this.rider.querySelector('.avix-pal') : null;
 		this.end = root.querySelector('[data-jr-end]');
+		this.cta = root.querySelector('[data-jr-cta]');
 		this.editor = isEditMode();
 
 		this.points = [];
@@ -102,6 +105,7 @@
 		this.observeReveal();
 		this.observeView();
 		this.bindLook();
+		this.bindCta();
 
 		window.addEventListener('scroll', this.onScroll, { passive: true });
 		window.addEventListener('resize', this.onResize, { passive: true });
@@ -175,6 +179,19 @@
 			}, 1500 + self.items.length * 90);
 		}, { threshold: 0, rootMargin: '0px 0px -15% 0px' });
 		this.revealObserver.observe(root);
+
+		// The call to action sits below a tall track: it reveals when it is reached.
+		if (this.cta) {
+			var cta = this.cta;
+			this.ctaObserver = new window.IntersectionObserver(function (entries, observer) {
+				if (!entries[entries.length - 1].isIntersecting) {
+					return;
+				}
+				cta.classList.add('is-in');
+				observer.disconnect();
+			}, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
+			this.ctaObserver.observe(cta);
+		}
 	};
 
 	/*
@@ -261,6 +278,34 @@
 			item.addEventListener('focusin', self.onLook);
 			item.addEventListener('focusout', self.onLookEnd);
 		});
+	};
+
+	// Hovering or focusing the call-to-action pill: the character turns to it
+	// and waves. The pill itself, not its full-width row, so empty space beside
+	// it never sets the character off.
+	Journey.prototype.bindCta = function () {
+		var self = this;
+		this.ctaPill = this.cta ? this.cta.querySelector('.avix-jr__cta-pill') : null;
+		if (!this.ctaPill || !this.pal || !this.config.look || !window.AvixPal) {
+			return;
+		}
+		this.onCta = function (event) {
+			if (self.walking || (event.type === 'mouseenter' && !finePointer.matches)) {
+				return;
+			}
+			window.AvixPal.lookAt(self.pal, self.ctaPill);
+			window.AvixPal.play(self.pal, 'is-wave', 1300);
+		};
+		this.onCtaEnd = function (event) {
+			if (event.type === 'focusout' && self.ctaPill.contains(event.relatedTarget)) {
+				return;
+			}
+			window.AvixPal.lookAt(self.pal, null);
+		};
+		this.ctaPill.addEventListener('mouseenter', this.onCta);
+		this.ctaPill.addEventListener('mouseleave', this.onCtaEnd);
+		this.ctaPill.addEventListener('focusin', this.onCta);
+		this.ctaPill.addEventListener('focusout', this.onCtaEnd);
 	};
 
 	/*
@@ -602,7 +647,7 @@
 		window.removeEventListener('scroll', this.onScroll);
 		window.removeEventListener('resize', this.onResize);
 		document.removeEventListener('visibilitychange', this.onVisibility);
-		[this.resizeObserver, this.revealObserver, this.viewObserver, this.greetObserver].forEach(function (observer) {
+		[this.resizeObserver, this.revealObserver, this.ctaObserver, this.viewObserver, this.greetObserver].forEach(function (observer) {
 			if (observer) {
 				observer.disconnect();
 			}
@@ -614,6 +659,12 @@
 				item.removeEventListener('focusin', self.onLook);
 				item.removeEventListener('focusout', self.onLookEnd);
 			});
+		}
+		if (this.onCta) {
+			this.ctaPill.removeEventListener('mouseenter', this.onCta);
+			this.ctaPill.removeEventListener('mouseleave', this.onCtaEnd);
+			this.ctaPill.removeEventListener('focusin', this.onCta);
+			this.ctaPill.removeEventListener('focusout', this.onCtaEnd);
 		}
 		this.timers.forEach(function (id) {
 			window.clearTimeout(id);

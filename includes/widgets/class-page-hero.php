@@ -100,6 +100,32 @@ class Page_Hero extends Widget_Base {
 		);
 
 		$this->add_control(
+			'breadcrumb_parent',
+			array(
+				'label'       => esc_html__( 'Parent page label', 'avix-widgets' ),
+				'description' => esc_html__( 'Optional middle step, e.g. “Services” on a service page: the trail reads Home › Services › This page. Leave empty for Home › This page.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => '',
+				'dynamic'     => array( 'active' => true ),
+				'condition'   => array( 'show_breadcrumb' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'breadcrumb_parent_link',
+			array(
+				'label'       => esc_html__( 'Parent page link', 'avix-widgets' ),
+				'description' => esc_html__( 'Where the middle step goes, e.g. /service/. Without a link it shows as plain text.', 'avix-widgets' ),
+				'type'        => Controls_Manager::URL,
+				'dynamic'     => array( 'active' => true ),
+				'condition'   => array(
+					'show_breadcrumb'    => 'yes',
+					'breadcrumb_parent!' => '',
+				),
+			)
+		);
+
+		$this->add_control(
 			'breadcrumb_current',
 			array(
 				'label'       => esc_html__( 'Current page label', 'avix-widgets' ),
@@ -598,6 +624,21 @@ class Page_Hero extends Widget_Base {
 		);
 
 		$this->add_control(
+			'image_frame',
+			array(
+				'label'       => esc_html__( 'Image frame', 'avix-widgets' ),
+				'description' => esc_html__( 'Product render: a warm orange shadow, a hairline edge and a round icon-only pause button, made for square device renders on a white background.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => '',
+				'options'     => array(
+					''       => esc_html__( 'Classic', 'avix-widgets' ),
+					'render' => esc_html__( 'Product render', 'avix-widgets' ),
+				),
+				'condition'   => array( 'visual' => 'image' ),
+			)
+		);
+
+		$this->add_control(
 			'image_eager',
 			array(
 				'label'       => esc_html__( 'Load image first', 'avix-widgets' ),
@@ -605,6 +646,63 @@ class Page_Hero extends Widget_Base {
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
 				'condition'   => array( 'visual' => 'image' ),
+			)
+		);
+
+		$this->add_control(
+			'show_image_chip',
+			array(
+				'label'       => esc_html__( 'Stat chip on the image', 'avix-widgets' ),
+				'description' => esc_html__( 'A small white card on the image’s bottom-left corner with a big value and a short label, e.g. “$50M+ · Client revenue scaled”. On phones it sits under the image so it never covers it.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => '',
+				'separator'   => 'before',
+				'condition'   => array( 'visual' => 'image' ),
+			)
+		);
+
+		$this->add_control(
+			'image_chip_value',
+			array(
+				'label'       => esc_html__( 'Value', 'avix-widgets' ),
+				'description' => esc_html__( 'A number or a few words: “$50M+”, “UI/UX”, “Built for people”.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => '$50M+',
+				'label_block' => true,
+				'dynamic'     => array( 'active' => true ),
+				'condition'   => array(
+					'visual'          => 'image',
+					'show_image_chip' => 'yes',
+				),
+			)
+		);
+
+		$this->add_control(
+			'image_chip_label',
+			array(
+				'label'       => esc_html__( 'Label', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => esc_html__( 'Client revenue scaled', 'avix-widgets' ),
+				'label_block' => true,
+				'dynamic'     => array( 'active' => true ),
+				'condition'   => array(
+					'visual'          => 'image',
+					'show_image_chip' => 'yes',
+				),
+			)
+		);
+
+		$this->add_control(
+			'image_chip_badge',
+			array(
+				'label'       => esc_html__( 'Check seal', 'avix-widgets' ),
+				'description' => esc_html__( 'A scalloped seal with an orange check in front of the value.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+				'condition'   => array(
+					'visual'          => 'image',
+					'show_image_chip' => 'yes',
+				),
 			)
 		);
 
@@ -904,6 +1002,60 @@ class Page_Hero extends Widget_Base {
 					'label'     => $color[0],
 					'type'      => Controls_Manager::COLOR,
 					'selectors' => array( '{{WRAPPER}} .avix-ph' => $color[1] . ': {{VALUE}};' ),
+				)
+			);
+		}
+
+		$this->add_control(
+			'stat_heading',
+			array(
+				'label'     => esc_html__( 'Stat chip on the image', 'avix-widgets' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+				'condition' => array(
+					'visual'          => 'image',
+					'show_image_chip' => 'yes',
+				),
+			)
+		);
+
+		$stat_type = array(
+			'stat_value' => array( esc_html__( 'Chip value', 'avix-widgets' ), '.avix-ph__stat-value' ),
+			'stat_label' => array( esc_html__( 'Chip label', 'avix-widgets' ), '.avix-ph__stat-label' ),
+		);
+		foreach ( $stat_type as $key => $group ) {
+			$this->add_group_control(
+				Group_Control_Typography::get_type(),
+				array(
+					'name'      => $key . '_typography',
+					'label'     => $group[0],
+					'selector'  => '{{WRAPPER}} .avix-ph ' . $group[1],
+					'condition' => array(
+						'visual'          => 'image',
+						'show_image_chip' => 'yes',
+					),
+				)
+			);
+		}
+
+		$stat_colors = array(
+			'stat_bg'    => array( esc_html__( 'Chip background', 'avix-widgets' ), '--ph-stat-bg' ),
+			'stat_ink'   => array( esc_html__( 'Chip value', 'avix-widgets' ), '--ph-stat-ink' ),
+			'stat_muted' => array( esc_html__( 'Chip label', 'avix-widgets' ), '--ph-stat-muted' ),
+			'stat_seal'  => array( esc_html__( 'Seal', 'avix-widgets' ), '--ph-stat-seal' ),
+			'stat_check' => array( esc_html__( 'Seal check', 'avix-widgets' ), '--ph-stat-check' ),
+		);
+		foreach ( $stat_colors as $key => $color ) {
+			$this->add_control(
+				$key,
+				array(
+					'label'     => $color[0],
+					'type'      => Controls_Manager::COLOR,
+					'selectors' => array( '{{WRAPPER}} .avix-ph' => $color[1] . ': {{VALUE}};' ),
+					'condition' => array(
+						'visual'          => 'image',
+						'show_image_chip' => 'yes',
+					),
 				)
 			);
 		}
@@ -1386,7 +1538,7 @@ class Page_Hero extends Widget_Base {
 						// The pause button sits on the image's corner, not under it.
 						ob_start();
 						$this->render_pause( $s, $show_pal && $greet > 0 );
-						$this->render_image( $image_html, $show_pal, (string) ob_get_clean() );
+						$this->render_image( $image_html, $show_pal, (string) ob_get_clean(), $this->stat_html( $s ), 'render' === ( $s['image_frame'] ?? '' ) );
 					}
 					?>
 				</div>
@@ -1433,8 +1585,9 @@ class Page_Hero extends Widget_Base {
 			return;
 		}
 		$home    = trim( (string) ( $s['breadcrumb_home'] ?? '' ) );
+		$parent  = trim( (string) ( $s['breadcrumb_parent'] ?? '' ) );
 		$current = $this->current_label( $s );
-		if ( '' === $home && '' === $current ) {
+		if ( '' === $home && '' === $parent && '' === $current ) {
 			return;
 		}
 		?>
@@ -1443,9 +1596,14 @@ class Page_Hero extends Widget_Base {
 				<?php if ( '' !== $home ) : ?>
 					<li class="avix-ph__crumb"><a class="avix-ph__crumb-link" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( $home ); ?></a></li>
 				<?php endif; ?>
-				<?php if ( '' !== $current ) : ?>
+				<?php
+				// The optional middle step prints on this line, so a trail
+				// without one keeps exactly the markup it had before.
+				$this->render_crumb_parent( $s, $parent, '' !== $home );
+				if ( '' !== $current ) :
+					?>
 					<li class="avix-ph__crumb" aria-current="page">
-						<?php if ( '' !== $home ) : ?>
+						<?php if ( '' !== $home || '' !== $parent ) : ?>
 							<svg class="avix-ph__crumb-sep" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 6 6 6-6 6"/></svg>
 						<?php endif; ?>
 						<span class="avix-ph__crumb-text" title="<?php echo esc_attr( $current ); ?>"><?php echo esc_html( $current ); ?></span>
@@ -1454,6 +1612,39 @@ class Page_Hero extends Widget_Base {
 			</ol>
 		</nav>
 		<?php
+	}
+
+	/**
+	 * The middle step of a three-level trail (Home › Parent › Current): a
+	 * link when it has a usable URL, plain text otherwise.
+	 *
+	 * @param array  $s      Settings.
+	 * @param string $parent Trimmed label ('' prints nothing).
+	 * @param bool   $sep    A step comes before it, so it starts with a separator.
+	 */
+	private function render_crumb_parent( array $s, $parent, $sep ) {
+		if ( '' === $parent ) {
+			return;
+		}
+		$link = (array) ( $s['breadcrumb_parent_link'] ?? array() );
+		echo '<li class="avix-ph__crumb avix-ph__crumb--parent">';
+		if ( $sep ) {
+			echo '<svg class="avix-ph__crumb-sep" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 6 6 6-6 6"/></svg>';
+		}
+		// Decided on the escaped URL, so a stripped scheme leaves plain text.
+		if ( '' !== esc_url( (string) ( $link['url'] ?? '' ) ) ) {
+			$this->add_render_attribute( 'crumb_parent', 'class', 'avix-ph__crumb-link' );
+			$this->add_link_attributes( 'crumb_parent', $link );
+			printf(
+				'<a %1$s><span class="avix-ph__crumb-text" title="%2$s">%3$s</span></a>',
+				$this->get_render_attribute_string( 'crumb_parent' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by Elementor.
+				esc_attr( $parent ),
+				esc_html( $parent )
+			);
+		} else {
+			printf( '<span class="avix-ph__crumb-text" title="%1$s">%2$s</span>', esc_attr( $parent ), esc_html( $parent ) );
+		}
+		echo '</li>';
 	}
 
 	/**
@@ -1662,18 +1853,75 @@ class Page_Hero extends Widget_Base {
 	}
 
 	/**
+	 * The stat chip on the image ("$50M+ · Client revenue scaled"), or ''
+	 * when it is off or has no text.
+	 *
+	 * @param array $s Settings.
+	 */
+	private function stat_html( array $s ) {
+		if ( 'yes' !== ( $s['show_image_chip'] ?? '' ) ) {
+			return '';
+		}
+		$value = trim( (string) ( $s['image_chip_value'] ?? '' ) );
+		$label = trim( (string) ( $s['image_chip_label'] ?? '' ) );
+		if ( '' === $value && '' === $label ) {
+			return '';
+		}
+		$seal = 'yes' === ( $s['image_chip_badge'] ?? '' ) ? $this->seal_svg() : '';
+		$html = '<p class="avix-ph__stat' . ( '' !== $seal ? ' has-seal' : '' ) . '" data-ph-stat>';
+		if ( '' !== $seal ) {
+			$html .= '<span class="avix-ph__stat-seal" aria-hidden="true">' . $seal . '</span>';
+		}
+		$html .= '<span class="avix-ph__stat-copy">';
+		if ( '' !== $value ) {
+			$html .= '<span class="avix-ph__stat-value">' . esc_html( $value ) . '</span>';
+		}
+		if ( '' !== $label ) {
+			// "Responsive design · Clear user journeys" sets as two lines, so
+			// the dot never hangs at a line end; screen readers still hear it.
+			$parts = preg_split( '/\s+·\s+/u', $label );
+			$parts = is_array( $parts ) ? $parts : array( $label );
+			$html .= '<span class="avix-ph__stat-label">' . implode( '<span class="avix-ph__stat-sep"> · </span>', array_map( 'esc_html', $parts ) ) . '</span>';
+		}
+		return $html . '</span></p>';
+	}
+
+	/**
+	 * The approved scalloped seal (assets/images/check-badge.svg, shared with
+	 * About Hero) with an orange check laid into its cut-out. Trusted bundled
+	 * file only, never user-supplied markup.
+	 */
+	private function seal_svg() {
+		static $svg = null;
+		if ( null === $svg ) {
+			$file = AVIX_EW_PATH . 'assets/images/check-badge.svg';
+			$raw  = is_readable( $file ) ? (string) file_get_contents( $file ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local bundled file.
+			$svg  = '';
+			if ( false !== strpos( $raw, '</svg>' ) ) {
+				$raw = preg_replace( '/\s(class|width|height|data-name)="[^"]*"/', '', $raw, 4 );
+				$raw = preg_replace( '/^<svg\b/', '<svg class="avix-ph__seal"', trim( $raw ) );
+				$svg = str_replace( '</svg>', '<path class="avix-ph__seal-check" d="M9 12l2 2 4-4"/></svg>', $raw );
+			}
+		}
+		return $svg;
+	}
+
+	/**
 	 * @param string $img      From image_html(); '' only reaches here in the editor (placeholder frame).
 	 * @param bool   $show_pal Character on the image.
 	 * @param string $pause    Pause button markup from render_pause(), or ''.
+	 * @param string $stat     Stat chip markup from stat_html(), or ''.
+	 * @param bool   $render   "Product render" frame (opt-in; Classic adds no class).
 	 */
-	private function render_image( $img, $show_pal, $pause = '' ) {
+	private function render_image( $img, $show_pal, $pause = '', $stat = '', $render = false ) {
 		?>
 		<div class="avix-ph__visual" data-ph-visual>
-			<figure class="avix-ph__media<?php echo '' === $img ? ' is-empty' : ''; ?><?php echo $show_pal ? ' has-pal' : ''; ?>" data-ph-hub>
+			<figure class="avix-ph__media<?php echo $render ? ' avix-ph__media--render' : ''; ?><?php echo '' === $img ? ' is-empty' : ''; ?><?php echo $show_pal ? ' has-pal' : ''; ?><?php echo '' !== $stat ? ' has-stat' : ''; ?>" data-ph-hub>
 				<span class="avix-ph__media-frame">
 					<?php echo $img; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_get_attachment_image() or escaped above. ?>
 				</span>
 				<?php
+				echo $stat; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in stat_html().
 				if ( $show_pal ) {
 					echo $this->pal_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts in Pixel_Pal::render().
 				}

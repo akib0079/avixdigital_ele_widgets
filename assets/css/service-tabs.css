@@ -1,0 +1,1004 @@
+/*!
+ * Avix Digital · Service Tabs
+ * A centred header, a segmented pill tab bar with an ink "thumb" that slides
+ * to the open tab, and panel cards (text | image) that cross-fade while the
+ * card glides to the new height. The pixel character stands on the tab
+ * bar. Layout follows the widget width (container queries), not the viewport.
+ */
+
+.avix-stb {
+	--stb-bg: #ffffff;
+	--stb-ink: #1a1a1a;
+	--stb-muted: #5c5f66;
+	--stb-line: rgba(26, 26, 26, 0.1);
+	--stb-accent: #fb6007;
+	--stb-accent-text: #c54804;
+	--stb-track: #f6f3ef;
+	--stb-track-line: #ece6de;
+	--stb-tab-ink: #4b4e54;
+	--stb-tab-hover: rgba(26, 26, 26, 0.05);
+	--stb-thumb: #1a1a1a;
+	--stb-thumb-ink: #ffffff;
+	--stb-thumb-px: var(--stb-accent);
+	--stb-card: #f6f3ef;
+	--stb-card-line: #ece6de;
+	--stb-check-bg: #ffffff;
+	--stb-check-line: #ece6de;
+	--stb-btn: #1a1a1a;
+	--stb-btn-ink: #ffffff;
+	--stb-btn-hover: #000000;
+	--stb-media-bg: linear-gradient(160deg, #ffe7d4, #f6efe8);
+	--stb-shadow: 0 30px 60px -38px rgba(26, 26, 26, 0.38);
+	--stb-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--stb-font-body: "Inter", Arial, sans-serif;
+	--stb-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--stb-max: 1240px;
+	--stb-gutter: 24px;
+	--stb-radius: 28px;
+	--stb-ratio: 4 / 3;
+	--stb-ratio-stack: 16 / 10;
+	--stb-pal-w: 30px;
+
+	container: avix-stb / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(88px, 10vw, 140px) 0;
+	overflow: clip;
+	color: var(--stb-ink);
+	background: var(--stb-bg);
+	font-family: var(--stb-font-body);
+	font-style: normal;
+	font-weight: 400;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Dark section: every token swaps, Style-tab colours still win. The open
+   tab turns orange (white label) and the button white (ink label). */
+.avix-stb--dark {
+	--stb-bg: #050608;
+	--stb-ink: #f5f2ee;
+	--stb-muted: rgba(255, 255, 255, 0.64);
+	--stb-line: rgba(255, 255, 255, 0.1);
+	--stb-accent-text: #ff8a3d;
+	--stb-track: rgba(255, 255, 255, 0.05);
+	--stb-track-line: rgba(255, 255, 255, 0.09);
+	--stb-tab-ink: rgba(255, 255, 255, 0.72);
+	--stb-tab-hover: rgba(255, 255, 255, 0.06);
+	--stb-thumb: var(--stb-accent);
+	--stb-thumb-ink: #ffffff;
+	--stb-thumb-px: #ffffff;
+	--stb-card: #101114;
+	--stb-card-line: rgba(255, 255, 255, 0.08);
+	--stb-check-bg: rgba(255, 255, 255, 0.06);
+	--stb-check-line: rgba(255, 255, 255, 0.1);
+	--stb-btn: #ffffff;
+	--stb-btn-ink: #111111;
+	--stb-btn-hover: #f3efe9;
+	--stb-media-bg: linear-gradient(160deg, #1b1c20, #111215);
+	--stb-shadow: 0 30px 60px -36px rgba(0, 0, 0, 0.85);
+}
+
+.avix-stb *,
+.avix-stb *::before,
+.avix-stb *::after {
+	box-sizing: border-box;
+}
+
+/* Container queries style descendants only: tokens are reset on the inner wrapper. */
+.avix-stb__inner {
+	--stb-pad: clamp(28px, 3.8cqi, 56px);
+	--stb-col-gap: clamp(32px, 5cqi, 72px);
+	--stb-head-gap: clamp(40px, 4.6cqi, 60px);
+	--stb-nav-gap: clamp(20px, 2.4cqi, 28px);
+	--stb-media-radius: 20px;
+	width: min(calc(100% - var(--stb-gutter) * 2), var(--stb-max));
+	margin-inline: auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-stb__head {
+	display: flex;
+	flex-direction: column;
+	align-items: var(--stb-head-items, center);
+	margin: 0 0 var(--stb-head-gap);
+	text-align: var(--stb-head-align, center);
+}
+
+/* The character stands above the tab bar, which already brings its own room. */
+.avix-stb--pal .avix-stb__head {
+	margin-bottom: calc(var(--stb-head-gap) * 0.55);
+}
+
+.avix-stb .avix-stb__eyebrow {
+	display: block;
+	max-width: 60ch;
+	margin: 0 0 22px;
+	padding: 0;
+	color: var(--stb-ink);
+	font-family: var(--stb-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	line-height: 1.5;
+	text-transform: uppercase;
+	text-wrap: balance;
+}
+
+/* A single orange "pixel" ties the eyebrow to the character. Inline, so a
+   long eyebrow that wraps stays centred with its pixel. */
+.avix-stb .avix-stb__eyebrow::before {
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	margin: 0 10px 0 0;
+	background: var(--stb-accent);
+	vertical-align: 0.06em;
+	content: "";
+}
+
+.avix-stb .avix-stb__title {
+	max-width: 20ch;
+	margin: 0;
+	padding: 0;
+	color: var(--stb-ink);
+	font-family: var(--stb-font-display);
+	font-size: clamp(34px, 4.6cqi, 60px);
+	font-weight: 600;
+	letter-spacing: -0.035em;
+	line-height: 1.06;
+	text-transform: none;
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+	hyphens: manual;
+}
+
+.avix-stb__accent {
+	color: var(--stb-accent-text);
+}
+
+.avix-stb .avix-stb__intro {
+	max-width: 62ch;
+	margin: 22px 0 0;
+	padding: 0;
+	color: var(--stb-muted);
+	font-family: var(--stb-font-body);
+	font-size: clamp(15px, 1.4cqi, 17px);
+	font-weight: 400;
+	line-height: 1.7;
+	text-wrap: pretty;
+	overflow-wrap: anywhere;
+}
+
+.avix-stb .avix-stb__intro p {
+	margin: 0;
+	padding: 0;
+	color: inherit;
+	font: inherit;
+}
+
+.avix-stb .avix-stb__intro p + p {
+	margin-top: 0.7em;
+}
+
+.avix-stb .avix-stb__intro strong {
+	color: var(--stb-ink);
+	font-weight: 600;
+}
+
+.avix-stb .avix-stb__intro a,
+.avix-stb .avix-stb__intro a:visited {
+	color: var(--stb-accent-text);
+	font-weight: 500;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--stb-accent-text) 35%, transparent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	transition: color 0.25s ease, text-decoration-color 0.25s ease;
+}
+
+/* ---------- Tab bar ---------- */
+
+.avix-stb__nav {
+	position: relative;
+	margin: 0 0 var(--stb-nav-gap);
+}
+
+/* Scrolls sideways when the tabs don't fit. The top padding is the stage the
+   character stands on (its "hi" pops above its head), so the scroller never
+   clips it. */
+.avix-stb__scroller {
+	--stb-fl: 0px;
+	--stb-fr: 0px;
+	position: relative;
+	display: flex;
+	/* The side padding is room for the focus ring; the negative margin keeps
+	   the bar itself on the content edge when it is left aligned. */
+	margin-inline: -6px;
+	padding: 6px 6px 8px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	-webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--stb-fl), #000 calc(100% - var(--stb-fr)), transparent 100%);
+	mask-image: linear-gradient(90deg, transparent 0, #000 var(--stb-fl), #000 calc(100% - var(--stb-fr)), transparent 100%);
+	overscroll-behavior-x: contain;
+	scroll-padding-inline: 24px;
+	scroll-snap-type: x proximity;
+	scrollbar-width: none;
+	-webkit-overflow-scrolling: touch;
+}
+
+.avix-stb__scroller::-webkit-scrollbar {
+	display: none;
+}
+
+.avix-stb--pal .avix-stb__scroller {
+	padding-top: calc(var(--stb-pal-w) * 1.95 + 4px);
+}
+
+.avix-stb__scroller.is-fade-l {
+	--stb-fl: 44px;
+}
+
+.avix-stb__scroller.is-fade-r {
+	--stb-fr: 44px;
+}
+
+.avix-stb__track {
+	position: relative;
+	display: inline-flex;
+	flex: none;
+	align-items: stretch;
+	gap: 4px;
+	margin: 0 auto 0 var(--stb-nav-ml, auto);
+	padding: 5px;
+	border: 1px solid var(--stb-track-line);
+	border-radius: 999px;
+	background: var(--stb-track);
+}
+
+/* Theme and Elementor-kit button styles must not leak in. */
+.avix-stb .avix-stb__tab,
+.avix-stb .avix-stb__tab:hover,
+.avix-stb .avix-stb__tab:focus,
+.avix-stb .avix-stb__tab:active {
+	position: relative;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	width: auto;
+	min-width: 0;
+	min-height: 46px;
+	margin: 0;
+	padding: 0 22px;
+	border: 0;
+	border-radius: 999px;
+	outline: none;
+	color: var(--stb-tab-ink);
+	background: none;
+	box-shadow: none;
+	font-family: var(--stb-font-body);
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+	line-height: 1.2;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	white-space: nowrap;
+	cursor: pointer;
+	scroll-snap-align: center;
+	-webkit-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+	transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Before the script runs (and in the editor's first paint) the open tab is
+   filled itself; once ready the sliding thumb takes over. */
+.avix-stb .avix-stb__tab.is-active {
+	color: var(--stb-thumb-ink);
+	background: var(--stb-thumb);
+}
+
+.avix-stb.is-ready .avix-stb__tab.is-active {
+	background: transparent;
+}
+
+.avix-stb .avix-stb__tab:focus-visible {
+	outline: 2px solid var(--stb-accent);
+	outline-offset: 2px;
+}
+
+.avix-stb__tab-px {
+	width: 6px;
+	height: 6px;
+	flex: none;
+	background: currentColor;
+	opacity: 0.4;
+	transition: background-color 0.3s ease, opacity 0.3s ease, transform 0.4s var(--stb-ease);
+}
+
+.avix-stb__tab.is-active .avix-stb__tab-px {
+	background: var(--stb-thumb-px);
+	opacity: 1;
+	transform: scale(1.17);
+}
+
+.avix-stb__thumb {
+	position: absolute;
+	z-index: 0;
+	top: 5px;
+	bottom: 5px;
+	left: 0;
+	width: var(--stb-thumb-w, 0px);
+	border-radius: 999px;
+	opacity: 0;
+	background: var(--stb-thumb);
+	/* Kept short: it must stay inside the scroller's bottom padding, or the
+	   scrolling bar on phones cuts it off with a hard edge. */
+	box-shadow: 0 6px 12px -8px rgba(0, 0, 0, 0.5);
+	transform: translateX(var(--stb-thumb-x, 0px));
+	transition: transform 0.55s var(--stb-ease), width 0.55s var(--stb-ease), opacity 0.2s ease;
+}
+
+.avix-stb.is-ready .avix-stb__thumb {
+	opacity: 1;
+}
+
+.avix-stb.is-instant .avix-stb__thumb,
+.avix-stb.is-instant .avix-stb__tab {
+	transition: none;
+}
+
+@media (hover: hover) {
+	.avix-stb .avix-stb__tab:not(.is-active):hover {
+		color: var(--stb-ink);
+		background: var(--stb-tab-hover);
+	}
+
+	.avix-stb .avix-stb__tab:not(.is-active):hover .avix-stb__tab-px {
+		opacity: 0.75;
+	}
+
+	.avix-stb .avix-stb__intro a:hover {
+		color: var(--stb-ink);
+		text-decoration-color: currentColor;
+	}
+}
+
+/* ---------- The pixel character ---------- */
+
+/* Stands on the track's top edge; JS moves it over the open tab. */
+.avix-stb__walker {
+	position: absolute;
+	z-index: 2;
+	bottom: 100%;
+	left: 0;
+	display: block;
+	width: var(--stb-pal-w);
+	height: calc(var(--stb-pal-w) * 1.2);
+	opacity: 0;
+	pointer-events: none;
+	will-change: transform;
+}
+
+.avix-stb.is-ready .avix-stb__walker {
+	opacity: 1;
+	transition: opacity 0.4s ease;
+}
+
+.avix-stb .avix-stb__pal {
+	--pal-w: var(--stb-pal-w);
+	--pal-color: var(--stb-accent);
+	display: block;
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--stb-accent) 38%, transparent));
+}
+
+.avix-stb--dark .avix-stb__pal {
+	filter: drop-shadow(0 0 8px color-mix(in srgb, var(--stb-accent) 60%, transparent));
+}
+
+/* Hopping straight to a tab (walking off): a pixel-true squash on landing. */
+.avix-stb .avix-stb__walker.is-land .avix-pal__head,
+.avix-stb .avix-stb__walker.is-land .avix-pal__body {
+	animation: avix-stb-squash 0.3s steps(1) both;
+}
+
+.avix-stb .avix-stb__walker.is-land .avix-pal__arm {
+	animation: avix-stb-squash-arm 0.3s steps(1) both;
+}
+
+.avix-stb.is-off .avix-pal,
+.avix-stb.is-off .avix-pal * {
+	animation-play-state: paused;
+}
+
+/* ---------- Panels ---------- */
+
+/* Only the open panel is in the flow; the others wait on top of it, hidden,
+   so the card always fits its own content. The script animates the height
+   between two panels, so the page below glides instead of jumping. */
+/* The card is the panels box itself, so only the content cross-fades and
+   the card never flickers between two panels. */
+.avix-stb__panels {
+	position: relative;
+	border: 1px solid var(--stb-card-line);
+	border-radius: var(--stb-radius);
+	background: var(--stb-card);
+}
+
+/* Doubled with .is-armed so it beats the reveal rule on the same box (its
+   transition list would otherwise drop height and the card would snap). */
+.avix-stb .avix-stb__panels.is-sizing,
+.avix-stb.is-armed .avix-stb__panels.is-sizing {
+	overflow: clip;
+	transition: height 0.5s var(--stb-ease), opacity 0.7s ease, transform 0.8s var(--stb-ease);
+}
+
+.avix-stb__panel {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+	align-items: center;
+	gap: var(--stb-col-gap);
+	min-width: 0;
+	padding: var(--stb-pad);
+	border-radius: var(--stb-radius);
+	outline: none;
+}
+
+.avix-stb__panel:not(.is-active) {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.avix-stb__panel:focus-visible {
+	outline: 2px solid var(--stb-accent);
+	outline-offset: -3px;
+}
+
+.avix-stb__panel.no-media {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.avix-stb__panel.no-media .avix-stb__copy {
+	max-width: 760px;
+}
+
+.avix-stb--img-left .avix-stb__panel.has-media {
+	grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+}
+
+.avix-stb--img-left .avix-stb__media {
+	order: -1;
+}
+
+.avix-stb__copy {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+.avix-stb .avix-stb__count {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 14px;
+	margin: 0 0 18px;
+	padding: 0;
+	color: var(--stb-muted);
+	font-family: var(--stb-font-display);
+	font-size: 13px;
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+	line-height: 1.3;
+}
+
+.avix-stb__count-now {
+	color: var(--stb-ink);
+	font-weight: 600;
+}
+
+.avix-stb__count-of {
+	margin-left: -10px;
+}
+
+.avix-stb__count-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-family: var(--stb-font-body);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.avix-stb__count-label::before {
+	width: 22px;
+	height: 1px;
+	background: currentColor;
+	opacity: 0.5;
+	content: "";
+}
+
+.avix-stb .avix-stb__name {
+	max-width: 22ch;
+	margin: 0;
+	padding: 0;
+	color: var(--stb-ink);
+	font-family: var(--stb-font-display);
+	font-size: clamp(26px, 2.9cqi, 38px);
+	font-weight: 600;
+	letter-spacing: -0.03em;
+	line-height: 1.1;
+	text-transform: none;
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+}
+
+.avix-stb .avix-stb__text {
+	max-width: 54ch;
+	margin: 18px 0 0;
+	padding: 0;
+	color: var(--stb-muted);
+	font-family: var(--stb-font-body);
+	font-size: clamp(15px, 1.3cqi, 16.5px);
+	font-weight: 400;
+	line-height: 1.7;
+	text-wrap: pretty;
+	overflow-wrap: anywhere;
+}
+
+/* ---------- Checklist ---------- */
+
+.avix-stb .avix-stb__features {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px 22px;
+	width: 100%;
+	margin: 28px 0 0;
+	padding: 26px 0 0;
+	border-top: 1px solid var(--stb-line);
+	list-style: none;
+}
+
+.avix-stb--list-1 .avix-stb__features {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.avix-stb .avix-stb__feature {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	color: var(--stb-ink);
+	font-family: var(--stb-font-body);
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.45;
+	list-style: none;
+}
+
+.avix-stb .avix-stb__feature::before,
+.avix-stb .avix-stb__feature::marker {
+	display: none;
+	content: none;
+}
+
+.avix-stb__feature-text {
+	min-width: 0;
+	padding-top: 2px;
+	overflow-wrap: anywhere;
+}
+
+.avix-stb__check {
+	display: grid;
+	width: 26px;
+	height: 26px;
+	flex: none;
+	place-items: center;
+	border: 1px solid var(--stb-check-line);
+	border-radius: 8px;
+	background: var(--stb-check-bg);
+}
+
+.avix-stb .avix-stb__check svg {
+	display: block;
+	width: 14px;
+	height: 12px;
+	overflow: visible;
+	fill: var(--stb-accent);
+	shape-rendering: crispEdges;
+}
+
+/* ---------- Button ---------- */
+
+.avix-stb__cta {
+	margin: 0;
+	padding: 34px 0 0;
+}
+
+.avix-stb .avix-stb__btn,
+.avix-stb .avix-stb__btn:visited,
+.avix-stb .avix-stb__btn:focus,
+.avix-stb .avix-stb__btn:active {
+	display: inline-flex;
+	align-items: center;
+	gap: 14px;
+	max-width: 100%;
+	min-height: 54px;
+	margin: 0;
+	padding: 6px 6px 6px 24px;
+	border: 0;
+	border-radius: 999px;
+	color: var(--stb-btn-ink);
+	background: var(--stb-btn);
+	box-shadow: 0 16px 30px -18px rgba(26, 26, 26, 0.6);
+	font-family: var(--stb-font-body);
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+	line-height: 1.2;
+	text-align: left;
+	text-decoration: none;
+	text-transform: none;
+	transition: transform 0.35s var(--stb-ease), background-color 0.25s ease, box-shadow 0.35s var(--stb-ease);
+}
+
+.avix-stb .avix-stb__btn-text {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+/* Orange circle, white arrow: white on orange, as everywhere on the site. */
+.avix-stb .avix-stb__btn-icon {
+	display: grid;
+	width: 42px;
+	height: 42px;
+	flex: none;
+	place-items: center;
+	border-radius: 50%;
+	color: #ffffff;
+	background: var(--stb-accent);
+}
+
+.avix-stb .avix-stb__btn-icon svg {
+	display: block;
+	width: 18px;
+	height: 18px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 2.2;
+	transition: transform 0.35s var(--stb-ease);
+}
+
+.avix-stb .avix-stb__btn:focus-visible {
+	outline: 2px solid var(--stb-accent);
+	outline-offset: 4px;
+}
+
+@media (hover: hover) {
+	.avix-stb .avix-stb__btn:hover {
+		color: var(--stb-btn-ink);
+		background: var(--stb-btn-hover);
+		box-shadow: 0 22px 36px -18px rgba(26, 26, 26, 0.65);
+		transform: translateY(-2px);
+	}
+
+	.avix-stb .avix-stb__btn:hover .avix-stb__btn-icon svg {
+		transform: translate(2px, -2px);
+	}
+}
+
+/* ---------- Image ---------- */
+
+.avix-stb .avix-stb__media {
+	position: relative;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	aspect-ratio: var(--stb-ratio);
+	border-radius: var(--stb-media-radius);
+	background: var(--stb-media-bg);
+	box-shadow: var(--stb-shadow);
+	/* Keeps the rounded clip while the image scales (Safari). */
+	isolation: isolate;
+}
+
+.avix-stb .avix-stb__img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: cover;
+}
+
+/* ---------- Switching panels ---------- */
+
+/* Cross-fade: the old panel fades out while the new one fades in and its
+   lines rise in turn (--j). Visibility flips at the end of the fade out, so
+   hidden panels never take focus or reach screen readers. */
+.avix-stb.is-ready .avix-stb__panel {
+	transition: opacity 0.35s ease, visibility 0s linear 0.35s;
+}
+
+.avix-stb.is-ready .avix-stb__panel.is-active {
+	transition: opacity 0.45s ease 0.05s, visibility 0s;
+}
+
+.avix-stb.is-ready .avix-stb__copy > * {
+	transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.avix-stb.is-ready .avix-stb__panel:not(.is-active) .avix-stb__copy > * {
+	opacity: 0;
+	transform: translateY(14px);
+}
+
+.avix-stb.is-ready .avix-stb__panel.is-active .avix-stb__copy > * {
+	transition: opacity 0.55s ease, transform 0.7s var(--stb-ease);
+	transition-delay: calc(var(--j, 0) * 55ms + 90ms);
+}
+
+.avix-stb.is-ready .avix-stb__img {
+	transition: transform 0.9s var(--stb-ease);
+}
+
+.avix-stb.is-ready .avix-stb__panel:not(.is-active) .avix-stb__img {
+	transform: scale(1.06);
+}
+
+/* First paint and window resizes: no animation. */
+.avix-stb.is-instant .avix-stb__panel,
+.avix-stb.is-instant .avix-stb__copy > *,
+.avix-stb.is-instant .avix-stb__img {
+	transition: none !important;
+}
+
+/* ---------- Reveal ---------- */
+
+.avix-stb.is-armed [data-stb-reveal] {
+	opacity: 0;
+	transform: translateY(26px);
+	transition: opacity 0.7s ease, transform 0.8s var(--stb-ease);
+	transition-delay: calc(var(--i, 0) * 110ms);
+}
+
+.avix-stb.is-armed.is-in [data-stb-reveal] {
+	opacity: 1;
+	transform: none;
+}
+
+/* ---------- Without JavaScript ---------- */
+
+/* Tabs need the script: without it every panel is shown, one under the other. */
+@media (scripting: none) {
+	.avix-stb__nav {
+		display: none;
+	}
+
+	.avix-stb__panels {
+		display: grid;
+		gap: 20px;
+		border: 0;
+		background: none;
+	}
+
+	.avix-stb__panel,
+	.avix-stb__panel:not(.is-active) {
+		position: relative;
+		border: 1px solid var(--stb-card-line);
+		visibility: visible;
+		opacity: 1;
+		background: var(--stb-card);
+		pointer-events: auto;
+	}
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-stb-squash {
+	0% { transform: translate(0, 1px); }
+	50% { transform: translate(0, 0); }
+}
+
+@keyframes avix-stb-squash-arm {
+	0% { transform: translate(0, 2px); }
+	50% { transform: translate(0, 0); }
+}
+
+/* ---------- Layout follows the widget width ---------- */
+
+@container avix-stb (max-width: 1024px) {
+	.avix-stb__inner {
+		--stb-col-gap: clamp(28px, 4cqi, 44px);
+	}
+
+	/* Beside the image the text column is too narrow for two columns: every
+	   item would wrap. One column until the panel stacks. */
+	.avix-stb .avix-stb__features {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 12px 18px;
+	}
+}
+
+/* One column: the image leads, since it changes most visibly when a tab is
+   picked. */
+@container avix-stb (max-width: 860px) {
+	.avix-stb__inner {
+		--stb-pad: clamp(16px, 3cqi, 28px);
+		--stb-media-radius: 18px;
+	}
+
+	.avix-stb__panel,
+	.avix-stb--img-left .avix-stb__panel.has-media {
+		grid-template-columns: minmax(0, 1fr);
+		align-items: start;
+		/* A row gap, not a margin: Elementor zeroes figure margins with a
+		   stronger selector. */
+		gap: clamp(22px, 4cqi, 32px) 0;
+	}
+
+	.avix-stb .avix-stb__media {
+		order: -1;
+		aspect-ratio: var(--stb-ratio-stack);
+	}
+
+	.avix-stb__copy {
+		padding: 0 clamp(6px, 1.4cqi, 12px) clamp(6px, 1.4cqi, 12px);
+	}
+
+	.avix-stb .avix-stb__name {
+		max-width: 26ch;
+	}
+
+	/* Stacked, the text has the full card width again. */
+	.avix-stb:not(.avix-stb--list-1) .avix-stb__features {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+/* Phones: the tab bar runs edge to edge and scrolls, with soft fades. */
+@container avix-stb (max-width: 767px) {
+	.avix-stb__nav {
+		margin-inline: calc(var(--stb-gutter) * -1);
+	}
+
+	.avix-stb__scroller {
+		margin-inline: 0;
+		padding-inline: var(--stb-gutter);
+		scroll-padding-inline: calc(var(--stb-gutter) + 8px);
+	}
+
+	/* An end spacer: some browsers drop the end padding of a scrolling flex row. */
+	.avix-stb__scroller::after {
+		width: var(--stb-gutter);
+		flex: none;
+		content: "";
+	}
+
+	.avix-stb__track {
+		margin-right: 0;
+	}
+
+	.avix-stb .avix-stb__tab,
+	.avix-stb .avix-stb__tab:hover,
+	.avix-stb .avix-stb__tab:focus,
+	.avix-stb .avix-stb__tab:active {
+		gap: 9px;
+		min-height: 44px;
+		padding: 0 18px;
+		font-size: 14.5px;
+	}
+}
+
+@container avix-stb (max-width: 600px) {
+	.avix-stb__inner {
+		--stb-head-gap: 36px;
+		--stb-nav-gap: 16px;
+		--stb-pad: 12px;
+		--stb-media-radius: 16px;
+		--stb-gutter: 16px;
+	}
+
+	.avix-stb .avix-stb__eyebrow {
+		margin-bottom: 18px;
+		font-size: 12px;
+	}
+
+	.avix-stb .avix-stb__intro {
+		margin-top: 18px;
+	}
+
+	.avix-stb__panels,
+	.avix-stb__panel {
+		border-radius: min(var(--stb-radius), 22px);
+	}
+
+	.avix-stb__copy {
+		padding: 0 8px 10px;
+	}
+
+	.avix-stb .avix-stb__count {
+		margin-bottom: 14px;
+	}
+
+	.avix-stb .avix-stb__name {
+		font-size: clamp(24px, 6.6cqi, 30px);
+	}
+
+	.avix-stb .avix-stb__text {
+		margin-top: 14px;
+		font-size: 15px;
+		line-height: 1.65;
+	}
+
+	.avix-stb .avix-stb__features,
+	.avix-stb:not(.avix-stb--list-1) .avix-stb__features {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 12px;
+		margin-top: 22px;
+		padding-top: 20px;
+	}
+
+	.avix-stb .avix-stb__feature {
+		font-size: 14.5px;
+	}
+
+	.avix-stb__cta {
+		padding-top: 26px;
+	}
+}
+
+@container avix-stb (max-width: 420px) {
+	.avix-stb .avix-stb__btn,
+	.avix-stb .avix-stb__btn:visited,
+	.avix-stb .avix-stb__btn:focus {
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.avix-stb__cta {
+		width: 100%;
+	}
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-stb *,
+	.avix-stb *::before,
+	.avix-stb *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-stb.is-armed [data-stb-reveal] {
+		opacity: 1;
+		transform: none;
+	}
+
+	.avix-stb.is-ready .avix-stb__panel:not(.is-active) .avix-stb__img {
+		transform: none;
+	}
+}

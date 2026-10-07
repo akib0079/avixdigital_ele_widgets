@@ -4,7 +4,8 @@
  * visitor scrolls, lights each milestone it reaches and plants a flag at the
  * last one. Layout follows the widget width (container queries): a vertical
  * track by default, a horizontal one on wide widgets (1180px+) with up to 4
- * milestones.
+ * milestones. An optional call-to-action pill closes the track, and the dark
+ * theme doubles as the service pages' "How we build" process band.
  */
 
 .avix-jr {
@@ -66,6 +67,21 @@
 	--jr-accent-text: #ff8a3d;
 	--jr-prop: #ffffff;
 	--jr-shadow: 0 26px 50px -28px rgba(0, 0, 0, 0.7);
+	--jr-cta-bg: rgba(255, 255, 255, 0.04);
+	--jr-cta-line: rgba(255, 255, 255, 0.14);
+	--jr-grid: rgba(255, 255, 255, 0.022);
+}
+
+/*
+ * The faint 80px grid of the other dark process sections, for the centred
+ * process band only: dark journeys without the new options stay as they were.
+ */
+.avix-jr--dark:is(.avix-jr--center, .has-cta) {
+	background-image:
+		linear-gradient(var(--jr-grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--jr-grid) 1px, transparent 1px);
+	background-position: center top;
+	background-size: 80px 80px;
 }
 
 /* A soft orange glow in a corner keeps the dark band from feeling flat. */
@@ -77,6 +93,19 @@
 	height: 760px;
 	border-radius: 50%;
 	background: radial-gradient(closest-side, color-mix(in srgb, var(--jr-accent) 14%, transparent), transparent);
+	content: "";
+	pointer-events: none;
+}
+
+/* A second, fainter glow low on the left warms the call to action. */
+.avix-jr--dark.has-cta::after {
+	position: absolute;
+	bottom: -320px;
+	left: -260px;
+	width: 720px;
+	height: 720px;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--jr-accent) 8%, transparent), transparent);
 	content: "";
 	pointer-events: none;
 }
@@ -156,6 +185,27 @@
 	color: var(--jr-accent-text);
 }
 
+/* Centred header: eyebrow, title and text stack in the middle. */
+.avix-jr--center .avix-jr__head {
+	grid-template-columns: minmax(0, 1fr);
+	justify-items: center;
+	text-align: center;
+}
+
+.avix-jr--center .avix-jr__head-main {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.avix-jr.avix-jr--center .avix-jr__title {
+	max-width: 20ch;
+}
+
+.avix-jr.avix-jr--center .avix-jr__intro {
+	margin-inline: auto;
+}
+
 .avix-jr .avix-jr__intro {
 	max-width: 46ch;
 	margin: 0;
@@ -178,6 +228,18 @@
 
 .avix-jr__head + .avix-jr__track {
 	margin-top: clamp(28px, 3.6cqi, 44px);
+}
+
+/*
+ * Centred layout: the vertical track is a centred column under the header,
+ * so stories keep a readable line length (about 70 characters) instead of
+ * stretching across a tablet or a wide widget. The cards, not the lane, sit
+ * on the centre line. The row resets it.
+ */
+.avix-jr--center .avix-jr__track {
+	max-width: var(--jr-col, 640px);
+	margin-right: auto;
+	margin-left: max(0px, (100% - var(--jr-col, 640px) - var(--jr-lane-x)) / 2);
 }
 
 .avix-jr__rail {
@@ -544,6 +606,126 @@
 	text-decoration: none;
 }
 
+/* ---------- Call to action ---------- */
+
+.avix-jr__cta {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	justify-content: center;
+	margin-top: clamp(44px, 5.4cqi, 72px);
+}
+
+/*
+ * One link: the prompt in the pill, the orange action at its end. Theme and
+ * Elementor-kit link styles are restated so they cannot leak in.
+ */
+.avix-jr .avix-jr__cta-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px 20px;
+	max-width: 100%;
+	min-height: 58px;
+	margin: 0;
+	padding: 6px 6px 6px 26px;
+	border: 1px solid var(--jr-cta-line, var(--jr-line));
+	border-radius: 999px;
+	color: var(--jr-ink);
+	background: var(--jr-cta-bg, var(--jr-card-on));
+	box-shadow: none;
+	font-family: var(--jr-font-body);
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.35;
+	text-align: left;
+	text-decoration: none;
+	transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.45s var(--jr-ease);
+}
+
+.avix-jr .avix-jr__cta-pill:hover,
+.avix-jr .avix-jr__cta-pill:focus,
+.avix-jr .avix-jr__cta-pill:active {
+	color: var(--jr-ink);
+	text-decoration: none;
+}
+
+.avix-jr .avix-jr__cta-pill:focus-visible {
+	outline: 2px solid var(--jr-accent);
+	outline-offset: 4px;
+}
+
+.avix-jr .avix-jr__cta-text {
+	/* A long prompt wraps to two lines instead of stretching the pill across the page. */
+	max-width: 46ch;
+	min-width: 0;
+	color: inherit;
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+}
+
+/* Button only: the outline hugs the action evenly. */
+.avix-jr .avix-jr__cta-pill--solo {
+	padding: 6px;
+}
+
+/* The action: a tinted orange pill that fills solid on hover. */
+.avix-jr .avix-jr__cta-action {
+	position: relative;
+	z-index: 0;
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 46px;
+	padding: 0 20px 0 22px;
+	overflow: hidden;
+	border-radius: 999px;
+	color: var(--jr-accent-text);
+	background: color-mix(in srgb, var(--jr-accent) 12%, transparent);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1.2;
+	text-transform: uppercase;
+	white-space: nowrap;
+	transition: color 0.3s ease;
+}
+
+.avix-jr .avix-jr__cta-action::before {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	background: var(--jr-accent);
+	content: "";
+	transform: translateX(-101%);
+	transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.avix-jr__cta-action svg {
+	flex: none;
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.35s var(--jr-ease);
+}
+
+/* The light theme needs one step darker orange for AA on the tint. */
+.avix-jr--light .avix-jr__cta-action {
+	color: #b84203;
+}
+
+/* The walk ends at the call to action: its outline lights up. */
+.avix-jr.is-done .avix-jr__cta-pill {
+	border-color: color-mix(in srgb, var(--jr-accent) 38%, transparent);
+	box-shadow: 0 18px 44px -26px color-mix(in srgb, var(--jr-accent) 60%, transparent);
+}
+
 /* ---------- Pixel character ---------- */
 
 .avix-jr__rider {
@@ -639,6 +821,32 @@
 	.avix-jr .avix-jr__link:hover svg {
 		transform: translateX(4px);
 	}
+
+	.avix-jr .avix-jr__cta-pill:hover {
+		border-color: color-mix(in srgb, var(--jr-accent) 45%, transparent);
+		transform: translateY(-3px);
+	}
+
+	.avix-jr .avix-jr__cta-pill:hover .avix-jr__cta-action {
+		color: #ffffff;
+	}
+
+	.avix-jr .avix-jr__cta-pill:hover .avix-jr__cta-action::before {
+		transform: none;
+	}
+
+	.avix-jr .avix-jr__cta-pill:hover .avix-jr__cta-action svg {
+		transform: translateX(3px);
+	}
+}
+
+/* Keyboard users get the same filled action as a hover. */
+.avix-jr .avix-jr__cta-pill:focus-visible .avix-jr__cta-action {
+	color: #ffffff;
+}
+
+.avix-jr .avix-jr__cta-pill:focus-visible .avix-jr__cta-action::before {
+	transform: none;
 }
 
 /* ---------- Reveal ---------- */
@@ -679,6 +887,19 @@
 .avix-jr.is-armed .avix-jr__end {
 	opacity: 0;
 	transition: opacity 0.6s ease 0.45s;
+}
+
+/* The call to action rises in on its own, once it reaches the screen. */
+.avix-jr.is-armed .avix-jr__cta {
+	opacity: 0;
+	transform: translateY(20px);
+	transition: opacity 0.7s ease, transform 0.8s var(--jr-ease);
+}
+
+.avix-jr.is-armed .avix-jr__cta.is-in,
+.avix-jr.is-armed .avix-jr__cta:focus-within {
+	opacity: 1;
+	transform: none;
 }
 
 .avix-jr.is-armed.is-in .avix-jr__head-main,
@@ -783,6 +1004,22 @@
 		justify-content: center;
 		min-height: calc((min(100cqi - 48px, var(--jr-max)) - var(--jr-lane-x) - 2 * var(--jr-pad) - 2px - clamp(24px, 3cqi, 40px)) * 0.3 / 1.3 / (var(--jr-ratio, var(--jr-ratio-auto))) + 2 * var(--jr-pad) + 2px);
 	}
+
+	/*
+	 * The centred column makes room for the label column, which stays narrow:
+	 * a wide gutter after a short "01" would split the card in two.
+	 */
+	.avix-jr--center .avix-jr__inner {
+		--jr-col: 780px;
+	}
+
+	.avix-jr.avix-jr--center .avix-jr__body {
+		grid-template-columns: clamp(72px, 8cqi, 112px) minmax(0, 1fr);
+	}
+
+	.avix-jr--center.has-pictures .avix-jr__item:not(.has-image) .avix-jr__card {
+		min-height: calc((min(100cqi - 48px, var(--jr-max), var(--jr-col)) - var(--jr-lane-x) - 2 * var(--jr-pad) - 2px - clamp(24px, 3cqi, 40px)) * 0.3 / 1.3 / (var(--jr-ratio, var(--jr-ratio-auto))) + 2 * var(--jr-pad) + 2px);
+	}
 }
 
 /*
@@ -799,6 +1036,23 @@
 
 	.avix-jr--row .avix-jr__track {
 		--jr-axis: x;
+	}
+
+	.avix-jr--row.avix-jr--center .avix-jr__track {
+		max-width: none;
+		margin-left: 0;
+	}
+
+	/*
+	 * Centred header with 1 or 2 milestones: the cards keep their third of the
+	 * row and the track shrinks around them, centred under the title.
+	 */
+	.avix-jr--row.avix-jr--center:is(.avix-jr--n1, .avix-jr--n2) .avix-jr__track {
+		--jr-cols: var(--jr-count);
+		--jr-row-w: calc((min(100cqi - 48px, var(--jr-max)) - 2 * var(--jr-gap)) / 3 * var(--jr-count) + (var(--jr-count) - 1) * var(--jr-gap));
+
+		max-width: var(--jr-row-w);
+		margin-inline: auto;
 	}
 
 	/* The character's lane above the line doubles as the header spacing. */
@@ -967,7 +1221,7 @@
 		right: 0;
 		bottom: 22px;
 		width: max-content;
-		max-width: calc((min(100cqi - 48px, var(--jr-max)) - (var(--jr-cols, 4) - 1) * var(--jr-gap)) / var(--jr-cols, 4) - var(--jr-pad) - var(--jr-node) / 2 - var(--jr-pal) * 1.4 - 16px);
+		max-width: calc((var(--jr-row-w, min(100cqi - 48px, var(--jr-max))) - (var(--jr-cols, 4) - 1) * var(--jr-gap)) / var(--jr-cols, 4) - var(--jr-pad) - var(--jr-node) / 2 - var(--jr-pal) * 1.4 - 16px);
 		text-align: right;
 	}
 }
@@ -1034,6 +1288,49 @@
 
 }
 
+/* Narrow widgets: the pill becomes a small card, prompt above a full-width action. */
+@container avix-jr (max-width: 560px) {
+	.avix-jr .avix-jr__cta-pill {
+		flex-direction: column;
+		align-items: stretch;
+		width: 100%;
+		padding: 18px 8px 8px;
+		border-radius: 24px;
+		text-align: center;
+	}
+
+	.avix-jr .avix-jr__cta-text {
+		max-width: none;
+		padding: 0 12px;
+	}
+
+	.avix-jr .avix-jr__cta-pill--solo {
+		padding: 8px;
+	}
+
+	/*
+	 * Touch screens have no hover fill: the action is solid from the start.
+	 * A long label wraps inside it instead of being clipped.
+	 */
+	.avix-jr .avix-jr__cta-action {
+		min-height: 50px;
+		padding: 12px 18px;
+		color: #ffffff;
+		font-size: 14px;
+		text-align: center;
+		white-space: normal;
+	}
+
+	.avix-jr .avix-jr__cta-action > span {
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	.avix-jr .avix-jr__cta-action::before {
+		transform: none;
+	}
+}
+
 /*
  * Without the script the journey shows its walked-through end state: the
  * track lit and bounded by the content, every milestone reached and the last
@@ -1092,6 +1389,14 @@
 		transition-delay: 0ms !important;
 	}
 
+	/*
+	 * Every property otherwise transitions for 0.01ms, so the script's title
+	 * levelling (set min-height, read height) would read the old height.
+	 */
+	.avix-jr .avix-jr__name {
+		transition: none !important;
+	}
+
 	.avix-jr.is-armed .avix-jr__head-main,
 	.avix-jr.is-armed .avix-jr__intro,
 	.avix-jr.is-armed .avix-jr__card,
@@ -1100,7 +1405,8 @@
 	.avix-jr.is-armed .avix-jr__line,
 	.avix-jr.is-armed .avix-jr__rider,
 	.avix-jr.is-armed .avix-jr__tail,
-	.avix-jr.is-armed .avix-jr__end {
+	.avix-jr.is-armed .avix-jr__end,
+	.avix-jr.is-armed .avix-jr__cta {
 		opacity: 1;
 		transform: none;
 	}
