@@ -1,0 +1,968 @@
+/*!
+ * Avix Digital · Case Study Gallery
+ * "05 · Across devices": a bento mosaic of equal-height tiles. Dark studio
+ * renders are full-bleed tiles; real screenshots sit in the kit's browser and
+ * phone frames on soft paper (or brand-tinted) tiles. Below 768px of widget
+ * width, and with the Carousel layout, it becomes a scroll-snap carousel.
+ * Layout follows the widget width (container queries), not the viewport.
+ */
+
+.avix-csg {
+	--csg-bg: #f5f3ef;
+	--csg-ink: #1a1a1a;
+	--csg-muted: #5c5f66;
+	--csg-line: rgba(26, 26, 26, 0.12);
+	--csg-accent: #fb6007;
+	--csg-accent-text: #c54804;
+	/* A paper tile reads as a slightly deeper tone of the section. */
+	--csg-tile-auto: #ebe7e0;
+	--csg-render-bg: #0b0b0c;
+	--csg-btn-bg: #ffffff;
+	--csg-btn-ink: #1a1a1a;
+	--csg-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--csg-font-body: "Inter", Arial, sans-serif;
+	--csg-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--csg-max: 1240px;
+	--csg-stagger: 48px;
+
+	container: avix-csg / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: var(--csg-pad-top, clamp(72px, 9vw, 140px)) 0 var(--csg-pad-bottom, clamp(72px, 9vw, 140px));
+	overflow: hidden;
+	overflow: clip;
+	color: var(--csg-ink);
+	background: var(--csg-bg);
+	font-family: var(--csg-font-body);
+	font-weight: 400;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-csg--white {
+	--csg-bg: #ffffff;
+	--csg-tile-auto: #f5f3ef;
+}
+
+.avix-csg--dark {
+	--csg-bg: #0b0b0c;
+	--csg-ink: #ffffff;
+	--csg-muted: rgba(255, 255, 255, 0.62);
+	--csg-line: rgba(255, 255, 255, 0.14);
+	--csg-accent-text: #ff8a3d;
+	--csg-tile-auto: #151517;
+	--csg-btn-bg: #17181a;
+	--csg-btn-ink: #ffffff;
+	/* The pixel reveal covers screens in the tile colour. */
+	--csk-cover: #151517;
+	--csk-eyebrow-ink: rgba(255, 255, 255, 0.62);
+}
+
+/* Tint: the case study's brand colour (printed as --csk-accent on the root)
+   mixed into the section tone, the same recipe as the kit's tint mat. */
+.avix-csg--mat-tint {
+	--csg-tile-auto: color-mix(in srgb, var(--csk-accent, #d8d1c6) 24%, #f5f3ef);
+}
+
+.avix-csg--dark.avix-csg--mat-tint {
+	--csg-tile-auto: color-mix(in srgb, var(--csk-accent, #fb6007) 12%, #151517);
+}
+
+.avix-csg--mat-none {
+	--csg-tile-auto: transparent;
+}
+
+.avix-csg *,
+.avix-csg *::before,
+.avix-csg *::after {
+	box-sizing: border-box;
+}
+
+/* Themes style [hidden] elements too; hidden must always win. */
+.avix-csg [hidden] {
+	display: none !important;
+}
+
+.avix-csg .avix-csg__sr {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Container queries style descendants only: tokens that change with width
+   are declared (and reset) on the inner wrapper. */
+.avix-csg__inner {
+	--csg-gutter: max(18px, clamp(16px, 5cqi, 72px));
+	--csg-gap-auto: clamp(16px, 2.4cqi, 32px);
+	--csg-tpad: clamp(22px, 4.2cqi, 56px);
+	--csg-radius: 28px;
+	--csg-render-radius: 24px;
+	--csg-tile: var(--csg-tile-auto);
+	--csg-phone-w: 260px;
+
+	position: relative;
+	width: min(calc(100% - 2 * var(--csg-gutter)), var(--csg-max));
+	margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+
+.avix-csg__head {
+	display: grid;
+	gap: 20px;
+	margin: 0 0 clamp(40px, 5.2cqi, 72px);
+}
+
+.avix-csg__head--split {
+	grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+	align-items: end;
+	column-gap: clamp(32px, 6cqi, 96px);
+}
+
+.avix-csg .avix-csg__eyebrow {
+	margin: 0 0 clamp(16px, 1.6cqi, 22px);
+	color: var(--csg-muted);
+}
+
+.avix-csg .avix-csg__eyebrow .avix-csk-eyebrow__px {
+	background: var(--csg-accent);
+}
+
+.avix-csg .avix-csg__title {
+	max-width: 18ch;
+	margin: 0;
+	padding: 0;
+	color: var(--csg-ink);
+	font-family: var(--csg-font-display);
+	font-size: clamp(34px, 4.2cqi, 60px);
+	font-weight: 600;
+	line-height: 1.06;
+	letter-spacing: -0.035em;
+	text-transform: none;
+	text-wrap: balance;
+}
+
+.avix-csg .avix-csg__accent {
+	color: var(--csg-accent);
+}
+
+.avix-csg .avix-csg__text {
+	max-width: 46ch;
+	margin: 0;
+	padding: 0;
+	color: var(--csg-muted);
+	font-size: clamp(15px, 1.4cqi, 17px);
+	line-height: 1.65;
+	text-wrap: pretty;
+}
+
+/* ---------- Mosaic ---------- */
+
+.avix-csg__stage {
+	position: relative;
+}
+
+.avix-csg__track {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: var(--csg-gap, var(--csg-gap-auto));
+}
+
+.avix-csg__row {
+	position: relative;
+	display: flex;
+	align-items: stretch;
+	gap: var(--csg-gap, var(--csg-gap-auto));
+	min-width: 0;
+}
+
+/* Every item: a figure holding its tile and caption. Items in a row share a
+   height (stretch), so tiles line up as one bento grid. */
+.avix-csg .avix-csg__item {
+	position: relative;
+	display: flex;
+	flex: 1 1 0%;
+	flex-direction: column;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.avix-csg__tile {
+	position: relative;
+	display: flex;
+	flex: 1 1 auto;
+	align-items: center;
+	justify-content: center;
+	min-height: 0;
+	padding: var(--csg-tpad);
+	border-radius: var(--csg-radius);
+	background: var(--csg-tile);
+	/* The pixel reveal covers screens in the tile's colour. */
+	--csk-cover: var(--csg-tile);
+}
+
+.avix-csg--mat-none .avix-csg__tile {
+	padding: 0;
+	--csk-cover: var(--csg-bg);
+}
+
+.avix-csg__device {
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	transform: translate3d(0, var(--csg-depth, 0px), 0);
+}
+
+.avix-csg__item--phone .avix-csg__device {
+	width: min(100%, var(--csg-phone-w));
+}
+
+/* Render: the image already shows the devices. No frame and no mat
+   padding; its own shape, a dark placeholder until it loads. */
+.avix-csg .avix-csg__tile--render {
+	display: block;
+	flex: 0 0 auto;
+	padding: 0;
+	overflow: hidden;
+	border-radius: var(--csg-render-radius);
+	background: #111111;
+	aspect-ratio: var(--csg-ratio, 3 / 2);
+	box-shadow: 0 44px 80px -52px rgba(11, 11, 12, 0.6);
+	isolation: isolate;
+	--csk-cover: #0b0b0c;
+}
+
+/* A hairline catches the light on the render's edge. */
+.avix-csg__tile--render::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	border-radius: inherit;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+	pointer-events: none;
+}
+
+.avix-csg .avix-csg__tile--render img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	object-fit: cover;
+	object-position: 50% 50%;
+	transition: transform 1.1s var(--csg-ease);
+}
+
+/* The kit positions its canvas inside frames; a render is not a frame. */
+.avix-csg .avix-csg__tile--render .avix-csk-px {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	margin: 0;
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+	pointer-events: none;
+}
+
+/* Showcase: a render placed first fills the whole width. */
+.avix-csg__row--show .avix-csg__item {
+	flex-basis: 100%;
+}
+
+/* Row A: a wide shot (8 of 12 columns) beside a phone (4 of 12). The phone
+   tile adds no height of its own (size containment) and the phone is sized
+   from the tile's height, so both tiles end on the same line whatever the
+   wide shot's shape. */
+.avix-csg__row--a > .avix-csg__item:first-child {
+	flex: 2 1 0%;
+}
+
+.avix-csg__row--a > .avix-csg__item--phone {
+	flex: 1 1 0%;
+}
+
+.avix-csg__row--a > .avix-csg__item--phone .avix-csg__tile {
+	container: avix-csg-tile / size;
+	flex: 1 1 0%;
+	min-height: 280px;
+}
+
+.avix-csg__row--a > .avix-csg__item--phone .avix-csg__device {
+	/* 100cqh is the tile's content height; 20px is the phone's bezel. */
+	width: min(100cqw, calc((100cqh - 20px) * var(--csg-ar, 0.4621) + 20px), 320px);
+}
+
+/* A render in row A keeps its own shape; the phone tile follows it. */
+.avix-csg__row--a > .avix-csg__item--render .avix-csg__tile--render {
+	flex: 1 1 auto;
+}
+
+/* Phone rows: one tile holding up to four phones, every second one lower. */
+.avix-csg__row--phones {
+	justify-content: center;
+	gap: clamp(14px, 3.4cqi, 56px);
+	padding: var(--csg-tpad) var(--csg-tpad) calc(var(--csg-tpad) * 0.9);
+	border-radius: var(--csg-radius);
+	background: var(--csg-tile);
+	--csk-cover: var(--csg-tile);
+}
+
+.avix-csg--mat-none .avix-csg__row--phones {
+	padding: 0;
+}
+
+.avix-csg__row--phones > .avix-csg__item {
+	flex: 0 1 calc(var(--csg-phone-w) * var(--csg-phone-k, 1));
+}
+
+/* Fewer phones in a row: each one a little larger. */
+.avix-csg__row--phones.avix-csg__row--n3 {
+	--csg-phone-k: 1.1;
+}
+
+.avix-csg__row--phones.avix-csg__row--n2 {
+	--csg-phone-k: 1.2;
+}
+
+.avix-csg__row--phones.avix-csg__row--n1 {
+	--csg-phone-k: 1.25;
+}
+
+.avix-csg__row--phones > .avix-csg__item:nth-child(even) {
+	padding-top: var(--csg-stagger);
+}
+
+.avix-csg__row--phones > .avix-csg__item:nth-child(odd):not(:only-child) {
+	padding-bottom: var(--csg-stagger);
+}
+
+.avix-csg__row--phones .avix-csg__tile {
+	flex: 0 0 auto;
+	padding: 0;
+	border-radius: 0;
+	background: none;
+}
+
+.avix-csg__row--phones .avix-csg__item--phone .avix-csg__device {
+	width: 100%;
+}
+
+.avix-csg__row--phones .avix-csg__cap {
+	justify-content: center;
+	text-align: center;
+}
+
+/* Pairs: each item grows with its own shape, so both tiles share a height
+   without cropping either screenshot. */
+.avix-csg__row--pair > .avix-csg__item {
+	flex: var(--csg-grow, 1) 1 0%;
+}
+
+.avix-csg__row--pair .avix-csg__tile--render,
+.avix-csg__row--solo .avix-csg__tile--render {
+	flex: 1 1 auto;
+}
+
+/* Wide shots fill more of their tile than a phone does. */
+.avix-csg__row--pair .avix-csg__tile,
+.avix-csg__row--solo .avix-csg__tile {
+	padding: clamp(20px, 3.4cqi, 44px);
+}
+
+/* Solo: a last odd wide shot spans the row; its frame stays at 880px so a
+   tall page capture never towers over the rest. */
+.avix-csg__row--solo .avix-csg__item--browser .avix-csg__device {
+	max-width: 880px;
+}
+
+/* ---------- Captions ---------- */
+
+.avix-csg .avix-csg__cap {
+	position: static;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 20px;
+	margin: 16px 0 0;
+	padding: 0 4px;
+	color: var(--csg-muted);
+	font-family: var(--csg-font-body);
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.4;
+	text-align: left;
+}
+
+.avix-csg .avix-csg__cap--hidden {
+	min-height: 0;
+	margin: 0;
+}
+
+.avix-csg .avix-csg__px {
+	flex: none;
+	width: 6px;
+	height: 6px;
+	background: var(--csg-accent);
+}
+
+.avix-csg .avix-csg__cap-text {
+	min-width: 0;
+}
+
+/* A linked item: the caption's link covers the whole figure. */
+.avix-csg .avix-csg__cap-link,
+.avix-csg .avix-csg__cap-link:hover,
+.avix-csg .avix-csg__cap-link:focus,
+.avix-csg .avix-csg__cap-link:visited {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--csg-ink);
+	background: none;
+	box-shadow: none;
+	text-decoration: none;
+}
+
+.avix-csg .avix-csg__cap-link::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 4;
+	border-radius: var(--csg-radius);
+}
+
+.avix-csg .avix-csg__cap-icon {
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.35s var(--csg-ease);
+}
+
+.avix-csg .avix-csg__cap-link:focus-visible {
+	outline: none !important;
+}
+
+.avix-csg .avix-csg__cap-link:focus-visible::after {
+	outline: 2px solid var(--csg-accent) !important;
+	outline-offset: 4px;
+}
+
+@media (hover: hover) {
+	.avix-csg .is-linked:hover .avix-csg__cap-icon {
+		transform: translate(3px, -3px);
+	}
+
+	.avix-csg .is-linked:hover .avix-csg__tile--render img {
+		transform: scale(1.02);
+	}
+}
+
+/* ---------- Carousel controls ---------- */
+
+.avix-csg__nav {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 18px;
+	margin-top: clamp(22px, 5cqi, 32px);
+}
+
+.avix-csg .avix-csg__btn,
+.avix-csg .avix-csg__btn:hover,
+.avix-csg .avix-csg__btn:focus,
+.avix-csg .avix-csg__btn:active {
+	display: inline-grid;
+	place-items: center;
+	width: 48px;
+	height: 48px;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 1px solid var(--csg-line);
+	border-radius: 50%;
+	color: var(--csg-btn-ink);
+	background: var(--csg-btn-bg);
+	box-shadow: none;
+	font: inherit;
+	line-height: 1;
+	text-transform: none;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+	transition: border-color 0.25s ease, color 0.25s ease, background-color 0.25s ease, opacity 0.25s ease, transform 0.35s var(--csg-ease);
+}
+
+.avix-csg .avix-csg__btn svg {
+	display: block;
+	width: 18px;
+	height: 18px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+/* At either end the button steps back (kept in place, so nothing jumps). */
+.avix-csg .avix-csg__btn.is-off {
+	visibility: hidden;
+	opacity: 0;
+}
+
+.avix-csg .avix-csg__btn:focus-visible {
+	outline: 2px solid var(--csg-accent) !important;
+	outline-offset: 3px !important;
+}
+
+/* The strip itself takes focus in the carousel (arrow keys scroll it). */
+.avix-csg .avix-csg__track:focus-visible {
+	outline: 2px solid var(--csg-accent) !important;
+	outline-offset: -2px !important;
+}
+
+/* The theme swaps every focus ring for a dotted one; a click keeps none. */
+.avix-csg :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
+@media (hover: hover) {
+	.avix-csg .avix-csg__btn:hover {
+		border-color: var(--csg-accent);
+		color: #ffffff;
+		background: var(--csg-accent);
+	}
+}
+
+.avix-csg .avix-csg__btn:active {
+	transform: scale(0.94);
+}
+
+.avix-csg .avix-csg__count {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 92px;
+	justify-content: center;
+	margin: 0;
+	padding: 0;
+	color: var(--csg-muted);
+	font-family: var(--csg-font-display);
+	font-size: 14px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.04em;
+	line-height: 1;
+}
+
+.avix-csg .avix-csg__count-now {
+	min-width: 2ch;
+	color: var(--csg-ink);
+	text-align: right;
+}
+
+.avix-csg .avix-csg__count-sep {
+	display: block;
+	width: 22px;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--csg-accent);
+}
+
+/* ---------- Carousel ----------
+   Narrow widths (the container query below) and the Carousel layout share
+   these rules; they are written out twice because a container query cannot
+   be combined with a class in one selector. One card per view, the next one
+   peeking, snapped to the centre; native swipe, no autoplay. */
+
+.avix-csg--carousel .avix-csg__inner {
+	--csg-slide: min(72cqi, 920px);
+	--csg-slide-gap: clamp(12px, 2cqi, 24px);
+	--csg-phone-w: 300px;
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track {
+	flex-direction: row;
+	align-items: stretch;
+	gap: var(--csg-slide-gap);
+	margin-inline: calc(50% - 50cqi);
+	padding: 4px calc(50cqi - var(--csg-slide) / 2) 6px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	overscroll-behavior-x: contain;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+	-webkit-overflow-scrolling: touch;
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__row {
+	display: contents;
+}
+
+/* Every slide is a card of the same height: the device centred on the
+   card, the caption at its foot. */
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item {
+	flex: 0 0 var(--csg-slide);
+	width: var(--csg-slide);
+	padding: var(--csg-tpad) var(--csg-tpad) 18px;
+	border-radius: var(--csg-radius);
+	background: var(--csg-tile);
+	scroll-snap-align: center;
+	scroll-snap-stop: always;
+	--csk-cover: var(--csg-tile);
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__tile {
+	flex: 1 1 auto;
+	container-type: normal;
+	min-height: 0;
+	padding: 0;
+	border-radius: 0;
+	background: none;
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__device {
+	max-width: none;
+	transform: none;
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--phone .avix-csg__device {
+	width: min(100%, var(--csg-phone-w), calc(52svh * var(--csg-ar, 0.4621)));
+}
+
+/* A render card is the render's own near-black: the image sits in the
+   middle and its top and bottom edges dissolve into the card. */
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--render {
+	padding: 0 0 18px;
+	overflow: hidden;
+	background: var(--csg-render-bg);
+	--csk-cover: var(--csg-render-bg);
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__tile--render {
+	display: flex;
+	align-items: center;
+	overflow: visible;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	aspect-ratio: auto;
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__tile--render::after {
+	display: none;
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__tile--render img {
+	height: auto;
+	aspect-ratio: var(--csg-ratio, 3 / 2);
+	-webkit-mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
+	mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap {
+	justify-content: flex-start;
+	margin: 14px 0 0;
+	padding: 0;
+	text-align: left;
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--render .avix-csg__cap {
+	padding: 0 var(--csg-tpad);
+	color: rgba(255, 255, 255, 0.72);
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--render .avix-csg__cap-link {
+	color: #ffffff;
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap-link::after {
+	border-radius: var(--csg-radius);
+}
+
+.avix-csg--carousel.avix-csg--mat-none .avix-csg__stage .avix-csg__track .avix-csg__item:not(.avix-csg__item--render) {
+	padding: 0;
+	background: none;
+}
+
+.avix-csg--dark.avix-csg--carousel .avix-csg__stage .avix-csg__track .avix-csg__item {
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* Until the script is ready, a visible scrollbar keeps the strip usable
+   with a mouse; afterwards the buttons take over. */
+.avix-csg--carousel.is-ready .avix-csg__track {
+	scrollbar-width: none;
+}
+
+.avix-csg--carousel.is-ready .avix-csg__track::-webkit-scrollbar {
+	display: none;
+}
+
+/* ---------- Reveal ---------- */
+
+/* Content is visible by default; the script arms the reveal. */
+.avix-csg.is-armed [data-csg-rv],
+.avix-csg.is-armed [data-csg-item] {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 0.7s ease, transform 0.8s var(--csg-ease);
+	transition-delay: var(--csg-d, 0ms);
+}
+
+.avix-csg.is-armed [data-csg-rv].is-in,
+.avix-csg.is-armed [data-csg-item].is-in {
+	opacity: 1;
+	transform: none;
+}
+
+/* ---------- Layout by width ---------- */
+
+@container avix-csg (max-width: 1024px) {
+	.avix-csg__inner {
+		--csg-phone-w: 220px;
+		--csg-radius: 24px;
+		--csg-render-radius: 22px;
+	}
+
+	.avix-csg__row--phones {
+		gap: clamp(12px, 2.6cqi, 28px);
+	}
+}
+
+@container avix-csg (max-width: 900px) {
+	.avix-csg__head--split {
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: 18px;
+	}
+
+	.avix-csg .avix-csg__text {
+		max-width: 58ch;
+	}
+
+	.avix-csg__row--phones > .avix-csg__item:nth-child(even) {
+		padding-top: calc(var(--csg-stagger) * 0.66);
+	}
+
+	.avix-csg__row--phones > .avix-csg__item:nth-child(odd):not(:only-child) {
+		padding-bottom: calc(var(--csg-stagger) * 0.66);
+	}
+}
+
+/* Narrow: every layout becomes the carousel. Rows dissolve (display:
+   contents), so the items line up in one strip that runs to the screen
+   edges: one card per view at 82% width with the next one peeking. */
+@container avix-csg (max-width: 767px) {
+	.avix-csg__inner {
+		--csg-slide: 82cqi;
+		--csg-slide-gap: 12px;
+		--csg-tpad: 20px;
+		--csg-radius: 22px;
+		--csg-render-radius: 20px;
+		--csg-phone-w: 220px;
+	}
+
+	.avix-csg__head {
+		margin-bottom: 30px;
+	}
+
+	.avix-csg .avix-csg__title {
+		font-size: clamp(30px, 8.4cqi, 40px);
+		line-height: 1.08;
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track {
+		flex-direction: row;
+		align-items: stretch;
+		gap: var(--csg-slide-gap);
+		margin-inline: calc(50% - 50cqi);
+		padding: 4px calc(50cqi - var(--csg-slide) / 2) 6px;
+		overflow-x: auto;
+		overflow-y: hidden;
+		overscroll-behavior-x: contain;
+		scroll-snap-type: x mandatory;
+		scroll-behavior: smooth;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__row {
+		display: contents;
+	}
+
+	/* Every slide is a card of the same height: the device centred on the
+	   card, the caption at its foot. */
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item {
+		flex: 0 0 var(--csg-slide);
+		width: var(--csg-slide);
+		padding: var(--csg-tpad) var(--csg-tpad) 18px;
+		border-radius: var(--csg-radius);
+		background: var(--csg-tile);
+		scroll-snap-align: center;
+		scroll-snap-stop: always;
+		--csk-cover: var(--csg-tile);
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__tile {
+		flex: 1 1 auto;
+		container-type: normal;
+		min-height: 0;
+		padding: 0;
+		border-radius: 0;
+		background: none;
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__device {
+		max-width: none;
+		transform: none;
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--phone .avix-csg__device {
+		width: min(100%, var(--csg-phone-w), calc(52svh * var(--csg-ar, 0.4621)));
+	}
+
+	/* A render card is the render's own near-black: the image sits in the
+	   middle and its top and bottom edges dissolve into the card. */
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--render {
+		padding: 0 0 18px;
+		overflow: hidden;
+		background: var(--csg-render-bg);
+		--csk-cover: var(--csg-render-bg);
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__tile--render {
+		display: flex;
+		align-items: center;
+		overflow: visible;
+		border-radius: 0;
+		background: none;
+		box-shadow: none;
+		aspect-ratio: auto;
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__tile--render::after {
+		display: none;
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__tile--render img {
+		height: auto;
+		aspect-ratio: var(--csg-ratio, 3 / 2);
+		-webkit-mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
+		mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap {
+		justify-content: flex-start;
+		margin: 14px 0 0;
+		padding: 0;
+		text-align: left;
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--render .avix-csg__cap {
+		padding: 0 var(--csg-tpad);
+		color: rgba(255, 255, 255, 0.72);
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--render .avix-csg__cap-link {
+		color: #ffffff;
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap-link::after {
+		border-radius: var(--csg-radius);
+	}
+
+	.avix-csg--mat-none .avix-csg__stage .avix-csg__track .avix-csg__item:not(.avix-csg__item--render) {
+		padding: 0;
+		background: none;
+	}
+
+	.avix-csg--dark .avix-csg__stage .avix-csg__track .avix-csg__item {
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+	}
+
+	.avix-csg .avix-csg__cap {
+		font-size: 13.5px;
+	}
+
+	.avix-csg.is-ready .avix-csg__track {
+		scrollbar-width: none;
+	}
+
+	.avix-csg.is-ready .avix-csg__track::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* A single item needs no strip. */
+	.avix-csg--single .avix-csg__stage .avix-csg__track {
+		margin-inline: 0;
+		padding-inline: 0;
+		overflow: visible;
+	}
+
+	.avix-csg--single .avix-csg__stage .avix-csg__track .avix-csg__item {
+		flex-basis: 100%;
+		width: 100%;
+	}
+}
+
+@container avix-csg (max-width: 420px) {
+	.avix-csg__inner {
+		--csg-slide: 84cqi;
+		--csg-tpad: 16px;
+		--csg-phone-w: 220px;
+	}
+}
+
+/* ---------- Editor ---------- */
+
+.elementor-editor-active .avix-csg [data-csg-rv],
+.elementor-editor-active .avix-csg [data-csg-item] {
+	opacity: 1 !important;
+	transform: none !important;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-csg *,
+	.avix-csg *::before,
+	.avix-csg *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-csg.is-armed [data-csg-rv],
+	.avix-csg.is-armed [data-csg-item] {
+		opacity: 1;
+		transform: none;
+	}
+
+	.avix-csg__device {
+		transform: none !important;
+	}
+
+	.avix-csg__track {
+		scroll-behavior: auto !important;
+	}
+}

@@ -1,0 +1,351 @@
+{
+	"slug": "flow-storage",
+	"spec": "SPEC-CASE-STUDIES §7 + addendum A2/A5 (8 Oct 2026)",
+	"post": {
+		"title": "Flow Storage: Architecting a Dynamic Webflow Ecosystem",
+		"excerpt": "A pixel-perfect Figma-to-Webflow build for a self-storage company near Roermond, with a custom CMS and lead forms that route enquiries to the team.",
+		"menu_order": 3,
+		"featured": [
+			"@media:avix-cs-flow-storage-render-hero.webp",
+			"@media:2025/12/Untitled-design-6.webp",
+			"@media:avix-cs-flow-storage-hero-desktop.webp"
+		]
+	},
+	"terms": {
+		"service": [
+			"webflow",
+			"web-development"
+		],
+		"industry": [
+			"Self-storage"
+		]
+	},
+	"yoast": {
+		"title": "Flow Storage Case Study: Webflow Website & CMS | AvixDigital",
+		"metadesc": "How AvixDigital turned Flow Storage's Figma design into a fast, fully responsive Webflow site with a custom CMS and lead-capture forms.",
+		"og_image": "@media:avix-cs-flow-storage-og.jpg"
+	},
+	"meta": {
+		"client": "Flow Storage",
+		"display_title": "Architecting a Dynamic [Webflow Ecosystem]",
+		"summary": "Flow Storage required a digital presence that perfectly balanced high-end aesthetic design with operational flexibility. We built it in Webflow: pixel-perfect, fully responsive and easy for the team to run.",
+		"logo": "@media:avix-cs-flow-storage-logo-white.png",
+		"hero_desktop": "@media:avix-cs-flow-storage-hero-desktop.webp",
+		"hero_mobile": "@media:avix-cs-flow-storage-hero-mobile.webp",
+		"hero_render": "@media:avix-cs-flow-storage-render-hero.webp",
+		"accent": "#9BC3A7",
+		"year": "2026",
+		"services": "User Research, User Testing, UX/UI Design, Website",
+		"platform": "Webflow",
+		"role": "End-to-end Webflow development",
+		"market": "Roermond, Netherlands",
+		"live_url": "https://www.flowstorage.nl/",
+		"live_label": "flowstorage.nl",
+		"card_tags": "Webflow, CMS, Lead generation",
+		"card_label": "Designed for",
+		"card_value": "Qualified leads",
+		"challenge_statement": "The primary challenge in high-tier Webflow development is translating [intricate design files] into a live environment without sacrificing visual integrity, load speed, or responsiveness.",
+		"challenge_body": [
+			"Flow Storage rents secure container units, plus caravan and boat storage, just outside Roermond, and it sells on trust: clean, dry, alarmed and flexible. The new brand arrived as a detailed, high-fidelity Figma design with logo-shaped image masks, two-tone headlines and layered cards, and it had to go live without losing any of that polish.",
+			"Furthermore, Flow Storage needed a robust back-end system that empowered their internal team to update dynamic content effortlessly, without needing to touch the core code, and a site capable of capturing leads and scaling alongside their business needs."
+		],
+		"constraints": "1:1 Figma fidelity, Fast on every breakpoint, Editable without code, Lead capture",
+		"approach_intro": "Akib led the end-to-end development of the website, using Webflow's advanced capabilities to engineer a seamless, dynamic and highly functional platform.",
+		"approach_body": [
+			"We treated the Figma file as the contract. Every type style, spacing value and interaction was rebuilt 1:1 in Webflow, then checked at every breakpoint, from ultra-wide monitors down to phones.",
+			"Alongside the visual build, we mapped the content the team would actually change, such as use-case pages and customer reviews, into a CMS structure shaped around how they work. We also planned the lead journey end to end: clear calls to action, a direct line to a named person and a form that asks the right questions up front."
+		],
+		"implementations": [
+			"Pixel-Perfect Figma Conversion: Meticulously translated the approved Figma designs into a live Webflow environment. We ensured that every interaction, typography choice, and spacing metric was a flawless 1:1 match with the original creative vision.",
+			"Custom CMS Integration: Engineered a fully dynamic Content Management System (CMS). This custom architecture allows the Flow Storage team to intuitively manage updates, publish new pages, and scale their content strategy with zero developer friction.",
+			"Advanced Custom Form Integration: Developed and integrated bespoke forms designed to streamline user inquiries and data capture. This ensured a frictionless UX for potential clients while seamlessly routing leads to the client's internal systems.",
+			"Fully Responsive & Dynamic Architecture: Built the entire platform to be fluid and fully responsive across all breakpoints. The site adapts flawlessly from ultra-wide desktop monitors to mobile devices, maintaining dynamic content delivery and fast load speeds across the board."
+		],
+		"solution_body": [
+			"The result is a fully dynamic Webflow platform. A CMS collection powers a family of use-case landing pages (moving house, renovating, travelling, seasonal items, lack of space and moving in together), all from one template and listed automatically in the navigation. Customer reviews flow from the CMS into a swipeable slider beside the Google rating, a three-step tabbed journey explains how renting works, and the contact form captures complete enquiries, including whether they are private or business."
+		],
+		"outcome_statement": "The result is a [visually striking, high-performing] Webflow site that perfectly encapsulates the Flow Storage brand.",
+		"outcome_body": [
+			"By combining a flawless Figma translation with a powerful CMS and custom lead-capture logic, the new platform serves as both a premium digital brochure and an efficient, scalable growth engine.",
+			"The team runs content through the CMS with zero developer friction, so new use-case pages and fresh reviews go live on their schedule, and every page leads naturally to a call, a visit or an enquiry."
+		],
+		"outcome_pillars": [
+			"A premium digital brochure",
+			"A CMS the team runs itself",
+			"Every page leads to an enquiry"
+		],
+		"proof": [
+			"Open a use-case page built from the CMS | https://www.flowstorage.nl/toepassingen/opslag-tijdens-een-verhuizing",
+			"See the contact page and form | https://www.flowstorage.nl/contact",
+			"Try the three-step rental journey | https://www.flowstorage.nl/"
+		],
+		"metric_1_value": "1:1",
+		"metric_1_label": "Figma-to-Webflow fidelity: interactions, type and spacing",
+		"metric_1_source": "AvixDigital project record (portfolio)",
+		"metric_2_value": "6",
+		"metric_2_label": "Use-case pages generated from one CMS template",
+		"metric_2_source": "observed on flowstorage.nl/toepassingen/, 8 Oct 2026",
+		"metric_3_value": "3",
+		"metric_3_label": "Storage services with dedicated pages: containers, caravans, boats",
+		"metric_3_source": "observed in the flowstorage.nl navigation, 8 Oct 2026",
+		"stack": [
+			"Webflow Designer & Interactions: pixel-perfect build and animation",
+			"Webflow CMS: use-case pages and customer reviews",
+			"Figma: the approved source designs",
+			"Swiper: review and content sliders | observed",
+			"Elfsight Form Builder: the embedded, brand-styled contact form | observed",
+			"Space Grotesk: the brand typeface | observed"
+		],
+		"header": "dark",
+		"credits": "Web design: Studio Koers · Development partner: Fctry | Digital Agency"
+	},
+	"layout": {
+		"features": {
+			"title": "Six features that turn [visits into enquiries]"
+		},
+		"spotlights": [
+			{
+				"tag": "Design system",
+				"title": "A [pixel-perfect] Figma-to-Webflow build",
+				"problem": "The approved design was intricate: photography cut into the lightning-bolt logo, two-tone headlines, a bold price roundel and layered dark cards. Designs like this usually lose fidelity, speed or responsiveness on the way to a live site.",
+				"built": "Every interaction, type style and spacing value was matched 1:1 to the approved Figma file. The hero shows how far that goes: the bolt-shaped image mask, the white and sage two-tone headline, the orange \"per dag\" price roundel and the USP cards are all built natively in Webflow, not flattened into images.",
+				"attribution": "built",
+				"source_link": "https://www.flowstorage.nl/",
+				"image": "@media:avix-cs-flow-storage-feature-1-figma-hero.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 78,
+						"y": 46,
+						"label": "Logo-shaped image mask, built natively"
+					},
+					{
+						"x": 65,
+						"y": 18,
+						"label": "Price roundel from the design system"
+					},
+					{
+						"x": 22,
+						"y": 26,
+						"label": "Two-tone display headline, 1:1 with Figma"
+					}
+				]
+			},
+			{
+				"tag": "CMS",
+				"title": "Use-case pages, [powered by the CMS]",
+				"problem": "People rent storage for very different reasons. The team needed a page for each situation, and the freedom to add more without a developer.",
+				"built": "A Webflow CMS collection powers a page for each situation: moving house, renovating, travelling, lack of space, seasonal items and moving in together. All six come from one template, and the navigation lists them automatically, so a new page appears in the menu as soon as the team publishes it.",
+				"attribution": "built",
+				"source_link": "https://www.flowstorage.nl/toepassingen/opslag-tijdens-een-verhuizing",
+				"image": "@media:avix-cs-flow-storage-feature-2-cms-toepassingen.webp",
+				"device": "browser",
+				"mat": "paper",
+				"hotspots": [
+					{
+						"x": 42,
+						"y": 46,
+						"label": "Menu links pulled live from the CMS"
+					},
+					{
+						"x": 42,
+						"y": 20,
+						"label": "Core storage services"
+					},
+					{
+						"x": 59,
+						"y": 59,
+						"label": "One template, a page per use case"
+					}
+				]
+			},
+			{
+				"tag": "Lead capture",
+				"title": "A contact page built to capture [complete leads]",
+				"problem": "Storage is booked through a conversation and a site visit, so enquiries need to arrive complete and reach the right person, for private and business customers alike.",
+				"built": "The contact page pairs a named contact and a one-tap call button with an enquiry form: name, email, a phone number with a +31 country selector, a message and a \"Zakelijk klant?\" business-customer checkbox, so every lead arrives ready to route. The form runs on an embedded form builder, styled to the brand.",
+				"attribution": "built",
+				"source_link": "https://www.flowstorage.nl/contact",
+				"image": "@media:avix-cs-flow-storage-feature-3-lead-form.webp",
+				"device": "plain",
+				"mat": "tint",
+				"visual_max": 460,
+				"hotspots": [
+					{
+						"x": 58,
+						"y": 27,
+						"label": "Named contact with a one-tap call button"
+					},
+					{
+						"x": 66,
+						"y": 64,
+						"label": "Phone field with +31 country prefix"
+					},
+					{
+						"x": 17,
+						"y": 86,
+						"label": "Business-customer flag for lead routing"
+					}
+				]
+			},
+			{
+				"tag": "Responsive",
+				"title": "A mobile menu that keeps [every option] in reach",
+				"problem": "Most local storage searches happen on a phone, so the full menu, including every storage type and use case, has to work on a small screen.",
+				"built": "On phones the header switches to a light bar, and the menu opens full screen. \"Opslagmogelijkheden\" expands in place to show the three storage services and the CMS use-case pages, with large, centred tap targets.",
+				"attribution": "built",
+				"source_link": "https://www.flowstorage.nl/",
+				"image": "@media:avix-cs-flow-storage-feature-4-mobile-menu.webp",
+				"device": "phone",
+				"mat": "paper",
+				"hotspots": [
+					{
+						"x": 79,
+						"y": 24,
+						"label": "Expandable storage-options group"
+					},
+					{
+						"x": 50,
+						"y": 51,
+						"label": "CMS use-case links on mobile too"
+					},
+					{
+						"x": 50,
+						"y": 70,
+						"label": "Large, centred tap targets"
+					}
+				]
+			},
+			{
+				"tag": "Journey",
+				"title": "An interactive [three-step] rental journey",
+				"problem": "First-time renters don't know how hiring a container works, and that uncertainty slows enquiries down.",
+				"built": "A tabbed \"Hoe we te werk gaan\" block walks visitors through a call or meeting, a guided tour and the contract, with \"Ga naar stap\" buttons and a sage contact strip with phone and email underneath. The same block is reused on the use-case pages.",
+				"attribution": "observed",
+				"source_link": "https://www.flowstorage.nl/",
+				"image": "@media:avix-cs-flow-storage-feature-5-rental-steps.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 50,
+						"y": 9,
+						"label": "Tabbed steps: contact, tour, contract"
+					},
+					{
+						"x": 13,
+						"y": 75,
+						"label": "Step-by-step \"next step\" buttons"
+					},
+					{
+						"x": 86,
+						"y": 93,
+						"label": "Direct phone and email at every step"
+					}
+				]
+			},
+			{
+				"tag": "Social proof",
+				"title": "Reviews the team [updates itself]",
+				"problem": "Handing over your belongings or caravan takes trust, so social proof has to be visible on every key page and easy to keep current.",
+				"built": "Customer reviews live in a CMS collection and render into a swipeable slider next to the Google rating, reused across service and use-case pages, so fresh reviews go live without a developer.",
+				"attribution": "observed",
+				"source_link": "https://www.flowstorage.nl/",
+				"image": "@media:avix-cs-flow-storage-feature-6-cms-reviews.webp",
+				"device": "browser",
+				"mat": "paper",
+				"hotspots": [
+					{
+						"x": 76,
+						"y": 13,
+						"label": "Google rating badge"
+					},
+					{
+						"x": 85,
+						"y": 38,
+						"label": "Slider controls"
+					},
+					{
+						"x": 17,
+						"y": 68,
+						"label": "Review cards fed by the CMS"
+					}
+				]
+			}
+		],
+		"gallery": {
+			"layout": "mosaic",
+			"mat": "paper",
+			"items": [
+				{
+					"image": "@media:avix-cs-flow-storage-render-cms.webp",
+					"device": "render",
+					"caption": "Use-case pages from the CMS"
+				},
+				{
+					"image": "@media:avix-cs-flow-storage-render-mobile.webp",
+					"device": "render",
+					"caption": "Full-screen mobile menu"
+				},
+				{
+					"image": "@media:avix-cs-flow-storage-gallery-1-home-bento.webp",
+					"device": "browser",
+					"caption": "Homepage bento section"
+				},
+				{
+					"image": "@media:avix-cs-flow-storage-gallery-6-mobile-bento.webp",
+					"device": "phone",
+					"caption": "Container storage card on mobile"
+				},
+				{
+					"image": "@media:avix-cs-flow-storage-gallery-8-mobile-toepassing.webp",
+					"device": "phone",
+					"caption": "Use-case page on mobile"
+				},
+				{
+					"image": "@media:avix-cs-flow-storage-gallery-3-containeropslag.webp",
+					"device": "browser",
+					"caption": "Container storage service page"
+				},
+				{
+					"image": "@media:avix-cs-flow-storage-gallery-4-wie-we-zijn.webp",
+					"device": "browser",
+					"caption": "About page"
+				},
+				{
+					"image": "@media:avix-cs-flow-storage-gallery-5-faq.webp",
+					"device": "browser",
+					"caption": "FAQ accordion"
+				},
+				{
+					"image": "@media:avix-cs-flow-storage-gallery-2-home-mission.webp",
+					"device": "browser",
+					"caption": "Mission block"
+				}
+			]
+		}
+	},
+	"alt": {
+		"avix-cs-flow-storage-hero-desktop.webp": "Flowstorage.nl homepage on desktop with the headline beside a bolt-shaped photo of the storage site and a price badge",
+		"avix-cs-flow-storage-hero-mobile.webp": "Flowstorage.nl homepage on a phone",
+		"avix-cs-flow-storage-feature-1-figma-hero.webp": "Flow Storage hero with a lightning-bolt image mask, two-tone headline and orange price roundel",
+		"avix-cs-flow-storage-feature-2-cms-toepassingen.webp": "Flow Storage navigation listing storage services and use-case pages",
+		"avix-cs-flow-storage-feature-3-lead-form.webp": "Flow Storage contact page with a call button and an enquiry form",
+		"avix-cs-flow-storage-feature-4-mobile-menu.webp": "Flow Storage full-screen mobile menu with storage options expanded",
+		"avix-cs-flow-storage-feature-5-rental-steps.webp": "Flow Storage three-step rental journey tabs with phone and email strip",
+		"avix-cs-flow-storage-feature-6-cms-reviews.webp": "Flow Storage customer review slider beside a Google rating badge",
+		"avix-cs-flow-storage-gallery-1-home-bento.webp": "Flow Storage homepage bento section with storage card, phone contact and rating",
+		"avix-cs-flow-storage-gallery-6-mobile-bento.webp": "Container storage card on a phone",
+		"avix-cs-flow-storage-gallery-8-mobile-toepassing.webp": "Storage during a move use-case page on a phone",
+		"avix-cs-flow-storage-gallery-3-containeropslag.webp": "Container storage in Roermond service page",
+		"avix-cs-flow-storage-gallery-4-wie-we-zijn.webp": "Flow Storage about page",
+		"avix-cs-flow-storage-gallery-5-faq.webp": "Flow Storage FAQ accordion on dark green",
+		"avix-cs-flow-storage-gallery-2-home-mission.webp": "Flow Storage mission block with a call to action",
+		"avix-cs-flow-storage-logo-white.png": "Flow Storage logo",
+		"avix-cs-flow-storage-og.jpg": "Flow Storage case study by AvixDigital, with the Flowstorage.nl homepage in a browser window",
+		"avix-cs-flow-storage-render-hero.webp": "Flowstorage.nl homepage on a laptop and a phone",
+		"avix-cs-flow-storage-render-cms.webp": "Flow Storage use-case page with the storage menu open on a laptop",
+		"avix-cs-flow-storage-render-mobile.webp": "Flow Storage mobile menu, storage card and use-case page on three phones"
+	}
+}

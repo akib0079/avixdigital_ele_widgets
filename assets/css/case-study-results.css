@@ -1,0 +1,1003 @@
+/*!
+ * Avix Digital · Case Study Results
+ * "04 · The impact" on a dark stage with a slow orange glow: the outcome
+ * statement beside its label, pillars, the build in numbers on a glass
+ * panel (every figure with its source), proof links to the live site and an
+ * optional client quote. Layout follows the widget width (container queries).
+ */
+
+.avix-csr {
+	--csr-bg: #0b0b0c;
+	--csr-ink: #ffffff;
+	--csr-muted: rgba(255, 255, 255, 0.72);
+	--csr-soft: rgba(255, 255, 255, 0.5);
+	--csr-label: rgba(255, 255, 255, 0.62);
+	--csr-line: rgba(255, 255, 255, 0.1);
+	--csr-accent: #fb6007;
+	--csr-accent-text: #ff7a2c;
+	--csr-panel-top: rgba(255, 255, 255, 0.045);
+	--csr-panel-bottom: rgba(255, 255, 255, 0.012);
+	--csr-panel-line: rgba(255, 255, 255, 0.09);
+	--csr-glow: color-mix(in srgb, var(--csr-accent) 22%, transparent);
+	--csr-grid-color: rgba(255, 255, 255, 0.022);
+	--csr-number-glow: 0 0 42px color-mix(in srgb, var(--csr-accent) 28%, transparent);
+	--csr-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--csr-font-body: "Inter", Arial, sans-serif;
+	--csr-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--csr-max: 1240px;
+
+	container: avix-csr / inline-size;
+	position: relative;
+	z-index: 0;
+	display: block;
+	width: 100%;
+	padding: var(--csr-pad-top, clamp(72px, 9vw, 140px)) 0 var(--csr-pad-bottom, clamp(72px, 9vw, 140px));
+	overflow: hidden;
+	overflow: clip;
+	isolation: isolate;
+	color: var(--csr-ink);
+	background: var(--csr-bg);
+	font-family: var(--csr-font-body);
+	-webkit-font-smoothing: antialiased;
+	scroll-margin-top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--avix-header-h, 0px));
+}
+
+.avix-csr *,
+.avix-csr *::before,
+.avix-csr *::after {
+	box-sizing: border-box;
+}
+
+.avix-csr--light {
+	--csr-bg: #f5f3ef;
+	--csr-ink: #1a1a1a;
+	--csr-muted: #4f5258;
+	--csr-soft: #6b665f;
+	--csr-label: #5c5f66;
+	--csr-line: rgba(26, 26, 26, 0.1);
+	--csr-accent-text: #c54804;
+	--csr-panel-top: #ffffff;
+	--csr-panel-bottom: #ffffff;
+	--csr-panel-line: rgba(26, 26, 26, 0.08);
+	--csr-glow: color-mix(in srgb, var(--csr-accent) 12%, transparent);
+	--csr-grid-color: rgba(26, 26, 26, 0.035);
+	--csr-number-glow: none;
+}
+
+/* ---------- Glow & grid ---------- */
+
+.avix-csr__fx {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+/* Faint 80px grid, strongest behind the statement. */
+.avix-csr__fx::before {
+	position: absolute;
+	inset: 0;
+	background-image:
+		linear-gradient(var(--csr-grid-color) 1px, transparent 1px),
+		linear-gradient(90deg, var(--csr-grid-color) 1px, transparent 1px);
+	background-position: center top;
+	background-size: 80px 80px;
+	-webkit-mask-image: radial-gradient(ellipse 70% 55% at 65% 18%, #000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 85%);
+	mask-image: radial-gradient(ellipse 70% 55% at 65% 18%, #000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 85%);
+	content: "";
+}
+
+.avix-csr__glow {
+	position: absolute;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, var(--csr-glow), transparent);
+	opacity: 0.85;
+	/* Breathing glow: an opacity-only drift runs on the compositor, unlike
+	   an animated filter or background. */
+	animation: avix-csr-glow 24s ease-in-out infinite alternate;
+}
+
+.avix-csr__glow--a {
+	top: -260px;
+	right: -180px;
+	width: 900px;
+	height: 900px;
+}
+
+.avix-csr__glow--b {
+	bottom: -220px;
+	left: -200px;
+	width: 620px;
+	height: 620px;
+	opacity: 0.55;
+	animation-delay: -12s;
+}
+
+.avix-csr--no-glow .avix-csr__glow {
+	display: none;
+}
+
+/* A state override that must beat every animation shorthand above. */
+.avix-csr.is-paused *,
+.avix-csr.is-paused *::before,
+.avix-csr.is-paused *::after {
+	animation-play-state: paused !important;
+}
+
+/* ---------- Frame ---------- */
+
+/* Container queries style descendants only: width-based tokens live on the
+   inner wrapper. */
+.avix-csr__inner {
+	--csr-gutter: max(18px, clamp(16px, 5cqi, 72px));
+	--csr-block-gap: clamp(64px, 7cqi, 104px);
+
+	position: relative;
+	width: min(calc(100% - 2 * var(--csr-gutter)), var(--csr-max));
+	margin-inline: auto;
+}
+
+.avix-csr__head,
+.avix-csr__proof {
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	column-gap: clamp(24px, 3cqi, 48px);
+	align-items: start;
+}
+
+.avix-csr__head-side {
+	grid-column: 1 / span 4;
+	padding-top: 0.55em;
+}
+
+.avix-csr__head-main {
+	grid-column: 5 / span 8;
+	min-width: 0;
+}
+
+/* ---------- Header ---------- */
+
+.avix-csr .avix-csr__eyebrow {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	color: var(--csr-label);
+	font-family: var(--csr-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+/* Locked to the first line, so a two-line label keeps its marker at the start. */
+.avix-csr .avix-csr__px {
+	flex: none;
+	width: 6px;
+	height: 6px;
+	margin-top: calc(0.65em - 3px);
+	background: var(--csr-accent);
+	box-shadow: 0 0 12px color-mix(in srgb, var(--csr-accent) 70%, transparent);
+}
+
+.avix-csr .avix-csr__num {
+	color: var(--csr-ink);
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-csr .avix-csr__dot {
+	margin: 0 -2px;
+	opacity: 0.6;
+}
+
+.avix-csr .avix-csr__title {
+	margin: clamp(14px, 1.6cqi, 20px) 0 0;
+	padding: 0;
+	color: var(--csr-ink);
+	font-family: var(--csr-font-display);
+	font-size: clamp(30px, 3.4cqi, 48px);
+	font-weight: 600;
+	line-height: 1.06;
+	letter-spacing: -0.035em;
+	text-transform: none;
+	text-wrap: balance;
+}
+
+.avix-csr .avix-csr__title .avix-csr__accent,
+.avix-csr .avix-csr__statement .avix-csr__accent {
+	color: var(--csr-accent-text);
+}
+
+.avix-csr .avix-csr__tag {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 4px 10px;
+	max-width: 100%;
+	margin: clamp(20px, 2cqi, 26px) 0 0;
+	padding: 9px 16px;
+	border: 1px solid var(--csr-panel-line);
+	border-radius: 999px;
+	background: var(--csr-panel-top);
+	line-height: 1.3;
+}
+
+.avix-csr .avix-csr__tag-key {
+	color: var(--csr-label);
+	font-size: 11.5px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.avix-csr .avix-csr__tag-val {
+	color: var(--csr-accent-text);
+	font-family: var(--csr-font-display);
+	font-size: 14.5px;
+	font-weight: 500;
+	letter-spacing: -0.005em;
+}
+
+.avix-csr .avix-csr__statement {
+	max-width: 24ch;
+	margin: 0;
+	padding: 0;
+	color: var(--csr-ink);
+	font-family: var(--csr-font-display);
+	font-size: clamp(28px, 3.6cqi, 54px);
+	font-weight: 500;
+	line-height: 1.16;
+	letter-spacing: -0.03em;
+	text-wrap: balance;
+}
+
+.avix-csr__body {
+	max-width: 62ch;
+	margin-top: clamp(28px, 3cqi, 40px);
+}
+
+.avix-csr__body--cols {
+	max-width: none;
+	columns: 2;
+	column-gap: clamp(28px, 3.4cqi, 48px);
+}
+
+.avix-csr .avix-csr__body p {
+	margin: 0 0 1em;
+	padding: 0;
+	color: var(--csr-muted);
+	font-family: var(--csr-font-body);
+	font-size: clamp(15.5px, 1.25cqi, 17px);
+	line-height: 1.7;
+	text-wrap: pretty;
+	break-inside: avoid;
+}
+
+.avix-csr .avix-csr__body p:last-child {
+	margin-bottom: 0;
+}
+
+.avix-csr .avix-csr__body a {
+	color: var(--csr-ink);
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--csr-accent) 60%, transparent);
+	text-underline-offset: 3px;
+	box-shadow: none;
+}
+
+.avix-csr .avix-csr__body strong {
+	color: var(--csr-ink);
+	font-weight: 600;
+}
+
+/* ---------- Pillars ---------- */
+
+.avix-csr .avix-csr__pillars {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 24px clamp(24px, 3cqi, 48px);
+	margin: var(--csr-block-gap) 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-csr .avix-csr__pillars--4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.avix-csr .avix-csr__pillars--2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.avix-csr .avix-csr__pillars--1 {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.avix-csr .avix-csr__pillar {
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+	margin: 0;
+	padding: 22px 0 0;
+	border-top: 1px solid var(--csr-line);
+	list-style: none;
+}
+
+.avix-csr .avix-csr__pillar::marker {
+	content: none;
+}
+
+/* An orange segment lights the start of each hairline. */
+.avix-csr .avix-csr__pillar::before {
+	position: absolute;
+	top: -1px;
+	left: 0;
+	width: 48px;
+	height: 1px;
+	background: var(--csr-accent);
+	transform-origin: 0 50%;
+	content: "";
+}
+
+.avix-csr__pillar-px {
+	flex: none;
+	width: 8px;
+	height: 8px;
+	margin-top: 0.5em;
+	background: var(--csr-accent);
+}
+
+.avix-csr .avix-csr__pillar-text {
+	color: var(--csr-ink);
+	font-family: var(--csr-font-display);
+	font-size: clamp(18px, 1.6cqi, 20px);
+	font-weight: 500;
+	line-height: 1.35;
+	letter-spacing: -0.012em;
+	text-wrap: balance;
+}
+
+/* ---------- Numbers ---------- */
+
+.avix-csr__numbers {
+	margin-top: var(--csr-block-gap);
+}
+
+.avix-csr .avix-csr__subtitle {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0 0 clamp(18px, 2cqi, 24px);
+	padding: 0;
+	color: var(--csr-label);
+	font-family: var(--csr-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.avix-csr .avix-csr__subtitle::before {
+	flex: none;
+	width: 18px;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--csr-accent);
+	content: "";
+}
+
+/* A glass panel: hairline cells, a light edge along the top. */
+.avix-csr .avix-csr__metrics {
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(var(--csr-cols, 3), minmax(0, 1fr));
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	border: 1px solid var(--csr-panel-line);
+	border-radius: 28px;
+	background: linear-gradient(180deg, var(--csr-panel-top), var(--csr-panel-bottom));
+	list-style: none;
+}
+
+.avix-csr .avix-csr__metrics::before {
+	position: absolute;
+	top: 0;
+	left: 8%;
+	right: 8%;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--csr-accent) 70%, transparent), transparent);
+	opacity: 0.8;
+	content: "";
+}
+
+.avix-csr .avix-csr__metrics--1 {
+	--csr-cols: 1;
+	max-width: 560px;
+}
+
+.avix-csr .avix-csr__metrics--2 {
+	--csr-cols: 2;
+}
+
+.avix-csr .avix-csr__metrics--4 {
+	--csr-cols: 4;
+}
+
+.avix-csr--light .avix-csr__metrics {
+	box-shadow: 0 1px 2px rgba(26, 26, 26, 0.03), 0 24px 50px -36px rgba(26, 26, 26, 0.25);
+}
+
+.avix-csr .avix-csr__metric {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	margin: 0;
+	padding: clamp(26px, 2.8cqi, 40px) clamp(22px, 2.4cqi, 36px);
+	border-left: 1px solid var(--csr-panel-line);
+	list-style: none;
+}
+
+.avix-csr .avix-csr__metric::marker {
+	content: none;
+}
+
+.avix-csr .avix-csr__metric:first-child {
+	border-left: 0;
+}
+
+.avix-csr .avix-csr__value {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0 0.06em;
+	margin: 0;
+	padding: 0;
+	color: var(--csr-ink);
+	font-family: var(--csr-font-display);
+	font-size: clamp(48px, 6.4cqi, 96px);
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -0.045em;
+	font-variant-numeric: tabular-nums;
+	text-shadow: var(--csr-number-glow);
+}
+
+.avix-csr .avix-csr__prefix {
+	flex-basis: 100%;
+	margin-bottom: 0.3em;
+	color: var(--csr-label);
+	font-family: var(--csr-font-body);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-shadow: none;
+}
+
+.avix-csr .avix-csr__suffix {
+	color: var(--csr-accent-text);
+	font-size: 0.62em;
+	letter-spacing: 0;
+}
+
+.avix-csr .avix-csr__number--long {
+	font-size: 0.56em;
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+}
+
+.avix-csr .avix-csr__metric-label {
+	max-width: 30ch;
+	margin: clamp(14px, 1.4cqi, 18px) 0 0;
+	padding: 0;
+	color: color-mix(in srgb, var(--csr-ink) 80%, transparent);
+	font-family: var(--csr-font-body);
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.5;
+	text-wrap: pretty;
+}
+
+.avix-csr .avix-csr__source {
+	margin: auto 0 0;
+	padding: 16px 0 0;
+	color: var(--csr-soft);
+	font-family: var(--csr-font-body);
+	font-size: 12.5px;
+	line-height: 1.55;
+	text-wrap: pretty;
+}
+
+.avix-csr .avix-csr__source-key {
+	color: var(--csr-label);
+	font-weight: 600;
+}
+
+.avix-csr .avix-csr__footnote {
+	max-width: 72ch;
+	margin: 18px 0 0;
+	padding: 0;
+	color: var(--csr-soft);
+	font-family: var(--csr-font-body);
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+/* Visually hidden, read by screen readers (the counting copy is hidden). */
+.avix-csr .avix-csr__sr {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	margin: -1px !important;
+	padding: 0 !important;
+	overflow: hidden !important;
+	clip: rect(0 0 0 0) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
+}
+
+/* ---------- Proof links ---------- */
+
+.avix-csr__proof {
+	margin-top: var(--csr-block-gap);
+}
+
+.avix-csr .avix-csr__proof-title {
+	grid-column: 1 / span 4;
+	margin: 0;
+	padding-top: 24px;
+}
+
+.avix-csr .avix-csr__links {
+	grid-column: 5 / span 8;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border-bottom: 1px solid var(--csr-line);
+	list-style: none;
+}
+
+.avix-csr .avix-csr__links li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-csr .avix-csr__links li::before,
+.avix-csr .avix-csr__links li::marker,
+.avix-csr .avix-csr__pillars li::before,
+.avix-csr .avix-csr__metrics li::before {
+	content: none;
+}
+
+.avix-csr .avix-csr__pillars li.avix-csr__pillar::before {
+	content: "";
+}
+
+.avix-csr .avix-csr__link,
+.avix-csr .avix-csr__link:visited,
+.avix-csr .avix-csr__link:focus {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, auto) 40px;
+	align-items: center;
+	gap: 8px 20px;
+	min-height: 64px;
+	padding: 14px 0;
+	border-top: 1px solid var(--csr-line);
+	color: var(--csr-ink);
+	background: none;
+	text-decoration: none;
+	box-shadow: none;
+}
+
+.avix-csr .avix-csr__link-label {
+	min-width: 0;
+	font-family: var(--csr-font-display);
+	font-size: clamp(17px, 1.5cqi, 20px);
+	font-weight: 500;
+	line-height: 1.3;
+	letter-spacing: -0.012em;
+	transition: transform 0.45s var(--csr-ease), color 0.25s ease;
+}
+
+.avix-csr .avix-csr__link-url {
+	max-width: 30ch;
+	overflow: hidden;
+	color: var(--csr-soft);
+	font-size: 13.5px;
+	line-height: 1.4;
+	text-align: right;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.avix-csr .avix-csr__link-icon {
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border: 1px solid var(--csr-panel-line);
+	border-radius: 50%;
+	color: var(--csr-ink);
+	transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.avix-csr .avix-csr__link-icon svg,
+.avix-csr .avix-csr__cite-link svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.35s var(--csr-ease);
+}
+
+@media (hover: hover) {
+	.avix-csr .avix-csr__link:hover {
+		color: var(--csr-ink);
+	}
+
+	.avix-csr .avix-csr__link:hover .avix-csr__link-label {
+		color: var(--csr-ink);
+		transform: translateX(4px);
+	}
+
+	.avix-csr .avix-csr__link:hover .avix-csr__link-icon {
+		border-color: var(--csr-accent);
+		color: #ffffff;
+		background: var(--csr-accent);
+	}
+
+	.avix-csr .avix-csr__link:hover .avix-csr__link-icon svg,
+	.avix-csr .avix-csr__cite-link:hover svg {
+		transform: translate(2px, -2px);
+	}
+}
+
+.avix-csr .avix-csr__link:focus-visible,
+.avix-csr .avix-csr__cite-link:focus-visible,
+.avix-csr .avix-csr__body a:focus-visible {
+	outline: 2px solid var(--csr-accent) !important;
+	outline-offset: 4px !important;
+	border-radius: 6px;
+}
+
+.avix-csr :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
+/* ---------- Quote ---------- */
+
+.avix-csr__quote-block {
+	max-width: 880px;
+	margin: var(--csr-block-gap) auto 0;
+}
+
+.avix-csr .avix-csr__quote-wrap {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: visible;
+	text-align: center;
+}
+
+/* Two orange pixels stand in for the quote marks. */
+.avix-csr__glyph {
+	display: inline-flex;
+	gap: 6px;
+	margin-bottom: 26px;
+}
+
+.avix-csr__glyph i {
+	display: block;
+	width: 8px;
+	height: 8px;
+	background: var(--csr-accent);
+	box-shadow: 0 0 14px color-mix(in srgb, var(--csr-accent) 60%, transparent);
+}
+
+.avix-csr .avix-csr__quote {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	quotes: none;
+}
+
+.avix-csr .avix-csr__quote p {
+	margin: 0;
+	padding: 0;
+	color: var(--csr-ink);
+	font-family: var(--csr-font-display);
+	font-size: clamp(24px, 2.8cqi, 40px);
+	font-style: normal;
+	font-weight: 500;
+	line-height: 1.3;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+}
+
+.avix-csr .avix-csr__cite {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 6px 14px;
+	margin-top: 26px;
+	color: var(--csr-muted);
+	font-size: 14.5px;
+}
+
+.avix-csr .avix-csr__cite-name {
+	color: var(--csr-ink);
+	font-style: normal;
+	font-weight: 600;
+}
+
+.avix-csr .avix-csr__cite-link,
+.avix-csr .avix-csr__cite-link:visited {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 44px;
+	color: var(--csr-accent-text);
+	font-weight: 600;
+	text-decoration: none;
+	box-shadow: none;
+}
+
+/* ---------- Motion ---------- */
+
+/* Each group (header, pillars, numbers, proof, quote) reveals on its own
+   when it comes into view, so nothing animates out of sight. */
+.avix-csr.is-armed .avix-csr__rise {
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 0.7s ease, transform 0.8s var(--csr-ease);
+	transition-delay: calc(var(--i, 0) * 80ms);
+}
+
+.avix-csr.is-armed .is-in .avix-csr__rise,
+.avix-csr.is-armed .avix-csr__rise.is-in {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-csr.is-armed .avix-csr__pillar,
+.avix-csr.is-armed .avix-csr__metric,
+.avix-csr.is-armed .avix-csr__link-item {
+	opacity: 0;
+	transform: translateY(20px);
+	transition: opacity 0.7s ease, transform 0.8s var(--csr-ease);
+}
+
+.avix-csr.is-armed .avix-csr__pillar {
+	transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+.avix-csr.is-armed .avix-csr__metric {
+	transition-delay: calc(120ms + var(--i, 0) * 110ms);
+}
+
+.avix-csr.is-armed .avix-csr__link-item {
+	transition-delay: calc(80ms + var(--i, 0) * 60ms);
+}
+
+.avix-csr.is-armed .avix-csr__pillar::before {
+	transform: scaleX(0);
+	transition: transform 0.9s var(--csr-ease);
+	transition-delay: calc(300ms + var(--i, 0) * 90ms);
+}
+
+.avix-csr.is-armed .avix-csr__pillars.is-in .avix-csr__pillar,
+.avix-csr.is-armed .avix-csr__numbers.is-in .avix-csr__metric,
+.avix-csr.is-armed .avix-csr__proof.is-in .avix-csr__link-item,
+.avix-csr.is-armed .avix-csr__pillars.is-in .avix-csr__pillar::before {
+	opacity: 1;
+	transform: none;
+}
+
+/* No entrance replays while editing in Elementor. */
+.elementor-editor-active .avix-csr .avix-csr__rise,
+.elementor-editor-active .avix-csr .avix-csr__pillar,
+.elementor-editor-active .avix-csr .avix-csr__metric,
+.elementor-editor-active .avix-csr .avix-csr__link-item {
+	opacity: 1;
+	transform: none;
+}
+
+/* ---------- Container queries ---------- */
+
+@container avix-csr (max-width: 1024px) {
+	.avix-csr .avix-csr__metrics--4 {
+		--csr-cols: 2;
+	}
+
+	.avix-csr .avix-csr__metrics--4 .avix-csr__metric:nth-child(3) {
+		border-left: 0;
+	}
+
+	.avix-csr .avix-csr__metrics--4 .avix-csr__metric:nth-child(n + 3) {
+		border-top: 1px solid var(--csr-panel-line);
+	}
+
+	.avix-csr .avix-csr__pillars--4 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@container avix-csr (max-width: 860px) {
+	.avix-csr__head,
+	.avix-csr__proof {
+		display: block;
+	}
+
+	.avix-csr__head-side {
+		padding-top: 0;
+		margin-bottom: clamp(28px, 5cqi, 40px);
+	}
+
+	.avix-csr .avix-csr__title {
+		max-width: 18ch;
+	}
+
+	.avix-csr .avix-csr__statement {
+		max-width: 22ch;
+	}
+
+	.avix-csr__body--cols {
+		max-width: 62ch;
+		columns: 1;
+	}
+
+	.avix-csr .avix-csr__pillars,
+	.avix-csr .avix-csr__pillars--4 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.avix-csr .avix-csr__metrics {
+		--csr-cols: 2;
+	}
+
+	.avix-csr .avix-csr__metrics--1 {
+		--csr-cols: 1;
+	}
+
+	/* Three figures: two on top, the third across the panel. */
+	.avix-csr .avix-csr__metrics--3 .avix-csr__metric:nth-child(3) {
+		grid-column: 1 / -1;
+		border-top: 1px solid var(--csr-panel-line);
+		border-left: 0;
+	}
+
+	.avix-csr .avix-csr__metrics--4 .avix-csr__metric:nth-child(3) {
+		border-left: 0;
+	}
+
+	.avix-csr .avix-csr__proof-title {
+		margin-bottom: 18px;
+		padding-top: 0;
+	}
+}
+
+@container avix-csr (max-width: 600px) {
+	.avix-csr__inner {
+		--csr-block-gap: clamp(56px, 14cqi, 72px);
+	}
+
+	.avix-csr .avix-csr__statement {
+		font-size: clamp(27px, 7.4cqi, 34px);
+		line-height: 1.2;
+	}
+
+	.avix-csr .avix-csr__title {
+		font-size: clamp(30px, 8.4cqi, 36px);
+	}
+
+	.avix-csr .avix-csr__pillars,
+	.avix-csr .avix-csr__pillars--2,
+	.avix-csr .avix-csr__pillars--4 {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 18px;
+	}
+
+	.avix-csr .avix-csr__metrics,
+	.avix-csr .avix-csr__metrics--4 {
+		--csr-cols: 1;
+		border-radius: 22px;
+	}
+
+	.avix-csr .avix-csr__metric,
+	.avix-csr .avix-csr__metrics--3 .avix-csr__metric:nth-child(3),
+	.avix-csr .avix-csr__metrics--4 .avix-csr__metric:nth-child(3) {
+		grid-column: auto;
+		padding: 26px 24px;
+		border-top: 1px solid var(--csr-panel-line);
+		border-left: 0;
+	}
+
+	.avix-csr .avix-csr__metric:first-child {
+		border-top: 0;
+	}
+
+	.avix-csr .avix-csr__value {
+		font-size: 56px;
+	}
+
+	/* The address wraps under the label. */
+	.avix-csr .avix-csr__link,
+	.avix-csr .avix-csr__link:visited,
+	.avix-csr .avix-csr__link:focus {
+		grid-template-columns: minmax(0, 1fr) 40px;
+		grid-template-areas: "label icon" "url icon";
+		gap: 4px 16px;
+		padding: 16px 0;
+	}
+
+	.avix-csr .avix-csr__link-label {
+		grid-area: label;
+	}
+
+	.avix-csr .avix-csr__link-url {
+		grid-area: url;
+		max-width: 100%;
+		text-align: left;
+	}
+
+	.avix-csr .avix-csr__link-icon {
+		grid-area: icon;
+	}
+
+	.avix-csr .avix-csr__quote-wrap {
+		text-align: left;
+	}
+
+	.avix-csr .avix-csr__cite {
+		justify-content: flex-start;
+	}
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-csr-glow {
+	0% {
+		opacity: 0.45;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-csr *,
+	.avix-csr *::before,
+	.avix-csr *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-csr.is-armed .avix-csr__rise,
+	.avix-csr.is-armed .avix-csr__pillar,
+	.avix-csr.is-armed .avix-csr__metric,
+	.avix-csr.is-armed .avix-csr__link-item,
+	.avix-csr.is-armed .avix-csr__pillar::before {
+		opacity: 1;
+		transform: none;
+	}
+
+	.avix-csr__glow {
+		opacity: 0.7;
+	}
+}

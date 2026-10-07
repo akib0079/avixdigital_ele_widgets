@@ -1,0 +1,966 @@
+/*!
+ * Avix Digital · Case Study admin
+ * Native WordPress admin styling with restrained Avix touches: the orange
+ * accent on the active tab, pixel squares on section titles, dark previews
+ * for white logos and studio renders.
+ */
+
+.avix-cs-box,
+.avix-cs-settings {
+	--cs-accent: #fb6007;
+	--cs-accent-text: #c54804;
+	--cs-ink: #1d2327;
+	--cs-muted: #646970;
+	--cs-line: #dcdcde;
+	--cs-soft: #f6f7f7;
+	--cs-dark: #0b0b0c;
+	--cs-radius: 8px;
+}
+
+.avix-cs-box *,
+.avix-cs-box *::before,
+.avix-cs-box *::after,
+.avix-cs-settings *,
+.avix-cs-settings *::before,
+.avix-cs-settings *::after {
+	box-sizing: border-box;
+}
+
+/* ---------- Box frame ---------- */
+
+#avix-cs-details .inside {
+	margin: 0;
+	padding: 0;
+}
+
+.avix-cs-box {
+	color: var(--cs-ink);
+}
+
+.avix-cs-box__foot {
+	margin: 0;
+	padding: 12px 16px 14px;
+	border-top: 1px solid var(--cs-line);
+	color: var(--cs-muted);
+	font-size: 12px;
+}
+
+/* ---------- Starter bar ---------- */
+
+.avix-cs-starter {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px 20px;
+	padding: 14px 16px;
+	border-bottom: 1px solid var(--cs-line);
+	background: var(--cs-soft);
+}
+
+.avix-cs-starter__status {
+	display: flex;
+	flex: 1 1 320px;
+	align-items: flex-start;
+	gap: 10px;
+	min-width: 0;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.avix-cs-starter__status strong {
+	color: var(--cs-ink);
+}
+
+.avix-cs-starter__status span {
+	color: var(--cs-muted);
+}
+
+.avix-cs-starter__dot {
+	flex: none;
+	width: 8px;
+	height: 8px;
+	margin-top: 6px;
+	background: #dba617;
+}
+
+.avix-cs-starter.has-layout .avix-cs-starter__dot {
+	background: #00a32a;
+}
+
+.avix-cs-starter__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.avix-cs-starter__actions .is-busy {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+/* ---------- Tabs ---------- */
+
+.avix-cs-tabs {
+	display: none;
+	gap: 2px;
+	padding: 0 8px;
+	overflow-x: auto;
+	border-bottom: 1px solid var(--cs-line);
+	scrollbar-width: none;
+}
+
+.avix-cs-tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.avix-cs-box.is-js .avix-cs-tabs {
+	display: flex;
+}
+
+.avix-cs-tab {
+	position: relative;
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 8px;
+	min-height: 46px;
+	margin: 0;
+	padding: 0 14px;
+	border: 0;
+	border-radius: 0;
+	color: var(--cs-muted);
+	background: none;
+	box-shadow: none;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
+	transition: color 0.15s ease;
+}
+
+.avix-cs-tab::after {
+	content: "";
+	position: absolute;
+	right: 10px;
+	bottom: -1px;
+	left: 10px;
+	height: 2px;
+	background: transparent;
+	transition: background-color 0.15s ease;
+}
+
+.avix-cs-tab:hover {
+	color: var(--cs-ink);
+}
+
+.avix-cs-tab.is-active {
+	color: var(--cs-ink);
+}
+
+.avix-cs-tab.is-active::after {
+	background: var(--cs-accent);
+}
+
+.avix-cs-tab:focus {
+	outline: none;
+	box-shadow: none;
+}
+
+.avix-cs-tab:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: -4px;
+	border-radius: 4px;
+}
+
+.avix-cs-tab__count {
+	display: inline-block;
+	min-width: 30px;
+	padding: 3px 6px;
+	border-radius: 999px;
+	color: var(--cs-muted);
+	background: #f0f0f1;
+	font-size: 11px;
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+	text-align: center;
+}
+
+.avix-cs-tab__count.is-done {
+	color: #00702a;
+	background: #e6f4ea;
+}
+
+/* ---------- Panels ---------- */
+
+.avix-cs-panel {
+	padding: 4px 16px 8px;
+}
+
+.avix-cs-panel:focus {
+	outline: none;
+}
+
+.avix-cs-panel:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: -2px;
+}
+
+/* Without JS every panel shows, one after the other, each with its title. */
+.avix-cs-box:not(.is-js) .avix-cs-panel + .avix-cs-panel {
+	border-top: 1px solid var(--cs-line);
+}
+
+.avix-cs-box:not(.is-js) .avix-cs-panel__title {
+	position: static !important;
+	width: auto;
+	height: auto;
+	margin: 16px 0 0;
+	clip: auto;
+	clip-path: none;
+	font-size: 14px;
+}
+
+.avix-cs-section {
+	padding: 20px 0 22px;
+}
+
+.avix-cs-section + .avix-cs-section {
+	border-top: 1px solid #f0f0f1;
+}
+
+.avix-cs-section__head {
+	margin: 0 0 14px;
+}
+
+.avix-cs-box .avix-cs-section__title {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin: 0;
+	padding: 0;
+	color: var(--cs-ink);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+/* The pixel motif: a 6px orange square, as on the case-study eyebrows. */
+.avix-cs-box .avix-cs-section__title::before,
+.avix-cs-settings__px {
+	content: "";
+	display: inline-block;
+	flex: none;
+	width: 6px;
+	height: 6px;
+	background: var(--cs-accent);
+}
+
+.avix-cs-section__note {
+	margin: 4px 0 0 15px;
+	color: var(--cs-muted);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+/* ---------- Grid ---------- */
+
+.avix-cs-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 18px;
+}
+
+.avix-cs-grid--2,
+.avix-cs-grid--quote {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 18px 20px;
+}
+
+.avix-cs-grid--3 {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 18px 20px;
+}
+
+.avix-cs-grid--2 .is-wide,
+.avix-cs-grid--3 .is-wide,
+.avix-cs-grid--quote .avix-cs-field--textarea {
+	grid-column: 1 / -1;
+}
+
+.avix-cs-grid--media {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 16px;
+}
+
+/* ---------- Fields ---------- */
+
+.avix-cs-field {
+	min-width: 0;
+}
+
+.avix-cs-field__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	margin: 0 0 6px;
+}
+
+.avix-cs-field__label {
+	color: var(--cs-ink);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.avix-cs-badge {
+	display: inline-block;
+	margin-left: 4px;
+	padding: 1px 5px;
+	border-radius: 4px;
+	color: var(--cs-accent-text);
+	background: #fff3e9;
+	font-family: Menlo, Consolas, monospace;
+	font-size: 10px;
+	font-weight: 600;
+	vertical-align: 1px;
+	cursor: help;
+}
+
+.avix-cs-count {
+	flex: none;
+	color: #8c8f94;
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.avix-cs-count.is-near {
+	color: #996800;
+}
+
+.avix-cs-count.is-over {
+	color: #d63638;
+	font-weight: 600;
+}
+
+.avix-cs-box .avix-cs-input,
+.avix-cs-field--excerpt textarea {
+	display: block;
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	font-size: 14px;
+}
+
+.avix-cs-box textarea.avix-cs-input,
+.avix-cs-field--excerpt textarea {
+	min-height: 0;
+	padding: 8px 10px;
+	line-height: 1.55;
+	resize: vertical;
+}
+
+.avix-cs-box input.avix-cs-input--year {
+	max-width: 120px;
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-cs-box .avix-cs-field--select .avix-cs-input {
+	max-width: 420px;
+}
+
+.avix-cs-field.has-error .avix-cs-input {
+	border-color: #d63638;
+	box-shadow: 0 0 0 1px #d63638;
+}
+
+.avix-cs-error {
+	margin: 6px 0 0;
+	color: #d63638;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.avix-cs-help {
+	margin: 6px 0 0;
+	color: var(--cs-muted);
+	font-size: 12px;
+	line-height: 1.55;
+}
+
+.avix-cs-help code,
+.avix-cs-section__note code {
+	padding: 1px 5px;
+	border-radius: 3px;
+	color: var(--cs-ink);
+	background: #f0f0f1;
+	font-size: 11.5px;
+}
+
+.avix-cs-field--excerpt {
+	padding: 4px 0 2px;
+}
+
+/* Colour picker: keep WordPress's control, aligned with the other fields. */
+.avix-cs-field--color .wp-picker-container {
+	display: block;
+}
+
+.avix-cs-field--color .wp-picker-container .wp-color-result.button {
+	margin: 0 6px 0 0;
+}
+
+.avix-cs-field--color .wp-picker-input-wrap input.avix-cs-input {
+	display: inline-block;
+	width: 7.5em;
+}
+
+/* ---------- Media cards ---------- */
+
+.avix-cs-media {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+}
+
+.avix-cs-media__preview {
+	position: relative;
+	display: grid;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	place-items: center;
+	border: 1px dashed #c3c4c7;
+	border-radius: var(--cs-radius);
+	color: var(--cs-muted);
+	background: var(--cs-soft);
+	cursor: pointer;
+	transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.avix-cs-media[data-ratio="phone"] .avix-cs-media__preview img {
+	object-fit: contain;
+}
+
+.avix-cs-media__preview:hover {
+	border-color: #8c8f94;
+}
+
+.avix-cs-media__preview:focus {
+	outline: none;
+}
+
+.avix-cs-media__preview:focus-visible {
+	outline: 2px solid #2271b1;
+	outline-offset: 2px;
+}
+
+.avix-cs-media.has-image .avix-cs-media__preview {
+	border-style: solid;
+	border-color: var(--cs-line);
+	background: #fff;
+}
+
+.avix-cs-media.is-dark .avix-cs-media__preview {
+	border-color: #2c2c30;
+	color: rgba(255, 255, 255, 0.62);
+	background: var(--cs-dark);
+}
+
+.avix-cs-media.is-dark:not(.has-image) .avix-cs-media__preview {
+	border-style: dashed;
+	border-color: #3a3b3f;
+}
+
+.avix-cs-media__preview img {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+}
+
+.avix-cs-media[data-ratio="logo"] .avix-cs-media__preview img {
+	inset: 22%;
+	width: 56%;
+	height: 56%;
+	object-fit: contain;
+	object-position: center;
+}
+
+.avix-cs-media__empty {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.avix-cs-media__empty .dashicons {
+	width: 24px;
+	height: 24px;
+	font-size: 24px;
+	opacity: 0.7;
+}
+
+.avix-cs-media.has-image .avix-cs-media__empty {
+	display: none;
+}
+
+.avix-cs-media__meta {
+	min-height: 18px;
+	margin: 6px 0 0;
+	overflow: hidden;
+	color: var(--cs-muted);
+	font-size: 11px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.avix-cs-media__actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 4px 0 0;
+}
+
+.avix-cs-media__remove.button-link {
+	color: #b32d2e;
+	font-size: 12px;
+	text-decoration: none;
+}
+
+.avix-cs-media__remove.button-link:hover {
+	color: #8a2424;
+	text-decoration: underline;
+}
+
+.avix-cs-media .avix-cs-help {
+	margin-top: 8px;
+}
+
+/* ---------- Metrics ---------- */
+
+.avix-cs-metrics__head,
+.avix-cs-metric {
+	display: grid;
+	grid-template-columns: 30px minmax(0, 0.7fr) minmax(0, 1.4fr) minmax(0, 1.9fr);
+	align-items: start;
+	gap: 10px;
+}
+
+.avix-cs-metrics__head {
+	margin: 0 0 6px;
+	color: var(--cs-muted);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.avix-cs-metric {
+	padding: 8px 0;
+	border-top: 1px solid #f0f0f1;
+}
+
+.avix-cs-metric__num {
+	padding-top: 8px;
+	color: var(--cs-accent-text);
+	font-size: 12px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-cs-metric .avix-cs-field__head {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+.avix-cs-metric .avix-cs-error {
+	font-size: 11px;
+}
+
+.avix-cs-metric__state {
+	grid-column: 2 / -1;
+	margin: 0;
+	color: #996800;
+	font-size: 12px;
+}
+
+.avix-cs-metric.is-incomplete .avix-cs-metric__num {
+	color: #996800;
+}
+
+/* ---------- Notices ---------- */
+
+.avix-cs-notice ul {
+	margin: 0 0 10px 18px;
+	list-style: disc;
+}
+
+/* ---------- List table ---------- */
+
+.post-type-avix_case_study .column-avix_cs_thumb {
+	width: 64px;
+}
+
+.post-type-avix_case_study .column-avix_cs_order {
+	width: 76px;
+	text-align: center;
+}
+
+.post-type-avix_case_study .column-avix_cs_year {
+	width: 64px;
+}
+
+.post-type-avix_case_study .column-avix_cs_client {
+	width: 18%;
+}
+
+.avix-cs-thumb {
+	display: block;
+	width: 48px;
+	height: 48px;
+	border-radius: 6px;
+	background: #f0f0f1;
+	object-fit: cover;
+	object-position: top;
+}
+
+.avix-cs-thumb.is-empty {
+	border: 1px dashed #c3c4c7;
+}
+
+.avix-cs-order {
+	display: inline-block;
+	min-width: 28px;
+	padding: 3px 6px;
+	border-radius: 999px;
+	background: #f0f0f1;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+}
+
+.avix-cs-domain {
+	color: var(--cs-muted, #646970);
+	font-size: 12px;
+	text-decoration: none;
+}
+
+/* ---------- Settings page ---------- */
+
+.avix-cs-settings {
+	max-width: 980px;
+}
+
+.avix-cs-settings .avix-cs-settings__title {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 4px;
+}
+
+.avix-cs-settings__title span:not(.avix-cs-settings__px) {
+	color: var(--cs-muted);
+	font-weight: 400;
+}
+
+.avix-cs-settings .avix-cs-settings__px {
+	width: 8px;
+	height: 8px;
+}
+
+.avix-cs-settings__lead {
+	max-width: 70ch;
+	margin: 0 0 20px;
+	color: var(--cs-muted);
+	font-size: 14px;
+}
+
+.avix-cs-card {
+	margin: 0 0 16px;
+	border: 1px solid #c3c4c7;
+	border-radius: var(--cs-radius);
+	background: #fff;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.avix-cs-card__head {
+	padding: 18px 24px 0;
+}
+
+.avix-cs-card__head h2 {
+	margin: 0;
+	font-size: 15px;
+	line-height: 1.4;
+}
+
+.avix-cs-card__head p {
+	max-width: 72ch;
+	margin: 4px 0 0;
+	color: var(--cs-muted);
+}
+
+.avix-cs-card__body {
+	padding: 16px 24px 22px;
+}
+
+.avix-cs-label {
+	display: block;
+	margin: 0 0 6px;
+	font-weight: 600;
+}
+
+.avix-cs-card select {
+	width: 100%;
+	max-width: 520px;
+}
+
+.avix-cs-muted {
+	color: var(--cs-muted);
+}
+
+.avix-cs-ok {
+	color: #00702a;
+}
+
+.avix-cs-choices {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.avix-cs-choice {
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 14px 16px;
+	border: 1px solid var(--cs-line);
+	border-radius: var(--cs-radius);
+	cursor: pointer;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.avix-cs-choice:hover {
+	border-color: #8c8f94;
+}
+
+.avix-cs-choice input[type="radio"] {
+	flex: none;
+	margin: 2px 0 0;
+}
+
+.avix-cs-choice:has(input:checked) {
+	border-color: var(--cs-accent);
+	box-shadow: 0 0 0 1px var(--cs-accent);
+	background: #fffaf6;
+}
+
+.avix-cs-choice__body {
+	display: grid;
+	gap: 4px;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.avix-cs-choice__body span {
+	color: var(--cs-muted);
+	font-size: 12px;
+}
+
+.avix-cs-settings__submit {
+	margin: 4px 0 28px;
+}
+
+/* Importer */
+
+.avix-cs-import__table {
+	border-radius: 6px;
+}
+
+.avix-cs-import__table td,
+.avix-cs-import__table th {
+	vertical-align: top;
+}
+
+.avix-cs-import__table .check-column {
+	padding-top: 12px;
+}
+
+.avix-cs-slug {
+	display: inline-block;
+	margin-top: 4px;
+	padding: 0;
+	color: var(--cs-muted);
+	background: none;
+	font-size: 11.5px;
+}
+
+.avix-cs-pill {
+	display: inline-block;
+	padding: 3px 9px;
+	border-radius: 999px;
+	color: var(--cs-muted);
+	background: #f0f0f1;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+.avix-cs-pill.is-draft {
+	color: #8a5a00;
+	background: #fcf3dc;
+}
+
+.avix-cs-pill.is-live {
+	color: #00702a;
+	background: #e6f4ea;
+}
+
+.avix-cs-rowlinks {
+	display: block;
+	margin-top: 6px;
+	font-size: 12px;
+}
+
+.avix-cs-missing summary {
+	color: #b32d2e;
+	cursor: pointer;
+}
+
+.avix-cs-missing ul {
+	margin: 8px 0 0;
+}
+
+.avix-cs-missing li {
+	margin: 0 0 4px;
+}
+
+.avix-cs-missing code {
+	padding: 0;
+	background: none;
+	font-size: 11.5px;
+	overflow-wrap: anywhere;
+}
+
+.avix-cs-import__table th:nth-child(3),
+.avix-cs-import__table td:nth-child(3) {
+	width: 120px;
+}
+
+.avix-cs-import__table th:nth-child(4),
+.avix-cs-import__table td:nth-child(4) {
+	width: 110px;
+	white-space: nowrap;
+}
+
+.avix-cs-import__table th:nth-child(5),
+.avix-cs-import__table td:nth-child(5) {
+	width: 38%;
+}
+
+.avix-cs-import__foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+	margin: 16px 0 0;
+}
+
+.avix-cs-import__foot .spinner {
+	float: none;
+	margin: 0;
+}
+
+.avix-cs-import .notice.inline {
+	margin: 0 0 16px;
+}
+
+/* ---------- Narrow screens ---------- */
+
+@media (max-width: 1280px) {
+	.avix-cs-grid--media {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 960px) {
+	.avix-cs-grid--3 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 782px) {
+	.avix-cs-grid--2,
+	.avix-cs-grid--3,
+	.avix-cs-grid--quote,
+	.avix-cs-choices {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-cs-metrics__head {
+		display: none;
+	}
+
+	.avix-cs-metric {
+		grid-template-columns: 30px minmax(0, 1fr);
+	}
+
+	.avix-cs-metric .avix-cs-field {
+		grid-column: 2;
+	}
+
+	.avix-cs-metric .avix-cs-field__head {
+		position: static;
+		width: auto;
+		height: auto;
+		margin: 0 0 4px;
+		overflow: visible;
+		clip: auto;
+		white-space: normal;
+	}
+
+	.avix-cs-card__head,
+	.avix-cs-card__body {
+		padding-right: 16px;
+		padding-left: 16px;
+	}
+
+	.avix-cs-tab {
+		min-height: 48px;
+	}
+}
+
+@media (max-width: 480px) {
+	.avix-cs-grid--media {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-cs-box *,
+	.avix-cs-settings * {
+		transition-duration: 0.01ms !important;
+	}
+}

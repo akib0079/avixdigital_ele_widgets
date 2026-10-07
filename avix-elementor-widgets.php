@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Avix Digital Elementor Widgets
  * Plugin URI:        https://avixdigital.com
- * Description:       Custom Elementor widgets for avixdigital.com: Service Benefits, About Hero, Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline, FAQ & Quote, Compare & CEO Quote, Client Logos, Intro Text, Smart Header, Team, Page Hero, Service Index, Story, Founder, Values, Journey, Careers, Post Grid, Service Tabs and Ticker.
- * Version:           1.14.0
+ * Description:       Custom Elementor widgets for avixdigital.com: Service Benefits, About Hero, Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline, FAQ & Quote, Compare & CEO Quote, Client Logos, Intro Text, Smart Header, Team, Page Hero, Service Index, Story, Founder, Values, Journey, Careers, Post Grid, Service Tabs, Ticker, plus the Case Studies post type with Case Study Hero, Chapter, Feature Spotlight, Results, Gallery, Stack, Next and Grid.
+ * Version:           1.15.0
  * Author:            Avix Digital
  * Author URI:        https://avixdigital.com
  * Text Domain:       avix-widgets
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AVIX_EW_VERSION', '1.14.0' );
+define( 'AVIX_EW_VERSION', '1.15.0' );
 define( 'AVIX_EW_FILE', __FILE__ );
 define( 'AVIX_EW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AVIX_EW_URL', plugin_dir_url( __FILE__ ) );
@@ -63,6 +63,14 @@ final class Avix_Elementor_Widgets {
 		'post-grid'         => array( 'includes/widgets/class-post-grid.php', '\AvixWidgets\Widgets\Post_Grid', array( 'pixel-pal' ) ),
 		'service-tabs'      => array( 'includes/widgets/class-service-tabs.php', '\AvixWidgets\Widgets\Service_Tabs', array( 'pixel-pal' ) ),
 		'ticker'            => array( 'includes/widgets/class-ticker.php', '\AvixWidgets\Widgets\Ticker', array( 'pixel-pal' ) ),
+		'case-study-hero'      => array( 'includes/widgets/class-case-study-hero.php', '\AvixWidgets\Widgets\Case_Study_Hero', array( 'case-study-kit' ) ),
+		'case-study-chapter'   => array( 'includes/widgets/class-case-study-chapter.php', '\AvixWidgets\Widgets\Case_Study_Chapter', array( 'case-study-kit' ) ),
+		'case-study-spotlight' => array( 'includes/widgets/class-case-study-spotlight.php', '\AvixWidgets\Widgets\Case_Study_Spotlight', array( 'case-study-kit' ) ),
+		'case-study-results'   => array( 'includes/widgets/class-case-study-results.php', '\AvixWidgets\Widgets\Case_Study_Results', array( 'case-study-kit' ) ),
+		'case-study-gallery'   => array( 'includes/widgets/class-case-study-gallery.php', '\AvixWidgets\Widgets\Case_Study_Gallery', array( 'case-study-kit' ) ),
+		'case-study-stack'     => array( 'includes/widgets/class-case-study-stack.php', '\AvixWidgets\Widgets\Case_Study_Stack', array( 'case-study-kit' ) ),
+		'case-study-next'      => array( 'includes/widgets/class-case-study-next.php', '\AvixWidgets\Widgets\Case_Study_Next', array( 'case-study-kit', 'pixel-pal' ) ),
+		'case-study-grid'      => array( 'includes/widgets/class-case-study-grid.php', '\AvixWidgets\Widgets\Case_Study_Grid', array( 'case-study-kit' ) ),
 	);
 
 	/**
@@ -71,11 +79,30 @@ final class Avix_Elementor_Widgets {
 	 * @var array<string, bool>
 	 */
 	private static $shared = array(
-		'pixel-pal' => true,
+		'pixel-pal'      => true,
+		'case-study-kit' => true,
 	);
 
 	public static function init() {
+		// The Case Studies post type does not need Elementor, so the posts never
+		// disappear when Elementor is switched off.
+		if ( file_exists( AVIX_EW_PATH . 'includes/case-studies/class-case-studies.php' ) ) {
+			require_once AVIX_EW_PATH . 'includes/case-studies/class-case-studies.php';
+			\AvixWidgets\Case_Studies\Case_Studies::init();
+		}
 		add_action( 'plugins_loaded', array( __CLASS__, 'boot' ) );
+	}
+
+	public static function activate() {
+		if ( class_exists( '\AvixWidgets\Case_Studies\Case_Studies' ) ) {
+			\AvixWidgets\Case_Studies\Case_Studies::activate();
+		}
+	}
+
+	public static function deactivate() {
+		if ( class_exists( '\AvixWidgets\Case_Studies\Case_Studies' ) ) {
+			\AvixWidgets\Case_Studies\Case_Studies::deactivate();
+		}
 	}
 
 	public static function boot() {
@@ -92,6 +119,9 @@ final class Avix_Elementor_Widgets {
 		// Front-end AJAX endpoints (e.g. loading more posts) run without Elementor's widget registry.
 		if ( file_exists( AVIX_EW_PATH . 'includes/ajax.php' ) ) {
 			require_once AVIX_EW_PATH . 'includes/ajax.php';
+		}
+		if ( file_exists( AVIX_EW_PATH . 'includes/case-studies/cards.php' ) ) {
+			require_once AVIX_EW_PATH . 'includes/case-studies/cards.php';
 		}
 
 		add_action( 'elementor/elements/categories_registered', array( __CLASS__, 'register_category' ) );
@@ -124,6 +154,17 @@ final class Avix_Elementor_Widgets {
 		require_once AVIX_EW_PATH . 'includes/trait-media.php';
 		require_once AVIX_EW_PATH . 'includes/brand-icons.php';
 		require_once AVIX_EW_PATH . 'includes/pixel-pal.php';
+		foreach ( array( 'class-kit.php', 'trait-case-study-source.php' ) as $file ) {
+			try {
+				if ( file_exists( AVIX_EW_PATH . 'includes/case-studies/' . $file ) ) {
+					require_once AVIX_EW_PATH . 'includes/case-studies/' . $file;
+				}
+			} catch ( \Throwable $error ) {
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'Avix case-study helper "' . $file . '" failed to load: ' . $error->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				}
+			}
+		}
 		foreach ( self::$widgets as $slug => $widget ) {
 			// One broken or missing widget file must not take the whole site down.
 			try {
@@ -243,5 +284,8 @@ final class Avix_Elementor_Widgets {
 		echo '<div class="notice notice-warning"><p>' . esc_html( sprintf( __( 'Avix Digital Elementor Widgets needs Elementor %s or newer.', 'avix-widgets' ), self::MIN_ELEMENTOR ) ) . '</p></div>';
 	}
 }
+
+register_activation_hook( __FILE__, array( 'Avix_Elementor_Widgets', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'Avix_Elementor_Widgets', 'deactivate' ) );
 
 Avix_Elementor_Widgets::init();

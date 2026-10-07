@@ -1,0 +1,713 @@
+/*!
+ * Avix Digital · Case Study Next
+ * The end of a case study: a white call-to-action card with the page's one
+ * pixel character seated on its top edge, then the next case study as a
+ * large render with a dark info panel overlapping its right edge (stacked
+ * under the image on narrow cards). Layout follows the widget width
+ * (container queries), and each card follows its own width.
+ */
+
+.avix-csn {
+	--csn-bg: #f5f3ef;
+	--csn-card: #ffffff;
+	--csn-card-line: rgba(26, 26, 26, 0.07);
+	--csn-ink: #1a1a1a;
+	--csn-muted: #5c5f66;
+	--csn-line: rgba(26, 26, 26, 0.1);
+	--csn-accent: #fb6007;
+	--csn-accent-text: #c54804;
+	--csn-accent-title: color-mix(in srgb, var(--csn-accent) 88%, #000000);
+	--csn-btn-hover: #e25504;
+	--csn-panel: #111111;
+	--csn-panel-ink: #ffffff;
+	--csn-panel-muted: #b9b6b1;
+	--csn-panel-soft: rgba(255, 255, 255, 0.07);
+	--csn-panel-accent: #ff7a2c;
+	--csn-panel-glow: rgba(251, 96, 7, 0.13);
+	--csn-mat: #e9e6df;
+	--csn-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--csn-font-body: "Inter", Arial, sans-serif;
+	--csn-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--csn-max: 1240px;
+
+	container: avix-csn / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: var(--csn-pad-top, clamp(72px, 9vw, 140px)) 0 var(--csn-pad-bottom, clamp(72px, 9vw, 140px));
+	overflow: hidden;
+	overflow: clip;
+	color: var(--csn-ink);
+	background: var(--csn-bg);
+	font-family: var(--csn-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-csn *,
+.avix-csn *::before,
+.avix-csn *::after {
+	box-sizing: border-box;
+}
+
+.avix-csn--white {
+	--csn-bg: #ffffff;
+	--csn-card: #f7f5f1;
+	--csn-card-line: rgba(26, 26, 26, 0.05);
+}
+
+/* Container queries style descendants only: width-based tokens live on the
+   inner wrapper. */
+.avix-csn__inner {
+	--csn-gutter: max(18px, clamp(16px, 5cqi, 72px));
+	--csn-pal: var(--csn-pal-w, 40px);
+
+	width: min(calc(100% - 2 * var(--csn-gutter)), var(--csn-max));
+	margin-inline: auto;
+}
+
+/* ---------- Call to action ---------- */
+
+.avix-csn__cta {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: end;
+	gap: 28px clamp(32px, 5cqi, 72px);
+	padding: clamp(28px, 4cqi, 48px);
+	border: 1px solid var(--csn-card-line);
+	border-radius: 24px;
+	background: var(--csn-card);
+	box-shadow: 0 1px 2px rgba(26, 26, 26, 0.03), 0 30px 60px -40px rgba(26, 26, 26, 0.28);
+}
+
+.avix-csn--white .avix-csn__cta {
+	box-shadow: none;
+}
+
+/* Seated on the card's top edge: the seat (row 7 of 12) lines up with the
+   edge, so the legs hang over the card. */
+.avix-csn__perch {
+	position: absolute;
+	top: 0;
+	right: 40px;
+	z-index: 2;
+	display: block;
+	line-height: 0;
+	margin-top: calc(var(--csn-pal) * -1.2 * 7 / 12);
+	pointer-events: none;
+}
+
+.avix-csn .avix-csn__pal {
+	--pal-w: var(--csn-pal);
+	--pal-color: var(--csn-accent);
+	display: block;
+}
+
+.avix-csn .avix-csn__pal .avix-pal__sprite svg {
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--csn-accent) 40%, transparent));
+}
+
+/* Arms resting while seated; a wave overrides this with its animation. */
+.avix-csn .avix-csn__pal .avix-pal__arm {
+	transform: translate(0, 1px);
+}
+
+/* A paused section: the character's moves stop off screen. */
+.avix-csn.is-off .avix-pal *,
+.avix-csn.is-off .avix-pal *::before,
+.avix-csn.is-off .avix-pal *::after {
+	animation-play-state: paused !important;
+}
+
+.avix-csn__cta-copy {
+	min-width: 0;
+}
+
+.avix-csn .avix-csn__title {
+	max-width: 22ch;
+	margin: 0;
+	padding: 0;
+	color: var(--csn-ink);
+	font-family: var(--csn-font-display);
+	font-size: clamp(26px, 3cqi, 40px);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+	text-transform: none;
+	text-wrap: balance;
+	overflow-wrap: break-word;
+}
+
+.avix-csn--pal .avix-csn__title {
+	padding-right: calc(var(--csn-pal) + 24px);
+}
+
+.avix-csn .avix-csn__title .avix-csn__accent {
+	color: var(--csn-accent-title);
+}
+
+.avix-csn .avix-csn__text {
+	max-width: 52ch;
+	margin: clamp(12px, 1.2cqi, 16px) 0 0;
+	padding: 0;
+	color: var(--csn-muted);
+	font-family: var(--csn-font-body);
+	font-size: clamp(15.5px, 1.25cqi, 17px);
+	line-height: 1.6;
+	text-wrap: pretty;
+}
+
+.avix-csn__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 14px 26px;
+}
+
+.avix-csn .avix-csn__btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 14px;
+	max-width: 100%;
+	min-height: 56px;
+	margin: 0;
+	border: 0;
+	border-radius: 999px;
+	font-family: var(--csn-font-body);
+	font-size: 15.5px;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: -0.005em;
+	text-align: left;
+	text-decoration: none;
+	text-transform: none;
+	white-space: normal;
+	box-shadow: none;
+	transition: transform 0.35s var(--csn-ease), background-color 0.25s ease, box-shadow 0.35s var(--csn-ease);
+}
+
+.avix-csn .avix-csn__btn--primary,
+.avix-csn .avix-csn__btn--primary:visited,
+.avix-csn .avix-csn__btn--primary:focus {
+	padding: 6px 6px 6px 26px;
+	color: #ffffff;
+	background: var(--csn-accent);
+	box-shadow: 0 16px 30px -16px color-mix(in srgb, var(--csn-accent) 85%, transparent);
+}
+
+.avix-csn .avix-csn__btn-icon {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	color: var(--csn-accent);
+	background: #ffffff;
+}
+
+.avix-csn .avix-csn__btn svg,
+.avix-csn .avix-csn__more svg,
+.avix-csn .avix-csn__go svg {
+	display: block;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.3;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.35s var(--csn-ease);
+}
+
+.avix-csn .avix-csn__btn-icon svg {
+	width: 18px;
+	height: 18px;
+}
+
+.avix-csn .avix-csn__more,
+.avix-csn .avix-csn__more:visited,
+.avix-csn .avix-csn__more:focus {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 0;
+	color: var(--csn-ink);
+	background: none;
+	font-family: var(--csn-font-body);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.3;
+	text-decoration: none;
+	box-shadow: none;
+}
+
+.avix-csn .avix-csn__more-text {
+	background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+	transition: background-size 0.35s var(--csn-ease);
+}
+
+.avix-csn .avix-csn__more svg {
+	width: 17px;
+	height: 17px;
+	color: var(--csn-accent);
+}
+
+@media (hover: hover) {
+	.avix-csn .avix-csn__btn--primary:hover {
+		color: #ffffff;
+		background: var(--csn-btn-hover);
+		box-shadow: 0 20px 36px -16px color-mix(in srgb, var(--csn-accent) 90%, transparent);
+		transform: translateY(-2px);
+	}
+
+	.avix-csn .avix-csn__btn--primary:hover .avix-csn__btn-icon svg {
+		transform: translate(2px, -2px);
+	}
+
+	.avix-csn .avix-csn__more:hover {
+		color: var(--csn-ink);
+	}
+
+	.avix-csn .avix-csn__more:hover .avix-csn__more-text {
+		background-size: 100% 1px;
+	}
+
+	.avix-csn .avix-csn__more:hover svg {
+		transform: translateX(4px);
+	}
+}
+
+.avix-csn .avix-csn__btn:focus-visible,
+.avix-csn .avix-csn__more:focus-visible,
+.avix-csn .avix-csn__card:focus-visible {
+	outline: 2px solid var(--csn-accent) !important;
+	outline-offset: 4px !important;
+}
+
+.avix-csn :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
+/* ---------- Next case study ---------- */
+
+.avix-csn__cards {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: clamp(28px, 3cqi, 40px);
+}
+
+.avix-csn__cta + .avix-csn__cards {
+	margin-top: clamp(48px, 6cqi, 88px);
+}
+
+.avix-csn__cards--2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Each card lays itself out by its own width. */
+.avix-csn__item {
+	container: avix-csn-card / inline-size;
+	min-width: 0;
+}
+
+.avix-csn .avix-csn__card,
+.avix-csn .avix-csn__card:visited,
+.avix-csn .avix-csn__card:focus {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	color: var(--csn-panel-ink);
+	background: none;
+	text-decoration: none;
+	box-shadow: none;
+	border-radius: 28px;
+}
+
+.avix-csn__media {
+	position: relative;
+	display: block;
+	aspect-ratio: 16 / 9;
+	overflow: hidden;
+	border-radius: 28px;
+	background: var(--csn-mat);
+	isolation: isolate;
+}
+
+.avix-csn__card.is-render .avix-csn__media {
+	background: #0b0b0c;
+}
+
+/* A soft warm wash on hover, like the home Selected Work cards. */
+.avix-csn__media::after {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	background:
+		linear-gradient(125deg, rgba(251, 96, 7, 0.12), transparent 40%),
+		linear-gradient(0deg, rgba(10, 10, 10, 0.18), transparent 45%);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.52s var(--csn-ease);
+	content: "";
+}
+
+.avix-csn .avix-csn__img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: cover;
+	object-position: 50% 50%;
+	transition: transform 0.7s var(--csn-ease);
+}
+
+.avix-csn__card.is-shot .avix-csn__img {
+	object-position: 50% 0;
+}
+
+.avix-csn .avix-csn__placeholder {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	height: 100%;
+	color: rgba(26, 26, 26, 0.18);
+	font-family: var(--csn-font-display);
+	font-size: clamp(64px, 12cqi, 160px);
+	font-weight: 600;
+	letter-spacing: -0.06em;
+}
+
+.avix-csn__panel {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	margin: -56px 14px 0;
+	padding: clamp(24px, 6cqi, 34px);
+	overflow: hidden;
+	border-radius: 22px;
+	color: var(--csn-panel-ink);
+	background-color: var(--csn-panel);
+	background-image: radial-gradient(90% 46% at 100% 0%, var(--csn-panel-glow), transparent 70%);
+	box-shadow: 0 30px 60px -30px rgba(11, 11, 12, 0.45);
+	transition: transform 0.52s var(--csn-ease);
+}
+
+.avix-csn .avix-csn__kicker {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 16px;
+	color: var(--csn-panel-accent);
+	font-family: var(--csn-font-body);
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.avix-csn .avix-csn__kicker::before {
+	flex: none;
+	width: 18px;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--csn-accent);
+	content: "";
+}
+
+.avix-csn .avix-csn__name {
+	display: block;
+	margin: 0;
+	color: var(--csn-panel-ink);
+	font-family: var(--csn-font-display);
+	font-size: clamp(34px, 9cqi, 64px);
+	font-weight: 500;
+	line-height: 0.98;
+	letter-spacing: -0.05em;
+	overflow-wrap: break-word;
+}
+
+.avix-csn .avix-csn__summary {
+	display: -webkit-box;
+	max-width: 40ch;
+	margin-top: 16px;
+	overflow: hidden;
+	color: var(--csn-panel-muted);
+	font-family: var(--csn-font-body);
+	font-size: 15px;
+	line-height: 1.55;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+}
+
+.avix-csn__foot {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 16px;
+	margin-top: auto;
+	padding-top: 24px;
+}
+
+.avix-csn__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 7px;
+	min-width: 0;
+}
+
+.avix-csn .avix-csn__tag {
+	display: inline-flex;
+	align-items: center;
+	min-height: 28px;
+	padding: 7px 11px;
+	border: 1px solid rgba(255, 255, 255, 0.06);
+	border-radius: 999px;
+	color: #dcdcdc;
+	background: var(--csn-panel-soft);
+	font-family: var(--csn-font-body);
+	font-size: 11.5px;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	line-height: 1;
+}
+
+.avix-csn__go {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 56px;
+	height: 56px;
+	margin-left: auto;
+	border-radius: 50%;
+	color: #111111;
+	background: #ffffff;
+	transition: background-color 0.3s ease, color 0.3s ease, transform 0.45s var(--csn-ease);
+}
+
+.avix-csn .avix-csn__go svg {
+	width: 20px;
+	height: 20px;
+}
+
+@media (hover: hover) {
+	.avix-csn .avix-csn__card:hover {
+		color: var(--csn-panel-ink);
+	}
+
+	.avix-csn .avix-csn__card:hover .avix-csn__img {
+		transform: scale(1.04);
+	}
+
+	.avix-csn .avix-csn__card:hover .avix-csn__media::after {
+		opacity: 1;
+	}
+
+	.avix-csn .avix-csn__card:hover .avix-csn__go {
+		color: #ffffff;
+		background: var(--csn-accent);
+	}
+
+	.avix-csn .avix-csn__card--next:hover .avix-csn__go svg {
+		transform: translateX(4px);
+	}
+
+	.avix-csn .avix-csn__card--prev:hover .avix-csn__go svg {
+		transform: translateX(-4px);
+	}
+}
+
+/* Wide cards: the panel overlaps the render's right edge, vertically
+   centred, the way the home Selected Work cards do. */
+@container avix-csn-card (min-width: 700px) {
+	.avix-csn .avix-csn__card,
+	.avix-csn .avix-csn__card:visited,
+	.avix-csn .avix-csn__card:focus {
+		grid-template-columns: repeat(24, minmax(0, 1fr));
+		align-items: center;
+	}
+
+	.avix-csn__media {
+		grid-row: 1;
+		grid-column: 1 / 19;
+	}
+
+	.avix-csn__panel {
+		grid-row: 1;
+		grid-column: 17 / 25;
+		margin: 0;
+		padding: clamp(26px, 3.4cqi, 38px);
+	}
+
+	.avix-csn .avix-csn__name {
+		font-size: clamp(34px, 4.6cqi, 64px);
+	}
+
+	.avix-csn .avix-csn__summary {
+		max-width: 34ch;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+	}
+
+	.avix-csn__foot {
+		padding-top: clamp(28px, 3.4cqi, 40px);
+	}
+
+	/* Previous: mirrored, the panel on the left. */
+	.avix-csn__card--prev .avix-csn__media {
+		grid-column: 7 / 25;
+	}
+
+	.avix-csn__card--prev .avix-csn__panel {
+		grid-column: 1 / 9;
+		background-image: radial-gradient(90% 46% at 0% 0%, var(--csn-panel-glow), transparent 70%);
+	}
+
+	@media (hover: hover) {
+		.avix-csn .avix-csn__card:hover .avix-csn__panel {
+			transform: translateY(-4px);
+		}
+	}
+}
+
+/* Mid-width cards: a wider panel, so the name, summary and tags breathe. */
+@container avix-csn-card (700px <= width < 1000px) {
+	.avix-csn__media {
+		grid-column: 1 / 17;
+	}
+
+	.avix-csn__panel {
+		grid-column: 14 / 25;
+	}
+
+	.avix-csn__card--prev .avix-csn__media {
+		grid-column: 9 / 25;
+	}
+
+	.avix-csn__card--prev .avix-csn__panel {
+		grid-column: 1 / 12;
+	}
+}
+
+@container avix-csn-card (max-width: 420px) {
+	.avix-csn__panel {
+		margin: -40px 10px 0;
+		padding: 22px;
+	}
+
+	.avix-csn__media {
+		border-radius: 22px;
+	}
+
+	.avix-csn .avix-csn__card {
+		border-radius: 22px;
+	}
+
+	.avix-csn__go {
+		width: 52px;
+		height: 52px;
+	}
+}
+
+/* ---------- Motion ---------- */
+
+.avix-csn.is-armed .avix-csn__rise {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 0.7s ease, transform 0.8s var(--csn-ease);
+	transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+.avix-csn.is-armed .avix-csn__rise.is-in {
+	opacity: 1;
+	transform: none;
+}
+
+/* ---------- Container queries ---------- */
+
+/* Below 1100 the buttons move under the text, so the headline keeps two
+   lines instead of squeezing into three. */
+@container avix-csn (max-width: 1100px) {
+	.avix-csn__cta {
+		grid-template-columns: minmax(0, 1fr);
+		align-items: start;
+	}
+
+	.avix-csn__actions {
+		justify-content: flex-start;
+	}
+}
+
+@container avix-csn (max-width: 860px) {
+	.avix-csn__cards--2 {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@container avix-csn (max-width: 600px) {
+	.avix-csn__inner {
+		--csn-pal: var(--csn-pal-w, 32px);
+	}
+
+	.avix-csn__perch {
+		right: 26px;
+	}
+
+	.avix-csn__cta {
+		gap: 24px;
+		border-radius: 22px;
+	}
+
+	.avix-csn--pal .avix-csn__title {
+		padding-right: 0;
+	}
+
+	.avix-csn .avix-csn__title {
+		font-size: clamp(26px, 7.4cqi, 32px);
+	}
+
+	.avix-csn__actions {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 6px;
+	}
+
+	.avix-csn .avix-csn__btn {
+		width: 100%;
+	}
+
+	.avix-csn .avix-csn__more {
+		justify-content: center;
+	}
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-csn *,
+	.avix-csn *::before,
+	.avix-csn *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-csn.is-armed .avix-csn__rise {
+		opacity: 1;
+		transform: none;
+	}
+
+	/* The character sits still, arms resting, with no "hi". */
+	.avix-csn .avix-csn__pal .avix-pal__hi g {
+		opacity: 0;
+	}
+}

@@ -1,0 +1,359 @@
+{
+	"slug": "rehall",
+	"spec": "SPEC-CASE-STUDIES §7 + addendum A2/A5 (8 Oct 2026)",
+	"post": {
+		"title": "Rehall: Scaling E-Commerce Through Custom Architecture & High-Converting Design",
+		"excerpt": "A bespoke Shopify build for a Dutch skiwear brand: a pixel-perfect theme, carefully integrated apps and a buying journey with less friction.",
+		"menu_order": 1,
+		"featured": [
+			"@media:avix-cs-rehall-render-hero.webp",
+			"@media:2025/12/rehall.webp",
+			"@media:avix-cs-rehall-hero-desktop.webp"
+		]
+	},
+	"terms": {
+		"service": [
+			"shopify",
+			"uiux-brand-design"
+		],
+		"industry": [
+			"Skiwear & outdoor fashion"
+		]
+	},
+	"yoast": {
+		"title": "Rehall Case Study: Custom Shopify Architecture | AvixDigital",
+		"metadesc": "How AvixDigital turned Rehall's high-fidelity design into a fast, scalable Shopify store with smart navigation, spec filters and seamless app integrations.",
+		"og_image": "@media:avix-cs-rehall-og.jpg"
+	},
+	"meta": {
+		"client": "Rehall",
+		"display_title": "Scaling E-Commerce Through [Custom Architecture] & High-Converting Design",
+		"summary": "Rehall needed a digital storefront that didn't just serve as a visual catalogue, but acted as a high-performance sales engine. We turned a static, high-fidelity design into a dynamic, scalable Shopify ecosystem built for revenue.",
+		"logo": "@media:avix-cs-rehall-logo-white.png",
+		"hero_desktop": "@media:avix-cs-rehall-hero-desktop.webp",
+		"hero_mobile": "@media:avix-cs-rehall-hero-mobile.webp",
+		"hero_render": "@media:avix-cs-rehall-render-hero.webp",
+		"accent": "#ECE9EC",
+		"year": "2026",
+		"services": "Design, E-commerce, Shopify, Web Development",
+		"platform": "Shopify",
+		"role": "Shopify build & app integration",
+		"market": "Netherlands, Belgium & Germany",
+		"live_url": "https://rehall.com/",
+		"live_label": "rehall.com",
+		"card_tags": "Shopify, Theme engineering",
+		"card_label": "Designed for",
+		"card_value": "Faster discovery",
+		"challenge_statement": "The primary hurdle in modern e-commerce is bridging the gap between [premium aesthetic design] and elite technical performance.",
+		"challenge_body": [
+			"Rehall designs technical ski and snowboard outerwear for men, women and kids, and sells it directly across the Netherlands, Belgium and Germany. The brief was not another pretty catalogue: the storefront had to behave like a high-performance sales engine, turning a static, high-fidelity design into a dynamic, scalable Shopify ecosystem built to maximise revenue.",
+			"The challenge for Rehall was to implement a pixel-perfect design and integrate essential third-party applications without introducing code bloat, slowing down page speed, or creating friction in the buying journey.",
+			"Premium visuals plus the apps a modern fashion brand relies on usually mean heavier pages and a slower path to checkout, exactly the kind of drag a seasonal brand can least afford."
+		],
+		"constraints": "Pixel-perfect design, Third-party apps, Core Web Vitals, No checkout friction",
+		"approach_intro": "Led by founder Akib Zawayed, we engineered a bespoke Shopify environment focused on speed, seamless third-party functionality and user-centric navigation.",
+		"approach_body": [
+			"We treated speed and clarity as design features, not afterthoughts. Every screen in the approved design was rebuilt as a lightweight, fully responsive Shopify theme in clean Liquid, so the brand stays razor-sharp whether a shopper is on a laptop at home or a phone in the lift queue.",
+			"Third-party functionality was added deliberately, through meticulous API work, so each new feature extended Shopify without dragging down Core Web Vitals. Then we restructured product discovery and checkout around how people actually buy skiwear: by who it is for, by garment, by fit and by technical performance."
+		],
+		"implementations": [
+			"Pixel-Perfect Design Conversion: Translated complex UI/UX designs into a fully responsive, lightweight Shopify theme. We ensured the brand's visual identity remained razor-sharp and engaging across all mobile and desktop devices.",
+			"Strategic App Integration: Seamlessly integrated custom third-party applications to extend Shopify's native functionality. This required meticulous API implementation to ensure the new features worked flawlessly without compromising Core Web Vitals or site speed.",
+			"Conversion-Optimised Architecture: Restructured the product discovery and checkout flows. By utilising clean Liquid code and prioritising intuitive navigation, we eliminated user friction points to actively reduce cart abandonment."
+		],
+		"solution_body": [
+			"The result is a bespoke Shopify environment focused on speed, seamless app functionality and user-centric navigation. On the live store today, shoppers move from a mega menu organised by Men, Women, Boys and Girls into category lists and campaign tiles; search suggests queries and shows products, prices and ratings as they type; collections filter by size, colour, waterproofness and breathability; product pages show every colourway as a photo and translate fabric specs into simple meters; and the cart pairs recommendations with trust signals, the dispatch cut-off and payment options."
+		],
+		"outcome_statement": "The architectural overhaul directly translated into [proven, measurable sales growth].",
+		"outcome_body": [
+			"By delivering a lightning-fast, visually compelling, and frictionless shopping experience, the Rehall.com platform successfully maximised its conversion rate. The resulting infrastructure now provides a robust, future-proof foundation for scaling their operations and driving sustained revenue.",
+			"That foundation is visible today: the store trades its Winter 26 collection in English, Dutch and German on Shopify, with new campaigns and categories added season after season."
+		],
+		"outcome_pillars": [
+			"Faster, frictionless buying journey",
+			"Conversion-focused architecture",
+			"A foundation built to scale"
+		],
+		"proof": [
+			"Browse the mega menu by audience | https://rehall.com/",
+			"Filter men's ski jackets by waterproofness | https://rehall.com/collections/mens-ski-jackets",
+			"See the spec meters on a product page | https://rehall.com/products/rehall-razor-r26-mens-ski-jacket-waterproof-20k"
+		],
+		"metric_1_value": "3",
+		"metric_1_label": "Storefront languages: English, Dutch and German",
+		"metric_1_source": "observed on rehall.com (hreflang en, nl, de), 8 Oct 2026",
+		"metric_2_value": "4",
+		"metric_2_label": "Shopper audiences in the mega menu: Men, Women, Boys, Girls",
+		"metric_2_source": "observed on rehall.com, 8 Oct 2026",
+		"metric_3_value": "9",
+		"metric_3_label": "Third-party apps running inside the live theme",
+		"metric_3_source": "observed in the storefront (Rebuy, Globo filters, Klaviyo, Gorgias, Judge.me, Trustpilot, Froonze, Returnista, CookieYes), 8 Oct 2026",
+		"stack": [
+			"Shopify (Online Store 2.0): storefront platform and checkout",
+			"Liquid: custom, lightweight theme code and sections",
+			"Rebuy: smart cart drawer and recommendations | observed",
+			"Globo Smart Product Filters: spec-level collection filters | observed",
+			"Klaviyo: email sign-up and back-in-stock alerts | observed",
+			"Gorgias: helpdesk and chat | observed",
+			"Judge.me & Trustpilot: reviews and ratings | observed",
+			"Returnista: returns portal | observed",
+			"GSAP: interface animation | observed"
+		],
+		"header": "dark"
+	},
+	"layout": {
+		"features": {
+			"title": "Six details that do the selling"
+		},
+		"spotlights": [
+			{
+				"tag": "Navigation",
+				"title": "A mega menu that shops like a [ski store]",
+				"problem": "A deep range of jackets, pants, suits, base layers and technical lines across four audiences can bury products several clicks deep.",
+				"built": "Hovering Shop opens a mega menu split by Men, Women, Boys and Girls. Every category for that audience sits one hover away, and half the panel goes to editorial campaign tiles, so discovery feels like browsing a store rather than reading a sitemap.",
+				"attribution": "observed",
+				"source_link": "https://rehall.com/",
+				"image": "@media:avix-cs-rehall-feature-mega-menu.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 4.2,
+						"y": 25.2,
+						"label": "Shop by audience: Men, Women, Boys, Girls"
+					},
+					{
+						"x": 24.4,
+						"y": 31.6,
+						"label": "Every category one hover away"
+					},
+					{
+						"x": 58.9,
+						"y": 84.7,
+						"label": "Editorial campaign tiles inside the menu"
+					}
+				]
+			},
+			{
+				"tag": "Search",
+				"title": "Search that answers [while you type]",
+				"problem": "Shoppers who arrive knowing what they want shouldn't have to wade through a results page to see what fits.",
+				"built": "Typing opens a predictive panel under the header: query suggestions on the left, live product results on the right with sale prices and star ratings, and a View all shortcut for the full list.",
+				"attribution": "observed",
+				"source_link": "https://rehall.com/",
+				"image": "@media:avix-cs-rehall-feature-predictive-search.webp",
+				"device": "browser",
+				"mat": "paper",
+				"hotspots": [
+					{
+						"x": 73.3,
+						"y": 12.5,
+						"label": "Results appear as you type"
+					},
+					{
+						"x": 6.1,
+						"y": 35.8,
+						"label": "Smart query suggestions"
+					},
+					{
+						"x": 42.8,
+						"y": 92,
+						"label": "Sale prices and ratings at a glance"
+					}
+				]
+			},
+			{
+				"tag": "Filtering",
+				"title": "Filters built on [technical specs], not just size and colour",
+				"problem": "Skiwear is bought on performance. Without spec-level filters, customers open product after product to compare waterproof and breathability ratings.",
+				"built": "Collection pages pair a filter app, styled into the theme, with Rehall's product data: size with live stock counts, colour swatches, waterproofness in mm, breathability, and features such as a snow skirt or ski-pass pocket. Regular, Baggy and DXR fit tiles sit above the grid.",
+				"attribution": "observed",
+				"source_link": "https://rehall.com/collections/mens-ski-jackets",
+				"image": "@media:avix-cs-rehall-feature-technical-filters.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 4.5,
+						"y": 24,
+						"label": "Size filter with live stock counts"
+					},
+					{
+						"x": 8.8,
+						"y": 55.2,
+						"label": "Visual colour filter"
+					},
+					{
+						"x": 5.9,
+						"y": 68.2,
+						"label": "Filter by waterproofness (mm)"
+					}
+				]
+			},
+			{
+				"tag": "Product page",
+				"title": "A buy box that removes [the last doubts]",
+				"problem": "Choosing a colourway, finding out a size is sold out only after clicking, and hunting for delivery terms are classic reasons to leave a product page.",
+				"built": "Every colourway is a real product photo, sold-out sizes are struck through in the size bar, and the delivery promise sits right under a full-width Add to cart: same-day dispatch before 5 p.m., free shipping from €250 and 14-day returns.",
+				"attribution": "observed",
+				"source_link": "https://rehall.com/products/rehall-razor-r26-mens-ski-jacket-waterproof-20k",
+				"image": "@media:avix-cs-rehall-feature-product-page.webp",
+				"device": "browser",
+				"mat": "paper",
+				"hotspots": [
+					{
+						"x": 71.1,
+						"y": 36,
+						"label": "Colourways as photo swatches"
+					},
+					{
+						"x": 67.2,
+						"y": 49.3,
+						"label": "Sold-out sizes visible before clicking"
+					},
+					{
+						"x": 80,
+						"y": 77.3,
+						"label": "Delivery and returns promise at the button"
+					}
+				]
+			},
+			{
+				"tag": "Product data",
+				"title": "Technical specs, [made readable]",
+				"problem": "A 20,000 mm water column and 20,000 g/m²/24h breathability mean little to most shoppers, yet they're why people buy a premium ski jacket.",
+				"built": "A Features tab turns product data into three visual meters for warmth, breathability and water resistance, followed by a clean details table. The buy box stays pinned beside it while shoppers read.",
+				"attribution": "observed",
+				"source_link": "https://rehall.com/products/rehall-razor-r26-mens-ski-jacket-waterproof-20k",
+				"image": "@media:avix-cs-rehall-feature-tech-specs.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 12,
+						"y": 35.4,
+						"label": "Warmth, breathability and waterproof meters"
+					},
+					{
+						"x": 24.5,
+						"y": 70.9,
+						"label": "Spec table driven by product data"
+					},
+					{
+						"x": 81.5,
+						"y": 52.8,
+						"label": "Buy box stays in view while reading"
+					}
+				]
+			},
+			{
+				"tag": "Cart",
+				"title": "A cart drawer that [keeps people buying]",
+				"problem": "Cart abandonment often starts in the cart itself: a dead end with no reassurance and no next step.",
+				"built": "The slide-out smart cart adds a \"Recommended for you\" product, the Trustpilot rating, the order-before-17:00 same-day dispatch message and every accepted payment method, from Shop Pay and Klarna to Amex, right where the decision happens.",
+				"attribution": "observed",
+				"source_link": "https://rehall.com/",
+				"image": "@media:avix-cs-rehall-feature-smart-cart.webp",
+				"device": "plain",
+				"mat": "paper",
+				"visual_max": 420,
+				"hotspots": [
+					{
+						"x": 45,
+						"y": 44.4,
+						"label": "In-cart recommendations"
+					},
+					{
+						"x": 50,
+						"y": 89.4,
+						"label": "Trust signal at the decision point"
+					},
+					{
+						"x": 50,
+						"y": 95.6,
+						"label": "Dispatch cut-off and payment options"
+					}
+				]
+			}
+		],
+		"gallery": {
+			"layout": "mosaic",
+			"mat": "paper",
+			"items": [
+				{
+					"image": "@media:avix-cs-rehall-render-mega-menu.webp",
+					"device": "render",
+					"caption": "Mega menu, Men's range"
+				},
+				{
+					"image": "@media:avix-cs-rehall-render-mobile.webp",
+					"device": "render",
+					"caption": "Mobile shopping journey"
+				},
+				{
+					"image": "@media:avix-cs-rehall-gallery-collections-desktop.webp",
+					"device": "browser",
+					"caption": "Collection tiles on the homepage"
+				},
+				{
+					"image": "@media:avix-cs-rehall-gallery-mobile-bestsellers.webp",
+					"device": "phone",
+					"caption": "Bestsellers on mobile"
+				},
+				{
+					"image": "@media:avix-cs-rehall-gallery-mobile-menu-men.webp",
+					"device": "phone",
+					"caption": "Mobile menu, men's range"
+				},
+				{
+					"image": "@media:avix-cs-rehall-gallery-mobile-filters.webp",
+					"device": "phone",
+					"caption": "Mobile filters with stock counts"
+				},
+				{
+					"image": "@media:avix-cs-rehall-gallery-mobile-product-buybox.webp",
+					"device": "phone",
+					"caption": "Mobile buy box"
+				},
+				{
+					"image": "@media:avix-cs-rehall-gallery-fashion-ski-desktop.webp",
+					"device": "browser",
+					"caption": "Fashion Ski campaign section"
+				},
+				{
+					"image": "@media:avix-cs-rehall-gallery-baggy-banner-desktop.webp",
+					"device": "browser",
+					"caption": "Baggy collection banner"
+				},
+				{
+					"image": "@media:avix-cs-rehall-feature-product-cards.webp",
+					"device": "browser",
+					"caption": "Product cards with colourway thumbnails"
+				}
+			]
+		}
+	},
+	"alt": {
+		"avix-cs-rehall-hero-desktop.webp": "Rehall.com homepage on desktop with the Winter 26 campaign photo and the Shop and Discover navigation",
+		"avix-cs-rehall-hero-mobile.webp": "Rehall.com homepage on a phone",
+		"avix-cs-rehall-feature-mega-menu.webp": "Rehall mega menu listing categories for Men, Women, Boys and Girls beside campaign tiles",
+		"avix-cs-rehall-feature-predictive-search.webp": "Rehall predictive search showing suggestions and live product results with prices and ratings",
+		"avix-cs-rehall-feature-technical-filters.webp": "Rehall men's ski jackets with filters for size, colour, waterproofness and breathability",
+		"avix-cs-rehall-feature-product-page.webp": "Rehall ski jacket product page with colourway photos, size bar and delivery promise under Add to cart",
+		"avix-cs-rehall-feature-tech-specs.webp": "Rehall product Features tab with warmth, breathability and water resistance meters and a specification table",
+		"avix-cs-rehall-feature-smart-cart.webp": "Rehall slide-out cart with recommendations, Trustpilot rating, dispatch cut-off and payment methods",
+		"avix-cs-rehall-gallery-collections-desktop.webp": "Rehall homepage collection tiles for Men, Women, Accessories and Boys",
+		"avix-cs-rehall-gallery-mobile-bestsellers.webp": "Rehall bestsellers carousel on a phone",
+		"avix-cs-rehall-gallery-mobile-menu-men.webp": "Rehall mobile menu listing men's categories",
+		"avix-cs-rehall-gallery-mobile-filters.webp": "Rehall mobile filter drawer with size counts, colour swatches and waterproofness",
+		"avix-cs-rehall-gallery-mobile-product-buybox.webp": "Rehall product page on a phone with colourways, sizes and Add to cart",
+		"avix-cs-rehall-gallery-fashion-ski-desktop.webp": "Rehall Fashion Ski section with a campaign photo beside product cards",
+		"avix-cs-rehall-gallery-baggy-banner-desktop.webp": "Rehall Baggy Collection banner",
+		"avix-cs-rehall-feature-product-cards.webp": "Rehall bestseller product cards with colourway thumbnails and wishlist hearts",
+		"avix-cs-rehall-logo-white.png": "Rehall logo",
+		"avix-cs-rehall-og.jpg": "Rehall case study by AvixDigital, with the Rehall.com homepage in a browser window",
+		"avix-cs-rehall-render-hero.webp": "Rehall.com homepage on a laptop and a phone",
+		"avix-cs-rehall-render-mega-menu.webp": "Rehall mega menu for the men's range on a laptop",
+		"avix-cs-rehall-render-mobile.webp": "Rehall mobile menu, bestsellers and a product page on three phones"
+	}
+}

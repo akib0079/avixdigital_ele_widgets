@@ -130,7 +130,7 @@ class Service_Tabs extends Widget_Base {
 				'description' => esc_html__( 'Leave an empty line between paragraphs. Simple links (<a href="…">), <strong>, <em> and <br> are allowed; links that open in a new tab get rel="noopener" automatically.', 'avix-widgets' ),
 				'type'        => Controls_Manager::TEXTAREA,
 				'rows'        => 6,
-				'default'     => "Start with the right scope: improve an existing theme, build a custom storefront or connect the tools your business depends on. We recommend the approach that fits your requirements and maintenance budget.\n\nSee our Shopify work: <a href=\"https://akib.avixdigital.com/rehall-com/\" target=\"_blank\" rel=\"noopener nofollow\">Rehall</a> and <a href=\"https://akib.avixdigital.com/ovabalance-eu/\" target=\"_blank\" rel=\"noopener nofollow\">OvaBalance</a>.",
+				'default'     => "Start with the right scope: improve an existing theme, build a custom storefront or connect the tools your business depends on. We recommend the approach that fits your requirements and maintenance budget.\n\nSee our Shopify work: <a href=\"https://avixdigital.com/case-studies/rehall/\">Rehall</a> and <a href=\"https://avixdigital.com/case-studies/ovabalance/\">OvaBalance</a>.",
 				'dynamic'     => array( 'active' => true ),
 			)
 		);

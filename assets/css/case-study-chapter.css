@@ -1,0 +1,966 @@
+/*!
+ * Avix Digital · Case Study Chapter
+ * The text chapters of a case study: a statement beside a sticky label
+ * (challenge), a stacked headline with numbered build cards joined by an
+ * orange line (approach), and the "What we built" intro with anchor chips.
+ * Layout follows the widget's own width (container queries).
+ */
+
+.avix-csc {
+	--csc-bg: #ffffff;
+	--csc-ink: #1a1a1a;
+	--csc-lead: #34363b;
+	--csc-muted: #5c5f66;
+	--csc-line: rgba(26, 26, 26, 0.1);
+	--csc-accent: #fb6007;
+	--csc-accent-text: #c54804;
+	/* Large orange words on white: a touch deeper than the button orange so
+	   the highlight keeps 3:1 contrast. */
+	--csc-accent-title: color-mix(in srgb, var(--csc-accent) 88%, #000000);
+	--csc-card-bg: #f5f3ef;
+	--csc-chip-bg: #ffffff;
+	--csc-chip-line: rgba(26, 26, 26, 0.12);
+	--csc-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--csc-font-body: "Inter", Arial, sans-serif;
+	--csc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--csc-max: 1240px;
+	--csc-pad-top-auto: clamp(72px, 9vw, 140px);
+	--csc-pad-bottom-auto: clamp(72px, 9vw, 140px);
+
+	container: avix-csc / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: var(--csc-pad-top, var(--csc-pad-top-auto)) 0 var(--csc-pad-bottom, var(--csc-pad-bottom-auto));
+	overflow: hidden;
+	overflow: clip;
+	color: var(--csc-ink);
+	background: var(--csc-bg);
+	font-family: var(--csc-font-body);
+	-webkit-font-smoothing: antialiased;
+	/* Anchor jumps land below the fixed header. */
+	scroll-margin-top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--avix-header-h, 0px));
+}
+
+.avix-csc *,
+.avix-csc *::before,
+.avix-csc *::after {
+	box-sizing: border-box;
+}
+
+/* The challenge follows the hero's white band, which already gives air;
+   What we built leads straight into the first spotlight. */
+.avix-csc--challenge {
+	--csc-pad-top-auto: clamp(40px, 5vw, 72px);
+}
+
+.avix-csc--features {
+	--csc-pad-bottom-auto: 24px;
+}
+
+/* ---------- Themes ---------- */
+
+.avix-csc--paper {
+	--csc-bg: #f5f3ef;
+	--csc-card-bg: #ffffff;
+	--csc-chip-bg: #ffffff;
+	--csc-line: rgba(26, 26, 26, 0.1);
+}
+
+.avix-csc--white {
+	--csc-chip-bg: #faf8f5;
+}
+
+.avix-csc--dark {
+	--csc-bg: #0b0b0c;
+	--csc-ink: #ffffff;
+	--csc-lead: rgba(255, 255, 255, 0.84);
+	--csc-muted: rgba(255, 255, 255, 0.64);
+	--csc-line: rgba(255, 255, 255, 0.1);
+	--csc-accent-text: #ff8a3d;
+	--csc-accent-title: var(--csc-accent);
+	--csc-card-bg: #141416;
+	--csc-chip-bg: rgba(255, 255, 255, 0.05);
+	--csc-chip-line: rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- Frame ---------- */
+
+/* Container queries style descendants only: width-based tokens live on the
+   inner wrapper. */
+.avix-csc__inner {
+	--csc-gutter: max(18px, clamp(16px, 5cqi, 72px));
+	--csc-card-pad: 32px;
+	--csc-card-gap: clamp(14px, 1.6cqi, 20px);
+	--csc-pill-w: 44px;
+	--csc-pill-h: 28px;
+
+	position: relative;
+	width: min(calc(100% - 2 * var(--csc-gutter)), var(--csc-max));
+	margin-inline: auto;
+}
+
+/* ---------- Eyebrow & caption ---------- */
+
+.avix-csc .avix-csc__eyebrow {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	color: var(--csc-muted);
+	font-family: var(--csc-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+/* Locked to the first line, so a two-line label keeps its marker at the start. */
+.avix-csc .avix-csc__px {
+	flex: none;
+	width: 6px;
+	height: 6px;
+	margin-top: calc(0.65em - 3px);
+	background: var(--csc-accent);
+}
+
+.avix-csc .avix-csc__num {
+	color: var(--csc-ink);
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-csc .avix-csc__dot {
+	margin: 0 -2px;
+	opacity: 0.6;
+}
+
+.avix-csc .avix-csc__caption {
+	max-width: 26ch;
+	margin: 14px 0 0;
+	padding: 0;
+	color: var(--csc-muted);
+	font-family: var(--csc-font-body);
+	font-size: 15px;
+	line-height: 1.55;
+	text-wrap: pretty;
+}
+
+/* ---------- Headline ---------- */
+
+.avix-csc .avix-csc__title {
+	margin: 0;
+	padding: 0;
+	color: var(--csc-ink);
+	font-family: var(--csc-font-display);
+	text-transform: none;
+	overflow-wrap: break-word;
+}
+
+/* The challenge: a statement, not a shout. */
+.avix-csc .avix-csc__title--statement {
+	max-width: 30ch;
+	font-size: clamp(26px, 3cqi, 44px);
+	font-weight: 500;
+	line-height: 1.18;
+	letter-spacing: -0.02em;
+	text-wrap: pretty;
+}
+
+.avix-csc .avix-csc__title--display {
+	max-width: 16ch;
+	font-size: clamp(34px, 4.2cqi, 60px);
+	font-weight: 600;
+	line-height: 1.06;
+	letter-spacing: -0.035em;
+	text-wrap: balance;
+}
+
+.avix-csc .avix-csc__title .avix-csc__accent {
+	color: var(--csc-accent-title);
+}
+
+/* ---------- Split layout ---------- */
+
+.avix-csc__grid {
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	column-gap: clamp(24px, 3cqi, 48px);
+	align-items: start;
+}
+
+.avix-csc__aside {
+	grid-column: 1 / span 4;
+	padding-top: 0.55em;
+}
+
+.avix-csc__main {
+	grid-column: 5 / span 8;
+	min-width: 0;
+}
+
+.avix-csc__grid > .avix-csc__main:first-child {
+	grid-column: 1 / -1;
+}
+
+.avix-csc--split .avix-csc__main .avix-csc__lead {
+	margin-top: clamp(22px, 2.4cqi, 32px);
+}
+
+/* ---------- Stacked layout ---------- */
+
+.avix-csc__head-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+	gap: 24px clamp(32px, 6cqi, 96px);
+	align-items: end;
+	margin-top: clamp(18px, 2cqi, 26px);
+}
+
+.avix-csc__head-row--solo {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+/* Headline and chips on the left, the lead on the right. */
+.avix-csc__head-row--chips {
+	grid-template-areas: "title side" "chips side";
+	grid-template-rows: auto 1fr;
+	align-items: start;
+	row-gap: 0;
+}
+
+.avix-csc__head-row--chips > .avix-csc__title {
+	grid-area: title;
+}
+
+.avix-csc__head-row--chips > .avix-csc__head-side {
+	grid-area: side;
+	padding-top: 0.4em;
+	padding-bottom: 0;
+}
+
+.avix-csc .avix-csc__head-row--chips > .avix-csc__chipbar {
+	grid-area: chips;
+	align-self: end;
+	margin-top: clamp(28px, 3cqi, 40px);
+}
+
+.avix-csc__head-side {
+	min-width: 0;
+	padding-bottom: 0.3em;
+}
+
+.avix-csc__head-side .avix-csc__caption {
+	margin: 0 0 12px;
+}
+
+/* ---------- Lead & body ---------- */
+
+.avix-csc .avix-csc__lead {
+	max-width: 62ch;
+	margin: 0;
+	padding: 0;
+	color: var(--csc-lead);
+	font-family: var(--csc-font-body);
+	font-size: clamp(16.5px, 1.3cqi, 18px);
+	font-weight: 400;
+	line-height: 1.6;
+	text-wrap: pretty;
+}
+
+.avix-csc__body {
+	max-width: 62ch;
+	margin-top: clamp(22px, 2.4cqi, 32px);
+}
+
+.avix-csc .avix-csc__body p {
+	margin: 0 0 1.05em;
+	padding: 0;
+	color: var(--csc-muted);
+	font-family: var(--csc-font-body);
+	font-size: clamp(16px, 1.25cqi, 17px);
+	line-height: 1.7;
+	text-wrap: pretty;
+}
+
+.avix-csc .avix-csc__body p:last-child {
+	margin-bottom: 0;
+}
+
+.avix-csc .avix-csc__body--opening p:first-child {
+	color: var(--csc-ink);
+	font-size: clamp(17px, 1.35cqi, 18px);
+}
+
+.avix-csc .avix-csc__body a,
+.avix-csc .avix-csc__lead a {
+	color: inherit;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--csc-accent) 55%, transparent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	box-shadow: none;
+	transition: text-decoration-color 0.25s ease, color 0.25s ease;
+}
+
+.avix-csc .avix-csc__body strong,
+.avix-csc .avix-csc__lead strong {
+	color: var(--csc-ink);
+	font-weight: 600;
+}
+
+/* Stacked chapters: the story continues below the header in two columns. */
+.avix-csc--stacked .avix-csc__body {
+	max-width: none;
+	margin-top: clamp(36px, 4cqi, 56px);
+	padding-top: clamp(28px, 3cqi, 40px);
+	border-top: 1px solid var(--csc-line);
+}
+
+.avix-csc--stacked .avix-csc__body:not(.avix-csc__body--cols) {
+	max-width: 62ch;
+}
+
+.avix-csc__body--cols {
+	columns: 2;
+	column-gap: clamp(32px, 4cqi, 64px);
+}
+
+.avix-csc .avix-csc__body--cols p {
+	break-inside: avoid;
+}
+
+/* ---------- Chips ---------- */
+
+.avix-csc__chipbar {
+	margin-top: clamp(28px, 3cqi, 40px);
+}
+
+.avix-csc--stacked .avix-csc__chipbar {
+	margin-top: clamp(32px, 3.6cqi, 48px);
+}
+
+.avix-csc .avix-csc__chips-label {
+	margin: 0 0 12px;
+	padding: 0;
+	color: var(--csc-muted);
+	font-family: var(--csc-font-body);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.avix-csc .avix-csc__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-csc .avix-csc__chips li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-csc .avix-csc__chips li::before,
+.avix-csc .avix-csc__chips li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-csc .avix-csc__chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	min-height: 34px;
+	margin: 0;
+	padding: 7px 14px 7px 12px;
+	border: 1px solid var(--csc-chip-line);
+	border-radius: 999px;
+	color: var(--csc-ink);
+	background: var(--csc-chip-bg);
+	font-family: var(--csc-font-body);
+	font-size: 13.5px;
+	font-weight: 500;
+	line-height: 1.25;
+	text-decoration: none;
+	box-shadow: none;
+}
+
+/* A pixel bullet ties the constraints to the brand's pixel. */
+.avix-csc span.avix-csc__chip::before {
+	flex: none;
+	width: 5px;
+	height: 5px;
+	background: var(--csc-accent);
+	content: "";
+}
+
+/* Anchor chips: a tappable 44px row of features. */
+.avix-csc .avix-csc__chip--link,
+.avix-csc .avix-csc__chip--link:visited,
+.avix-csc .avix-csc__chip--link:focus {
+	min-height: 44px;
+	padding: 8px 16px 8px 8px;
+	color: var(--csc-ink);
+	white-space: nowrap;
+	transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.35s var(--csc-ease);
+}
+
+.avix-csc .avix-csc__chip-num {
+	display: inline-grid;
+	place-items: center;
+	min-width: 28px;
+	height: 28px;
+	padding: 0 6px;
+	border-radius: 999px;
+	color: var(--csc-accent-text);
+	background: color-mix(in srgb, var(--csc-accent) 9%, transparent);
+	font-family: var(--csc-font-display);
+	font-size: 12.5px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-csc .avix-csc__chip-text {
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.avix-csc .avix-csc__chip-arrow {
+	width: 14px;
+	height: 14px;
+	margin-left: 2px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	opacity: 0.45;
+	transition: transform 0.35s var(--csc-ease), opacity 0.25s ease;
+}
+
+@media (hover: hover) {
+	.avix-csc .avix-csc__chip--link:hover {
+		border-color: color-mix(in srgb, var(--csc-accent) 45%, transparent);
+		color: var(--csc-ink);
+		background: color-mix(in srgb, var(--csc-accent) 6%, var(--csc-chip-bg));
+		transform: translateY(-1px);
+	}
+
+	.avix-csc .avix-csc__chip--link:hover .avix-csc__chip-arrow {
+		opacity: 1;
+		transform: translateY(2px);
+	}
+
+	.avix-csc .avix-csc__body a:hover,
+	.avix-csc .avix-csc__lead a:hover {
+		text-decoration-color: var(--csc-accent);
+	}
+}
+
+.avix-csc .avix-csc__chip--link:focus-visible,
+.avix-csc .avix-csc__body a:focus-visible,
+.avix-csc .avix-csc__lead a:focus-visible {
+	outline: 2px solid var(--csc-accent) !important;
+	outline-offset: 3px !important;
+}
+
+.avix-csc :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
+/* The scroller only scrolls on narrow widths (see the container queries). */
+.avix-csc__scroller {
+	--csc-fade-l: 0px;
+	--csc-fade-r: 0px;
+}
+
+/* ---------- Cards ---------- */
+
+/* Grid classes come from PHP: three across for 3, 5 or 6 cards, two for
+   even counts, one column otherwise (and at most two beside a label).
+   A card places its parts by grid areas set on the list, so one column of
+   cards can switch to a timeline "rail": the number on the left, the line
+   running down below it, the text never crossed. */
+.avix-csc .avix-csc__cards {
+	--csc-card-cols: minmax(0, 1fr);
+	--csc-card-areas: "num" "title" "text";
+	--csc-card-colgap: 0px;
+	--csc-num-gap: clamp(22px, 2.2cqi, 30px);
+	--csc-text-gap: 12px;
+
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--csc-card-gap);
+	margin: clamp(40px, 4.4cqi, 64px) 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-csc--split .avix-csc__cards {
+	margin-top: clamp(32px, 3.6cqi, 48px);
+}
+
+.avix-csc--grid-three .avix-csc__cards {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.avix-csc--grid-two .avix-csc__cards {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.avix-csc--grid-one.avix-csc--stacked .avix-csc__cards {
+	max-width: 920px;
+}
+
+/* The rail, wide: number | title | text on one row. */
+.avix-csc--grid-one .avix-csc__cards {
+	--csc-card-cols: var(--csc-pill-w) minmax(0, 0.8fr) minmax(0, 1.2fr);
+	--csc-card-areas: "num title text";
+	--csc-card-colgap: clamp(20px, 2.6cqi, 36px);
+	--csc-num-gap: 0px;
+	--csc-text-gap: 0px;
+}
+
+.avix-csc--grid-one .avix-csc__cards--plain {
+	--csc-card-cols: minmax(0, 0.8fr) minmax(0, 1.2fr);
+	--csc-card-areas: "title text";
+}
+
+.avix-csc .avix-csc__card {
+	position: relative;
+	display: grid;
+	grid-template-columns: var(--csc-card-cols);
+	grid-template-areas: var(--csc-card-areas);
+	align-content: start;
+	align-items: start;
+	column-gap: var(--csc-card-colgap);
+	min-width: 0;
+	margin: 0;
+	padding: var(--csc-card-pad);
+	border: 1px solid color-mix(in srgb, var(--csc-line) 60%, transparent);
+	border-radius: 20px;
+	background: var(--csc-card-bg);
+	list-style: none;
+}
+
+.avix-csc .avix-csc__card::before,
+.avix-csc .avix-csc__card::marker {
+	display: none;
+	content: none;
+}
+
+.avix-csc--paper .avix-csc__card {
+	border-color: rgba(26, 26, 26, 0.05);
+	box-shadow: 0 1px 2px rgba(26, 26, 26, 0.03), 0 18px 40px -30px rgba(26, 26, 26, 0.22);
+}
+
+.avix-csc__card-index {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	grid-area: num;
+	align-items: center;
+	height: var(--csc-pill-h);
+	margin-bottom: var(--csc-num-gap);
+}
+
+.avix-csc .avix-csc__card-num {
+	display: inline-grid;
+	place-items: center;
+	min-width: var(--csc-pill-w);
+	height: var(--csc-pill-h);
+	padding: 0 10px;
+	border: 1px solid color-mix(in srgb, var(--csc-accent) 34%, transparent);
+	border-radius: 999px;
+	color: var(--csc-accent-text);
+	background: var(--csc-card-bg);
+	font-family: var(--csc-font-display);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: 0.02em;
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-csc .avix-csc__card-title {
+	grid-area: title;
+	margin: 0;
+	padding: 0;
+	color: var(--csc-ink);
+	font-family: var(--csc-font-display);
+	font-size: clamp(20px, 1.7cqi, 22px);
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: -0.015em;
+	text-transform: none;
+	text-wrap: balance;
+}
+
+/* On the rail the first title line sits level with the number. */
+.avix-csc--grid-one .avix-csc__card-title {
+	padding-top: 1px;
+}
+
+.avix-csc .avix-csc__card-text {
+	grid-area: text;
+	margin: var(--csc-text-gap) 0 0;
+	padding: 0;
+	color: var(--csc-muted);
+	font-family: var(--csc-font-body);
+	font-size: clamp(15px, 1.2cqi, 16px);
+	line-height: 1.65;
+	text-wrap: pretty;
+}
+
+/* The connector: one segment per card, from its number towards the next
+   one, drawn above the neighbouring card's background and under its number
+   pill. Off unless a layout turns it on. */
+.avix-csc__card-line {
+	position: absolute;
+	z-index: 1;
+	display: none;
+	border-radius: 2px;
+	background: var(--csc-accent);
+	pointer-events: none;
+}
+
+/* Down the rail. */
+.avix-csc--connector.avix-csc--grid-one .avix-csc__card-line {
+	top: calc(var(--csc-card-pad) + var(--csc-pill-h) + 10px);
+	bottom: calc(-1 * (var(--csc-card-gap) + var(--csc-card-pad) - 10px));
+	left: calc(var(--csc-card-pad) + var(--csc-pill-w) / 2 - 1px);
+	display: block;
+	width: 2px;
+	transform-origin: 50% 0;
+	--csc-line-from: scaleY(0);
+}
+
+/* Three across: a horizontal segment through each row of numbers. */
+.avix-csc--connector.avix-csc--grid-three .avix-csc__card-line {
+	top: calc(var(--csc-card-pad) + var(--csc-pill-h) / 2 - 1px);
+	left: calc(var(--csc-card-pad) + var(--csc-pill-w) + 10px);
+	right: calc(-1 * (var(--csc-card-gap) + var(--csc-card-pad) - 10px));
+	display: block;
+	height: 2px;
+	transform-origin: 0 50%;
+	--csc-line-from: scaleX(0);
+}
+
+.avix-csc--connector.avix-csc--grid-three .avix-csc__card:nth-child(3n) .avix-csc__card-line,
+.avix-csc--connector .avix-csc__card:last-child .avix-csc__card-line {
+	display: none;
+}
+
+/* ---------- Motion ---------- */
+
+.avix-csc.is-armed .avix-csc__rise {
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 0.7s ease, transform 0.8s var(--csc-ease);
+	transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+.avix-csc.is-armed.is-in .avix-csc__rise {
+	opacity: 1;
+	transform: none;
+}
+
+/* Chips arrive one after another. */
+.avix-csc.is-armed .avix-csc__chip-item {
+	opacity: 0;
+	transform: translateY(12px);
+	transition: opacity 0.5s ease, transform 0.6s var(--csc-ease);
+	transition-delay: calc(120ms + var(--c, 0) * 50ms);
+}
+
+.avix-csc.is-armed .avix-csc__chipbar.is-in .avix-csc__chip-item {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-csc.is-armed .avix-csc__card {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 0.7s ease, transform 0.8s var(--csc-ease);
+	transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+.avix-csc.is-armed .avix-csc__cards.is-in .avix-csc__card {
+	opacity: 1;
+	transform: none;
+}
+
+/* The line draws once the cards have landed. */
+.avix-csc.is-armed .avix-csc__card-line {
+	transform: var(--csc-line-from, scaleX(0));
+	transition: transform 0.6s var(--csc-ease);
+	transition-delay: calc(820ms + var(--i, 0) * 200ms);
+}
+
+.avix-csc.is-armed .avix-csc__cards.is-in .avix-csc__card-line {
+	transform: none;
+}
+
+/* No entrance replays while editing in Elementor, and no sticky label. */
+.elementor-editor-active .avix-csc .avix-csc__aside {
+	position: relative !important;
+	top: auto !important;
+}
+
+/* ---------- Container queries ---------- */
+
+/* Wide: the label follows the reader down the chapter. */
+@container avix-csc (min-width: 1025px) {
+	.avix-csc--sticky .avix-csc__aside {
+		position: sticky;
+		top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--avix-header-h, 0px) + 32px);
+	}
+}
+
+@container avix-csc (max-width: 1100px) {
+	.avix-csc__inner {
+		--csc-card-pad: 28px;
+	}
+}
+
+/* 861–1024 keeps the label beside the text, without sticking. Below,
+   everything stacks with the label on top. */
+@container avix-csc (max-width: 860px) {
+	.avix-csc__grid {
+		display: block;
+	}
+
+	.avix-csc__aside {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 8px 18px;
+		margin-bottom: clamp(18px, 3cqi, 24px);
+		padding-top: 0;
+	}
+
+	.avix-csc .avix-csc__aside .avix-csc__caption {
+		max-width: none;
+		margin: 0;
+		font-size: 14px;
+	}
+
+	.avix-csc__head-row {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 18px;
+	}
+
+	.avix-csc__head-row--chips {
+		grid-template-areas: "title" "side" "chips";
+		grid-template-rows: auto;
+	}
+
+	.avix-csc .avix-csc__head-row--chips > .avix-csc__chipbar {
+		margin-top: 14px;
+	}
+
+	.avix-csc__head-side {
+		padding-bottom: 0;
+	}
+
+	.avix-csc .avix-csc__title--display {
+		max-width: 18ch;
+	}
+
+	.avix-csc__body--cols {
+		columns: 1;
+	}
+
+	.avix-csc .avix-csc__body--cols p {
+		max-width: 62ch;
+	}
+
+	/* Three or five cards become a one-column rail (six stay two by two). */
+	.avix-csc--grid-three .avix-csc__cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.avix-csc--grid-three.avix-csc--cards-odd .avix-csc__cards {
+		--csc-card-cols: var(--csc-pill-w) minmax(0, 0.8fr) minmax(0, 1.2fr);
+		--csc-card-areas: "num title text";
+		--csc-card-colgap: clamp(20px, 2.6cqi, 36px);
+		--csc-num-gap: 0px;
+		--csc-text-gap: 0px;
+
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-csc--grid-three.avix-csc--cards-odd .avix-csc__cards--plain {
+		--csc-card-cols: minmax(0, 0.8fr) minmax(0, 1.2fr);
+		--csc-card-areas: "title text";
+	}
+
+	.avix-csc--grid-three.avix-csc--cards-odd .avix-csc__card-title {
+		padding-top: 1px;
+	}
+
+	.avix-csc--connector.avix-csc--grid-three .avix-csc__card-line {
+		display: none;
+	}
+
+	.avix-csc--connector.avix-csc--grid-three.avix-csc--cards-odd .avix-csc__card-line {
+		top: calc(var(--csc-card-pad) + var(--csc-pill-h) + 10px);
+		right: auto;
+		bottom: calc(-1 * (var(--csc-card-gap) + var(--csc-card-pad) - 10px));
+		left: calc(var(--csc-card-pad) + var(--csc-pill-w) / 2 - 1px);
+		display: block;
+		width: 2px;
+		height: auto;
+		transform-origin: 50% 0;
+		--csc-line-from: scaleY(0);
+	}
+
+	.avix-csc--connector .avix-csc__card:last-child .avix-csc__card-line {
+		display: none;
+	}
+
+	/* Feature chips: one row that scrolls sideways, edge to edge. */
+	.avix-csc__chipbar--nav .avix-csc__scroller {
+		margin-inline: calc(-1 * var(--csc-gutter));
+		padding-inline: var(--csc-gutter);
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		scroll-padding-inline: var(--csc-gutter);
+		scrollbar-width: none;
+		-webkit-overflow-scrolling: touch;
+		-webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--csc-fade-l), #000 calc(100% - var(--csc-fade-r)), transparent 100%);
+		mask-image: linear-gradient(90deg, transparent 0, #000 var(--csc-fade-l), #000 calc(100% - var(--csc-fade-r)), transparent 100%);
+	}
+
+	.avix-csc__chipbar--nav .avix-csc__scroller::-webkit-scrollbar {
+		display: none;
+	}
+
+	.avix-csc__chipbar--nav .avix-csc__scroller.is-fade-l {
+		--csc-fade-l: 48px;
+	}
+
+	.avix-csc__chipbar--nav .avix-csc__scroller.is-fade-r {
+		--csc-fade-r: 56px;
+	}
+
+	.avix-csc__chipbar--nav .avix-csc__chips {
+		flex-wrap: nowrap;
+		width: max-content;
+		padding-bottom: 2px;
+	}
+}
+
+/* Phones: every count stacks in one column, cards read top to bottom and
+   the line links them down the left. */
+@container avix-csc (max-width: 600px) {
+	.avix-csc__inner {
+		--csc-card-pad: 24px;
+		--csc-card-gap: 12px;
+	}
+
+	.avix-csc .avix-csc__title--statement {
+		font-size: clamp(25px, 6.8cqi, 30px);
+		line-height: 1.22;
+	}
+
+	.avix-csc .avix-csc__title--display {
+		font-size: clamp(32px, 8.8cqi, 40px);
+		line-height: 1.08;
+	}
+
+	.avix-csc .avix-csc__lead {
+		font-size: 17px;
+	}
+
+	/* Every count becomes the rail: number on the left, title and text
+	   stacked beside it, the line linking the cards down the left. */
+	.avix-csc .avix-csc__cards,
+	.avix-csc--grid-one .avix-csc__cards,
+	.avix-csc--grid-two .avix-csc__cards,
+	.avix-csc--grid-three .avix-csc__cards,
+	.avix-csc--grid-three.avix-csc--cards-odd .avix-csc__cards {
+		--csc-pill-w: 40px;
+		--csc-card-cols: var(--csc-pill-w) minmax(0, 1fr);
+		--csc-card-areas: "num title" "num text";
+		--csc-card-colgap: 16px;
+		--csc-num-gap: 0px;
+		--csc-text-gap: 8px;
+
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-csc .avix-csc__cards--plain,
+	.avix-csc--grid-one .avix-csc__cards--plain,
+	.avix-csc--grid-three.avix-csc--cards-odd .avix-csc__cards--plain {
+		--csc-card-cols: minmax(0, 1fr);
+		--csc-card-areas: "title" "text";
+	}
+
+	.avix-csc .avix-csc__card {
+		border-radius: 18px;
+	}
+
+	.avix-csc .avix-csc__card-title {
+		padding-top: 2px;
+		font-size: 19px;
+	}
+
+	.avix-csc .avix-csc__card-text {
+		font-size: 15px;
+		line-height: 1.6;
+	}
+
+	.avix-csc--connector .avix-csc__card-line,
+	.avix-csc--connector.avix-csc--grid-one .avix-csc__card-line,
+	.avix-csc--connector.avix-csc--grid-three .avix-csc__card-line,
+	.avix-csc--connector.avix-csc--grid-three.avix-csc--cards-odd .avix-csc__card-line {
+		top: calc(var(--csc-card-pad) + var(--csc-pill-h) + 10px);
+		right: auto;
+		bottom: calc(-1 * (var(--csc-card-gap) + var(--csc-card-pad) - 10px));
+		left: calc(var(--csc-card-pad) + 20px - 1px);
+		display: block;
+		width: 2px;
+		height: auto;
+		transform-origin: 50% 0;
+		--csc-line-from: scaleY(0);
+	}
+
+	.avix-csc--connector .avix-csc__card:last-child .avix-csc__card-line,
+	.avix-csc--connector.avix-csc--grid-three .avix-csc__card:last-child .avix-csc__card-line {
+		display: none;
+	}
+
+	.avix-csc .avix-csc__chip {
+		font-size: 13px;
+	}
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-csc *,
+	.avix-csc *::before,
+	.avix-csc *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-csc.is-armed .avix-csc__rise,
+	.avix-csc.is-armed .avix-csc__chip-item,
+	.avix-csc.is-armed .avix-csc__card,
+	.avix-csc.is-armed .avix-csc__card-line {
+		opacity: 1;
+		transform: none;
+	}
+}
