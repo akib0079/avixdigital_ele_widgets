@@ -182,7 +182,13 @@
    section titles): a short title such as "Explore other services" keeps to
    one line instead of leaving its last word alone. */
 .avix-si--edge-header .avix-si__title {
-	font-size: clamp(34px, 4.6cqi, 60px);
+	font-size: clamp(34px, 4.4cqi, 60px);
+}
+
+@container avix-si (max-width: 380px) {
+	.avix-si--edge-header .avix-si__title {
+		font-size: 31px;
+	}
 }
 
 .avix-si__head-side {

@@ -3,7 +3,7 @@
  * Plugin Name:       Avix Digital Elementor Widgets
  * Plugin URI:        https://avixdigital.com
  * Description:       Custom Elementor widgets for avixdigital.com: Service Benefits, About Hero, Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline, FAQ & Quote, Compare & CEO Quote, Client Logos, Intro Text, Smart Header, Team, Page Hero, Service Index, Story, Founder, Values, Journey, Careers, Post Grid, Service Tabs and Ticker.
- * Version:           1.13.1
+ * Version:           1.13.2
  * Author:            Avix Digital
  * Author URI:        https://avixdigital.com
  * Text Domain:       avix-widgets
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AVIX_EW_VERSION', '1.13.1' );
+define( 'AVIX_EW_VERSION', '1.13.2' );
 define( 'AVIX_EW_FILE', __FILE__ );
 define( 'AVIX_EW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AVIX_EW_URL', plugin_dir_url( __FILE__ ) );

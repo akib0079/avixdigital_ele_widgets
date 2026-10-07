@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.13.1**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.13.2**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.13.1.zip](dist/avix-elementor-widgets-1.13.1.zip).
+1. Download [avix-elementor-widgets-1.13.2.zip](dist/avix-elementor-widgets-1.13.2.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -43,6 +43,10 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.13.2
+
+- Service Index: when lined up with the header, the title size follows the width a little more closely (31px on the narrowest phones), so "Explore other services" stays on one line from 360 to 1920px.
 
 ### 1.13.1
 
