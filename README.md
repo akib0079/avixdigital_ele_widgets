@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.13.0**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.13.1**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.13.0.zip](dist/avix-elementor-widgets-1.13.0.zip).
+1. Download [avix-elementor-widgets-1.13.1.zip](dist/avix-elementor-widgets-1.13.1.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -41,6 +41,20 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 | Ticker | Orange keyword band that loops seamlessly, pauses on hover or with its button, and lists the words for screen readers. The pixel character rides on the band. |
 
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
+
+## Changelog
+
+### 1.13.1
+
+Fixes from the live QA of the four service pages. The home page widgets are unchanged, and pages that do not use the new settings render exactly as before.
+
+- Page Hero: the image figure no longer inherits the theme's `figure { overflow: hidden }`, so the stat chip, its seal, both label lines and the character above the frame show in full. Before the header script runs, the stage clears the real header height (106/91px with the notch), so it no longer moves down after load. On stacked tablets the image starts on the copy's edge. New colour control: Headline [highlight].
+- Focus rings: Page Hero, Service Tabs, Values, Journey, Ticker and Service Index restate their 2px rings with `!important`, because the theme's `body.show_outline` rule replaced them with a 1px dotted outline. A mouse click shows no ring. The Ticker's pause button gets a two-tone ring that stays visible on the orange band.
+- New "Side margins → Line up with the header" setting on Page Hero, Values, Journey and Service Index. Service Tabs always uses it: content starts on the header logo's line (5% of the width) at every width.
+- Journey: in the centred layout the vertical track (rail and cards) is centred as one block.
+- Values: in the side layout the watermark stays inside the text column and is hidden where the column stacks. The Padding control accepts custom values.
+- Service Index: a spanning odd card fills its image to the card height. The title uses a fluid size capped at 60px when lined up with the header. New colour control: Title [highlight].
+- Service Tabs and Service Index images stay `loading="lazy"` even when the site filters attachment images to eager.
 
 ## Project structure
 

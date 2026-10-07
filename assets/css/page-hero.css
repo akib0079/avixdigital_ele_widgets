@@ -609,12 +609,20 @@
 	}
 }
 
+/* Keyboard focus: a 2px accent ring. The theme swaps every focus ring for a
+   1px dotted grey one (`body.show_outline :focus { … !important }`) once a
+   key is pressed, so the ring is restated with !important here; a click
+   keeps no ring. */
 .avix-ph .avix-ph__btn:focus-visible,
 .avix-ph .avix-ph__crumb-link:focus-visible,
 .avix-ph .avix-ph__chip:focus-visible,
 .avix-ph .avix-ph__pause:focus-visible {
-	outline: 2px solid var(--ph-accent);
-	outline-offset: 4px;
+	outline: 2px solid var(--ph-accent) !important;
+	outline-offset: 4px !important;
+}
+
+.avix-ph :focus:not(:focus-visible) {
+	outline: none !important;
 }
 
 /* ---------- Proof row ---------- */
@@ -1255,6 +1263,10 @@
 	max-width: var(--ph-orbit-max, 540px);
 	margin: 0;
 	padding: 0;
+	/* The chip hangs off the frame and the character stands above it: the
+	   theme's `figure { overflow: hidden }` must not clip them. The frame
+	   inside still clips the picture to its rounded corners. */
+	overflow: visible;
 }
 
 /* Headroom for the character standing on the frame: its body (1.2×) plus
@@ -1790,6 +1802,22 @@
 	}
 }
 
+/* Stacked tablets: an image starts on the copy's edge, so the hero keeps one
+   left axis; the chip hangs a little past it, never into the stage edge. */
+@container avix-ph (600px < width <= 900px) {
+	.avix-ph.avix-ph--visual-image .avix-ph__visual {
+		justify-content: flex-start;
+	}
+
+	.avix-ph.avix-ph--visual-image .avix-ph__visual .avix-ph__media.avix-ph__media {
+		margin-inline: 0;
+	}
+
+	.avix-ph.avix-ph--visual-image .avix-ph__stat {
+		left: calc(-1 * clamp(0px, var(--ph-gutter) - 12px, 12px));
+	}
+}
+
 @container avix-ph (max-width: 600px) {
 	.avix-ph__stage {
 		--ph-inset-auto: 8px;
@@ -1939,6 +1967,65 @@
 
 	.avix-ph .avix-ph__pause-text {
 		display: none;
+	}
+}
+
+/* ---------- Side margins: line up with the header (opt-in) ---------- */
+
+/* The copy starts on the Smart Header's logo line (5% of the width, as the
+   header and the FAQ), so the hero shares one content edge with the
+   sections below it that use the same setting. The stage keeps a 16px
+   inset (8px on phones) and the copy padding is what is left of the 5%. */
+.avix-ph--edge-header .avix-ph__stage {
+	--ph-inset-auto: 16px;
+	--ph-edge: clamp(16px, 5cqi, 72px);
+	--ph-gutter-min: 20px;
+	--ph-gutter: max(var(--ph-gutter-min), calc(var(--ph-edge) - var(--ph-inset, var(--ph-inset-auto)) - 1px));
+}
+
+/* Full width stage: no inset and no border, the copy sits on the line itself. */
+.avix-ph--edge-header.avix-ph--bleed .avix-ph__stage {
+	--ph-gutter: max(var(--ph-gutter-min), var(--ph-edge));
+}
+
+@container avix-ph (max-width: 600px) {
+	.avix-ph--edge-header .avix-ph__stage {
+		--ph-inset-auto: 8px;
+		--ph-gutter-min: 18px;
+	}
+}
+
+/* ---------- Header clearance before the header script runs ---------- */
+
+/* The Smart Header's CSS estimate of its height (91px from 481 to 900px,
+   84px on phones) is shorter than the header with its notch (106 / 91px),
+   so the stage moved down once the script measured it. With the notch the
+   real height is the floor; the measured value still wins when larger. */
+@media (min-width: 481px) and (max-width: 900px) {
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--clear {
+		padding-top: calc(max(var(--avix-header-h, 0px), 106px) + var(--ph-header-gap, var(--ph-header-gap-auto)));
+	}
+
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--bleed.avix-ph--clear {
+		padding-top: 0;
+	}
+
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--bleed.avix-ph--clear .avix-ph__stage {
+		padding-top: calc(max(var(--avix-header-h, 0px), 106px) + var(--ph-pad-top, var(--ph-pad-auto)));
+	}
+}
+
+@media (max-width: 480px) {
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--clear {
+		padding-top: calc(max(var(--avix-header-h, 0px), 91px) + var(--ph-header-gap, var(--ph-header-gap-auto)));
+	}
+
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--bleed.avix-ph--clear {
+		padding-top: 0;
+	}
+
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--bleed.avix-ph--clear .avix-ph__stage {
+		padding-top: calc(max(var(--avix-header-h, 0px), 91px) + var(--ph-pad-top, var(--ph-pad-auto)));
 	}
 }
 

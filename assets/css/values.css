@@ -88,6 +88,12 @@
 	margin-inline: auto;
 }
 
+/* Side margins "Line up with the header": 5% of the width (16px at least),
+   the Smart Header's own side padding, at every width. */
+.avix-vl--edge-header .avix-vl__inner {
+	--vl-gutter: clamp(16px, 5cqi, 72px);
+}
+
 /* The character sits between rows, so the gutter leaves room for its head.
    One gutter in both directions keeps the bento even. */
 .avix-vl--pal .avix-vl__inner {
@@ -434,14 +440,21 @@
 	transition: transform 0.35s var(--vl-ease);
 }
 
+/* The theme swaps focus rings for a 1px dotted one once a key is pressed
+   (`body.show_outline :focus { … !important }`): the rings are restated with
+   !important, and a click keeps no ring. */
+.avix-vl :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
 .avix-vl .avix-vl__link:focus-visible {
-	outline: none;
+	outline: none !important;
 }
 
 /* The focus ring is drawn around the whole card the link covers. */
 .avix-vl .avix-vl__link:focus-visible::after {
-	outline: 2px solid var(--vl-accent);
-	outline-offset: 4px;
+	outline: 2px solid var(--vl-accent) !important;
+	outline-offset: 4px !important;
 }
 
 .avix-vl__sr {
@@ -869,8 +882,8 @@
 }
 
 .avix-vl .avix-vl__text a:focus-visible {
-	outline: 2px solid var(--vl-accent);
-	outline-offset: 3px;
+	outline: 2px solid var(--vl-accent) !important;
+	outline-offset: 3px !important;
 	border-radius: 2px;
 }
 
@@ -1085,12 +1098,28 @@
 	}
 }
 
-/* Stacked side layout (tablets and phones): behind the eyebrow and title, not
-   centred on the whole stack where it would sit behind the first card. */
+/* Side layout: the mark stays inside the text column, starting on its edge,
+   so it reads as part of the column instead of a stray shape at the page
+   edge. A wide logo keeps its proportions (only its mark shows). */
+@container avix-vl (min-width: 901px) {
+	.avix-vl--head-side .avix-vl__mark {
+		left: 0;
+		width: min(var(--vl-side-w, 42%), var(--vl-mark-w, 420px));
+		transform: translateY(-50%);
+	}
+
+	.avix-vl--head-side .avix-vl__mark-img {
+		object-fit: contain;
+		object-position: left center;
+	}
+}
+
+/* Stacked side layout (tablets and phones): the text runs the full width, so
+   there is no column to hold the mark; it would sit behind the eyebrow and
+   title as a grey disc. */
 @container avix-vl (max-width: 900px) {
 	.avix-vl--head-side .avix-vl__mark {
-		top: 0;
-		transform: translate(-14%, -18%);
+		display: none;
 	}
 }
 

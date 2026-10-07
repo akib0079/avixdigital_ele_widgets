@@ -739,6 +739,7 @@ class Service_Index extends Widget_Base {
 			'si_muted'       => array( esc_html__( 'Body text', 'avix-widgets' ), '--si-muted' ),
 			'si_accent'      => array( esc_html__( 'Accent', 'avix-widgets' ), '--si-accent' ),
 			'si_accent_text' => array( esc_html__( 'Small orange text', 'avix-widgets' ), '--si-accent-text' ),
+			'si_hl'          => array( esc_html__( 'Title [highlight]', 'avix-widgets' ), '--si-hl' ),
 			'si_line'        => array( esc_html__( 'Lines', 'avix-widgets' ), '--si-line' ),
 			'si_tint'        => array( esc_html__( 'Row hover tint', 'avix-widgets' ), '--si-tint' ),
 			'si_card'        => array( esc_html__( 'Cards (phones & tablets)', 'avix-widgets' ), '--si-card' ),
@@ -764,6 +765,20 @@ class Service_Index extends Widget_Base {
 				'allowed_dimensions' => 'vertical',
 				'separator'          => 'before',
 				'selectors'          => array( '{{WRAPPER}} .avix-si' => 'padding-top: {{TOP}}{{UNIT}}; padding-bottom: {{BOTTOM}}{{UNIT}};' ),
+			)
+		);
+
+		$this->add_control(
+			'side_gutter',
+			array(
+				'label'       => esc_html__( 'Side margins', 'avix-widgets' ),
+				'description' => esc_html__( 'Line up with the header: the content starts on the header logo\'s line (5% of the width) at every width, like the other sections set the same way.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => '',
+				'options'     => array(
+					''       => esc_html__( 'Standard (24px)', 'avix-widgets' ),
+					'header' => esc_html__( 'Line up with the header', 'avix-widgets' ),
+				),
 			)
 		);
 
@@ -844,6 +859,9 @@ class Service_Index extends Widget_Base {
 			'avix-si--' . ( 'dark' === ( $s['theme'] ?? 'light' ) ? 'dark' : 'light' ),
 			'avix-si--head-' . ( 'stacked' === ( $s['head_layout'] ?? 'split' ) ? 'stacked' : 'split' ),
 		);
+		if ( 'header' === ( $s['side_gutter'] ?? '' ) ) {
+			$classes[] = 'avix-si--edge-header';
+		}
 		if ( $preview ) {
 			$classes[] = 'avix-si--preview';
 		}
@@ -1340,7 +1358,7 @@ class Service_Index extends Widget_Base {
 				)
 			);
 			if ( $html ) {
-				return $html;
+				return $this->lazy_img( $html );
 			}
 			$url = (string) wp_get_attachment_url( $item['image_id'] );
 		} else {
@@ -1444,5 +1462,28 @@ class Service_Index extends Widget_Base {
 				'link_label'    => 'Explore UI/UX and branding',
 			),
 		);
+	}
+
+	/**
+	 * Keeps a below-the-fold image lazy. Some sites filter attachment images
+	 * to loading="eager" (avixdigital.com does), which made these images
+	 * compete with the hero image on first load.
+	 */
+	private function lazy_img( $html ) {
+		$html = (string) $html;
+		if ( '' === $html ) {
+			return $html;
+		}
+		if ( class_exists( '\WP_HTML_Tag_Processor' ) ) {
+			$tags = new \WP_HTML_Tag_Processor( $html );
+			if ( $tags->next_tag( 'img' ) ) {
+				$tags->set_attribute( 'loading', 'lazy' );
+				$tags->set_attribute( 'decoding', 'async' );
+				$tags->remove_attribute( 'fetchpriority' );
+				return $tags->get_updated_html();
+			}
+			return $html;
+		}
+		return (string) preg_replace( '/\sloading=(["\'])[^"\']*\1/i', ' loading="lazy"', $html );
 	}
 }

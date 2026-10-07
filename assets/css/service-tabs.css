@@ -33,7 +33,6 @@
 	--stb-font-body: "Inter", Arial, sans-serif;
 	--stb-ease: cubic-bezier(0.22, 1, 0.36, 1);
 	--stb-max: 1240px;
-	--stb-gutter: 24px;
 	--stb-radius: 28px;
 	--stb-ratio: 4 / 3;
 	--stb-ratio-stack: 16 / 10;
@@ -85,8 +84,11 @@
 	box-sizing: border-box;
 }
 
-/* Container queries style descendants only: tokens are reset on the inner wrapper. */
+/* Container queries style descendants only: tokens are reset on the inner wrapper.
+   The side gutter is the Smart Header's: 5% of the width (16px at least), so
+   the content starts on the header logo's line, as the hero and FAQ do. */
 .avix-stb__inner {
+	--stb-gutter: clamp(16px, 5cqi, 72px);
 	--stb-pad: clamp(28px, 3.8cqi, 56px);
 	--stb-col-gap: clamp(32px, 5cqi, 72px);
 	--stb-head-gap: clamp(40px, 4.6cqi, 60px);
@@ -307,9 +309,16 @@
 	background: transparent;
 }
 
+/* The theme swaps focus rings for a 1px dotted one once a key is pressed
+   (`body.show_outline :focus { … !important }`): the rings below are restated
+   with !important, and a click keeps no ring. */
+.avix-stb :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
 .avix-stb .avix-stb__tab:focus-visible {
-	outline: 2px solid var(--stb-accent);
-	outline-offset: 2px;
+	outline: 2px solid var(--stb-accent) !important;
+	outline-offset: 2px !important;
 }
 
 .avix-stb__tab-px {
@@ -461,8 +470,8 @@
 }
 
 .avix-stb__panel:focus-visible {
-	outline: 2px solid var(--stb-accent);
-	outline-offset: -3px;
+	outline: 2px solid var(--stb-accent) !important;
+	outline-offset: -3px !important;
 }
 
 .avix-stb__panel.no-media {
@@ -688,8 +697,8 @@
 }
 
 .avix-stb .avix-stb__btn:focus-visible {
-	outline: 2px solid var(--stb-accent);
-	outline-offset: 4px;
+	outline: 2px solid var(--stb-accent) !important;
+	outline-offset: 4px !important;
 }
 
 @media (hover: hover) {
@@ -917,7 +926,6 @@
 		--stb-nav-gap: 16px;
 		--stb-pad: 12px;
 		--stb-media-radius: 16px;
-		--stb-gutter: 16px;
 	}
 
 	.avix-stb .avix-stb__eyebrow {

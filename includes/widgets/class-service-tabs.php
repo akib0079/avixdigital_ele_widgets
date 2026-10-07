@@ -866,7 +866,7 @@ class Service_Tabs extends Widget_Base {
 				)
 			);
 			if ( $html ) {
-				return $html;
+				return $this->lazy_img( $html );
 			}
 			$url = (string) wp_get_attachment_url( $id );
 		}
@@ -992,5 +992,28 @@ class Service_Tabs extends Widget_Base {
 				'image_alt'   => esc_html__( 'An operations dashboard on a tablet', 'avix-widgets' ),
 			),
 		);
+	}
+
+	/**
+	 * Keeps a below-the-fold image lazy. Some sites filter attachment images
+	 * to loading="eager" (avixdigital.com does), which made these images
+	 * compete with the hero image on first load.
+	 */
+	private function lazy_img( $html ) {
+		$html = (string) $html;
+		if ( '' === $html ) {
+			return $html;
+		}
+		if ( class_exists( '\WP_HTML_Tag_Processor' ) ) {
+			$tags = new \WP_HTML_Tag_Processor( $html );
+			if ( $tags->next_tag( 'img' ) ) {
+				$tags->set_attribute( 'loading', 'lazy' );
+				$tags->set_attribute( 'decoding', 'async' );
+				$tags->remove_attribute( 'fetchpriority' );
+				return $tags->get_updated_html();
+			}
+			return $html;
+		}
+		return (string) preg_replace( '/\sloading=(["\'])[^"\']*\1/i', ' loading="lazy"', $html );
 	}
 }

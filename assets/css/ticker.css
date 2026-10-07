@@ -401,9 +401,18 @@
 	box-shadow: none;
 }
 
+/* Keyboard focus: a two-tone ring (band ink inside, a dark halo outside), so
+   it reads on the orange band, the ink band and the page behind. Restated
+   with !important: the theme swaps focus rings for a 1px dotted one once a
+   key is pressed (`body.show_outline :focus { … !important }`). */
 .avix-tk .avix-tk__toggle:focus-visible {
-	outline: 2px solid var(--tk-ink);
-	outline-offset: 3px;
+	outline: 2px solid var(--tk-ink) !important;
+	outline-offset: 2px !important;
+	box-shadow: 0 0 0 6px rgba(17, 17, 17, 0.85);
+}
+
+.avix-tk :focus:not(:focus-visible) {
+	outline: none !important;
 }
 
 @media (hover: hover) {

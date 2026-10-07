@@ -505,6 +505,20 @@ class Journey extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'side_gutter',
+			array(
+				'label'       => esc_html__( 'Side margins', 'avix-widgets' ),
+				'description' => esc_html__( 'Line up with the header: the content starts on the header logo\'s line (5% of the width) at every width, like the other sections set the same way.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => '',
+				'options'     => array(
+					''       => esc_html__( 'Standard (24px)', 'avix-widgets' ),
+					'header' => esc_html__( 'Line up with the header', 'avix-widgets' ),
+				),
+			)
+		);
+
 		$this->add_responsive_control(
 			'max_width',
 			array(
@@ -685,6 +699,9 @@ class Journey extends Widget_Base {
 			$classes[] = 'has-end';
 		}
 		// New options add classes only when used, so existing journeys keep their markup.
+		if ( 'header' === ( $s['side_gutter'] ?? '' ) ) {
+			$classes[] = 'avix-jr--edge-header';
+		}
 		if ( 'center' === ( $s['head_layout'] ?? '' ) ) {
 			$classes[] = 'avix-jr--center';
 		}

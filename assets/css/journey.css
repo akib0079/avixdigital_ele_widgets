@@ -130,8 +130,18 @@
 	--jr-ratio-auto: 16 / 10;
 
 	position: relative;
-	width: min(calc(100% - 48px), var(--jr-max));
+	width: min(calc(100% - var(--jr-gutters, 48px)), var(--jr-max));
 	margin-inline: auto;
+}
+
+/* Side margins "Line up with the header": 5% of the width (16px at least)
+   on each side, the Smart Header's own side padding, at every width. */
+.avix-jr--edge-header .avix-jr__inner {
+	--jr-gutters: calc(2 * clamp(16px, 5cqi, 72px));
+}
+
+.avix-jr.avix-jr--edge-header .avix-jr__inner {
+	width: min(calc(100% - var(--jr-gutters)), var(--jr-max));
 }
 
 /* ---------- Header ---------- */
@@ -233,13 +243,13 @@
 /*
  * Centred layout: the vertical track is a centred column under the header,
  * so stories keep a readable line length (about 70 characters) instead of
- * stretching across a tablet or a wide widget. The cards, not the lane, sit
- * on the centre line. The row resets it.
+ * stretching across a tablet or a wide widget. The track (rail and cards as
+ * one block) sits on the centre line, like the centred header and the
+ * closing pill, so it never looks pushed to one side. The row resets it.
  */
 .avix-jr--center .avix-jr__track {
 	max-width: var(--jr-col, 640px);
-	margin-right: auto;
-	margin-left: max(0px, (100% - var(--jr-col, 640px) - var(--jr-lane-x)) / 2);
+	margin-inline: auto;
 }
 
 .avix-jr__rail {
@@ -497,10 +507,17 @@
 	scroll-margin-bottom: 24px;
 }
 
+/* The theme swaps focus rings for a 1px dotted one once a key is pressed
+   (`body.show_outline :focus { … !important }`): the rings are restated with
+   !important, and a click keeps no ring. */
+.avix-jr :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
 .avix-jr .avix-jr__link:focus-visible,
 .avix-jr .avix-jr__end-label:focus-visible {
-	outline: 2px solid var(--jr-accent);
-	outline-offset: 4px;
+	outline: 2px solid var(--jr-accent) !important;
+	outline-offset: 4px !important;
 	border-radius: 4px;
 }
 
@@ -650,8 +667,8 @@
 }
 
 .avix-jr .avix-jr__cta-pill:focus-visible {
-	outline: 2px solid var(--jr-accent);
-	outline-offset: 4px;
+	outline: 2px solid var(--jr-accent) !important;
+	outline-offset: 4px !important;
 }
 
 .avix-jr .avix-jr__cta-text {
@@ -1002,7 +1019,7 @@
 	 */
 	.avix-jr.has-pictures .avix-jr__item:not(.has-image) .avix-jr__card {
 		justify-content: center;
-		min-height: calc((min(100cqi - 48px, var(--jr-max)) - var(--jr-lane-x) - 2 * var(--jr-pad) - 2px - clamp(24px, 3cqi, 40px)) * 0.3 / 1.3 / (var(--jr-ratio, var(--jr-ratio-auto))) + 2 * var(--jr-pad) + 2px);
+		min-height: calc((min(100cqi - var(--jr-gutters, 48px), var(--jr-max)) - var(--jr-lane-x) - 2 * var(--jr-pad) - 2px - clamp(24px, 3cqi, 40px)) * 0.3 / 1.3 / (var(--jr-ratio, var(--jr-ratio-auto))) + 2 * var(--jr-pad) + 2px);
 	}
 
 	/*
@@ -1018,7 +1035,7 @@
 	}
 
 	.avix-jr--center.has-pictures .avix-jr__item:not(.has-image) .avix-jr__card {
-		min-height: calc((min(100cqi - 48px, var(--jr-max), var(--jr-col)) - var(--jr-lane-x) - 2 * var(--jr-pad) - 2px - clamp(24px, 3cqi, 40px)) * 0.3 / 1.3 / (var(--jr-ratio, var(--jr-ratio-auto))) + 2 * var(--jr-pad) + 2px);
+		min-height: calc((min(100cqi - var(--jr-gutters, 48px), var(--jr-max), var(--jr-col)) - var(--jr-lane-x) - 2 * var(--jr-pad) - 2px - clamp(24px, 3cqi, 40px)) * 0.3 / 1.3 / (var(--jr-ratio, var(--jr-ratio-auto))) + 2 * var(--jr-pad) + 2px);
 	}
 }
 
@@ -1049,7 +1066,7 @@
 	 */
 	.avix-jr--row.avix-jr--center:is(.avix-jr--n1, .avix-jr--n2) .avix-jr__track {
 		--jr-cols: var(--jr-count);
-		--jr-row-w: calc((min(100cqi - 48px, var(--jr-max)) - 2 * var(--jr-gap)) / 3 * var(--jr-count) + (var(--jr-count) - 1) * var(--jr-gap));
+		--jr-row-w: calc((min(100cqi - var(--jr-gutters, 48px), var(--jr-max)) - 2 * var(--jr-gap)) / 3 * var(--jr-count) + (var(--jr-count) - 1) * var(--jr-gap));
 
 		max-width: var(--jr-row-w);
 		margin-inline: auto;
@@ -1221,7 +1238,7 @@
 		right: 0;
 		bottom: 22px;
 		width: max-content;
-		max-width: calc((var(--jr-row-w, min(100cqi - 48px, var(--jr-max))) - (var(--jr-cols, 4) - 1) * var(--jr-gap)) / var(--jr-cols, 4) - var(--jr-pad) - var(--jr-node) / 2 - var(--jr-pal) * 1.4 - 16px);
+		max-width: calc((var(--jr-row-w, min(100cqi - var(--jr-gutters, 48px), var(--jr-max))) - (var(--jr-cols, 4) - 1) * var(--jr-gap)) / var(--jr-cols, 4) - var(--jr-pad) - var(--jr-node) / 2 - var(--jr-pal) * 1.4 - 16px);
 		text-align: right;
 	}
 }

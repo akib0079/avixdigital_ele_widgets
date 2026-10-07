@@ -355,7 +355,7 @@ class Values extends Widget_Base {
 			'watermark',
 			array(
 				'label'       => esc_html__( 'Watermark image (optional)', 'avix-widgets' ),
-				'description' => esc_html__( 'A large, very faint image behind the text, e.g. the Avix logo. It bleeds off the left edge and never covers the cards.', 'avix-widgets' ),
+				'description' => esc_html__( 'A large, very faint image behind the text, e.g. the Avix logo. It bleeds off the left edge and never covers the cards. In the side layout it stays inside the text column, and it is hidden where that column stacks (tablets and phones).', 'avix-widgets' ),
 				'type'        => Controls_Manager::MEDIA,
 				'dynamic'     => array( 'active' => true ),
 			)
@@ -703,10 +703,24 @@ class Values extends Widget_Base {
 			array(
 				'label'              => esc_html__( 'Padding', 'avix-widgets' ),
 				'type'               => Controls_Manager::DIMENSIONS,
-				'size_units'         => array( 'px', 'vh' ),
+				'size_units'         => array( 'px', 'vh', 'custom' ),
 				'allowed_dimensions' => 'vertical',
 				'separator'          => 'before',
 				'selectors'          => array( '{{WRAPPER}} .avix-vl' => 'padding-top: {{TOP}}{{UNIT}}; padding-bottom: {{BOTTOM}}{{UNIT}};' ),
+			)
+		);
+
+		$this->add_control(
+			'side_gutter',
+			array(
+				'label'       => esc_html__( 'Side margins', 'avix-widgets' ),
+				'description' => esc_html__( 'Line up with the header: the content starts on the header logo\'s line (5% of the width) at every width, like the other sections set the same way.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => '',
+				'options'     => array(
+					''       => esc_html__( 'Standard (24px)', 'avix-widgets' ),
+					'header' => esc_html__( 'Line up with the header', 'avix-widgets' ),
+				),
 			)
 		);
 
@@ -867,6 +881,9 @@ class Values extends Widget_Base {
 		// options add the class, so existing output is unchanged.
 		if ( ! $has_head && ( $side || '' !== $mark ) ) {
 			$classes[] = 'avix-vl--bare';
+		}
+		if ( 'header' === ( $s['side_gutter'] ?? '' ) ) {
+			$classes[] = 'avix-vl--edge-header';
 		}
 		if ( '' !== $mark ) {
 			$classes[] = 'avix-vl--mark';

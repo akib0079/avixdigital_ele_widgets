@@ -852,14 +852,15 @@ class Page_Hero extends Widget_Base {
 		);
 
 		$colors = array(
-			'bg'          => array( esc_html__( 'Page background (around the stage)', 'avix-widgets' ), '--ph-bg' ),
-			'stage'       => array( esc_html__( 'Stage background', 'avix-widgets' ), '--ph-stage' ),
-			'ink'         => array( esc_html__( 'Headline', 'avix-widgets' ), '--ph-ink' ),
-			'muted'       => array( esc_html__( 'Text', 'avix-widgets' ), '--ph-muted' ),
-			'accent'      => array( esc_html__( 'Accent', 'avix-widgets' ), '--ph-accent' ),
-			'accent_text' => array( esc_html__( 'Small orange text', 'avix-widgets' ), '--ph-accent-text' ),
-			'line'        => array( esc_html__( 'Lines', 'avix-widgets' ), '--ph-line' ),
-			'grid_color'  => array( esc_html__( 'Grid pattern', 'avix-widgets' ), '--ph-grid-color' ),
+			'bg'           => array( esc_html__( 'Page background (around the stage)', 'avix-widgets' ), '--ph-bg' ),
+			'stage'        => array( esc_html__( 'Stage background', 'avix-widgets' ), '--ph-stage' ),
+			'ink'          => array( esc_html__( 'Headline', 'avix-widgets' ), '--ph-ink' ),
+			'muted'        => array( esc_html__( 'Text', 'avix-widgets' ), '--ph-muted' ),
+			'accent'       => array( esc_html__( 'Accent', 'avix-widgets' ), '--ph-accent' ),
+			'accent_text'  => array( esc_html__( 'Small orange text', 'avix-widgets' ), '--ph-accent-text' ),
+			'accent_title' => array( esc_html__( 'Headline [highlight]', 'avix-widgets' ), '--ph-accent-title' ),
+			'line'         => array( esc_html__( 'Lines', 'avix-widgets' ), '--ph-line' ),
+			'grid_color'   => array( esc_html__( 'Grid pattern', 'avix-widgets' ), '--ph-grid-color' ),
 		);
 		foreach ( $colors as $key => $color ) {
 			$this->add_control(
@@ -895,6 +896,21 @@ class Page_Hero extends Widget_Base {
 				'size_units'         => array( 'px', 'vh' ),
 				'allowed_dimensions' => 'vertical',
 				'selectors'          => array( '{{WRAPPER}} .avix-ph' => '--ph-pad-top: {{TOP}}{{UNIT}}; --ph-pad-bottom: {{BOTTOM}}{{UNIT}};' ),
+			)
+		);
+
+		$this->add_control(
+			'side_gutter',
+			array(
+				'label'       => esc_html__( 'Side margins', 'avix-widgets' ),
+				'description' => esc_html__( 'Line up with the header: the headline starts on the header logo\'s line at every width, like the other sections set the same way.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => '',
+				'options'     => array(
+					''       => esc_html__( 'Standard', 'avix-widgets' ),
+					'header' => esc_html__( 'Line up with the header', 'avix-widgets' ),
+				),
+				'separator'   => 'before',
 			)
 		);
 
@@ -1461,6 +1477,9 @@ class Page_Hero extends Widget_Base {
 		}
 		if ( 'yes' === ( $s['full_bleed'] ?? '' ) ) {
 			$classes[] = 'avix-ph--bleed';
+		}
+		if ( 'header' === ( $s['side_gutter'] ?? '' ) ) {
+			$classes[] = 'avix-ph--edge-header';
 		}
 		if ( 'yes' !== ( $s['show_grid'] ?? '' ) ) {
 			$classes[] = 'avix-ph--no-grid';
