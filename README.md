@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.13.2**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.14.0**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.13.2.zip](dist/avix-elementor-widgets-1.13.2.zip).
+1. Download [avix-elementor-widgets-1.14.0.zip](dist/avix-elementor-widgets-1.14.0.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -29,7 +29,7 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 | Intro Text | Introductory copy. |
 | Smart Header | Site navigation. One **Light mode** switch per header: off for dark heroes (white text, white logo, white notch), on for light pages (dark text, dark logo, dark notch). The notch is a single seamless shape, and the pixel character sits on it saying hi. |
 | Team | Portrait cards for the people behind the projects, with a playful tilt on hover, and the pixel character's own card: it looks at whoever is hovered and jumps when its card is hovered. |
-| Page Hero | Inner-page hero (Services and the service pages): optional parent breadcrumb (Home › Services › Shopify Plus) and a stat chip on the image in a rounded stage, light or dark, with breadcrumb, two buttons, a proof row and an orbit of platform logos around the pixel character, which looks at whichever logo is hovered. Clears the fixed header. |
+| Page Hero | Inner-page hero (Services and the service pages): optional parent breadcrumb (Home › Services › Shopify Plus) and a stat chip on the image in a rounded stage, light or dark, with breadcrumb, two buttons, a proof row and an orbit of platform logos around the pixel character, which looks at whichever logo is hovered. Clears the fixed header. Optional Service structured data (JSON-LD). |
 | Service Index | Numbered service rows with platform icons and tags. On desktop a preview image follows the cursor with the pixel character riding on it; on phones the rows become image cards. |
 | Story | Manifesto statement whose words fill in as you scroll, with inline image pills, plus a wide photo with a stats panel the pixel character sits on. |
 | Founder | Founder note with photo, quote, badges and an accessible video modal (YouTube, Vimeo or MP4, loaded only on play). The pixel character peeks over the photo. |
@@ -43,6 +43,13 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.14.0
+
+Dark service-page heroes and service structured data. Both are opt-in: the home page widgets are unchanged, and pages that do not use the new settings render exactly as before.
+
+- Page Hero: new image frame **Product render, dark (orange glow)** for dark device renders on the dark full-width stage. The frame gets a warm near-black fill, an orange glow under and around it and a faint top-lit hairline; the pause button becomes a glass circle with a white icon so it stays visible on a dark render. The stat chip stays a white card and the layout is the same as the Product render frame.
+- Page Hero: new **Structured data → Service schema** switch (off by default). It prints one schema.org `Service` per page (`@id` = page URL + `#service`) with name, service type, description, URL and areas served, provided by the site's `#organization` (the Organization Yoast outputs). Name and description default to the headline (without the brackets) and the lead; areas served default to European Union, United Kingdom and United States, one per line. Not printed in the editor.
 
 ### 1.13.2
 

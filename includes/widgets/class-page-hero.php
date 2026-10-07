@@ -70,6 +70,7 @@ class Page_Hero extends Widget_Base {
 		$this->controls_proof();
 		$this->controls_visual();
 		$this->controls_buddy();
+		$this->controls_schema();
 		$this->controls_style();
 		$this->controls_type();
 		$this->controls_orbit_style();
@@ -627,12 +628,13 @@ class Page_Hero extends Widget_Base {
 			'image_frame',
 			array(
 				'label'       => esc_html__( 'Image frame', 'avix-widgets' ),
-				'description' => esc_html__( 'Product render: a warm orange shadow, a hairline edge and a round icon-only pause button, made for square device renders on a white background.', 'avix-widgets' ),
+				'description' => esc_html__( 'Product render: a warm orange shadow, a hairline edge and a round icon-only pause button, made for square device renders on a white background. Dark: for dark device renders on a dark stage: an orange rim glow and a glass pause button.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SELECT,
 				'default'     => '',
 				'options'     => array(
 					''       => esc_html__( 'Classic', 'avix-widgets' ),
 					'render' => esc_html__( 'Product render', 'avix-widgets' ),
+					'glow'   => esc_html__( 'Product render, dark (orange glow)', 'avix-widgets' ),
 				),
 				'condition'   => array( 'visual' => 'image' ),
 			)
@@ -746,6 +748,73 @@ class Page_Hero extends Widget_Base {
 				'range'       => array( 'px' => array( 'min' => 20, 'max' => 90 ) ),
 				'selectors'   => array( '{{WRAPPER}} .avix-ph' => '--ph-pal-w: {{SIZE}}{{UNIT}};' ),
 				'condition'   => array( 'show_pal' => 'yes' ),
+			)
+		);
+
+		$this->end_controls_section();
+	}
+
+	private function controls_schema() {
+		$this->start_controls_section( 'section_schema', array( 'label' => esc_html__( 'Structured data', 'avix-widgets' ) ) );
+
+		$this->add_control(
+			'service_schema',
+			array(
+				'label'       => esc_html__( 'Service schema', 'avix-widgets' ),
+				'description' => esc_html__( 'Adds JSON-LD that describes this page as a service offered by your organisation (the site\'s #organization, as Yoast outputs it). Turn it on for service pages only; it prints once per page and not in the editor.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => '',
+			)
+		);
+
+		$this->add_control(
+			'service_name',
+			array(
+				'label'       => esc_html__( 'Service name', 'avix-widgets' ),
+				'description' => esc_html__( 'Leave empty to use the headline without the [brackets].', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => '',
+				'label_block' => true,
+				'dynamic'     => array( 'active' => true ),
+				'condition'   => array( 'service_schema' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'service_type',
+			array(
+				'label'       => esc_html__( 'Service type', 'avix-widgets' ),
+				'description' => esc_html__( 'The kind of service in a few words, e.g. “Web development”.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => '',
+				'label_block' => true,
+				'dynamic'     => array( 'active' => true ),
+				'condition'   => array( 'service_schema' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'service_description',
+			array(
+				'label'       => esc_html__( 'Description', 'avix-widgets' ),
+				'description' => esc_html__( 'Leave empty to use the lead text.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXTAREA,
+				'rows'        => 3,
+				'default'     => '',
+				'dynamic'     => array( 'active' => true ),
+				'condition'   => array( 'service_schema' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'area_served',
+			array(
+				'label'       => esc_html__( 'Areas served', 'avix-widgets' ),
+				'description' => esc_html__( 'One place per line.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXTAREA,
+				'rows'        => 3,
+				'default'     => "European Union\nUnited Kingdom\nUnited States",
+				'condition'   => array( 'service_schema' => 'yes' ),
 			)
 		);
 
@@ -1555,9 +1624,11 @@ class Page_Hero extends Widget_Base {
 						$this->render_orbit( $s, $chips, $show_pal );
 					} elseif ( 'image' === $visual ) {
 						// The pause button sits on the image's corner, not under it.
+						// "Product render, dark" is the render frame plus a glow class.
+						$frame = (string) ( $s['image_frame'] ?? '' );
 						ob_start();
 						$this->render_pause( $s, $show_pal && $greet > 0 );
-						$this->render_image( $image_html, $show_pal, (string) ob_get_clean(), $this->stat_html( $s ), 'render' === ( $s['image_frame'] ?? '' ) );
+						$this->render_image( $image_html, $show_pal, (string) ob_get_clean(), $this->stat_html( $s ), in_array( $frame, array( 'render', 'glow' ), true ), 'glow' === $frame );
 					}
 					?>
 				</div>
@@ -1569,6 +1640,78 @@ class Page_Hero extends Widget_Base {
 			</div>
 		</section>
 		<?php
+		if ( 'yes' === ( $s['service_schema'] ?? '' ) && ! $this->is_editor() ) {
+			$this->print_schema( $s, $title );
+		}
+	}
+
+	/**
+	 * Plain text for JSON-LD: no tags or [accent] brackets, entities decoded
+	 * (wp_json_encode escapes), line breaks folded into single spaces.
+	 *
+	 * @param string $text Raw text.
+	 */
+	private function plain( $text ) {
+		$text = html_entity_decode( wp_strip_all_tags( str_replace( array( '[', ']' ), '', (string) $text ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		return trim( (string) preg_replace( '/\s+/u', ' ', $text ) );
+	}
+
+	/**
+	 * schema.org Service for this page, provided by the site's Organization
+	 * (the @id Yoast gives it), so search engines tie the two together.
+	 * Once per page: a second hero with the switch on adds nothing.
+	 *
+	 * @param array  $s     Settings.
+	 * @param string $title Headline.
+	 */
+	private function print_schema( array $s, $title ) {
+		static $printed = false;
+		// A Service describes one page: on archives the queried object is a
+		// term or user, whose ID would give the wrong permalink.
+		if ( $printed || ! is_singular() ) {
+			return;
+		}
+		$url     = get_permalink( get_queried_object_id() );
+		$name    = $this->plain( $s['service_name'] ?? '' );
+		$name    = '' !== $name ? $name : $this->plain( $title );
+		if ( ! $url || '' === $name ) {
+			return;
+		}
+		$printed = true;
+		$service = array(
+			'@context' => 'https://schema.org',
+			'@type'    => 'Service',
+			'@id'      => $url . '#service',
+			'name'     => $name,
+		);
+		$type = $this->plain( $s['service_type'] ?? '' );
+		if ( '' !== $type ) {
+			$service['serviceType'] = $type;
+		}
+		$text = $this->plain( $s['service_description'] ?? '' );
+		$text = '' !== $text ? $text : $this->plain( $s['text'] ?? '' );
+		if ( '' !== $text ) {
+			$service['description'] = $text;
+		}
+		$service['url'] = $url;
+		$areas          = array();
+		foreach ( preg_split( '/\r\n|\r|\n/', (string) ( $s['area_served'] ?? '' ) ) as $area ) {
+			$area = $this->plain( $area );
+			if ( '' !== $area ) {
+				$areas[] = array(
+					'@type' => 'Place',
+					'name'  => $area,
+				);
+			}
+		}
+		if ( $areas ) {
+			$service['areaServed'] = $areas;
+		}
+		$service['provider'] = array( '@id' => home_url( '/#organization' ) );
+		$json                = wp_json_encode( $service, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP );
+		if ( $json ) {
+			echo '<script type="application/ld+json">' . $json . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON with < > & hex-escaped.
+		}
 	}
 
 	/**
@@ -1931,11 +2074,12 @@ class Page_Hero extends Widget_Base {
 	 * @param string $pause    Pause button markup from render_pause(), or ''.
 	 * @param string $stat     Stat chip markup from stat_html(), or ''.
 	 * @param bool   $render   "Product render" frame (opt-in; Classic adds no class).
+	 * @param bool   $glow     "Product render, dark" frame: the render frame plus an orange rim glow.
 	 */
-	private function render_image( $img, $show_pal, $pause = '', $stat = '', $render = false ) {
+	private function render_image( $img, $show_pal, $pause = '', $stat = '', $render = false, $glow = false ) {
 		?>
 		<div class="avix-ph__visual" data-ph-visual>
-			<figure class="avix-ph__media<?php echo $render ? ' avix-ph__media--render' : ''; ?><?php echo '' === $img ? ' is-empty' : ''; ?><?php echo $show_pal ? ' has-pal' : ''; ?><?php echo '' !== $stat ? ' has-stat' : ''; ?>" data-ph-hub>
+			<figure class="avix-ph__media<?php echo $render ? ' avix-ph__media--render' : ''; ?><?php echo $glow ? ' avix-ph__media--glow' : ''; ?><?php echo '' === $img ? ' is-empty' : ''; ?><?php echo $show_pal ? ' has-pal' : ''; ?><?php echo '' !== $stat ? ' has-stat' : ''; ?>" data-ph-hub>
 				<span class="avix-ph__media-frame">
 					<?php echo $img; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_get_attachment_image() or escaped above. ?>
 				</span>

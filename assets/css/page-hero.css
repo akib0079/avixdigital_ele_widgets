@@ -1347,6 +1347,43 @@
 	display: none;
 }
 
+/* "Product render, dark" frame (opt-in, adds --glow to --render): for dark
+   device renders on the dark stage, where a black shadow disappears. A
+   warm near-black fill, an orange glow under and around the frame and a
+   faint top-lit hairline set the render off the stage. Same selectors as
+   the dark render rules plus one class, so these win. */
+.avix-ph .avix-ph__media--glow .avix-ph__media-frame {
+	background: #0e0c0b;
+	box-shadow:
+		0 0 0 1px rgba(255, 255, 255, 0.06),
+		0 50px 90px -50px color-mix(in srgb, var(--ph-accent) 55%, transparent),
+		0 0 120px -40px color-mix(in srgb, var(--ph-accent) 30%, transparent);
+}
+
+.avix-ph .avix-ph__media--glow .avix-ph__media-frame::after {
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* The quiet dark pause circle would vanish on a dark render: a glass
+   button with a white icon and a lighter rim keeps it findable. */
+.avix-ph .avix-ph__media--glow > .avix-ph__pause,
+.avix-ph .avix-ph__media--glow > .avix-ph__pause:focus,
+.avix-ph .avix-ph__media--glow > .avix-ph__pause:active {
+	border-color: rgba(255, 255, 255, 0.2);
+	color: #ffffff;
+	background: rgba(11, 11, 12, 0.55);
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
+}
+
+@media (hover: hover) {
+	.avix-ph .avix-ph__media--glow > .avix-ph__pause:hover {
+		border-color: rgba(255, 255, 255, 0.32);
+		color: #ffffff;
+		background: rgba(11, 11, 12, 0.75);
+	}
+}
+
 .avix-ph .avix-ph__img {
 	display: block;
 	width: 100%;
