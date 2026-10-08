@@ -108,6 +108,7 @@
 				self.visible = entries[entries.length - 1].isIntersecting;
 				if (self.visible) {
 					self.scrolled();
+					self.preload();
 				}
 			}, { rootMargin: '120px 0px' });
 			this.watcher.observe(root);
@@ -337,6 +338,7 @@
 				this.now.textContent = pad(best + 1);
 			}
 		}
+		this.preload();
 		if (quiet) {
 			this.spoken = best;
 			return;
@@ -344,6 +346,31 @@
 		this.later('announce', function () {
 			self.announce();
 		}, 450);
+	};
+
+	/* Lazy images load as they near the viewport, but a slide off to the side
+	   of the strip can be swiped in faster than that: once the strip is on
+	   screen, the slides around the current one load ahead (one back, two on),
+	   so a swipe never lands on an empty card. */
+	Gallery.prototype.preload = function () {
+		if (this.mode !== 'carousel' || (this.watcher && !this.visible)) {
+			return;
+		}
+		var from = Math.max(0, this.current - 1);
+		var to = Math.min(this.items.length - 1, Math.max(this.current, 0) + 2);
+		for (var i = from; i <= to; i++) {
+			toArray(this.items[i].querySelectorAll('img[loading="lazy"]')).forEach(function (img) {
+				if (img.complete) {
+					return;
+				}
+				// "sizes=auto" only applies to lazy images: keep the list.
+				var sizes = img.getAttribute('sizes') || '';
+				if (/^\s*auto\s*,/i.test(sizes)) {
+					img.setAttribute('sizes', sizes.replace(/^\s*auto\s*,\s*/i, ''));
+				}
+				img.setAttribute('loading', 'eager');
+			});
+		}
 	};
 
 	Gallery.prototype.setButton = function (button, on) {

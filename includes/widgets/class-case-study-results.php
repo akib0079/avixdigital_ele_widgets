@@ -1,11 +1,12 @@
 <?php
 /**
- * Case Study Results: the dark "04 · The impact" chapter. A large outcome
- * statement with an orange highlight, the outcome story, short pillars,
- * the build in numbers (each figure printed with its source, counting up
- * from zero as it comes into view), links visitors can use to check the
- * work on the live site, and a client quote when a real one exists.
- * Incomplete figures and empty quotes never render.
+ * Case Study Results: the "04 · The impact" chapter, on warm paper by
+ * default (white or dark on request). A large outcome statement with an
+ * orange highlight, the outcome story, short pillars, links visitors can use
+ * to check the work on the live site, the figures verified there (each
+ * printed with its source, counting up from zero as it comes into view) and
+ * a client quote when a real one exists. Incomplete figures and empty
+ * quotes never render.
  *
  * @package AvixWidgets
  */
@@ -222,7 +223,7 @@ class Case_Study_Results extends Widget_Base {
 			array(
 				'label'     => esc_html__( 'Heading', 'avix-widgets' ),
 				'type'      => Controls_Manager::TEXT,
-				'default'   => esc_html__( 'The build in numbers', 'avix-widgets' ),
+				'default'   => esc_html__( 'Verified on the live site', 'avix-widgets' ),
 				'dynamic'   => array( 'active' => true ),
 				'condition' => array( 'show_metrics' => 'yes' ),
 			)
@@ -455,12 +456,14 @@ class Case_Study_Results extends Widget_Base {
 		$this->add_control(
 			'theme',
 			array(
-				'label'   => esc_html__( 'Theme', 'avix-widgets' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => 'dark',
-				'options' => array(
-					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
+				'label'       => esc_html__( 'Theme', 'avix-widgets' ),
+				'description' => esc_html__( 'Sets every colour in the section: background, numbers panel, text, lines, links and glow. Any colour you pick below still wins.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'light',
+				'options'     => array(
 					'light' => esc_html__( 'Light (warm paper)', 'avix-widgets' ),
+					'white' => esc_html__( 'White', 'avix-widgets' ),
+					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
 				),
 			)
 		);
@@ -475,6 +478,16 @@ class Case_Study_Results extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'colors_note',
+			array(
+				'type'            => Controls_Manager::RAW_HTML,
+				'raw'             => esc_html__( 'Leave the colours empty to follow the theme. When you change a background, set the matching text colours too, so nothing disappears.', 'avix-widgets' ),
+				'content_classes' => 'elementor-descriptor',
+				'separator'       => 'before',
+			)
+		);
+
 		$colors = array(
 			'bg'          => array( esc_html__( 'Background', 'avix-widgets' ), '--csr-bg' ),
 			'ink'         => array( esc_html__( 'Headline', 'avix-widgets' ), '--csr-ink' ),
@@ -482,6 +495,8 @@ class Case_Study_Results extends Widget_Base {
 			'line'        => array( esc_html__( 'Lines', 'avix-widgets' ), '--csr-line' ),
 			'accent'      => array( esc_html__( 'Accent', 'avix-widgets' ), '--csr-accent' ),
 			'accent_text' => array( esc_html__( 'Highlight text', 'avix-widgets' ), '--csr-accent-text' ),
+			'panel'       => array( esc_html__( 'Numbers panel', 'avix-widgets' ), '--csr-panel' ),
+			'panel_ink'   => array( esc_html__( 'Numbers panel text', 'avix-widgets' ), '--csr-panel-ink' ),
 		);
 		foreach ( $colors as $key => $color ) {
 			$this->add_control(
@@ -490,7 +505,6 @@ class Case_Study_Results extends Widget_Base {
 					'label'     => $color[0],
 					'type'      => Controls_Manager::COLOR,
 					'selectors' => array( '{{WRAPPER}} .avix-csr' => $color[1] . ': {{VALUE}};' ),
-					'separator' => 'bg' === $key ? 'before' : '',
 				)
 			);
 		}
@@ -801,7 +815,7 @@ class Case_Study_Results extends Widget_Base {
 			return;
 		}
 
-		$theme    = 'light' === ( $s['theme'] ?? 'dark' ) ? 'light' : 'dark';
+		$theme    = in_array( $s['theme'] ?? 'light', array( 'light', 'white', 'dark' ), true ) ? (string) $s['theme'] : 'light';
 		$number   = trim( (string) ( $s['number'] ?? '' ) );
 		$label    = trim( (string) ( $s['label'] ?? '' ) );
 		$title    = trim( (string) ( $s['title'] ?? '' ) );
@@ -903,32 +917,6 @@ class Case_Study_Results extends Widget_Base {
 					</ul>
 				<?php endif; ?>
 
-				<?php if ( $metrics ) : ?>
-					<?php $metrics_title = trim( (string) ( $s['metrics_title'] ?? '' ) ); ?>
-					<div class="avix-csr__numbers">
-						<?php if ( '' !== $metrics_title ) : ?>
-							<h3 class="avix-csr__subtitle avix-csr__rise" style="--i:0;"><?php echo esc_html( $metrics_title ); ?></h3>
-						<?php endif; ?>
-						<ul class="avix-csr__metrics avix-csr__metrics--<?php echo (int) count( $metrics ); ?>">
-							<?php foreach ( $metrics as $i => $metric ) : ?>
-								<?php $is_count = $count && preg_match( '/^\d{1,9}$/', $metric[0] ); ?>
-								<li class="avix-csr__metric" style="--i:<?php echo (int) $i; ?>;">
-									<p class="avix-csr__value"<?php echo $is_count ? ' aria-hidden="true"' : ''; ?>><?php echo $this->value_html( $metric[0], $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in value_html(). ?></p>
-									<?php if ( $is_count ) : ?>
-										<p class="avix-csr__sr"><?php echo esc_html( $metric[0] ); ?></p>
-									<?php endif; ?>
-									<p class="avix-csr__metric-label"><?php echo esc_html( $metric[1] ); ?></p>
-									<p class="avix-csr__source"><span class="avix-csr__source-key"><?php esc_html_e( 'Source:', 'avix-widgets' ); ?></span> <?php echo esc_html( $metric[2] ); ?></p>
-								</li>
-							<?php endforeach; ?>
-						</ul>
-						<?php $footnote = trim( (string) ( $s['footnote'] ?? '' ) ); ?>
-						<?php if ( '' !== $footnote ) : ?>
-							<p class="avix-csr__footnote avix-csr__rise" style="--i:1;"><?php echo esc_html( $footnote ); ?></p>
-						<?php endif; ?>
-					</div>
-				<?php endif; ?>
-
 				<?php if ( $proof ) : ?>
 					<?php $proof_title = trim( (string) ( $s['proof_title'] ?? '' ) ); ?>
 					<div class="avix-csr__proof">
@@ -947,6 +935,33 @@ class Case_Study_Results extends Widget_Base {
 								</li>
 							<?php endforeach; ?>
 						</ul>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( $metrics ) : ?>
+					<?php $metrics_title = trim( (string) ( $s['metrics_title'] ?? '' ) ); ?>
+					<div class="avix-csr__numbers">
+						<?php if ( '' !== $metrics_title ) : ?>
+							<h3 class="avix-csr__subtitle avix-csr__rise" style="--i:0;"><?php echo esc_html( $metrics_title ); ?></h3>
+						<?php endif; ?>
+						<ul class="avix-csr__metrics avix-csr__metrics--<?php echo (int) count( $metrics ); ?>">
+							<?php foreach ( $metrics as $i => $metric ) : ?>
+								<?php $is_count = $count && preg_match( '/^\d{1,9}$/', $metric[0] ); ?>
+								<li class="avix-csr__metric" style="--i:<?php echo (int) $i; ?>;">
+									<p class="avix-csr__value"<?php echo $is_count ? ' aria-hidden="true"' : ''; ?>><?php echo $this->value_html( $metric[0], $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in value_html(). ?></p>
+									<?php if ( $is_count ) : ?>
+										<p class="avix-csr__sr"><?php echo esc_html( $metric[0] ); ?></p>
+									<?php endif; ?>
+									<p class="avix-csr__metric-label"><?php echo esc_html( $metric[1] ); ?></p>
+									<?php // Long sources clamp to two lines; the full text stays in the page and in the tooltip. ?>
+									<p class="avix-csr__source" title="<?php echo esc_attr( __( 'Source:', 'avix-widgets' ) . ' ' . $metric[2] ); ?>"><span class="avix-csr__source-key"><?php esc_html_e( 'Source:', 'avix-widgets' ); ?></span> <?php echo esc_html( $metric[2] ); ?></p>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+						<?php $footnote = trim( (string) ( $s['footnote'] ?? '' ) ); ?>
+						<?php if ( '' !== $footnote ) : ?>
+							<p class="avix-csr__footnote avix-csr__rise" style="--i:1;"><?php echo esc_html( $footnote ); ?></p>
+						<?php endif; ?>
 					</div>
 				<?php endif; ?>
 

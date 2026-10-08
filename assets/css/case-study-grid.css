@@ -2,8 +2,9 @@
  * Avix Digital · Case Study Grid
  * The /case-studies/ index: an editorial header, service filter chips and
  * case-study cards in the home page's Selected Work language (the image with
- * a dark info panel over its foot). The first card is wide. Layout follows
- * the widget width (container queries), not the viewport.
+ * an info panel at its foot, light or dark with the theme). The first card
+ * is wide. Layout follows the widget width (container queries), not the
+ * viewport.
  */
 
 .avix-csi {
@@ -14,14 +15,21 @@
 	--csi-accent: #fb6007;
 	--csi-accent-text: #c54804;
 	--csi-media-bg: #ece9e2;
+	/* Card panel: dark by default; .avix-csi--panel-light/-dark (from the
+	   theme, or the "Card panel" control) set the whole set. */
 	--csi-panel: #111111;
 	--csi-panel-ink: #ffffff;
 	--csi-panel-muted: #b9b6b1;
 	--csi-panel-dim: #8d8d8d;
-	--csi-panel-soft: rgba(255, 255, 255, 0.07);
 	--csi-panel-line: rgba(255, 255, 255, 0.12);
+	--csi-panel-edge: transparent;
 	--csi-panel-accent: #ff7a2c;
 	--csi-panel-glow: rgba(251, 96, 7, 0.13);
+	--csi-panel-shadow: 0 34px 60px -40px rgba(11, 11, 12, 0.65);
+	--csi-panel-shadow-hover: 0 40px 70px -40px rgba(11, 11, 12, 0.75);
+	--csi-tag-ink: color-mix(in srgb, var(--csi-panel-ink) 86%, transparent);
+	--csi-tag-bg: color-mix(in srgb, var(--csi-panel-ink) 7%, transparent);
+	--csi-tag-line: color-mix(in srgb, var(--csi-panel-ink) 7%, transparent);
 	--csi-btn-bg: #1a1a1a;
 	--csi-btn-ink: #ffffff;
 	--csi-chip-bg: transparent;
@@ -56,13 +64,74 @@
 .avix-csi--dark {
 	--csi-bg: #0b0b0c;
 	--csi-ink: #ffffff;
-	--csi-muted: rgba(255, 255, 255, 0.62);
-	--csi-line: rgba(255, 255, 255, 0.12);
+	--csi-muted: rgba(255, 255, 255, 0.64);
+	--csi-line: rgba(255, 255, 255, 0.14);
 	--csi-accent-text: #ff8a3d;
 	--csi-media-bg: #151517;
-	--csi-panel: #17181a;
 	--csi-btn-bg: #ffffff;
 	--csi-btn-ink: #1a1a1a;
+}
+
+/* Card panels. Paper and White themes get light panels (white on paper,
+   paper on white), Dark gets dark ones; "Card panel" can pick either. */
+.avix-csi--panel-light {
+	--csi-panel: #ffffff;
+	--csi-panel-ink: #1a1a1a;
+	--csi-panel-muted: #5c5f66;
+	--csi-panel-dim: #6b6e75;
+	--csi-panel-line: rgba(26, 26, 26, 0.1);
+	--csi-panel-edge: rgba(26, 26, 26, 0.07);
+	/* A shade under the brand's #c54804: 4.5:1 on the paper panel too. */
+	--csi-panel-accent: #bd4504;
+	--csi-panel-glow: rgba(251, 96, 7, 0.07);
+	--csi-panel-shadow: 0 30px 60px -36px rgba(11, 11, 12, 0.24);
+	--csi-panel-shadow-hover: 0 40px 70px -38px rgba(11, 11, 12, 0.32);
+	--csi-tag-ink: color-mix(in srgb, var(--csi-panel-ink) 88%, transparent);
+	--csi-tag-bg: color-mix(in srgb, var(--csi-panel-ink) 4%, transparent);
+	--csi-tag-line: color-mix(in srgb, var(--csi-panel-ink) 13%, transparent);
+}
+
+.avix-csi--panel-dark {
+	--csi-panel: #111111;
+	--csi-panel-ink: #ffffff;
+	--csi-panel-muted: #b9b6b1;
+	--csi-panel-dim: #8d8d8d;
+	--csi-panel-line: rgba(255, 255, 255, 0.12);
+	--csi-panel-edge: transparent;
+	--csi-panel-accent: #ff7a2c;
+	--csi-panel-glow: rgba(251, 96, 7, 0.13);
+	--csi-panel-shadow: 0 34px 60px -40px rgba(11, 11, 12, 0.65);
+	--csi-panel-shadow-hover: 0 40px 70px -40px rgba(11, 11, 12, 0.75);
+	--csi-tag-ink: color-mix(in srgb, var(--csi-panel-ink) 86%, transparent);
+	--csi-tag-bg: color-mix(in srgb, var(--csi-panel-ink) 7%, transparent);
+	--csi-tag-line: color-mix(in srgb, var(--csi-panel-ink) 7%, transparent);
+}
+
+/* A panel colour picked in the editor (the widget prints its tone): the
+   secondary text and the highlight are mixed from the ink and the picked
+   colour, so they keep their contrast on a mid-tone too. */
+.avix-csi--panel-picked {
+	--csi-panel-muted: color-mix(in srgb, var(--csi-panel-ink) 80%, var(--csi-panel));
+	--csi-panel-dim: color-mix(in srgb, var(--csi-panel-ink) 74%, var(--csi-panel));
+}
+
+.avix-csi--panel-picked.avix-csi--panel-light {
+	--csi-panel-accent: color-mix(in srgb, #bd4504 72%, var(--csi-panel-ink));
+}
+
+.avix-csi--panel-picked.avix-csi--panel-dark {
+	--csi-panel-accent: color-mix(in srgb, #ff7a2c 72%, var(--csi-panel-ink));
+}
+
+/* Surfaces that would melt into the section: a light panel on White is
+   paper, a dark panel on Dark is graphite with a hairline. */
+.avix-csi--panel-paper {
+	--csi-panel: #f5f3ef;
+}
+
+.avix-csi--panel-graphite {
+	--csi-panel: #17181a;
+	--csi-panel-edge: rgba(255, 255, 255, 0.07);
 }
 
 .avix-csi *,
@@ -108,9 +177,6 @@
 	--csi-gap-auto: clamp(20px, 2.6cqi, 32px);
 	--csi-row-gap: clamp(40px, 4.6cqi, 64px);
 	--csi-radius: 24px;
-	--csi-panel-radius: 20px;
-	--csi-overlap: 48px;
-	--csi-inset: clamp(12px, 1.4cqi, 18px);
 
 	position: relative;
 	width: min(calc(100% - 2 * var(--csi-gutter)), var(--csi-max));
@@ -399,6 +465,7 @@
 .avix-csi .avix-csi__link {
 	border-radius: var(--csi-radius);
 	outline: none;
+	transition: transform 0.55s var(--csi-ease);
 }
 
 .avix-csi__media {
@@ -414,6 +481,11 @@
 
 .avix-csi__media.is-render {
 	background: #0b0b0c;
+}
+
+/* Panel cards are one piece: the image on top, the panel flush below it. */
+.avix-csi--panel .avix-csi__card:not(.avix-csi__card--featured) .avix-csi__media {
+	border-radius: var(--csi-radius) var(--csi-radius) 0 0;
 }
 
 /* A warm wash comes up on hover (opacity only). */
@@ -487,14 +559,14 @@
 	display: flex;
 	flex: 1 1 auto;
 	flex-direction: column;
-	margin: calc(var(--csi-overlap) * -1) var(--csi-inset) 0;
+	margin: 0;
 	padding: clamp(22px, 6.4cqi, 32px);
-	border-radius: var(--csi-panel-radius);
+	border-radius: 0 0 var(--csi-radius) var(--csi-radius);
 	color: var(--csi-panel-ink);
 	background-color: var(--csi-panel);
 	background-image: radial-gradient(90% 46% at 100% 0%, var(--csi-panel-glow), transparent 70%);
-	box-shadow: 0 34px 60px -40px rgba(11, 11, 12, 0.65);
-	transition: transform 0.55s var(--csi-ease), box-shadow 0.55s var(--csi-ease);
+	box-shadow: var(--csi-panel-shadow), inset 0 0 0 1px var(--csi-panel-edge);
+	transition: box-shadow 0.55s var(--csi-ease);
 }
 
 .avix-csi .avix-csi__meta {
@@ -555,10 +627,10 @@
 	min-height: 28px;
 	margin: 0;
 	padding: 7px 11px;
-	border: 1px solid rgba(255, 255, 255, 0.06);
+	border: 1px solid var(--csi-tag-line);
 	border-radius: 999px;
-	color: #dcdcdc;
-	background: var(--csi-panel-soft);
+	color: var(--csi-tag-ink);
+	background: var(--csi-tag-bg);
 	font-family: var(--csi-font-body);
 	font-size: 11.5px;
 	font-weight: 600;
@@ -572,18 +644,18 @@
 	content: none;
 }
 
+/* The summary is written for the card (about 150 characters): always the
+   whole sentence, never cut with an ellipsis. */
 .avix-csi .avix-csi__excerpt {
-	display: -webkit-box;
+	display: block;
 	max-width: 48ch;
 	margin: 18px 0 0;
 	padding: 0;
-	overflow: hidden;
 	color: var(--csi-panel-muted);
 	font-family: var(--csi-font-body);
 	font-size: clamp(14px, 3.6cqi, 15.5px);
 	line-height: 1.55;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
+	text-wrap: pretty;
 }
 
 .avix-csi__bottom {
@@ -694,10 +766,6 @@
 /* Narrow cards (two columns on a tablet, phones): the image keeps more of
    itself, and the two figures become spec rows, label left, value right. */
 @container avix-csi-card (max-width: 440px) {
-	.avix-csi .avix-csi__panel {
-		margin-top: -28px;
-	}
-
 	.avix-csi .avix-csi__stats--two {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 0;
@@ -753,6 +821,8 @@
 	background-image: radial-gradient(100% 52% at 100% 0%, var(--csi-panel-glow), transparent 72%);
 }
 
+/* The wide card has no lift: the image zooms instead. */
+
 .avix-csi .avix-csi__card--featured .avix-csi__name {
 	font-size: clamp(40px, 4.8cqi, 64px);
 	letter-spacing: -0.05em;
@@ -765,7 +835,6 @@
 .avix-csi .avix-csi__card--featured .avix-csi__excerpt {
 	margin-top: 22px;
 	font-size: clamp(15px, 1.4cqi, 17px);
-	-webkit-line-clamp: 4;
 }
 
 .avix-csi .avix-csi__card--featured .avix-csi__stat-value {
@@ -856,14 +925,17 @@
 		opacity: 1;
 	}
 
-	.avix-csi .avix-csi__link:hover .avix-csi__panel {
+	/* The card lifts as one piece (image and panel together). */
+	.avix-csi--panel .avix-csi__card:not(.avix-csi__card--featured) .avix-csi__link:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 40px 70px -40px rgba(11, 11, 12, 0.75);
 	}
 
-	.avix-csi .avix-csi__card--featured .avix-csi__link:hover .avix-csi__panel,
+	.avix-csi .avix-csi__link:hover .avix-csi__panel {
+		box-shadow: var(--csi-panel-shadow-hover), inset 0 0 0 1px var(--csi-panel-edge);
+	}
+
 	.avix-csi--minimal .avix-csi__link:hover .avix-csi__panel {
-		transform: none;
+		box-shadow: none;
 	}
 
 	.avix-csi .avix-csi__link:hover .avix-csi__cta {
@@ -1184,6 +1256,7 @@
 	/* The wide card becomes a normal card spanning the row. */
 	.avix-csi .avix-csi__card--featured .avix-csi__link {
 		display: flex;
+		gap: 0;
 	}
 
 	.avix-csi__card--featured .avix-csi__media {
@@ -1192,10 +1265,14 @@
 		aspect-ratio: 16 / 9;
 	}
 
+	.avix-csi--panel .avix-csi__card--featured .avix-csi__media {
+		border-radius: var(--csi-radius) var(--csi-radius) 0 0;
+	}
+
 	.avix-csi__card--featured .avix-csi__panel {
-		margin: calc(var(--csi-overlap) * -1) var(--csi-inset) 0;
+		margin: 0;
 		padding: clamp(24px, 3.4cqi, 36px);
-		border-radius: var(--csi-panel-radius);
+		border-radius: 0 0 var(--csi-radius) var(--csi-radius);
 	}
 
 	.avix-csi--minimal .avix-csi__card--featured .avix-csi__panel {
@@ -1230,10 +1307,7 @@
 	.avix-csi__inner {
 		--csi-tracks: 1;
 		--csi-row-gap: 40px;
-		--csi-overlap: 24px;
-		--csi-inset: 10px;
 		--csi-radius: 20px;
-		--csi-panel-radius: 18px;
 	}
 
 	.avix-csi .avix-csi__card {
@@ -1299,10 +1373,6 @@
 		font-size: clamp(32px, 10cqi, 44px);
 	}
 
-	.avix-csi .avix-csi__card--featured .avix-csi__excerpt {
-		-webkit-line-clamp: 3;
-	}
-
 	/* One column: nothing to line up with across a row. */
 	.avix-csi .avix-csi__card:not(.avix-csi__card--featured) .avix-csi__stats--two .avix-csi__stat-label,
 	.avix-csi__grid:has(.avix-csi__stats--two) .avix-csi__card:not(.avix-csi__card--featured) .avix-csi__stat-label {
@@ -1324,10 +1394,6 @@
 }
 
 @container avix-csi (max-width: 420px) {
-	.avix-csi__inner {
-		--csi-inset: 8px;
-	}
-
 	.avix-csi__panel {
 		padding: 22px 20px 20px;
 	}

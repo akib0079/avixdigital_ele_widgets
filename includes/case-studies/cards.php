@@ -368,7 +368,45 @@ if ( ! class_exists( __NAMESPACE__ . '\\Cards' ) ) {
 			}
 			// GIFs keep the original file: resized GIFs stop animating.
 			$size = 'image/gif' === get_post_mime_type( $id ) ? 'full' : 'large';
-			return (string) wp_get_attachment_image( $id, $size, false, $attrs );
+			return self::loading( (string) wp_get_attachment_image( $id, $size, false, $attrs ), $eager );
+		}
+
+		/**
+		 * Puts back the loading the card asked for. Some sites filter
+		 * attachment images to loading="eager", which fetched every card
+		 * before the first scroll and, with "sizes=auto", the largest file.
+		 * The first card stays eager with a high fetch priority. Untouched
+		 * markup is returned as it came.
+		 *
+		 * @param string $html  Image markup.
+		 * @param bool   $eager The page's first card.
+		 */
+		private static function loading( $html, $eager ): string {
+			$html = (string) $html;
+			if ( '' === $html || ! class_exists( '\WP_HTML_Tag_Processor' ) ) {
+				return $html;
+			}
+			$tags = new \WP_HTML_Tag_Processor( $html );
+			if ( ! $tags->next_tag( 'img' ) ) {
+				return $html;
+			}
+			$want    = $eager ? 'eager' : 'lazy';
+			$changed = false;
+			if ( $want !== $tags->get_attribute( 'loading' ) ) {
+				$tags->set_attribute( 'loading', $want );
+				$changed = true;
+			}
+			if ( ! $eager && null !== $tags->get_attribute( 'fetchpriority' ) ) {
+				$tags->remove_attribute( 'fetchpriority' );
+				$changed = true;
+			}
+			// "sizes=auto" only works on lazy images; an eager one needs the list.
+			$sizes = $tags->get_attribute( 'sizes' );
+			if ( $eager && is_string( $sizes ) && preg_match( '/^\s*auto\s*,\s*/i', $sizes ) ) {
+				$tags->set_attribute( 'sizes', (string) preg_replace( '/^\s*auto\s*,\s*/i', '', $sizes ) );
+				$changed = true;
+			}
+			return $changed ? $tags->get_updated_html() : $html;
 		}
 
 		/**

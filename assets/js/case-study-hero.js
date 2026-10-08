@@ -5,6 +5,10 @@
  * scroll with a fine pointer, and fills the reading-progress line. One
  * passive scroll listener, throttled to one rAF; the glow pauses off screen
  * and in hidden tabs. Nothing moves with reduced motion or in the editor.
+ * Starts the orange shader background (AvixCsk.shader, case-study-kit.js)
+ * after the page has loaded and the browser is idle, keeping it dark behind
+ * every line of text (the headline and lead are never hidden: LCP), and
+ * lands "#anchor" buttons below the fixed header like the chapter chips.
  */
 (function (window, document) {
 	'use strict';
@@ -29,6 +33,57 @@
 		return Math.max(min, Math.min(max, value));
 	}
 
+	function cssPx(name) {
+		var value = parseFloat(window.getComputedStyle(document.documentElement).getPropertyValue(name));
+		return isNaN(value) ? 0 : value;
+	}
+
+	/**
+	 * One box per line of an element's text (a line's inline pieces merged),
+	 * at most `max`: the last box takes the remaining lines.
+	 */
+	function lineRects(el, max) {
+		var out = [];
+		if (!el || !document.createRange) {
+			return out;
+		}
+		var range = document.createRange();
+		range.selectNodeContents(el);
+		Array.prototype.forEach.call(range.getClientRects(), function (r) {
+			if (!r.width || !r.height) {
+				return;
+			}
+			var last = out[out.length - 1];
+			if (last && (r.top < last.bottom - r.height * 0.5 || out.length >= max)) {
+				last.left = Math.min(last.left, r.left);
+				last.right = Math.max(last.right, r.right);
+				last.top = Math.min(last.top, r.top);
+				last.bottom = Math.max(last.bottom, r.bottom);
+			} else {
+				out.push({ left: r.left, right: r.right, top: r.top, bottom: r.bottom });
+			}
+		});
+		out.forEach(function (r) {
+			r.width = r.right - r.left;
+			r.height = r.bottom - r.top;
+		});
+		return out;
+	}
+
+	/** The tight box around an element's text (its lines, not its column). */
+	function textRect(el) {
+		if (!el) {
+			return null;
+		}
+		var rect = null;
+		if (document.createRange) {
+			var range = document.createRange();
+			range.selectNodeContents(el);
+			rect = range.getBoundingClientRect();
+		}
+		return rect && rect.width && rect.height ? rect : el.getBoundingClientRect();
+	}
+
 	function Hero(root) {
 		var config = {};
 		try {
@@ -38,6 +93,8 @@
 		}
 
 		this.root = root;
+		this.config = config;
+		this.bg = root.querySelector('.avix-csh__bg');
 		this.alive = true;
 		this.editor = isEditMode();
 		this.visible = true;
@@ -57,6 +114,8 @@
 
 		this.onScroll = this.onScroll.bind(this);
 		this.onVisibility = this.onVisibility.bind(this);
+		this.onClick = this.onClick.bind(this);
+		this.startShader = this.startShader.bind(this);
 		this.tick = this.tick.bind(this);
 
 		this.init();
@@ -124,6 +183,194 @@
 			window.addEventListener('resize', this.onScroll, { passive: true });
 			this.onScroll();
 		}
+
+		root.addEventListener('click', this.onClick);
+
+		// The shader never competes with the first paint (the headline is
+		// the LCP) or the hero image: it starts once the page has loaded and
+		// the browser is idle; in the editor right away. The CSS glow shows
+		// until then.
+		if (this.config.shader && this.bg && window.AvixCsk && window.AvixCsk.shader) {
+			if (this.editor) {
+				this.idle = window.setTimeout(this.startShader, 0);
+			} else if (document.readyState === 'complete') {
+				this.queueShader();
+			} else {
+				this.onLoad = function () {
+					self.queueShader();
+				};
+				window.addEventListener('load', this.onLoad);
+			}
+		}
+	};
+
+	Hero.prototype.queueShader = function () {
+		if (this.onLoad) {
+			window.removeEventListener('load', this.onLoad);
+			this.onLoad = null;
+		}
+		if (!this.alive) {
+			return;
+		}
+		if (window.requestIdleCallback) {
+			this.idleId = window.requestIdleCallback(this.startShader, { timeout: 1200 });
+		} else {
+			this.idle = window.setTimeout(this.startShader, 200);
+		}
+	};
+
+	Hero.prototype.startShader = function () {
+		var self = this;
+		var root = this.root;
+		var cfg = this.config.shader || {};
+		this.idleId = 0;
+		if (!this.alive || this.shader || !root.isConnected) {
+			return;
+		}
+		this.shader = window.AvixCsk.shader(this.bg, {
+			className: 'avix-csh__shader',
+			root: root,
+			intensity: typeof cfg.intensity === 'number' ? cfg.intensity : 1,
+			speed: typeof cfg.speed === 'number' ? cfg.speed : 1,
+			pointer: cfg.pointer !== false,
+			colors: function () {
+				var style = window.getComputedStyle(root);
+				var get = function (name) {
+					return (style.getPropertyValue(name) || '').trim();
+				};
+				return {
+					base: get('--csh-shader-base') || get('--csh-bg'),
+					accent: get('--csh-shader-accent') || get('--csh-accent')
+				};
+			},
+			layout: function (box) {
+				return self.shaderLayout(box);
+			},
+			onState: function (on) {
+				window.clearTimeout(self.swap);
+				if (!on) {
+					root.classList.remove('has-shader');
+					return;
+				}
+				// The glow and grid go once the canvas has faded in over them.
+				self.swap = window.setTimeout(function () {
+					if (self.alive) {
+						root.classList.add('has-shader');
+					}
+				}, reduceMotion.matches ? 0 : 950);
+			}
+		});
+	};
+
+	/**
+	 * Where the shader may glow, in CSS px from the background's top left:
+	 * calm (capped dark) behind every line of text, the buttons, the facts
+	 * and the header's links; brightest right of the headline (above it on
+	 * narrow screens); gone by the top of the render, whose own dark
+	 * backdrop would otherwise show as a box.
+	 */
+	Hero.prototype.shaderLayout = function (box) {
+		var root = this.root;
+		var calm = [];
+		var add = function (rect, pad) {
+			pad = pad || 0;
+			if (rect && rect.width && rect.height) {
+				calm.push([rect.left - box.left - pad, rect.top - box.top - pad, rect.right - box.left + pad, rect.bottom - box.top + pad]);
+			}
+		};
+		var el = function (selector) {
+			return root.querySelector(selector);
+		};
+		var logo = el('.avix-csh__logo-img');
+		var actions = el('.avix-csh__actions');
+		var facts = el('.avix-csh__facts-wrap');
+		var title = textRect(el('.avix-csh__title'));
+		var lines = lineRects(el('.avix-csh__title'), 3);
+		add(textRect(el('.avix-csh__crumb-list')));
+		add(logo && logo.getBoundingClientRect());
+		add(textRect(el('.avix-csh__eyebrow')));
+		if (lines.length) {
+			lines.forEach(function (line) {
+				add(line, 6);
+			});
+		} else {
+			add(title, 6);
+		}
+		add(textRect(el('.avix-csh__lead')));
+		// Wider around the buttons: the orange one keeps a dark edge.
+		add(actions && actions.getBoundingClientRect(), 24);
+		add(facts && facts.getBoundingClientRect());
+		// The fixed header sits over the top of the hero.
+		var header = root.classList.contains('avix-csh--clear') ? cssPx('--avix-header-h') : 0;
+		if (header > 0) {
+			calm.push([0, 0, box.width, header - 12]);
+		}
+
+		var w = box.width;
+		var focus = [w * 0.8, Math.min(box.height * 0.3, 380), Math.max(280, w * 0.3)];
+		if (title) {
+			var right = title.right - box.left;
+			focus = w > 1024
+				? [right + (w - right) * 0.62, title.top - box.top + title.height * 0.3, clamp(w * 0.28, 300, 440)]
+				: [w * 0.86, Math.max(0, title.top - box.top - 40), Math.max(220, w * 0.62)];
+		}
+
+		var height = box.height;
+		var fade = box.height * 0.3;
+		// The figures, not the frames: the frames are moved by the entrance.
+		var render = el('.avix-csh__render');
+		var devices = el('.avix-csh__devices');
+		if (render) {
+			var r = render.getBoundingClientRect();
+			height = r.top - box.top + r.height * 0.05;
+			fade = clamp(height * 0.3, 180, 340);
+		} else if (devices) {
+			var d = devices.getBoundingClientRect();
+			height = d.top - box.top + d.height * 0.55;
+			fade = clamp(height * 0.35, 200, 420);
+		}
+		return { height: height, fade: fade, focus: focus, calm: calm };
+	};
+
+	// "#anchor" buttons: land the target below the fixed header (as the
+	// chapter chips do) and move focus there.
+	Hero.prototype.onClick = function (event) {
+		if (this.editor || event.defaultPrevented || event.button > 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+			return;
+		}
+		var link = event.target && event.target.closest ? event.target.closest('a[href^="#"]') : null;
+		if (!link || !this.root.contains(link)) {
+			return;
+		}
+		var id = (link.getAttribute('href') || '').slice(1);
+		var target = null;
+		try {
+			target = id ? document.getElementById(decodeURIComponent(id)) : null;
+		} catch (error) {
+			target = null;
+		}
+		if (!target) {
+			return;
+		}
+		event.preventDefault();
+		var offset = cssPx('--wp-admin--admin-bar--height') + cssPx('--avix-header-h') + 16;
+		var top = target.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0) - offset;
+		try {
+			window.scrollTo({ top: Math.max(0, top), behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+		} catch (error) {
+			window.scrollTo(0, Math.max(0, top));
+		}
+		if (window.history && window.history.pushState) {
+			window.history.pushState(null, '', '#' + id);
+		}
+		if (!target.hasAttribute('tabindex')) {
+			target.setAttribute('tabindex', '-1');
+		}
+		try {
+			target.focus({ preventScroll: true });
+		} catch (error) {
+			// Older browsers without focus options: skip moving focus.
+		}
 	};
 
 	Hero.prototype.pauseCheck = function () {
@@ -188,6 +435,20 @@
 		window.removeEventListener('scroll', this.onScroll, { passive: true });
 		window.removeEventListener('resize', this.onScroll, { passive: true });
 		document.removeEventListener('visibilitychange', this.onVisibility);
+		this.root.removeEventListener('click', this.onClick);
+		if (this.onLoad) {
+			window.removeEventListener('load', this.onLoad);
+			this.onLoad = null;
+		}
+		window.clearTimeout(this.idle);
+		window.clearTimeout(this.swap);
+		if (this.idleId && window.cancelIdleCallback) {
+			window.cancelIdleCallback(this.idleId);
+		}
+		if (this.shader) {
+			this.shader.destroy();
+			this.shader = null;
+		}
 		var index = instances.indexOf(this);
 		if (index > -1) {
 			instances.splice(index, 1);

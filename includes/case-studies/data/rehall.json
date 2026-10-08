@@ -4,7 +4,7 @@
 	"post": {
 		"title": "Rehall: Scaling E-Commerce Through Custom Architecture & High-Converting Design",
 		"excerpt": "A bespoke Shopify build for a Dutch skiwear brand: a pixel-perfect theme, carefully integrated apps and a buying journey with less friction.",
-		"menu_order": 1,
+		"menu_order": 3,
 		"featured": [
 			"@media:avix-cs-rehall-render-hero.webp",
 			"@media:2025/12/rehall.webp",
@@ -14,20 +14,23 @@
 	"terms": {
 		"service": [
 			"shopify",
-			"uiux-brand-design"
+			"uiux-brand-design",
+			"web-development"
 		],
 		"industry": [
 			"Skiwear & outdoor fashion"
 		]
 	},
 	"yoast": {
-		"title": "Rehall Case Study: Custom Shopify Architecture | AvixDigital",
-		"metadesc": "How AvixDigital turned Rehall's high-fidelity design into a fast, scalable Shopify store with smart navigation, spec filters and seamless app integrations.",
+		"focuskw": "Rehall Shopify case study",
+		"title": "Rehall Shopify Case Study: Custom Theme & Apps | AvixDigital",
+		"metadesc": "Rehall Shopify case study: how we turned a high-fidelity skiwear design into a fast, scalable store with smart navigation, spec filters and integrated apps.",
+		"bctitle": "Rehall",
 		"og_image": "@media:avix-cs-rehall-og.jpg"
 	},
 	"meta": {
 		"client": "Rehall",
-		"display_title": "Scaling E-Commerce Through [Custom Architecture] & High-Converting Design",
+		"display_title": "Rehall: Scaling Shopify E-Commerce Through [Custom Architecture] & High-Converting Design",
 		"summary": "Rehall needed a digital storefront that didn't just serve as a visual catalogue, but acted as a high-performance sales engine. We turned a static, high-fidelity design into a dynamic, scalable Shopify ecosystem built for revenue.",
 		"logo": "@media:avix-cs-rehall-logo-white.png",
 		"hero_desktop": "@media:avix-cs-rehall-hero-desktop.webp",
@@ -53,7 +56,7 @@
 		"constraints": "Pixel-perfect design, Third-party apps, Core Web Vitals, No checkout friction",
 		"approach_intro": "Led by founder Akib Zawayed, we engineered a bespoke Shopify environment focused on speed, seamless third-party functionality and user-centric navigation.",
 		"approach_body": [
-			"We treated speed and clarity as design features, not afterthoughts. Every screen in the approved design was rebuilt as a lightweight, fully responsive Shopify theme in clean Liquid, so the brand stays razor-sharp whether a shopper is on a laptop at home or a phone in the lift queue.",
+			"We treated speed and clarity as design features, not afterthoughts. Every screen in the approved design was rebuilt as a lightweight, fully responsive <a href=\"/service/shopify-plus/\">custom Shopify theme</a> in <a href=\"/custom-liquid-vs-premium-shopify-theme/\">clean Liquid</a>, so the brand stays razor-sharp whether a shopper is on a laptop at home or a phone in the lift queue.",
 			"Third-party functionality was added deliberately, through meticulous API work, so each new feature extended Shopify without dragging down Core Web Vitals. Then we restructured product discovery and checkout around how people actually buy skiwear: by who it is for, by garment, by fit and by technical performance."
 		],
 		"implementations": [
@@ -62,7 +65,7 @@
 			"Conversion-Optimised Architecture: Restructured the product discovery and checkout flows. By utilising clean Liquid code and prioritising intuitive navigation, we eliminated user friction points to actively reduce cart abandonment."
 		],
 		"solution_body": [
-			"The result is a bespoke Shopify environment focused on speed, seamless app functionality and user-centric navigation. On the live store today, shoppers move from a mega menu organised by Men, Women, Boys and Girls into category lists and campaign tiles; search suggests queries and shows products, prices and ratings as they type; collections filter by size, colour, waterproofness and breathability; product pages show every colourway as a photo and translate fabric specs into simple meters; and the cart pairs recommendations with trust signals, the dispatch cut-off and payment options."
+			"The result is a bespoke Shopify environment focused on speed, seamless app functionality and user-centric navigation."
 		],
 		"outcome_statement": "The architectural overhaul directly translated into [proven, measurable sales growth].",
 		"outcome_body": [
@@ -102,8 +105,11 @@
 		"header": "dark"
 	},
 	"layout": {
+		"hero": {
+			"eyebrow": "Rehall case study · Shopify · Netherlands, Belgium & Germany"
+		},
 		"features": {
-			"title": "Six details that do the selling"
+			"title": "Six Shopify details that do the selling"
 		},
 		"spotlights": [
 			{
@@ -118,18 +124,18 @@
 				"mat": "tint",
 				"hotspots": [
 					{
-						"x": 4.2,
-						"y": 25.2,
+						"x": 10,
+						"y": 22,
 						"label": "Shop by audience: Men, Women, Boys, Girls"
 					},
 					{
-						"x": 24.4,
-						"y": 31.6,
+						"x": 33,
+						"y": 25,
 						"label": "Every category one hover away"
 					},
 					{
-						"x": 58.9,
-						"y": 84.7,
+						"x": 66,
+						"y": 35,
 						"label": "Editorial campaign tiles inside the menu"
 					}
 				]
@@ -146,17 +152,17 @@
 				"mat": "paper",
 				"hotspots": [
 					{
-						"x": 73.3,
-						"y": 12.5,
+						"x": 75,
+						"y": 14.5,
 						"label": "Results appear as you type"
 					},
 					{
-						"x": 6.1,
-						"y": 35.8,
+						"x": 13.5,
+						"y": 41,
 						"label": "Smart query suggestions"
 					},
 					{
-						"x": 42.8,
+						"x": 54,
 						"y": 92,
 						"label": "Sale prices and ratings at a glance"
 					}
@@ -174,18 +180,18 @@
 				"mat": "tint",
 				"hotspots": [
 					{
-						"x": 4.5,
-						"y": 24,
+						"x": 12,
+						"y": 22,
 						"label": "Size filter with live stock counts"
 					},
 					{
-						"x": 8.8,
-						"y": 55.2,
+						"x": 20,
+						"y": 58.5,
 						"label": "Visual colour filter"
 					},
 					{
-						"x": 5.9,
-						"y": 68.2,
+						"x": 15,
+						"y": 72.5,
 						"label": "Filter by waterproofness (mm)"
 					}
 				]
@@ -202,18 +208,18 @@
 				"mat": "paper",
 				"hotspots": [
 					{
-						"x": 71.1,
+						"x": 82,
 						"y": 36,
 						"label": "Colourways as photo swatches"
 					},
 					{
-						"x": 67.2,
-						"y": 49.3,
+						"x": 92,
+						"y": 37.5,
 						"label": "Sold-out sizes visible before clicking"
 					},
 					{
-						"x": 80,
-						"y": 77.3,
+						"x": 96,
+						"y": 82,
 						"label": "Delivery and returns promise at the button"
 					}
 				]
@@ -230,8 +236,8 @@
 				"mat": "tint",
 				"hotspots": [
 					{
-						"x": 12,
-						"y": 35.4,
+						"x": 15,
+						"y": 21,
 						"label": "Warmth, breathability and waterproof meters"
 					},
 					{
@@ -240,8 +246,8 @@
 						"label": "Spec table driven by product data"
 					},
 					{
-						"x": 81.5,
-						"y": 52.8,
+						"x": 85,
+						"y": 33,
 						"label": "Buy box stays in view while reading"
 					}
 				]
@@ -259,18 +265,18 @@
 				"visual_max": 420,
 				"hotspots": [
 					{
-						"x": 45,
-						"y": 44.4,
+						"x": 70,
+						"y": 45,
 						"label": "In-cart recommendations"
 					},
 					{
-						"x": 50,
+						"x": 88,
 						"y": 89.4,
 						"label": "Trust signal at the decision point"
 					},
 					{
-						"x": 50,
-						"y": 95.6,
+						"x": 93,
+						"y": 94,
 						"label": "Dispatch cut-off and payment options"
 					}
 				]
@@ -336,12 +342,12 @@
 	"alt": {
 		"avix-cs-rehall-hero-desktop.webp": "Rehall.com homepage on desktop with the Winter 26 campaign photo and the Shop and Discover navigation",
 		"avix-cs-rehall-hero-mobile.webp": "Rehall.com homepage on a phone",
-		"avix-cs-rehall-feature-mega-menu.webp": "Rehall mega menu listing categories for Men, Women, Boys and Girls beside campaign tiles",
+		"avix-cs-rehall-feature-mega-menu.webp": "Rehall Shopify mega menu listing categories for Men, Women, Boys and Girls beside campaign tiles",
 		"avix-cs-rehall-feature-predictive-search.webp": "Rehall predictive search showing suggestions and live product results with prices and ratings",
-		"avix-cs-rehall-feature-technical-filters.webp": "Rehall men's ski jackets with filters for size, colour, waterproofness and breathability",
-		"avix-cs-rehall-feature-product-page.webp": "Rehall ski jacket product page with colourway photos, size bar and delivery promise under Add to cart",
+		"avix-cs-rehall-feature-technical-filters.webp": "Rehall Shopify collection of men's ski jackets with filters for size, colour, waterproofness and breathability",
+		"avix-cs-rehall-feature-product-page.webp": "Rehall Shopify product page for a ski jacket with colourway photos, size bar and delivery promise under Add to cart",
 		"avix-cs-rehall-feature-tech-specs.webp": "Rehall product Features tab with warmth, breathability and water resistance meters and a specification table",
-		"avix-cs-rehall-feature-smart-cart.webp": "Rehall slide-out cart with recommendations, Trustpilot rating, dispatch cut-off and payment methods",
+		"avix-cs-rehall-feature-smart-cart.webp": "Rehall Shopify slide-out cart with recommendations, Trustpilot rating, dispatch cut-off and payment methods",
 		"avix-cs-rehall-gallery-collections-desktop.webp": "Rehall homepage collection tiles for Men, Women, Accessories and Boys",
 		"avix-cs-rehall-gallery-mobile-bestsellers.webp": "Rehall bestsellers carousel on a phone",
 		"avix-cs-rehall-gallery-mobile-menu-men.webp": "Rehall mobile menu listing men's categories",
@@ -352,8 +358,8 @@
 		"avix-cs-rehall-feature-product-cards.webp": "Rehall bestseller product cards with colourway thumbnails and wishlist hearts",
 		"avix-cs-rehall-logo-white.png": "Rehall logo",
 		"avix-cs-rehall-og.jpg": "Rehall case study by AvixDigital, with the Rehall.com homepage in a browser window",
-		"avix-cs-rehall-render-hero.webp": "Rehall.com homepage on a laptop and a phone",
+		"avix-cs-rehall-render-hero.webp": "Rehall Shopify store homepage on a laptop and a phone",
 		"avix-cs-rehall-render-mega-menu.webp": "Rehall mega menu for the men's range on a laptop",
-		"avix-cs-rehall-render-mobile.webp": "Rehall mobile menu, bestsellers and a product page on three phones"
+		"avix-cs-rehall-render-mobile.webp": "Rehall Shopify store on three phones: mobile menu, bestsellers and a product page"
 	}
 }

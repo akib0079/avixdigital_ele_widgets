@@ -38,20 +38,36 @@ final class Importer {
 	/** Rich (paragraph) fields: a JSON array is joined with blank lines; other lists with newlines. */
 	const PARAGRAPH_FIELDS = array( 'challenge_body', 'approach_body', 'solution_body', 'outcome_body' );
 
-	/** The /case-studies/ index page (§4). */
+	/** The /case-studies/ index page (§4; SEO wording from the Oct 2026 audit: keyphrase "ecommerce case studies"). */
 	const INDEX = array(
 		'title'    => 'Case Studies',
 		'slug'     => 'case-studies',
-		'eyebrow'  => 'Case studies',
-		'heading'  => 'Selected Website & [Ecommerce Projects]',
-		'text'     => 'Live projects for brands in the Netherlands: a Shopify store for technical skiwear, a subscription-first supplement brand and a Webflow site that turns local searches into enquiries. Every screenshot comes from the live site, with the features that solved each problem marked.',
-		'seo'      => 'Case Studies: Shopify & Webflow Projects | AvixDigital',
-		'desc'     => 'Explore AvixDigital case studies: live Shopify and Webflow projects for brands in the Netherlands, with annotated screenshots of the features we built.',
+		'eyebrow'  => 'Selected work',
+		'heading'  => 'Ecommerce & Website [Case Studies]',
+		'text'     => 'Ecommerce case studies from live projects for brands in the Netherlands: a Shopify store for technical skiwear, a subscription-first supplement brand and a Webflow site that turns local searches into enquiries. Every screenshot comes from the live site, with the features that solved each problem marked.',
+		'seo'      => 'Ecommerce Case Studies & Website Projects | AvixDigital',
+		'desc'     => 'Ecommerce case studies from AvixDigital: live stores and websites we built for growing brands, with annotated screenshots of the features that win customers.',
+		'focuskw'  => 'ecommerce case studies',
 		'og'       => 'avix-cs-index-og.jpg',
 		'home_id'  => 431,
 		'header'   => 'header-custom-275',
 		'numbers'  => 'Numbers behind the work',
 	);
+
+	/**
+	 * The index wording earlier versions wrote (v1.15.0). A value still equal to it was never
+	 * edited by the owner, so a later import may replace it; anything else is left alone.
+	 */
+	const INDEX_PREVIOUS = array(
+		'eyebrow' => 'Case studies',
+		'heading' => 'Selected Website & [Ecommerce Projects]',
+		'text'    => 'Live projects for brands in the Netherlands: a Shopify store for technical skiwear, a subscription-first supplement brand and a Webflow site that turns local searches into enquiries. Every screenshot comes from the live site, with the features that solved each problem marked.',
+		'seo'     => 'Case Studies: Shopify & Webflow Projects | AvixDigital',
+		'desc'    => 'Explore AvixDigital case studies: live Shopify and Webflow projects for brands in the Netherlands, with annotated screenshots of the features we built.',
+	);
+
+	/** Case Study Hero settings a data file may set under layout.hero. */
+	const HERO_KEYS = array( 'eyebrow' );
 
 	/** Resolved media for this request: name => array( id, url ) (empty array = not found). */
 	private static $media = array();
@@ -218,7 +234,9 @@ final class Importer {
 	/**
 	 * Creates the /case-studies/ index page (§4): the case-study grid on paper plus
 	 * the site's Impact Numbers band (settings copied from the home page instance).
-	 * An existing page keeps its Elementor content unless $args['reset'] is set.
+	 * An existing page keeps its Elementor content unless $args['reset'] is set; it only
+	 * gets the in-place updates of upgrade_index_layout() (wording the owner never edited,
+	 * the Impact Numbers fit).
 	 *
 	 * @param array $args { @type bool $publish Publish a new page (default false). @type bool $reset Rewrite the layout. }
 	 * @return int Page ID (0 on failure).
@@ -257,6 +275,8 @@ final class Importer {
 			);
 			Starter::write( $id, Starter::fresh_ids( $layout ) );
 			update_post_meta( $id, '_elementor_template_type', 'wp-page' );
+		} else {
+			self::upgrade_index_layout( $id );
 		}
 
 		$opts = get_post_meta( $id, 'algenix_options', true );
@@ -275,7 +295,19 @@ final class Importer {
 		}
 
 		self::$alts = array( self::INDEX['og'] => 'AvixDigital case studies: live Shopify and Webflow projects' );
+		// The owner's own Yoast wording wins; the bundled wording of an earlier version is replaced.
+		foreach ( array(
+			'_yoast_wpseo_title'    => 'seo',
+			'_yoast_wpseo_metadesc' => 'desc',
+		) as $key => $field ) {
+			if ( (string) get_post_meta( $id, $key, true ) === self::INDEX_PREVIOUS[ $field ] ) {
+				delete_post_meta( $id, $key );
+			}
+		}
 		self::yoast( $id, self::INDEX['seo'], self::INDEX['desc'], '@media:' . self::INDEX['og'], false );
+		if ( '' === trim( (string) get_post_meta( $id, '_yoast_wpseo_focuskw', true ) ) ) {
+			update_post_meta( $id, '_yoast_wpseo_focuskw', self::INDEX['focuskw'] );
+		}
 
 		if ( ! empty( $args['publish'] ) && 'publish' !== $page->post_status ) {
 			wp_update_post(
@@ -362,6 +394,15 @@ final class Importer {
 		if ( ! empty( $data['yoast'] ) && is_array( $data['yoast'] ) ) {
 			$y = $data['yoast'];
 			self::yoast( $post_id, isset( $y['title'] ) ? (string) $y['title'] : '', isset( $y['metadesc'] ) ? (string) $y['metadesc'] : '', isset( $y['og_image'] ) ? (string) $y['og_image'] : '', true );
+			// Focus keyphrase, and the short breadcrumb title (the client) for Yoast's BreadcrumbList.
+			foreach ( array(
+				'focuskw' => '_yoast_wpseo_focuskw',
+				'bctitle' => '_yoast_wpseo_bctitle',
+			) as $field => $key ) {
+				if ( ! empty( $y[ $field ] ) ) {
+					update_post_meta( $post_id, $key, wp_slash( sanitize_text_field( (string) $y[ $field ] ) ) );
+				}
+			}
 		}
 
 		/* ---- Theme options ---- */
@@ -520,9 +561,12 @@ final class Importer {
 	/* ------------------------------------------------------------------ */
 
 	/**
-	 * The bundled starter with this study's widget content: the features chapter title,
-	 * one spotlight section per feature (the starter's 2nd spotlight is the template for
-	 * every later one, so its spacing carries over) and the gallery items.
+	 * The bundled starter with this study's widget content: the hero text the data sets
+	 * (layout.hero, see HERO_KEYS), the features chapter title, one spotlight section per
+	 * feature (the starter's 2nd spotlight is the template for every later one, so its
+	 * spacing carries over) and the gallery items. Colours and themes are never written
+	 * here: every section follows its widget's theme defaults, so the editor's Theme
+	 * switch re-themes an imported page like a new one.
 	 *
 	 * @param array $layout The data file's "layout" block.
 	 */
@@ -561,6 +605,13 @@ final class Importer {
 			}
 
 			$settings = isset( $section['elements'][0]['settings'] ) && is_array( $section['elements'][0]['settings'] ) ? $section['elements'][0]['settings'] : array();
+			if ( 'avix-case-study-hero' === $type && ! empty( $layout['hero'] ) && is_array( $layout['hero'] ) ) {
+				foreach ( self::HERO_KEYS as $key ) {
+					if ( isset( $layout['hero'][ $key ] ) && '' !== trim( (string) $layout['hero'][ $key ] ) ) {
+						$settings[ $key ] = sanitize_text_field( (string) $layout['hero'][ $key ] );
+					}
+				}
+			}
 			if ( 'avix-case-study-chapter' === $type && isset( $settings['chapter'] ) && 'features' === $settings['chapter'] && ! empty( $layout['features']['title'] ) ) {
 				$settings['title'] = (string) $layout['features']['title'];
 			}
@@ -682,7 +733,8 @@ final class Importer {
 
 	/**
 	 * Impact Numbers settings: a copy of the home page instance when there is one,
-	 * else the site's published numbers (200+ clients, 250+ projects, 150+ reviews, 22+ countries).
+	 * else the site's published numbers (200+ clients, 250+ projects, 150+ reviews, 22+ countries),
+	 * fitted to the index page (see index_numbers()).
 	 */
 	private static function numbers_settings(): array {
 		$home = 'page' === get_option( 'show_on_front' ) ? (int) get_option( 'page_on_front' ) : 0;
@@ -694,7 +746,7 @@ final class Importer {
 			$data = is_array( $raw ) ? $raw : json_decode( is_string( $raw ) ? $raw : '', true );
 			$hit  = is_array( $data ) ? self::find_widget( $data, 'avix-impact-numbers' ) : array();
 			if ( $hit ) {
-				return $hit;
+				return self::index_numbers( $hit );
 			}
 		}
 		$rows = array();
@@ -707,7 +759,95 @@ final class Importer {
 			);
 		}
 		// The widget's own eyebrow already reads "Numbers behind the work"; no title keeps the home look.
-		return array( 'metrics' => $rows );
+		return self::index_numbers( array( 'metrics' => $rows ) );
+	}
+
+	/**
+	 * The Impact Numbers copy as the index page needs it: on the grid's warm paper (the
+	 * widget's "Warm grey" theme is #f5f3ef, so no white band runs under the cards), inside
+	 * the grid's 1240px frame, without the hairline that would read as a seam between two
+	 * paper sections, and with its labels tidied ("Countries has been served" reads
+	 * "Countries served"). Only this copy changes: the home page keeps its text (§12.9).
+	 *
+	 * @param array $s Impact Numbers widget settings.
+	 */
+	private static function index_numbers( array $s ): array {
+		$s['theme']   = 'soft';
+		$s['divider'] = '';
+		// Colour picks made for the white home band would fight the paper theme.
+		foreach ( array( 'bg', 'line', 'icon_bg' ) as $key ) {
+			unset( $s[ $key ] );
+		}
+		$s['content_width'] = array(
+			'unit'  => 'px',
+			'size'  => 1240,
+			'sizes' => array(),
+		);
+		if ( ! empty( $s['metrics'] ) && is_array( $s['metrics'] ) ) {
+			foreach ( $s['metrics'] as $i => $row ) {
+				if ( is_array( $row ) && isset( $row['label'] ) && is_string( $row['label'] ) ) {
+					$s['metrics'][ $i ]['label'] = (string) preg_replace( '/\s+has\s+been\s+served\b/i', ' served', $row['label'] );
+				}
+			}
+		}
+		return $s;
+	}
+
+	/**
+	 * In-place updates for an index page that already has a layout (the admin import does
+	 * not rewrite it): grid wording still equal to an earlier version's (INDEX_PREVIOUS) takes
+	 * the current wording, and the Impact Numbers copy gets the index fit (index_numbers()).
+	 * Anything the owner edited stays. The previous layout is kept in a revision, and nothing
+	 * is written when nothing changes.
+	 *
+	 * @param int $id Index page ID.
+	 */
+	private static function upgrade_index_layout( int $id ): void {
+		$raw  = get_post_meta( $id, '_elementor_data', true );
+		$data = is_array( $raw ) ? $raw : json_decode( is_string( $raw ) ? $raw : '', true );
+		if ( ! is_array( $data ) || ! $data ) {
+			return;
+		}
+		$next = self::upgrade_index_elements( $data );
+		if ( $next === $data ) {
+			return;
+		}
+		self::revision( $id );
+		Starter::write( $id, $next );
+		update_post_meta( $id, '_elementor_template_type', 'wp-page' );
+	}
+
+	/**
+	 * Walks an Elementor tree for upgrade_index_layout().
+	 *
+	 * @param array $elements Elementor elements.
+	 */
+	private static function upgrade_index_elements( array $elements ): array {
+		foreach ( $elements as $i => $el ) {
+			if ( ! is_array( $el ) ) {
+				continue;
+			}
+			$type = isset( $el['widgetType'] ) ? (string) $el['widgetType'] : '';
+			$s    = isset( $el['settings'] ) && is_array( $el['settings'] ) ? $el['settings'] : array();
+			if ( 'avix-case-study-grid' === $type ) {
+				foreach ( array(
+					'eyebrow' => 'eyebrow',
+					'title'   => 'heading',
+					'text'    => 'text',
+				) as $key => $field ) {
+					if ( isset( $s[ $key ] ) && self::INDEX_PREVIOUS[ $field ] === (string) $s[ $key ] ) {
+						$s[ $key ] = self::INDEX[ $field ];
+					}
+				}
+				$elements[ $i ]['settings'] = $s;
+			} elseif ( 'avix-impact-numbers' === $type ) {
+				$elements[ $i ]['settings'] = self::index_numbers( $s );
+			}
+			if ( ! empty( $el['elements'] ) && is_array( $el['elements'] ) ) {
+				$elements[ $i ]['elements'] = self::upgrade_index_elements( $el['elements'] );
+			}
+		}
+		return $elements;
 	}
 
 	/* ------------------------------------------------------------------ */

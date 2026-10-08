@@ -1,28 +1,34 @@
 /*!
  * Avix Digital · Case Study Hero
- * The dark top of a case study: breadcrumb, client logo, eyebrow, headline,
- * lead and buttons, a facts bar, then the live site in a browser frame with
- * the phone overlapping it (or a studio render floating on the glow). The
- * devices can sit on a band in the next section's colour. Layout follows the
- * widget width (container queries).
+ * The top of a case study, full width with the header's side margins:
+ * breadcrumb, the client logo / eyebrow / headline lock-up, the lead beside
+ * the buttons, a facts bar, then the live site in a browser frame with the
+ * phone overlapping it (or a studio render). Behind it, the orange WebGL
+ * shader (AvixCsk.shader) with the CSS glow and grid as its fallback. Dark
+ * by default, Light re-themes every part. The devices can sit on a band in
+ * the next section's colour. Layout follows the widget width (container
+ * queries).
  */
 
 .avix-csh {
 	--csh-bg: #0b0b0c;
 	--csh-ink: #ffffff;
-	--csh-muted: rgba(255, 255, 255, 0.62);
+	--csh-muted: rgba(255, 255, 255, 0.72);
 	--csh-soft: rgba(255, 255, 255, 0.78);
 	--csh-line: rgba(255, 255, 255, 0.1);
 	--csh-accent: #fb6007;
 	--csh-accent-text: #ff8a3d;
+	--csh-title-accent: var(--csh-accent);
+	--csh-focus: var(--csh-accent);
 	--csh-btn-hover: #e25504;
 	--csh-btn2-line: rgba(255, 255, 255, 0.24);
 	--csh-btn2-hover-bg: rgba(255, 255, 255, 0.08);
 	--csh-grid-color: rgba(255, 255, 255, 0.022);
-	--csh-glow-mix: 22%;
+	--csh-glow-mix: 30%;
+	--csh-glow-mix-b: 18%;
 	--csh-after: #ffffff;
 	--csh-bleed: 18;
-	--csh-logo-h: 28px;
+	--csh-logo-h: 32px;
 	--csh-shot-ratio: 0.625;
 	--csh-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
 	--csh-font-body: "Inter", Arial, sans-serif;
@@ -56,14 +62,19 @@
 .avix-csh--light {
 	--csh-bg: #f5f3ef;
 	--csh-ink: #1a1a1a;
-	--csh-muted: #5c5f66;
+	--csh-muted: #55585f;
 	--csh-soft: #3a3d42;
 	--csh-line: rgba(26, 26, 26, 0.12);
 	--csh-accent-text: #c54804;
+	/* The brand orange is too light for large text on paper (2.8:1). */
+	--csh-title-accent: color-mix(in srgb, var(--csh-accent) 86%, #000000);
+	/* Focus rings need 3:1 on paper. */
+	--csh-focus: color-mix(in srgb, var(--csh-accent) 78%, #000000);
 	--csh-btn2-line: rgba(26, 26, 26, 0.22);
 	--csh-btn2-hover-bg: #ffffff;
-	--csh-grid-color: rgba(26, 26, 26, 0.04);
-	--csh-glow-mix: 14%;
+	--csh-grid-color: rgba(26, 26, 26, 0.05);
+	--csh-glow-mix: 16%;
+	--csh-glow-mix-b: 10%;
 }
 
 /* At the top of a page with the Smart Header: start below the fixed header. */
@@ -90,7 +101,8 @@
    the background layer and the inner wrapper, not on the root. */
 .avix-csh__inner,
 .avix-csh__bg {
-	--csh-gutter: max(18px, clamp(16px, 5cqi, 72px));
+	/* The header's side margins: 65px at 1280+, 51 at 1024, 38 at 768, 20 on phones. */
+	--csh-gutter: clamp(20px, 5cqi, 65px);
 	--csh-frame-w: min(var(--csh-devices-max, 1120px), calc(100cqi - 2 * var(--csh-gutter)));
 	--csh-bleed-px: calc(var(--csh-frame-w) * var(--csh-shot-ratio) * var(--csh-bleed) / 100);
 	/* Room under the browser frame for the phone's overhang and the shadows. */
@@ -108,8 +120,10 @@
 	z-index: 1;
 }
 
+/* Edge to edge with the header's margins; only very wide screens (2530px+)
+   centre it, so the lead and the buttons never drift apart. */
 .avix-csh__frame {
-	width: min(calc(100% - 2 * var(--csh-gutter)), var(--csh-max, 1240px));
+	width: min(calc(100% - 2 * var(--csh-gutter)), var(--csh-max, 2400px));
 	margin: 0 auto;
 }
 
@@ -146,41 +160,35 @@
 	will-change: opacity;
 }
 
-/* Wider than the browser frame, so the haze shows around its sides. */
+/* The glows sit where the shader is brightest: right of the headline and
+   in the top right corner. Placed from the top in px (never a percentage
+   of the hero's height), so a hero that grows late cannot move them. */
 .avix-csh__glow--a {
-	top: 72%;
-	left: 56%;
-	width: 1500px;
-	height: 1000px;
+	top: clamp(300px, 30cqi, 460px);
+	left: 74%;
+	width: min(1300px, 110cqi);
+	height: 900px;
 	animation: avix-csh-glow 24s ease-in-out infinite alternate;
 }
 
 .avix-csh__glow--b {
-	top: 8%;
-	left: 88%;
+	top: 90px;
+	left: 92%;
 	width: 620px;
 	height: 620px;
-	background: radial-gradient(closest-side, color-mix(in srgb, var(--csh-accent) 12%, transparent), transparent);
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--csh-accent) var(--csh-glow-mix-b), transparent), transparent);
 	animation: avix-csh-glow 24s ease-in-out -12s infinite alternate;
-}
-
-/* Image mode: the glow sits behind the render's centre and fades out
-   before its edges, so the render's own dark background meets plain hero
-   background and no box shows. The render brings its own rim light. */
-.avix-csh--visual-image .avix-csh__glow--a {
-	top: 72%;
-	left: 50%;
-	width: min(1100px, 92%);
-	height: 760px;
-}
-
-.avix-csh--visual-none .avix-csh__glow--a {
-	top: 40%;
-	left: 78%;
 }
 
 .avix-csh--no-glow .avix-csh__glow,
 .avix-csh--no-grid .avix-csh__grid {
+	display: none;
+}
+
+/* The shader (kit CSS sizes and fades it) replaces the glow and the grid
+   once it has faded in; they come back if the WebGL context is lost. */
+.avix-csh.has-shader .avix-csh__glow,
+.avix-csh.has-shader .avix-csh__grid {
 	display: none;
 }
 
@@ -283,32 +291,31 @@
 
 /* ---------- Copy ---------- */
 
+/* One column: the logo, eyebrow and headline lock-up, then the lead and
+   the buttons. Wide heroes put the buttons beside the lead (see below). */
 .avix-csh__top {
-	display: grid;
-	grid-template-columns: repeat(12, minmax(0, 1fr));
-	column-gap: clamp(16px, 2cqi, 32px);
-	align-items: start;
+	display: block;
 }
 
 .avix-csh__copy {
-	grid-row: 1;
-	grid-column: 1 / span 8;
 	min-width: 0;
 }
 
-.avix-csh__logo {
-	grid-row: 1;
-	grid-column: 10 / span 3;
-	justify-self: end;
+.avix-csh .avix-csh__logo {
+	display: flex;
+	justify-content: flex-start;
 	min-width: 0;
 	max-width: 100%;
-	padding-top: 2px;
+	margin: 0 0 clamp(22px, 2cqi, 28px);
+	padding: 0;
 }
 
+/* A fixed height, so the three wordmarks share a cap line; the widest
+   stop at 240px so they never outweigh the eyebrow. */
 .avix-csh .avix-csh__logo-img {
 	display: block;
 	width: auto;
-	max-width: 100%;
+	max-width: min(240px, 100%);
 	height: var(--csh-logo-h);
 	margin: 0;
 	padding: 0;
@@ -316,13 +323,23 @@
 	border-radius: 0;
 	box-shadow: none;
 	object-fit: contain;
-	object-position: right center;
+	object-position: left center;
+}
+
+/* Light theme: the white client logos in ink. */
+.avix-csh--logo-ink .avix-csh__logo-img {
+	filter: brightness(0);
+	opacity: 0.9;
 }
 
 .avix-csh .avix-csh__eyebrow {
+	--csk-eyebrow-ink: var(--csh-muted);
+
+	/* A block, so no line box adds space between it and the logo. */
+	display: flex;
 	align-items: flex-start;
 	margin: 0 0 clamp(18px, 1.8cqi, 24px);
-	color: var(--csk-muted, var(--csh-muted));
+	color: var(--csh-muted);
 }
 
 /* The pixel lines up with the first line when the eyebrow wraps. */
@@ -332,12 +349,12 @@
 }
 
 .avix-csh .avix-csh__title {
-	max-width: 22ch;
+	max-width: 15.5em;
 	margin: 0;
 	padding: 0;
 	color: var(--csh-ink);
 	font-family: var(--csh-font-display);
-	font-size: clamp(38px, 5cqi, 76px);
+	font-size: clamp(38px, 5.6cqi, 84px);
 	font-style: normal;
 	font-weight: 600;
 	line-height: 1.04;
@@ -350,12 +367,17 @@
 }
 
 .avix-csh .avix-csh__accent {
-	color: var(--csh-accent);
+	color: var(--csh-title-accent);
+}
+
+/* "E-Commerce", "High-Converting": wrap whole, never at the hyphen. */
+.avix-csh .avix-csh__nowrap {
+	white-space: nowrap;
 }
 
 .avix-csh .avix-csh__lead {
-	max-width: 58ch;
-	margin: clamp(20px, 2cqi, 28px) 0 0;
+	max-width: 60ch;
+	margin: clamp(20px, 2.2cqi, 32px) 0 0;
 	padding: 0;
 	color: var(--csh-muted);
 	font-family: var(--csh-font-body);
@@ -511,7 +533,7 @@
 .avix-csh .avix-csh__crumb-link:focus-visible,
 .avix-csh .avix-csh__fact-link:focus-visible,
 .avix-csh .avix-csk-chip:focus-visible {
-	outline: 2px solid var(--csh-accent) !important;
+	outline: 2px solid var(--csh-focus) !important;
 	outline-offset: 4px !important;
 }
 
@@ -653,6 +675,7 @@
 
 .avix-csh .avix-csh__devices {
 	position: relative;
+	display: block;
 	flex: none;
 	width: var(--csh-frame-w);
 	max-width: 100%;
@@ -689,10 +712,13 @@
 	padding-bottom: 0;
 }
 
+/* Up to 1360px wide: the render file is 1536px, so it stays sharp on
+   ordinary screens. */
 .avix-csh .avix-csh__render {
 	position: relative;
+	display: block;
 	flex: none;
-	width: min(100%, var(--csh-render-max, 1240px));
+	width: min(100%, var(--csh-devices-max, 1360px));
 	padding: 0;
 }
 
@@ -718,13 +744,26 @@
    devices float on the glow instead of sitting in a box. */
 .avix-csh .avix-csh__render.is-blend .avix-csh__render-frame {
 	-webkit-mask-image:
-		linear-gradient(to bottom, transparent 0, #000 6%, #000 86%, transparent 100%),
-		linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%);
+		linear-gradient(to bottom, transparent 0, #000 7%, #000 86%, transparent 100%),
+		linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
 	-webkit-mask-composite: source-in;
 	mask-image:
-		linear-gradient(to bottom, transparent 0, #000 6%, #000 86%, transparent 100%),
-		linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%);
+		linear-gradient(to bottom, transparent 0, #000 7%, #000 86%, transparent 100%),
+		linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
 	mask-composite: intersect;
+}
+
+/* The render's studio backdrop is a little darker than the hero: a soft
+   shade behind it lets the hero darken into it, so no box edge shows. */
+.avix-csh--dark .avix-csh__render.is-blend::before {
+	content: "";
+	position: absolute;
+	inset: 8% 6% 14%;
+	z-index: -1;
+	border-radius: 50%;
+	background: rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 120px 90px rgba(0, 0, 0, 0.5);
+	pointer-events: none;
 }
 
 .avix-csh .avix-csh__render.is-framed .avix-csh__render-frame {
@@ -735,9 +774,21 @@
 	box-shadow: 0 50px 100px -50px rgba(0, 0, 0, 0.9);
 }
 
-.avix-csh--light .avix-csh__render.is-framed .avix-csh__render-frame {
-	border-color: rgba(26, 26, 26, 0.1);
-	box-shadow: 0 50px 100px -50px rgba(11, 11, 12, 0.45);
+/* Light theme: the studio render is a dark photograph, so it always sits
+   in its rounded frame on paper (a blended edge would read as a smudge). */
+.avix-csh--light .avix-csh__render .avix-csh__render-frame,
+.avix-csh--light .avix-csh__render.is-blend .avix-csh__render-frame {
+	overflow: hidden;
+	border: 1px solid rgba(26, 26, 26, 0.1);
+	border-radius: 28px;
+	background: #111111;
+	box-shadow: 0 50px 100px -50px rgba(11, 11, 12, 0.45), 0 2px 6px rgba(11, 11, 12, 0.06);
+	-webkit-mask-image: none;
+	mask-image: none;
+}
+
+.avix-csh--light.avix-csh--visual-image:not(.avix-csh--bleed) {
+	padding-bottom: var(--csh-pad-bottom, clamp(48px, 6vw, 96px));
 }
 
 /* A framed render on the band: the band starts its share up the frame. */
@@ -787,7 +838,10 @@
 	display: none;
 }
 
-/* ---------- Reveal (only once JS arms it) ---------- */
+/* ---------- Reveal (only once JS arms it) ----------
+   The headline and the lead are never hidden: they are painted with the
+   first frame (the headline is the LCP element). Only the parts around
+   them (trail, logo, eyebrow, buttons, facts, devices) rise in. */
 
 .avix-csh .avix-csh__crumbs {
 	--i: 0;
@@ -798,15 +852,7 @@
 }
 
 .avix-csh .avix-csh__eyebrow {
-	--i: 1;
-}
-
-.avix-csh .avix-csh__title {
 	--i: 2;
-}
-
-.avix-csh .avix-csh__lead {
-	--i: 3;
 }
 
 .avix-csh .avix-csh__actions {
@@ -815,8 +861,8 @@
 
 .avix-csh.is-armed .avix-csh__rise {
 	opacity: 0;
-	transform: translateY(24px);
-	transition: opacity 0.7s ease, transform 0.7s var(--csh-ease);
+	transform: translateY(14px);
+	transition: opacity 0.7s ease, transform 0.8s var(--csh-ease);
 	transition-delay: calc(var(--i, 0) * 70ms);
 }
 
@@ -847,12 +893,13 @@
 	transform: none;
 }
 
+/* The site or the render may be the largest thing on a tall screen (an
+   LCP candidate), so it is never hidden: it only glides up into place. */
 .avix-csh.is-armed .avix-csh__browser,
 .avix-csh.is-armed .avix-csh__render-frame {
-	opacity: 0;
-	transform: translateY(40px) scale(0.98);
+	transform: translateY(36px) scale(0.985);
 	transform-origin: 50% 100%;
-	transition: opacity 0.8s ease, transform 0.9s var(--csh-ease);
+	transition: transform 1.1s var(--csh-ease);
 }
 
 .avix-csh.is-armed .avix-csh__phone {
@@ -880,31 +927,44 @@
 	}
 }
 
+/* ---------- Wide (1025+): the lead beside the buttons ----------
+   The headline uses the width (15.5em: three lines at most for the longest
+   title); under it the lead sits left and the buttons right, on the
+   header's right edge, so the wide frame never leaves an empty column. */
+
+@container avix-csh (min-width: 1025px) {
+	.avix-csh__copy.has-lead {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		column-gap: clamp(40px, 5cqi, 96px);
+		align-items: end;
+	}
+
+	.avix-csh__copy.has-lead > * {
+		grid-column: 1 / -1;
+	}
+
+	.avix-csh .avix-csh__copy.has-lead > .avix-csh__lead {
+		grid-column: 1;
+	}
+
+	.avix-csh .avix-csh__copy.has-lead > .avix-csh__actions {
+		grid-column: 2;
+		justify-content: flex-end;
+		margin: 0;
+		padding-bottom: 2px;
+	}
+}
+
 /* ---------- Tablet (768–1024) ---------- */
 
 @container avix-csh (max-width: 1024px) {
-	.avix-csh__top {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.avix-csh__copy {
-		grid-row: 2;
-		grid-column: 1;
-	}
-
-	.avix-csh__logo {
-		grid-row: 1;
-		grid-column: 1;
-		justify-self: start;
-		margin: 0 0 clamp(22px, 3cqi, 30px);
-		padding: 0;
-	}
-
-	.avix-csh .avix-csh__logo-img {
-		object-position: left center;
+	.avix-csh .avix-csh__logo {
+		margin-bottom: clamp(22px, 3cqi, 28px);
 	}
 
 	.avix-csh .avix-csh__title {
+		max-width: 16em;
 		font-size: clamp(38px, 6.4cqi, 60px);
 	}
 
@@ -974,8 +1034,12 @@
 		margin-bottom: 26px;
 	}
 
-	.avix-csh__logo {
+	.avix-csh .avix-csh__logo {
 		margin-bottom: 22px;
+	}
+
+	.avix-csh .avix-csh__logo-img {
+		max-width: min(200px, 100%);
 	}
 
 	.avix-csh .avix-csh__title {
@@ -1123,24 +1187,39 @@
 		mask-image: linear-gradient(to bottom, transparent 0, #000 6%, #000 86%, transparent 100%);
 	}
 
+	.avix-csh--dark .avix-csh__render.is-blend::before {
+		inset: 10% 0 16%;
+		box-shadow: 0 0 60px 30px rgba(0, 0, 0, 0.5);
+	}
+
 	/* The devices fill more of a narrow screen: the render's empty sides
 	   are cropped away. */
 	.avix-csh .avix-csh__render.is-blend .avix-csh__render-img {
 		transform: scale(1.12);
 	}
 
-	.avix-csh .avix-csh__render.is-framed .avix-csh__render-frame {
+	.avix-csh .avix-csh__render.is-framed .avix-csh__render-frame,
+	.avix-csh--light .avix-csh__render.is-blend .avix-csh__render-frame {
 		border-right: 0;
 		border-left: 0;
 		border-radius: 0;
+		-webkit-mask-image: none;
+		mask-image: none;
+	}
+
+	.avix-csh--light .avix-csh__render.is-blend .avix-csh__render-img {
+		transform: none;
 	}
 
 	.avix-csh__glow--a {
+		top: 360px;
+		left: 82%;
 		width: 640px;
 		height: 640px;
 	}
 
 	.avix-csh__glow--b {
+		top: 60px;
 		width: 420px;
 		height: 420px;
 	}

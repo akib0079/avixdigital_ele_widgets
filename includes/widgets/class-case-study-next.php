@@ -1,11 +1,12 @@
 <?php
 /**
- * Case Study Next: the end of a case study. A white call-to-action card
- * ("Facing a similar challenge on Shopify?") with the page's only pixel
- * character seated on its top edge (it waves once when the card comes into
- * view, and again when the main button is hovered), followed by a large
- * card for the next case study: its studio render with a dark info panel,
- * in the language of the home page's Selected Work cards.
+ * Case Study Next: the end of a case study. A call-to-action card ("Facing
+ * a similar challenge on Shopify?") with the page's only pixel character
+ * seated on its top edge (it waves once when the card comes into view, and
+ * again when the main button is hovered), followed by a large card for the
+ * next case study: its studio render with an info panel (white by default,
+ * or dark), in the language of the home page's Selected Work cards. The
+ * section comes in warm paper, white or dark.
  *
  * @package AvixWidgets
  */
@@ -291,13 +292,39 @@ class Case_Study_Next extends Widget_Base {
 		$this->add_control(
 			'theme',
 			array(
-				'label'   => esc_html__( 'Theme', 'avix-widgets' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => 'paper',
-				'options' => array(
+				'label'       => esc_html__( 'Theme', 'avix-widgets' ),
+				'description' => esc_html__( 'Sets every colour in the section: background, call-to-action card, text, lines and links. Any colour you pick below still wins.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'paper',
+				'options'     => array(
 					'paper' => esc_html__( 'Warm paper', 'avix-widgets' ),
 					'white' => esc_html__( 'White', 'avix-widgets' ),
+					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
 				),
+			)
+		);
+
+		$this->add_control(
+			'panel_tone',
+			array(
+				'label'       => esc_html__( 'Next card panel', 'avix-widgets' ),
+				'description' => esc_html__( 'The info panel beside the next case study’s image.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'light',
+				'options'     => array(
+					'light' => esc_html__( 'Light', 'avix-widgets' ),
+					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
+				),
+			)
+		);
+
+		$this->add_control(
+			'colors_note',
+			array(
+				'type'            => Controls_Manager::RAW_HTML,
+				'raw'             => esc_html__( 'Leave the colours empty to follow the theme. When you change a background or the panel, set the matching text colours too, so nothing disappears.', 'avix-widgets' ),
+				'content_classes' => 'elementor-descriptor',
+				'separator'       => 'before',
 			)
 		);
 
@@ -309,6 +336,8 @@ class Case_Study_Next extends Widget_Base {
 			'line'        => array( esc_html__( 'Lines', 'avix-widgets' ), '--csn-line' ),
 			'accent'      => array( esc_html__( 'Accent', 'avix-widgets' ), '--csn-accent' ),
 			'panel_bg'    => array( esc_html__( 'Next card panel', 'avix-widgets' ), '--csn-panel' ),
+			'panel_ink'   => array( esc_html__( 'Next card panel name', 'avix-widgets' ), '--csn-panel-ink' ),
+			'panel_muted' => array( esc_html__( 'Next card panel text', 'avix-widgets' ), '--csn-panel-muted' ),
 		);
 		foreach ( $colors as $key => $color ) {
 			$this->add_control(
@@ -317,7 +346,6 @@ class Case_Study_Next extends Widget_Base {
 					'label'     => $color[0],
 					'type'      => Controls_Manager::COLOR,
 					'selectors' => array( '{{WRAPPER}} .avix-csn' => $color[1] . ': {{VALUE}};' ),
-					'separator' => 'bg' === $key ? 'before' : '',
 				)
 			);
 		}
@@ -502,6 +530,34 @@ class Case_Study_Next extends Widget_Base {
 	}
 
 	/**
+	 * An attachment <img> forced to load lazily: loading="lazy" and no
+	 * fetchpriority, even when a filter (or the "first images" heuristic)
+	 * made it eager. Only rewrites what changed.
+	 *
+	 * @param string $html Image markup.
+	 */
+	private function lazy_img( $html ) {
+		$html = (string) $html;
+		if ( '' === $html || ! class_exists( '\WP_HTML_Tag_Processor' ) ) {
+			return $html;
+		}
+		$tags = new \WP_HTML_Tag_Processor( $html );
+		if ( ! $tags->next_tag( 'img' ) ) {
+			return $html;
+		}
+		$changed = false;
+		if ( 'lazy' !== $tags->get_attribute( 'loading' ) ) {
+			$tags->set_attribute( 'loading', 'lazy' );
+			$changed = true;
+		}
+		if ( null !== $tags->get_attribute( 'fetchpriority' ) ) {
+			$tags->remove_attribute( 'fetchpriority' );
+			$changed = true;
+		}
+		return $changed ? $tags->get_updated_html() : $html;
+	}
+
+	/**
 	 * Card tags as a list of labels.
 	 *
 	 * @param mixed $tags String (comma list) or array.
@@ -562,11 +618,15 @@ class Case_Study_Next extends Widget_Base {
 			return;
 		}
 
-		$theme = 'white' === ( $s['theme'] ?? 'paper' ) ? 'white' : 'paper';
+		$theme = in_array( $s['theme'] ?? 'paper', array( 'paper', 'white', 'dark' ), true ) ? (string) $s['theme'] : 'paper';
+		$tone  = 'dark' === ( $s['panel_tone'] ?? 'light' ) ? 'dark' : 'light';
 		$tag   = Utils::validate_html_tag( $s['cta_title_tag'] ?? 'h2' );
 		$tid   = 'avix-csn-title-' . $this->get_id();
 
-		$classes = array( 'avix-csn', 'avix-csn--' . $theme );
+		$classes = array( 'avix-csn', 'avix-csn--' . $theme, 'avix-csn--panel-' . $tone );
+		if ( 'dark' === $theme ) {
+			$classes[] = 'avix-csk-on-dark';
+		}
 		if ( $show_pal ) {
 			$classes[] = 'avix-csn--pal';
 		}
@@ -675,16 +735,20 @@ class Case_Study_Next extends Widget_Base {
 		$img = '';
 		if ( $img_id ) {
 			$alt = trim( (string) get_post_meta( $img_id, '_wp_attachment_image_alt', true ) );
-			$img = wp_get_attachment_image(
-				$img_id,
-				'large',
-				false,
-				array(
-					'class'    => 'avix-csn__img',
-					'alt'      => '' !== $alt ? $alt : sprintf( /* translators: %s: client name. */ __( '%s website on desktop and mobile', 'avix-widgets' ), $name ),
-					'loading'  => 'lazy',
-					'decoding' => 'async',
-					'sizes'    => '(max-width: 860px) 92vw, (max-width: 1240px) 70vw, 860px',
+			// The card sits at the very end of the page: it must never load
+			// with the page, whatever a filter or optimiser decided.
+			$img = $this->lazy_img(
+				wp_get_attachment_image(
+					$img_id,
+					'large',
+					false,
+					array(
+						'class'    => 'avix-csn__img',
+						'alt'      => '' !== $alt ? $alt : sprintf( /* translators: %s: client name. */ __( '%s website on desktop and mobile', 'avix-widgets' ), $name ),
+						'loading'  => 'lazy',
+						'decoding' => 'async',
+						'sizes'    => '(max-width: 860px) 92vw, (max-width: 1240px) 70vw, 860px',
+					)
 				)
 			);
 		}

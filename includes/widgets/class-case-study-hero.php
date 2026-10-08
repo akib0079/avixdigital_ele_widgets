@@ -1,10 +1,13 @@
 <?php
 /**
- * Case Study Hero: the dark top of every case study. A breadcrumb, the
- * client's logo, an eyebrow, the headline, a lead and two buttons, then a
- * facts bar (client, services, platform, year, role, website) and the live
- * site itself: the homepage in a browser frame with the phone overlapping it,
- * or a dark studio render of the site on devices. The lower part of the
+ * Case Study Hero: the top of every case study, full width with the header's
+ * side margins. A breadcrumb, then the client's logo, an eyebrow and the
+ * headline as one lock-up, a lead beside the two buttons, a facts bar
+ * (client, services, platform, year, role, website) and the live site itself:
+ * the homepage in a browser frame with the phone overlapping it, or a studio
+ * render of the site on devices. Behind it, an animated orange shader that
+ * follows the pointer (WebGL, with the CSS glow and grid as the fallback).
+ * Dark by default; the Light theme re-themes all of it. The lower part of the
  * devices can sit on a white band, so the next section starts under them.
  *
  * @package AvixWidgets
@@ -48,8 +51,8 @@ class Case_Study_Hero extends Widget_Base {
 	/** The phone overlapping the browser (22–26% of it). */
 	const SIZES_PHONE = '(max-width: 1024px) 26vw, 250px';
 
-	/** The studio render, at most 1240px wide. */
-	const SIZES_RENDER = '(max-width: 1240px) 94vw, 1240px';
+	/** The studio render, at most 1360px wide (edge to edge on phones). */
+	const SIZES_RENDER = '(max-width: 600px) 100vw, (max-width: 1490px) 92vw, 1360px';
 
 	public function get_name(): string {
 		return 'avix-case-study-hero';
@@ -68,7 +71,7 @@ class Case_Study_Hero extends Widget_Base {
 	}
 
 	public function get_keywords(): array {
-		return array( 'avix', 'case study', 'portfolio', 'hero', 'devices', 'facts', 'client', 'breadcrumb' );
+		return array( 'avix', 'case study', 'portfolio', 'hero', 'devices', 'facts', 'client', 'breadcrumb', 'shader', 'webgl' );
 	}
 
 	public function get_style_depends(): array {
@@ -143,7 +146,7 @@ class Case_Study_Hero extends Widget_Base {
 			'show_logo',
 			array(
 				'label'       => esc_html__( 'Client logo', 'avix-widgets' ),
-				'description' => esc_html__( 'Top right on desktop, above the eyebrow on tablets and phones. Use a white logo on the dark hero.', 'avix-widgets' ),
+				'description' => esc_html__( 'Above the eyebrow, lined up with the headline. Use a white logo: on the Light theme it is shown dark (Style › Section).', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
 				'separator'   => 'before',
@@ -171,13 +174,18 @@ class Case_Study_Hero extends Widget_Base {
 				'label'          => esc_html__( 'Logo height', 'avix-widgets' ),
 				'type'           => Controls_Manager::SLIDER,
 				'size_units'     => array( 'px' ),
-				'range'          => array( 'px' => array( 'min' => 20, 'max' => 64 ) ),
+				'range'          => array( 'px' => array( 'min' => 16, 'max' => 64 ) ),
+				'description'    => esc_html__( 'Wide wordmarks stop at 240px wide (200px on phones).', 'avix-widgets' ),
 				'default'        => array(
+					'size' => 32,
+					'unit' => 'px',
+				),
+				'tablet_default' => array(
 					'size' => 28,
 					'unit' => 'px',
 				),
 				'mobile_default' => array(
-					'size' => 20,
+					'size' => 24,
 					'unit' => 'px',
 				),
 				'selectors'      => array( '{{WRAPPER}} .avix-csh' => '--csh-logo-h: {{SIZE}}{{UNIT}};' ),
@@ -644,7 +652,7 @@ class Case_Study_Hero extends Widget_Base {
 			'theme',
 			array(
 				'label'       => esc_html__( 'Theme', 'avix-widgets' ),
-				'description' => esc_html__( 'Dark pairs with the dark Smart Header (no light mode).', 'avix-widgets' ),
+				'description' => esc_html__( 'Dark: the orange shader on near-black, for the dark header. Light: paper background, ink text and a soft orange shader; pair it with the light header.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SELECT,
 				'default'     => 'dark',
 				'options'     => array(
@@ -655,38 +663,44 @@ class Case_Study_Hero extends Widget_Base {
 		);
 
 		$this->add_control(
-			'show_glow',
+			'logo_light',
 			array(
-				'label'   => esc_html__( 'Orange glow', 'avix-widgets' ),
-				'type'    => Controls_Manager::SWITCHER,
-				'default' => 'yes',
+				'label'       => esc_html__( 'Logo on Light', 'avix-widgets' ),
+				'description' => esc_html__( 'Client logos are white for the dark hero. "Dark" shows a white logo in ink on paper; "Original" keeps the file\'s own colours.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'dark',
+				'options'     => array(
+					'dark'     => esc_html__( 'Dark', 'avix-widgets' ),
+					'original' => esc_html__( 'Original', 'avix-widgets' ),
+				),
+				'condition'   => array(
+					'theme'     => 'light',
+					'show_logo' => 'yes',
+				),
 			)
 		);
 
-		$this->add_control(
-			'show_grid',
-			array(
-				'label'   => esc_html__( 'Grid pattern', 'avix-widgets' ),
-				'type'    => Controls_Manager::SWITCHER,
-				'default' => 'yes',
-			)
-		);
-
+		// Empty colours use the theme's own; one picked here overrides only
+		// that token. The background comes with headline and text colours so
+		// text never disappears on it.
 		$colors = array(
-			'bg'     => array( esc_html__( 'Background', 'avix-widgets' ), '--csh-bg' ),
-			'ink'    => array( esc_html__( 'Headline', 'avix-widgets' ), '--csh-ink' ),
-			'muted'  => array( esc_html__( 'Text', 'avix-widgets' ), '--csh-muted' ),
-			'line'   => array( esc_html__( 'Lines', 'avix-widgets' ), '--csh-line' ),
-			'accent' => array( esc_html__( 'Accent', 'avix-widgets' ), '--csh-accent' ),
+			'bg'     => array( esc_html__( 'Background', 'avix-widgets' ), '--csh-bg', esc_html__( 'Empty: #0b0b0c (Dark) or paper (Light). The text turns light or dark to suit the colour picked; the Headline and Text colours below override that.', 'avix-widgets' ) ),
+			'ink'    => array( esc_html__( 'Headline', 'avix-widgets' ), '--csh-ink', esc_html__( 'Also the facts and the second button.', 'avix-widgets' ) ),
+			'muted'  => array( esc_html__( 'Text', 'avix-widgets' ), '--csh-muted', '' ),
+			'line'   => array( esc_html__( 'Lines', 'avix-widgets' ), '--csh-line', '' ),
+			'accent' => array( esc_html__( 'Accent', 'avix-widgets' ), '--csh-accent', esc_html__( 'Empty: #fb6007. The button keeps white text.', 'avix-widgets' ) ),
 		);
 		foreach ( $colors as $key => $color ) {
 			$this->add_control(
 				'color_' . $key,
 				array(
-					'label'     => $color[0],
-					'type'      => Controls_Manager::COLOR,
-					'selectors' => array( '{{WRAPPER}} .avix-csh' => $color[1] . ': {{VALUE}};' ),
-					'separator' => 'bg' === $key ? 'before' : '',
+					'label'       => $color[0],
+					'description' => $color[2],
+					'type'        => Controls_Manager::COLOR,
+					'selectors'   => array( '{{WRAPPER}} .avix-csh' => $color[1] . ': {{VALUE}};' ),
+					// The shader reads the background and accent when it starts.
+					'render_type' => in_array( $key, array( 'bg', 'accent' ), true ) ? 'template' : 'ui',
+					'separator'   => 'bg' === $key ? 'before' : '',
 				)
 			);
 		}
@@ -707,23 +721,131 @@ class Case_Study_Hero extends Widget_Base {
 		$this->add_responsive_control(
 			'max_width',
 			array(
-				'label'      => esc_html__( 'Content width', 'avix-widgets' ),
-				'type'       => Controls_Manager::SLIDER,
-				'size_units' => array( 'px' ),
-				'range'      => array( 'px' => array( 'min' => 760, 'max' => 1600 ) ),
-				'selectors'  => array( '{{WRAPPER}} .avix-csh' => '--csh-max: {{SIZE}}{{UNIT}};' ),
+				'label'       => esc_html__( 'Content width', 'avix-widgets' ),
+				'description' => esc_html__( 'Empty: the full width, with the same side margins as the header.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SLIDER,
+				'size_units'  => array( 'px' ),
+				'range'       => array( 'px' => array( 'min' => 760, 'max' => 1920 ) ),
+				'selectors'   => array( '{{WRAPPER}} .avix-csh' => '--csh-max: {{SIZE}}{{UNIT}};' ),
 			)
 		);
 
 		$this->add_responsive_control(
 			'devices_width',
 			array(
-				'label'      => esc_html__( 'Devices width', 'avix-widgets' ),
+				'label'       => esc_html__( 'Devices width', 'avix-widgets' ),
+				'description' => esc_html__( 'Empty: 1120px for the screenshots, 1360px for a studio render.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SLIDER,
+				'size_units'  => array( 'px' ),
+				'range'       => array( 'px' => array( 'min' => 600, 'max' => 1600 ) ),
+				'selectors'   => array( '{{WRAPPER}} .avix-csh' => '--csh-devices-max: {{SIZE}}{{UNIT}};' ),
+				'condition'   => array( 'visual!' => 'none' ),
+			)
+		);
+
+		$this->end_controls_section();
+
+		$this->start_controls_section(
+			'style_shader',
+			array(
+				'label' => esc_html__( 'Shader background', 'avix-widgets' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			)
+		);
+
+		$this->add_control(
+			'shader',
+			array(
+				'label'       => esc_html__( 'Animated shader', 'avix-widgets' ),
+				'description' => esc_html__( 'A slow, flowing orange field (WebGL) with a soft light that follows the pointer. It stays dark behind the text, pauses off screen and shows one still frame with reduced motion. Without WebGL the glow and grid below show instead.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+			)
+		);
+
+		$this->add_control(
+			'shader_intensity',
+			array(
+				'label'      => esc_html__( 'Intensity', 'avix-widgets' ),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => array( 'px' ),
-				'range'      => array( 'px' => array( 'min' => 600, 'max' => 1400 ) ),
-				'selectors'  => array( '{{WRAPPER}} .avix-csh' => '--csh-devices-max: {{SIZE}}{{UNIT}};' ),
-				'condition'  => array( 'visual!' => 'none' ),
+				'size_units' => array( '%' ),
+				'range'      => array( '%' => array( 'min' => 0, 'max' => 200, 'step' => 5 ) ),
+				'default'    => array(
+					'size' => 100,
+					'unit' => '%',
+				),
+				'condition'  => array( 'shader' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'shader_speed',
+			array(
+				'label'       => esc_html__( 'Speed', 'avix-widgets' ),
+				'description' => esc_html__( '0: the field stands still (the pointer light still moves).', 'avix-widgets' ),
+				'type'        => Controls_Manager::SLIDER,
+				'size_units'  => array( '%' ),
+				'range'       => array( '%' => array( 'min' => 0, 'max' => 300, 'step' => 5 ) ),
+				'default'     => array(
+					'size' => 100,
+					'unit' => '%',
+				),
+				'condition'   => array( 'shader' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'shader_pointer',
+			array(
+				'label'       => esc_html__( 'Follow the pointer', 'avix-widgets' ),
+				'description' => esc_html__( 'With a mouse or trackpad. On touch screens the light drifts on its own.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+				'condition'   => array( 'shader' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'shader_accent',
+			array(
+				'label'       => esc_html__( 'Shader colour', 'avix-widgets' ),
+				'description' => esc_html__( 'Empty: the accent (#fb6007).', 'avix-widgets' ),
+				'type'        => Controls_Manager::COLOR,
+				'selectors'   => array( '{{WRAPPER}} .avix-csh' => '--csh-shader-accent: {{VALUE}};' ),
+				'render_type' => 'template',
+				'condition'   => array( 'shader' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'shader_base',
+			array(
+				'label'       => esc_html__( 'Shader base', 'avix-widgets' ),
+				'description' => esc_html__( 'Empty: the section background (#0b0b0c on Dark, paper on Light).', 'avix-widgets' ),
+				'type'        => Controls_Manager::COLOR,
+				'selectors'   => array( '{{WRAPPER}} .avix-csh' => '--csh-shader-base: {{VALUE}};' ),
+				'render_type' => 'template',
+				'condition'   => array( 'shader' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'show_glow',
+			array(
+				'label'       => esc_html__( 'Orange glow', 'avix-widgets' ),
+				'description' => esc_html__( 'Shown when the shader is off or WebGL is not available.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+				'separator'   => 'before',
+			)
+		);
+
+		$this->add_control(
+			'show_grid',
+			array(
+				'label'   => esc_html__( 'Grid pattern', 'avix-widgets' ),
+				'type'    => Controls_Manager::SWITCHER,
+				'default' => 'yes',
 			)
 		);
 
@@ -789,6 +911,10 @@ class Case_Study_Hero extends Widget_Base {
 		}
 
 		$theme    = 'light' === ( $s['theme'] ?? '' ) ? 'light' : 'dark';
+		// A background picked under Style sets the text tone (auto contrast),
+		// so a dark colour on the Light theme never leaves ink on ink.
+		$tone     = $this->bg_tone( $s );
+		$theme    = '' !== $tone ? $tone : $theme;
 		$tag      = Utils::validate_html_tag( $s['title_tag'] ?? 'h1' );
 		$title_id = 'avix-csh-title-' . $this->get_id();
 		$eager    = 'yes' === ( $s['image_eager'] ?? '' );
@@ -801,8 +927,9 @@ class Case_Study_Hero extends Widget_Base {
 			'avix-csh--' . $theme,
 			'avix-csh--visual-' . $mode,
 		);
-		if ( 'dark' === $theme ) {
-			$classes[] = 'avix-csk-on-dark';
+		$classes[] = 'dark' === $theme ? 'avix-csk-on-dark' : 'avix-csk-on-light';
+		if ( 'light' === $theme && 'original' !== ( $s['logo_light'] ?? 'dark' ) ) {
+			$classes[] = 'avix-csh--logo-ink';
 		}
 		if ( $bleed ) {
 			$classes[] = 'avix-csh--bleed';
@@ -829,6 +956,7 @@ class Case_Study_Hero extends Widget_Base {
 		$config   = array(
 			'progress' => $progress,
 			'parallax' => in_array( $mode, array( 'devices', 'image' ), true ),
+			'shader'   => $this->shader_config( $s ),
 		);
 
 		$this->add_render_attribute(
@@ -853,6 +981,7 @@ class Case_Study_Hero extends Widget_Base {
 		$facts   = 'yes' === ( $s['show_facts'] ?? '' ) ? $this->facts( $s, $cs ) : array();
 		?>
 		<section <?php $this->print_render_attribute_string( 'root' ); ?>>
+			<?php // The script adds the shader canvas here; the grid and glow are its fallback. ?>
 			<div class="avix-csh__bg" aria-hidden="true">
 				<span class="avix-csh__grid"></span>
 				<span class="avix-csh__glow avix-csh__glow--a"></span>
@@ -861,19 +990,23 @@ class Case_Study_Hero extends Widget_Base {
 			<div class="avix-csh__inner">
 				<div class="avix-csh__frame">
 					<?php $this->render_crumbs( $s, $cs, $client ); ?>
-					<div class="avix-csh__top<?php echo '' !== $logo ? ' has-logo' : ''; ?>">
-						<?php if ( '' !== $logo ) : ?>
-							<div class="avix-csh__logo avix-csh__rise"><?php echo $logo; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in logo_html(). ?></div>
-						<?php endif; ?>
-						<div class="avix-csh__copy">
+					<div class="avix-csh__top">
+						<div class="avix-csh__copy<?php echo '' !== $lead ? ' has-lead' : ''; ?>">
+							<?php
+							// The headline and the lead are visible from the first paint (the
+							// headline is the LCP element); only the parts around them rise.
+							if ( '' !== $logo ) :
+								?>
+								<div class="avix-csh__logo avix-csh__rise"><?php echo $logo; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in logo_html(). ?></div>
+							<?php endif; ?>
 							<?php
 							echo Kit::eyebrow( $eyebrow, 'avix-csh__eyebrow avix-csh__rise' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in Kit::eyebrow().
 							if ( '' !== $title ) :
 								?>
-								<<?php echo esc_html( $tag ); ?> id="<?php echo esc_attr( $title_id ); ?>" class="avix-csh__title avix-csh__rise"><?php echo $this->title_html( $title ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in title_html(). ?></<?php echo esc_html( $tag ); ?>>
+								<<?php echo esc_html( $tag ); ?> id="<?php echo esc_attr( $title_id ); ?>" class="avix-csh__title"><?php echo $this->title_html( $title ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in title_html(). ?></<?php echo esc_html( $tag ); ?>>
 							<?php endif; ?>
 							<?php if ( '' !== $lead ) : ?>
-								<p class="avix-csh__lead avix-csh__rise"><?php echo Case_Study::accent_html( $lead, 'avix-csh__accent' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></p>
+								<p class="avix-csh__lead"><?php echo Case_Study::accent_html( $lead, 'avix-csh__accent' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></p>
 							<?php endif; ?>
 							<?php $this->render_buttons( $s, $cs, $editor ); ?>
 						</div>
@@ -912,6 +1045,60 @@ class Case_Study_Hero extends Widget_Base {
 	}
 
 	/**
+	 * "dark" or "light" for a background colour picked under Style (plain
+	 * hex or rgb), or '' when none is set or it is a global colour.
+	 *
+	 * @param array $s Settings.
+	 */
+	private function bg_tone( array $s ) {
+		if ( ! empty( $s['__globals__']['color_bg'] ) ) {
+			return '';
+		}
+		$color = strtolower( trim( (string) ( $s['color_bg'] ?? '' ) ) );
+		$rgb   = null;
+		if ( preg_match( '/^#([0-9a-f]{3,8})$/', $color, $m ) ) {
+			$hex = $m[1];
+			if ( strlen( $hex ) < 6 ) {
+				$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+			}
+			$rgb = array( hexdec( substr( $hex, 0, 2 ) ), hexdec( substr( $hex, 2, 2 ) ), hexdec( substr( $hex, 4, 2 ) ) );
+		} elseif ( preg_match( '/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/', $color, $m ) ) {
+			$rgb = array( (float) $m[1], (float) $m[2], (float) $m[3] );
+		}
+		if ( null === $rgb ) {
+			return '';
+		}
+		$luma = 0.0;
+		foreach ( array( 0.2126, 0.7152, 0.0722 ) as $i => $weight ) {
+			$v     = max( 0.0, min( 255.0, (float) $rgb[ $i ] ) ) / 255;
+			$luma += $weight * ( $v <= 0.04045 ? $v / 12.92 : pow( ( $v + 0.055 ) / 1.055, 2.4 ) );
+		}
+		// Where white and ink text have the same contrast.
+		return $luma < 0.179 ? 'dark' : 'light';
+	}
+
+	/**
+	 * The shader settings for the script, or false when it is off.
+	 *
+	 * @param array $s Settings.
+	 * @return array|false
+	 */
+	private function shader_config( array $s ) {
+		if ( 'yes' !== ( $s['shader'] ?? 'yes' ) ) {
+			return false;
+		}
+		$size = function ( $key ) use ( $s ) {
+			$value = $s[ $key ]['size'] ?? '';
+			return '' === $value || null === $value ? 100.0 : max( 0.0, min( 300.0, (float) $value ) );
+		};
+		return array(
+			'intensity' => round( $size( 'shader_intensity' ) / 100, 3 ),
+			'speed'     => round( $size( 'shader_speed' ) / 100, 3 ),
+			'pointer'   => 'yes' === ( $s['shader_pointer'] ?? 'yes' ),
+		);
+	}
+
+	/**
 	 * Headline: escaped, [accent] spans, Enter = line break.
 	 *
 	 * @param string $title Raw headline.
@@ -921,9 +1108,37 @@ class Case_Study_Hero extends Widget_Base {
 		$lines = array_filter( array_map( 'trim', is_array( $lines ) ? $lines : array( $title ) ), 'strlen' );
 		$out   = array();
 		foreach ( $lines as $line ) {
-			$out[] = Case_Study::accent_html( $line, 'avix-csh__accent' );
+			$out[] = $this->keep_compounds( Case_Study::accent_html( $line, 'avix-csh__accent' ) );
 		}
 		return implode( ' <br>', $out );
+	}
+
+	/**
+	 * Short hyphenated words ("E-Commerce", "High-Converting") never break at
+	 * the hyphen: they move to the next line whole. Text outside tags only.
+	 *
+	 * @param string $html Escaped headline HTML.
+	 */
+	private function keep_compounds( $html ) {
+		$parts = preg_split( '/(<[^>]*>)/u', (string) $html, -1, PREG_SPLIT_DELIM_CAPTURE );
+		if ( ! is_array( $parts ) ) {
+			return (string) $html;
+		}
+		foreach ( $parts as $i => $part ) {
+			if ( '' === $part || '<' === $part[0] ) {
+				continue;
+			}
+			$done = preg_replace_callback(
+				'/(?<![\p{L}\p{N}-])[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)+(?![\p{L}\p{N}-])/u',
+				function ( $m ) {
+					$len = function_exists( 'mb_strlen' ) ? mb_strlen( $m[0], 'UTF-8' ) : strlen( $m[0] );
+					return $len <= 18 ? '<span class="avix-csh__nowrap">' . $m[0] . '</span>' : $m[0];
+				},
+				$part
+			);
+			$parts[ $i ] = null === $done ? $part : $done;
+		}
+		return implode( '', $parts );
 	}
 
 	/**
@@ -985,7 +1200,7 @@ class Case_Study_Hero extends Widget_Base {
 			return Kit::img(
 				$id,
 				'medium_large',
-				'(max-width: 600px) 160px, 240px',
+				'(max-width: 600px) 200px, 240px',
 				array(
 					'class'         => 'avix-csh__logo-img',
 					'alt'           => $alt,

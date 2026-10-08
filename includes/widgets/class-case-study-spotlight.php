@@ -563,7 +563,7 @@ class Case_Study_Spotlight extends Widget_Base {
 			'theme',
 			array(
 				'label'       => esc_html__( 'Theme', 'avix-widgets' ),
-				'description' => esc_html__( 'Sets every colour below; any colour you pick still wins.', 'avix-widgets' ),
+				'description' => esc_html__( 'Sets every colour at once: background, text, lines, legend cards, the callout, the mat and the device frame. White and Paper are light; Dark turns the mat and frame dark too. The colours below override single parts.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SELECT,
 				'default'     => 'white',
 				'options'     => array(
@@ -574,27 +574,39 @@ class Case_Study_Spotlight extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'colours_note',
+			array(
+				'type'            => Controls_Manager::RAW_HTML,
+				'raw'             => esc_html__( 'Leave the colours empty to use the theme. A background, pin or callout colour you pick also switches the text on it to dark or light, so it stays readable.', 'avix-widgets' ),
+				'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+			)
+		);
+
+		// Empty by default: the theme's tokens apply until a colour is picked.
+		// Colours that text sits on re-render, so the text tone follows them.
 		$colors = array(
-			'bg'          => array( esc_html__( 'Background', 'avix-widgets' ), '--csf-bg' ),
-			'ink'         => array( esc_html__( 'Headings', 'avix-widgets' ), '--csf-ink' ),
-			'muted'       => array( esc_html__( 'Text', 'avix-widgets' ), '--csf-muted' ),
-			'line'        => array( esc_html__( 'Lines', 'avix-widgets' ), '--csf-line' ),
-			'accent'      => array( esc_html__( 'Accent', 'avix-widgets' ), '--csf-accent' ),
-			'accent_text' => array( esc_html__( 'Highlighted words and links', 'avix-widgets' ), '--csf-accent-text' ),
-			'pin_bg'      => array( esc_html__( 'Pins', 'avix-widgets' ), '--csf-pin' ),
-			'pin_ink'     => array( esc_html__( 'Pin numbers', 'avix-widgets' ), '--csf-pin-ink' ),
-			'callout_bg'  => array( esc_html__( 'Callout', 'avix-widgets' ), '--csf-callout' ),
-			'callout_ink' => array( esc_html__( 'Callout text', 'avix-widgets' ), '--csf-callout-ink' ),
+			'bg'          => array( esc_html__( 'Background', 'avix-widgets' ), '--csf-bg', true ),
+			'ink'         => array( esc_html__( 'Headings', 'avix-widgets' ), '--csf-ink', false ),
+			'muted'       => array( esc_html__( 'Text', 'avix-widgets' ), '--csf-muted', false ),
+			'line'        => array( esc_html__( 'Lines', 'avix-widgets' ), '--csf-line', false ),
+			'accent'      => array( esc_html__( 'Accent', 'avix-widgets' ), '--csf-accent', true ),
+			'accent_text' => array( esc_html__( 'Highlighted words and links', 'avix-widgets' ), '--csf-accent-text', false ),
+			'pin_bg'      => array( esc_html__( 'Pins', 'avix-widgets' ), '--csf-pin', true ),
+			'pin_ink'     => array( esc_html__( 'Pin numbers', 'avix-widgets' ), '--csf-pin-ink', false ),
+			'callout_bg'  => array( esc_html__( 'Callout', 'avix-widgets' ), '--csf-callout', true ),
+			'callout_ink' => array( esc_html__( 'Callout text', 'avix-widgets' ), '--csf-callout-ink', false ),
 		);
 		foreach ( $colors as $key => $color ) {
-			$this->add_control(
-				$key,
-				array(
-					'label'     => $color[0],
-					'type'      => Controls_Manager::COLOR,
-					'selectors' => array( '{{WRAPPER}} .avix-csf' => $color[1] . ': {{VALUE}};' ),
-				)
+			$control = array(
+				'label'     => $color[0],
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => array( '{{WRAPPER}} .avix-csf' => $color[1] . ': {{VALUE}};' ),
 			);
+			if ( $color[2] ) {
+				$control['render_type'] = 'template';
+			}
+			$this->add_control( $key, $control );
 		}
 
 		$this->add_responsive_control(
@@ -720,8 +732,32 @@ class Case_Study_Spotlight extends Widget_Base {
 			'avix-csf--theme-' . $theme,
 			$media ? 'has-media' : 'no-media',
 		);
-		if ( 'dark' === $theme ) {
+		// A Background colour picked in the editor brings the matching text
+		// tone (and dark mats and frames) with it; the theme decides otherwise.
+		$bg_tone = $this->tone( $this->color_setting( $s, 'bg' ) );
+		$dark    = 'dark' === $theme ? 'light' !== $bg_tone : 'dark' === $bg_tone;
+		if ( $dark && 'dark' !== $theme ) {
+			$classes[] = 'avix-csf--tone-dark';
+		} elseif ( ! $dark && 'dark' === $theme ) {
+			$classes[] = 'avix-csf--tone-light';
+		}
+		if ( $dark ) {
 			$classes[] = 'avix-csk-on-dark';
+		}
+		// Callout and pin colours picked without their text colour.
+		if ( '' === $this->color_setting( $s, 'callout_ink' ) ) {
+			$callout_tone = $this->tone( $this->color_setting( $s, 'callout_bg' ) );
+			if ( '' !== $callout_tone ) {
+				$classes[] = 'avix-csf--callout-' . $callout_tone;
+			}
+		}
+		if ( '' === $this->color_setting( $s, 'pin_ink' ) ) {
+			$pin_color = $this->color_setting( $s, 'pin_bg' );
+			$pin_lum   = $this->luminance( '' !== $pin_color ? $pin_color : $this->color_setting( $s, 'accent' ) );
+			// Brand orange keeps its white numerals; only pale pins flip.
+			if ( null !== $pin_lum && $pin_lum > 0.5 ) {
+				$classes[] = 'avix-csf--pin-light';
+			}
 		}
 		if ( $squares ) {
 			$classes[] = 'avix-csf--squares';
@@ -1215,6 +1251,90 @@ class Case_Study_Spotlight extends Widget_Base {
 	/* ------------------------------------------------------------------ */
 	/* Helpers                                                             */
 	/* ------------------------------------------------------------------ */
+
+	/**
+	 * A colour control's value: the picked colour, or the kit colour a global
+	 * points to; '' when neither is set.
+	 *
+	 * @param array  $s   Settings.
+	 * @param string $key Control.
+	 */
+	private function color_setting( array $s, $key ) {
+		$value = $s[ $key ] ?? '';
+		$value = is_scalar( $value ) ? trim( (string) $value ) : '';
+		if ( '' !== $value ) {
+			return $value;
+		}
+		$globals = isset( $s['__globals__'] ) && is_array( $s['__globals__'] ) ? $s['__globals__'] : array();
+		$ref     = isset( $globals[ $key ] ) && is_scalar( $globals[ $key ] ) ? (string) $globals[ $key ] : '';
+		if ( '' === $ref || ! preg_match( '/[?&]id=([A-Za-z0-9_-]+)/', $ref, $m ) || ! class_exists( '\Elementor\Plugin' ) ) {
+			return '';
+		}
+		$kits = isset( \Elementor\Plugin::$instance->kits_manager ) ? \Elementor\Plugin::$instance->kits_manager : null;
+		$kit  = $kits && method_exists( $kits, 'get_active_kit_for_frontend' ) ? $kits->get_active_kit_for_frontend() : null;
+		if ( ! $kit || ! method_exists( $kit, 'get_settings_for_display' ) ) {
+			return '';
+		}
+		foreach ( array( 'system_colors', 'custom_colors' ) as $group ) {
+			foreach ( (array) $kit->get_settings_for_display( $group ) as $row ) {
+				if ( is_array( $row ) && (string) ( $row['_id'] ?? '' ) === $m[1] ) {
+					return trim( (string) ( $row['color'] ?? '' ) );
+				}
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * Relative luminance (0–1) of a #hex or rgb()/rgba() colour; null when it
+	 * cannot be read or is mostly transparent.
+	 *
+	 * @param string $value Colour.
+	 */
+	private function luminance( $value ) {
+		$value = strtolower( trim( (string) $value ) );
+		$rgb   = array();
+		$alpha = 1.0;
+		if ( preg_match( '/^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/', $value, $m ) ) {
+			$hex = $m[1];
+			if ( strlen( $hex ) <= 4 ) {
+				$hex = (string) preg_replace( '/(.)/', '$1$1', $hex );
+			}
+			$rgb = array( hexdec( substr( $hex, 0, 2 ) ), hexdec( substr( $hex, 2, 2 ) ), hexdec( substr( $hex, 4, 2 ) ) );
+			if ( 8 === strlen( $hex ) ) {
+				$alpha = hexdec( substr( $hex, 6, 2 ) ) / 255;
+			}
+		} elseif ( preg_match( '/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:[\s,\/]+([\d.]+)(%?))?/', $value, $m ) ) {
+			$rgb = array( (float) $m[1], (float) $m[2], (float) $m[3] );
+			if ( isset( $m[4] ) && '' !== $m[4] ) {
+				$alpha = (float) $m[4] / ( '%' === ( $m[5] ?? '' ) ? 100 : 1 );
+			}
+		}
+		if ( 3 !== count( $rgb ) || $alpha < 0.5 ) {
+			return null;
+		}
+		$lum = 0.0;
+		foreach ( array( 0.2126, 0.7152, 0.0722 ) as $i => $weight ) {
+			$c    = max( 0, min( 255, (float) $rgb[ $i ] ) ) / 255;
+			$lum += $weight * ( $c <= 0.03928 ? $c / 12.92 : pow( ( $c + 0.055 ) / 1.055, 2.4 ) );
+		}
+		return $lum;
+	}
+
+	/**
+	 * "dark" or "light" for a picked colour, so the text on it can follow;
+	 * '' when it cannot be read. Near-black and white text reach the same
+	 * contrast at a luminance of about 0.18.
+	 *
+	 * @param string $value Colour.
+	 */
+	private function tone( $value ) {
+		$lum = $this->luminance( $value );
+		if ( null === $lum ) {
+			return '';
+		}
+		return $lum < 0.18 ? 'dark' : 'light';
+	}
 
 	private function in_editor() {
 		return class_exists( '\Elementor\Plugin' ) && isset( \Elementor\Plugin::$instance->editor ) && \Elementor\Plugin::$instance->editor->is_edit_mode();

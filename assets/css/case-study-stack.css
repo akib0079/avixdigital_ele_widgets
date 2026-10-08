@@ -1,9 +1,10 @@
 /*!
  * Avix Digital · Case Study Stack
  * Services & technology for a case study: a sticky label and headline on
- * the left; service chips, the industry and a two-column list of tools with
- * brand marks on the right. Layout follows the widget width (container
- * queries).
+ * the left; service chips, the industry and a two-column spec list of tools
+ * on the right (a brand mark where one exists, an orange dot for tools seen
+ * running on the live site). White, warm paper or dark. Layout follows the
+ * widget width (container queries).
  */
 
 .avix-cst {
@@ -12,12 +13,13 @@
 	--cst-muted: #5c5f66;
 	--cst-line: rgba(26, 26, 26, 0.1);
 	--cst-accent: #fb6007;
-	--cst-accent-text: #c54804;
+	--cst-accent-text: #bf4604;
 	--cst-accent-title: color-mix(in srgb, var(--cst-accent) 88%, #000000);
 	--cst-tile: #f5f3ef;
 	--cst-tile-line: rgba(26, 26, 26, 0.06);
 	--cst-chip-bg: #faf8f5;
 	--cst-chip-line: rgba(26, 26, 26, 0.12);
+	--cst-focus: #bf4604;
 	--cst-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
 	--cst-font-body: "Inter", Arial, sans-serif;
 	--cst-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -56,6 +58,7 @@
 	--cst-line: rgba(255, 255, 255, 0.1);
 	--cst-accent-text: #ff8a3d;
 	--cst-accent-title: var(--cst-accent);
+	--cst-focus: var(--cst-accent);
 	/* Brand marks keep their own colours, so tiles stay light on dark. */
 	--cst-tile: #f5f3ef;
 	--cst-tile-line: rgba(255, 255, 255, 0.1);
@@ -130,7 +133,7 @@
 	padding: 0;
 	color: var(--cst-ink);
 	font-family: var(--cst-font-display);
-	font-size: clamp(30px, 3.4cqi, 48px);
+	font-size: clamp(36px, 4.2cqi, 60px);
 	font-weight: 600;
 	line-height: 1.06;
 	letter-spacing: -0.035em;
@@ -250,7 +253,7 @@
 }
 
 .avix-cst .avix-cst__chip--link:focus-visible {
-	outline: 2px solid var(--cst-accent) !important;
+	outline: 2px solid var(--cst-focus) !important;
 	outline-offset: 3px !important;
 }
 
@@ -301,11 +304,21 @@
 	margin-top: clamp(40px, 4.4cqi, 60px);
 }
 
+/* "Technology 09" with, on the right, the one note that explains the dots. */
+.avix-cst__tech-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px 24px;
+	margin: 0 0 14px;
+}
+
 .avix-cst .avix-cst__tech-title {
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	margin: 0 0 6px;
+	margin: 0;
 	padding: 0;
 	color: var(--cst-muted);
 	font-family: var(--cst-font-body);
@@ -331,6 +344,31 @@
 	font-variant-numeric: tabular-nums;
 }
 
+.avix-cst .avix-cst__legend {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	color: var(--cst-muted);
+	font-family: var(--cst-font-body);
+	font-size: 12.5px;
+	font-weight: 500;
+	line-height: 1.3;
+}
+
+/* The orange dot: seen running on the live site. */
+.avix-cst .avix-cst__dot-mark {
+	display: block;
+	flex: none;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--cst-accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--cst-accent) 16%, transparent);
+}
+
+/* A spec sheet: two columns of hairline rows, names and notes aligned. */
 .avix-cst .avix-cst__list {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -342,45 +380,65 @@
 
 .avix-cst .avix-cst__item {
 	display: grid;
-	grid-template-columns: 36px minmax(0, 1fr);
-	gap: 16px;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 14px;
 	align-items: start;
 	margin: 0;
-	padding: 20px 0;
+	padding: 18px 0;
 	border-top: 1px solid var(--cst-line);
 	list-style: none;
 }
 
+/* A narrow marker column, the same on every row, so every name starts on
+   the same edge whether its row has a mark, a dot or nothing. */
+.avix-cst .avix-cst__list--markers .avix-cst__item {
+	grid-template-columns: 24px minmax(0, 1fr);
+}
+
+.avix-cst__marker {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* Centred on the name's first line (18px × 1.3). */
+	height: 23px;
+}
+
 .avix-cst__icon {
+	position: relative;
 	display: grid;
+	flex: none;
 	place-items: center;
-	width: 36px;
-	height: 36px;
+	width: 24px;
+	height: 24px;
 	border: 1px solid var(--cst-tile-line);
-	border-radius: 10px;
+	border-radius: 7px;
 	color: #1a1a1a;
 	background: var(--cst-tile);
 }
 
 .avix-cst .avix-cst__icon svg {
 	display: block;
-	width: 18px;
-	height: 18px;
+	width: 14px;
+	height: 14px;
 	max-width: none;
 }
 
-/* Tools without a brand mark get the pixel. */
-.avix-cst .avix-cst__icon i {
-	display: block;
-	width: 8px;
-	height: 8px;
+/* A brand mark seen on the live site: the dot sits on its corner. */
+.avix-cst .is-observed .avix-cst__icon::after {
+	position: absolute;
+	top: -3px;
+	right: -3px;
+	width: 7px;
+	height: 7px;
+	border: 1.5px solid var(--cst-bg);
+	border-radius: 50%;
 	background: var(--cst-accent);
+	content: "";
 }
 
 .avix-cst__copy {
 	display: block;
 	min-width: 0;
-	padding-top: 1px;
 }
 
 .avix-cst .avix-cst__name {
@@ -392,32 +450,6 @@
 	line-height: 1.3;
 	letter-spacing: -0.01em;
 	overflow-wrap: break-word;
-}
-
-/* "Seen on the live site": always on its own line under the text, so
-   every observed tool reads the same way. */
-.avix-cst .avix-cst__tag {
-	display: flex;
-	align-items: center;
-	gap: 7px;
-	width: max-content;
-	max-width: 100%;
-	margin-top: 10px;
-	color: var(--cst-muted);
-	font-family: var(--cst-font-body);
-	font-size: 12px;
-	font-weight: 500;
-	line-height: 1.3;
-	letter-spacing: 0.01em;
-}
-
-/* A hollow pixel: seen, not built. */
-.avix-cst .avix-cst__tag::before {
-	flex: none;
-	width: 6px;
-	height: 6px;
-	border: 1.5px solid var(--cst-accent);
-	content: "";
 }
 
 .avix-cst .avix-cst__text::first-letter {
@@ -432,6 +464,19 @@
 	font-size: 15px;
 	line-height: 1.55;
 	text-wrap: pretty;
+}
+
+/* Read by screen readers only (the dot is decorative). */
+.avix-cst .avix-cst__sr {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	margin: -1px !important;
+	padding: 0 !important;
+	overflow: hidden !important;
+	clip: rect(0 0 0 0) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
 }
 
 /* ---------- Motion ---------- */
@@ -500,16 +545,32 @@
 	}
 
 	.avix-cst .avix-cst__title {
-		font-size: clamp(30px, 8.6cqi, 38px);
+		font-size: clamp(32px, 8.8cqi, 40px);
+		line-height: 1.08;
 	}
 
-	.avix-cst .avix-cst__item {
-		gap: 14px;
-		padding: 18px 0;
+	.avix-cst .avix-cst__item,
+	.avix-cst .avix-cst__list--markers .avix-cst__item {
+		column-gap: 12px;
+		padding: 14px 0;
+	}
+
+	.avix-cst .avix-cst__list--markers .avix-cst__item {
+		grid-template-columns: 22px minmax(0, 1fr);
+	}
+
+	.avix-cst__marker {
+		height: 22px;
 	}
 
 	.avix-cst .avix-cst__name {
 		font-size: 17px;
+	}
+
+	.avix-cst .avix-cst__text {
+		margin-top: 2px;
+		font-size: 14.5px;
+		line-height: 1.5;
 	}
 }
 

@@ -554,15 +554,54 @@ final class Case_Studies {
 		$index   = Case_Study::index_page_id();
 		$base    = $index ? get_post_meta( $index, 'algenix_options', true ) : array();
 		$own     = $post_id ? get_post_meta( $post_id, 'algenix_options', true ) : array();
-		$header  = $post_id ? (string) get_post_meta( $post_id, Case_Study::meta_key( 'header' ), true ) : '';
 		$options = array_merge( is_array( $base ) ? $base : array(), is_array( $own ) ? $own : array() );
 
 		$options['body_style']     = 'fullscreen';
 		$options['remove_margins'] = '1';
 		$options['header_type']    = 'custom';
-		$options['header_style']   = 'light' === $header ? self::HEADER_LIGHT : self::HEADER_DARK;
+		$options['header_style']   = 'light' === self::header_tone( $post_id ) ? self::HEADER_LIGHT : self::HEADER_DARK;
 
 		return $options;
+	}
+
+	/**
+	 * The header a case study gets: 'dark' or 'light'. The theme header is fixed
+	 * and transparent over the top of the page (white text on Header Home, ink on
+	 * the light one), so on a page with a Case Study Hero it always follows the
+	 * hero's Style > Theme: switching the hero in Elementor and saving switches
+	 * the header too, and a light hero never sits under white header text. The
+	 * "Header style" field decides only for layouts without a Case Study Hero
+	 * (Automatic = dark there).
+	 */
+	public static function header_tone( int $post_id ): string {
+		$hero = Case_Study::hero_theme( $post_id );
+		if ( 'light' === $hero || 'dark' === $hero ) {
+			return $hero;
+		}
+		$mode = $post_id ? (string) get_post_meta( $post_id, Case_Study::meta_key( 'header' ), true ) : '';
+		return 'light' === $mode ? 'light' : 'dark';
+	}
+
+	/**
+	 * Brings only the header keys of the post's theme options in line with
+	 * header_tone(), leaving every other theme option as the editor set it.
+	 * Posts without theme options get the full set. Returns true when it changed.
+	 */
+	public static function sync_header( int $post_id ): bool {
+		if ( ! $post_id || Case_Study::POST_TYPE !== get_post_type( $post_id ) ) {
+			return false;
+		}
+		$current = get_post_meta( $post_id, 'algenix_options', true );
+		if ( ! is_array( $current ) || ! $current ) {
+			return self::apply_theme_options( $post_id );
+		}
+		$style = 'light' === self::header_tone( $post_id ) ? self::HEADER_LIGHT : self::HEADER_DARK;
+		if ( isset( $current['header_type'], $current['header_style'] ) && 'custom' === $current['header_type'] && $style === $current['header_style'] ) {
+			return false;
+		}
+		$current['header_type']  = 'custom';
+		$current['header_style'] = $style;
+		return (bool) update_post_meta( $post_id, 'algenix_options', $current );
 	}
 
 	/**
@@ -829,6 +868,9 @@ final class Case_Studies {
 
 		if ( Case_Study::meta_key( 'header' ) === $meta_key ) {
 			self::apply_theme_options( $object_id );
+		} elseif ( '_elementor_data' === $meta_key ) {
+			// The layout (and with it the hero's theme) changed: the header follows.
+			self::sync_header( $object_id );
 		}
 	}
 

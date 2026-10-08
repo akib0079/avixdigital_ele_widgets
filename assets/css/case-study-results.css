@@ -1,26 +1,41 @@
 /*!
  * Avix Digital · Case Study Results
- * "04 · The impact" on a dark stage with a slow orange glow: the outcome
- * statement beside its label, pillars, the build in numbers on a glass
- * panel (every figure with its source), proof links to the live site and an
- * optional client quote. Layout follows the widget width (container queries).
+ * "04 · The impact": the outcome statement beside its label, pillars, proof
+ * links to the live site, the figures verified there on a quiet panel (each
+ * with its source) and an optional client quote. Three themes share one
+ * token set: warm paper (default), white and dark with a slow orange glow.
+ * Secondary text, lines and panels derive from the ink and background, so a
+ * colour picked in the editor re-themes everything that depends on it.
+ * Layout follows the widget width (container queries).
  */
 
 .avix-csr {
-	--csr-bg: #0b0b0c;
-	--csr-ink: #ffffff;
-	--csr-muted: rgba(255, 255, 255, 0.72);
-	--csr-soft: rgba(255, 255, 255, 0.5);
-	--csr-label: rgba(255, 255, 255, 0.62);
-	--csr-line: rgba(255, 255, 255, 0.1);
+	/* Light (warm paper): the default. */
+	--csr-bg: #f5f3ef;
+	--csr-ink: #1a1a1a;
+	--csr-muted: #4f5258;
+	--csr-label: color-mix(in srgb, var(--csr-ink) 66%, transparent);
+	--csr-soft: color-mix(in srgb, var(--csr-ink) 64%, transparent);
+	--csr-line: rgba(26, 26, 26, 0.1);
 	--csr-accent: #fb6007;
-	--csr-accent-text: #ff7a2c;
-	--csr-panel-top: rgba(255, 255, 255, 0.045);
-	--csr-panel-bottom: rgba(255, 255, 255, 0.012);
-	--csr-panel-line: rgba(255, 255, 255, 0.09);
-	--csr-glow: color-mix(in srgb, var(--csr-accent) 22%, transparent);
-	--csr-grid-color: rgba(255, 255, 255, 0.022);
-	--csr-number-glow: 0 0 42px color-mix(in srgb, var(--csr-accent) 28%, transparent);
+	/* Small orange text on light: the deeper AA tone. */
+	--csr-accent-text: #bf4604;
+	/* Large orange words: a touch deeper than the button orange. */
+	--csr-accent-title: color-mix(in srgb, var(--csr-accent) 88%, #000000);
+	--csr-focus: #bf4604;
+	--csr-panel: #ffffff;
+	--csr-panel-ink: var(--csr-ink);
+	--csr-panel-top: var(--csr-panel);
+	--csr-panel-bottom: var(--csr-panel);
+	--csr-panel-line: rgba(26, 26, 26, 0.08);
+	--csr-panel-shadow: 0 1px 2px rgba(26, 26, 26, 0.04), 0 28px 56px -40px rgba(26, 26, 26, 0.28);
+	--csr-chip: #ffffff;
+	--csr-icon-line: rgba(26, 26, 26, 0.14);
+	--csr-glow: color-mix(in srgb, var(--csr-accent) 11%, transparent);
+	--csr-glow-opacity: 0.9;
+	--csr-grid-color: rgba(26, 26, 26, 0.04);
+	--csr-number-glow: none;
+	--csr-px-glow: none;
 	--csr-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
 	--csr-font-body: "Inter", Arial, sans-serif;
 	--csr-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -48,20 +63,40 @@
 	box-sizing: border-box;
 }
 
-.avix-csr--light {
-	--csr-bg: #f5f3ef;
-	--csr-ink: #1a1a1a;
-	--csr-muted: #4f5258;
-	--csr-soft: #6b665f;
-	--csr-label: #5c5f66;
-	--csr-line: rgba(26, 26, 26, 0.1);
-	--csr-accent-text: #c54804;
-	--csr-panel-top: #ffffff;
-	--csr-panel-bottom: #ffffff;
-	--csr-panel-line: rgba(26, 26, 26, 0.08);
-	--csr-glow: color-mix(in srgb, var(--csr-accent) 12%, transparent);
+/* White: the panel and pills sit on warm paper instead. */
+.avix-csr--white {
+	--csr-bg: #ffffff;
+	--csr-panel: #f7f5f1;
+	--csr-panel-line: rgba(26, 26, 26, 0.06);
+	--csr-panel-shadow: none;
+	--csr-chip: #f7f5f1;
 	--csr-grid-color: rgba(26, 26, 26, 0.035);
-	--csr-number-glow: none;
+	--csr-glow: color-mix(in srgb, var(--csr-accent) 9%, transparent);
+}
+
+.avix-csr--dark {
+	--csr-bg: #0b0b0c;
+	--csr-ink: #ffffff;
+	--csr-muted: rgba(255, 255, 255, 0.72);
+	--csr-label: color-mix(in srgb, var(--csr-ink) 62%, transparent);
+	--csr-soft: color-mix(in srgb, var(--csr-ink) 56%, transparent);
+	--csr-line: rgba(255, 255, 255, 0.1);
+	--csr-accent-text: #ff7a2c;
+	--csr-accent-title: #ff7a2c;
+	--csr-focus: var(--csr-accent);
+	--csr-panel: transparent;
+	--csr-panel-top: rgba(255, 255, 255, 0.045);
+	--csr-panel-bottom: rgba(255, 255, 255, 0.012);
+	--csr-panel-line: rgba(255, 255, 255, 0.09);
+	--csr-panel-shadow: none;
+	--csr-chip: rgba(255, 255, 255, 0.045);
+	--csr-icon-line: rgba(255, 255, 255, 0.14);
+	--csr-glow: color-mix(in srgb, var(--csr-accent) 22%, transparent);
+	--csr-glow-opacity: 0.85;
+	--csr-grid-color: rgba(255, 255, 255, 0.022);
+	/* Half strength: the numbers verify the build, they are not the headline. */
+	--csr-number-glow: 0 0 32px color-mix(in srgb, var(--csr-accent) 14%, transparent);
+	--csr-px-glow: 0 0 12px color-mix(in srgb, var(--csr-accent) 70%, transparent);
 }
 
 /* ---------- Glow & grid ---------- */
@@ -92,7 +127,7 @@
 	position: absolute;
 	border-radius: 50%;
 	background: radial-gradient(closest-side, var(--csr-glow), transparent);
-	opacity: 0.85;
+	opacity: var(--csr-glow-opacity);
 	/* Breathing glow: an opacity-only drift runs on the compositor, unlike
 	   an animated filter or background. */
 	animation: avix-csr-glow 24s ease-in-out infinite alternate;
@@ -116,6 +151,13 @@
 
 .avix-csr--no-glow .avix-csr__glow {
 	display: none;
+}
+
+/* Light themes sit between light sections: the glow and grid fade out
+   before the top and bottom edges, so no tinted band stops at a seam. */
+.avix-csr:not(.avix-csr--dark) .avix-csr__fx {
+	-webkit-mask-image: linear-gradient(180deg, transparent 0, #000 220px, #000 calc(100% - 280px), transparent 100%);
+	mask-image: linear-gradient(180deg, transparent 0, #000 220px, #000 calc(100% - 280px), transparent 100%);
 }
 
 /* A state override that must beat every animation shorthand above. */
@@ -180,7 +222,7 @@
 	height: 6px;
 	margin-top: calc(0.65em - 3px);
 	background: var(--csr-accent);
-	box-shadow: 0 0 12px color-mix(in srgb, var(--csr-accent) 70%, transparent);
+	box-shadow: var(--csr-px-glow);
 }
 
 .avix-csr .avix-csr__num {
@@ -208,7 +250,7 @@
 
 .avix-csr .avix-csr__title .avix-csr__accent,
 .avix-csr .avix-csr__statement .avix-csr__accent {
-	color: var(--csr-accent-text);
+	color: var(--csr-accent-title);
 }
 
 .avix-csr .avix-csr__tag {
@@ -221,7 +263,7 @@
 	padding: 9px 16px;
 	border: 1px solid var(--csr-panel-line);
 	border-radius: 999px;
-	background: var(--csr-panel-top);
+	background: var(--csr-chip);
 	line-height: 1.3;
 }
 
@@ -247,7 +289,7 @@
 	padding: 0;
 	color: var(--csr-ink);
 	font-family: var(--csr-font-display);
-	font-size: clamp(28px, 3.6cqi, 54px);
+	font-size: clamp(30px, 3.4cqi, 48px);
 	font-weight: 500;
 	line-height: 1.16;
 	letter-spacing: -0.03em;
@@ -391,8 +433,10 @@
 	content: "";
 }
 
-/* A glass panel: hairline cells, a light edge along the top. */
+/* A quiet panel: hairline cells and an orange edge along the top (a white
+   card on paper, warm paper on white, smoked glass on dark). */
 .avix-csr .avix-csr__metrics {
+	--csr-cell-ink: var(--csr-panel-ink);
 	position: relative;
 	display: grid;
 	grid-template-columns: repeat(var(--csr-cols, 3), minmax(0, 1fr));
@@ -401,7 +445,10 @@
 	overflow: hidden;
 	border: 1px solid var(--csr-panel-line);
 	border-radius: 28px;
-	background: linear-gradient(180deg, var(--csr-panel-top), var(--csr-panel-bottom));
+	color: var(--csr-cell-ink);
+	background-color: var(--csr-panel);
+	background-image: linear-gradient(180deg, var(--csr-panel-top), var(--csr-panel-bottom));
+	box-shadow: var(--csr-panel-shadow);
 	list-style: none;
 }
 
@@ -429,10 +476,6 @@
 	--csr-cols: 4;
 }
 
-.avix-csr--light .avix-csr__metrics {
-	box-shadow: 0 1px 2px rgba(26, 26, 26, 0.03), 0 24px 50px -36px rgba(26, 26, 26, 0.25);
-}
-
 .avix-csr .avix-csr__metric {
 	display: flex;
 	flex-direction: column;
@@ -451,6 +494,8 @@
 	border-left: 0;
 }
 
+/* Counts that verify the build, sized below the section headings so they
+   never read as the growth claim above them. */
 .avix-csr .avix-csr__value {
 	display: flex;
 	flex-wrap: wrap;
@@ -458,12 +503,12 @@
 	gap: 0 0.06em;
 	margin: 0;
 	padding: 0;
-	color: var(--csr-ink);
+	color: var(--csr-cell-ink);
 	font-family: var(--csr-font-display);
-	font-size: clamp(48px, 6.4cqi, 96px);
+	font-size: clamp(44px, 4.6cqi, 68px);
 	font-weight: 600;
 	line-height: 1;
-	letter-spacing: -0.045em;
+	letter-spacing: -0.04em;
 	font-variant-numeric: tabular-nums;
 	text-shadow: var(--csr-number-glow);
 }
@@ -471,7 +516,7 @@
 .avix-csr .avix-csr__prefix {
 	flex-basis: 100%;
 	margin-bottom: 0.3em;
-	color: var(--csr-label);
+	color: color-mix(in srgb, var(--csr-cell-ink) 64%, transparent);
 	font-family: var(--csr-font-body);
 	font-size: 13px;
 	font-weight: 600;
@@ -481,7 +526,7 @@
 }
 
 .avix-csr .avix-csr__suffix {
-	color: var(--csr-accent-text);
+	color: var(--csr-accent-title);
 	font-size: 0.62em;
 	letter-spacing: 0;
 }
@@ -496,7 +541,7 @@
 	max-width: 30ch;
 	margin: clamp(14px, 1.4cqi, 18px) 0 0;
 	padding: 0;
-	color: color-mix(in srgb, var(--csr-ink) 80%, transparent);
+	color: color-mix(in srgb, var(--csr-cell-ink) 82%, transparent);
 	font-family: var(--csr-font-body);
 	font-size: 15px;
 	font-weight: 500;
@@ -504,18 +549,34 @@
 	text-wrap: pretty;
 }
 
+/* Sources: small and quiet, two lines at most (the full text stays in the
+   page for screen readers and in the tooltip). */
 .avix-csr .avix-csr__source {
+	display: -webkit-box;
+	max-width: 36ch;
 	margin: auto 0 0;
 	padding: 16px 0 0;
+	overflow: hidden;
 	color: var(--csr-soft);
 	font-family: var(--csr-font-body);
-	font-size: 12.5px;
+	font-size: 12px;
 	line-height: 1.55;
 	text-wrap: pretty;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+}
+
+.avix-csr .avix-csr__metrics .avix-csr__source {
+	color: color-mix(in srgb, var(--csr-cell-ink) 64%, transparent);
+}
+
+.avix-csr--dark .avix-csr__metrics .avix-csr__source {
+	color: color-mix(in srgb, var(--csr-cell-ink) 56%, transparent);
 }
 
 .avix-csr .avix-csr__source-key {
-	color: var(--csr-label);
+	color: inherit;
 	font-weight: 600;
 }
 
@@ -622,9 +683,10 @@
 	place-items: center;
 	width: 40px;
 	height: 40px;
-	border: 1px solid var(--csr-panel-line);
+	border: 1px solid var(--csr-icon-line);
 	border-radius: 50%;
 	color: var(--csr-ink);
+	background: var(--csr-chip);
 	transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
@@ -665,7 +727,7 @@
 .avix-csr .avix-csr__link:focus-visible,
 .avix-csr .avix-csr__cite-link:focus-visible,
 .avix-csr .avix-csr__body a:focus-visible {
-	outline: 2px solid var(--csr-accent) !important;
+	outline: 2px solid var(--csr-focus) !important;
 	outline-offset: 4px !important;
 	border-radius: 6px;
 }
@@ -701,7 +763,7 @@
 	width: 8px;
 	height: 8px;
 	background: var(--csr-accent);
-	box-shadow: 0 0 14px color-mix(in srgb, var(--csr-accent) 60%, transparent);
+	box-shadow: var(--csr-px-glow);
 }
 
 .avix-csr .avix-csr__quote {
@@ -858,7 +920,12 @@
 		columns: 1;
 	}
 
-	.avix-csr .avix-csr__pillars,
+	/* Three pillars stay side by side (two would leave one alone on a row);
+	   four pair up. */
+	.avix-csr .avix-csr__pillars {
+		column-gap: 24px;
+	}
+
 	.avix-csr .avix-csr__pillars--4 {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
@@ -871,11 +938,13 @@
 		--csr-cols: 1;
 	}
 
-	/* Three figures: two on top, the third across the panel. */
-	.avix-csr .avix-csr__metrics--3 .avix-csr__metric:nth-child(3) {
-		grid-column: 1 / -1;
-		border-top: 1px solid var(--csr-panel-line);
-		border-left: 0;
+	/* Three figures stay in one row, like the pillars above them. */
+	.avix-csr .avix-csr__metrics--3 {
+		--csr-cols: 3;
+	}
+
+	.avix-csr .avix-csr__metrics--3 .avix-csr__metric {
+		padding-inline: 20px;
 	}
 
 	.avix-csr .avix-csr__metrics--4 .avix-csr__metric:nth-child(3) {
@@ -893,8 +962,9 @@
 		--csr-block-gap: clamp(56px, 14cqi, 72px);
 	}
 
+	/* One phone size for every statement (the chapters use the same). */
 	.avix-csr .avix-csr__statement {
-		font-size: clamp(27px, 7.4cqi, 34px);
+		font-size: clamp(26px, 7.2cqi, 32px);
 		line-height: 1.2;
 	}
 
@@ -916,6 +986,7 @@
 	}
 
 	.avix-csr .avix-csr__metric,
+	.avix-csr .avix-csr__metrics--3 .avix-csr__metric,
 	.avix-csr .avix-csr__metrics--3 .avix-csr__metric:nth-child(3),
 	.avix-csr .avix-csr__metrics--4 .avix-csr__metric:nth-child(3) {
 		grid-column: auto;
@@ -929,7 +1000,7 @@
 	}
 
 	.avix-csr .avix-csr__value {
-		font-size: 56px;
+		font-size: 48px;
 	}
 
 	/* The address wraps under the label. */

@@ -6,19 +6,26 @@
  * Layout follows the widget width (container queries), not the viewport.
  */
 
+/* Tokens. The theme classes below set the primary ones; the rest are mixed
+   from them, so a colour picked in the Style tab (which sets one token on
+   this same element) carries its dependants along: "What we built" follows
+   Headings and Text, the callout's detail line follows the callout text. */
 .avix-csf {
 	--csf-bg: #ffffff;
 	--csf-ink: #1a1a1a;
-	--csf-ink-2: #2f3237;
+	--csf-ink-2: color-mix(in srgb, var(--csf-ink) 68%, var(--csf-muted));
 	--csf-muted: #5c5f66;
 	--csf-line: rgba(26, 26, 26, 0.1);
 	--csf-accent: #fb6007;
 	--csf-accent-text: #c54804;
+	--csf-on-accent: #ffffff;
 	--csf-pin: var(--csf-accent);
 	--csf-pin-ink: #ffffff;
 	--csf-callout: #ffffff;
 	--csf-callout-ink: #1a1a1a;
-	--csf-callout-muted: #5c5f66;
+	--csf-callout-muted: color-mix(in srgb, var(--csf-callout-ink) 70%, var(--csf-callout));
+	--csf-callout-edge: rgba(11, 11, 12, 0.06);
+	--csf-callout-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
 	--csf-card: #f6f4f0;
 	--csf-card-line: transparent;
 	--csf-hover: color-mix(in srgb, var(--csf-accent) 7%, transparent);
@@ -49,19 +56,60 @@
 	--csf-line: rgba(26, 26, 26, 0.11);
 }
 
-/* Dark section: every token swaps, Style-tab colours still win. The callout
-   stays white so it reads over any screenshot. */
 .avix-csf--theme-dark {
 	--csf-bg: #0b0b0c;
+}
+
+/* Dark tone: the Dark theme, or a light theme whose Background colour is
+   dark (the widget adds --tone-dark). Every text, line, card and callout
+   token swaps; Style-tab colours still win. The callout turns dark too: it
+   floats over bright client screenshots, where dark reads best. */
+.avix-csf--theme-dark,
+.avix-csf--tone-dark {
 	--csf-ink: #f5f2ee;
-	--csf-ink-2: rgba(255, 255, 255, 0.84);
-	--csf-muted: rgba(255, 255, 255, 0.62);
-	--csf-line: rgba(255, 255, 255, 0.1);
+	--csf-muted: rgba(255, 255, 255, 0.64);
+	--csf-line: rgba(255, 255, 255, 0.12);
 	--csf-accent-text: #ff8a3d;
-	--csf-card: rgba(255, 255, 255, 0.045);
+	--csf-callout: #1b1c1f;
+	--csf-callout-ink: #f5f2ee;
+	--csf-callout-edge: rgba(255, 255, 255, 0.12);
+	--csf-callout-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+	--csf-card: rgba(255, 255, 255, 0.05);
 	--csf-card-line: rgba(255, 255, 255, 0.08);
 	--csf-hover: rgba(255, 255, 255, 0.05);
 	--csf-live: #43da7a;
+}
+
+/* Light tone: the Dark theme with a light Background colour picked. */
+.avix-csf--tone-light {
+	--csf-ink: #1a1a1a;
+	--csf-muted: #5c5f66;
+	--csf-line: rgba(26, 26, 26, 0.1);
+	--csf-accent-text: #c54804;
+	--csf-callout: #ffffff;
+	--csf-callout-ink: #1a1a1a;
+	--csf-callout-edge: rgba(11, 11, 12, 0.06);
+	--csf-callout-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+	--csf-card: #f6f4f0;
+	--csf-card-line: transparent;
+	--csf-hover: color-mix(in srgb, var(--csf-accent) 7%, transparent);
+	--csf-live: #1f9d55;
+}
+
+/* A callout colour picked without its text colour: the text follows it. */
+.avix-csf--callout-dark {
+	--csf-callout-ink: #f5f2ee;
+	--csf-callout-edge: rgba(255, 255, 255, 0.12);
+}
+
+.avix-csf--callout-light {
+	--csf-callout-ink: #1a1a1a;
+	--csf-callout-edge: rgba(11, 11, 12, 0.06);
+}
+
+/* A pale pin colour (or accent) picked without a numeral colour. */
+.avix-csf--pin-light {
+	--csf-pin-ink: #1a1a1a;
 }
 
 .avix-csf *,
@@ -383,8 +431,11 @@
 	background: var(--csf-hover);
 }
 
+/* An outline, not a ring in the section colour: it stays clean on a card. */
 .avix-csf .avix-csf__legend-item.is-active .avix-csf__num {
-	box-shadow: 0 0 0 3px var(--csf-bg), 0 0 0 5px var(--csf-pin);
+	outline: 2px solid var(--csf-pin);
+	outline-offset: 2px;
+	box-shadow: none;
 	transform: scale(1.06);
 }
 
@@ -513,6 +564,70 @@
 	margin-inline: auto;
 }
 
+/* A slimmer mat than the kit's: the screenshot is the proof, so it gets
+   the room (707 → 754px wide at 1440). */
+.avix-csf .avix-csf__media .avix-csk-mat {
+	padding: clamp(12px, 3%, 28px);
+}
+
+/* Mats follow the theme. On Paper the paper mat (and a tint of a pale
+   brand colour) would melt into the section, so both lift onto white with
+   a hairline. */
+.avix-csf--theme-paper:not(.avix-csk-on-dark) .avix-csk-mat--paper {
+	--csk-mat-bg: #ffffff;
+	--csk-cover: #ffffff;
+}
+
+.avix-csf--theme-paper:not(.avix-csk-on-dark) .avix-csk-mat--tint {
+	--csk-mat-bg: color-mix(in srgb, var(--csk-accent, #f5f3ef) 22%, #ffffff);
+	--csk-cover: color-mix(in srgb, var(--csk-accent, #f5f3ef) 22%, #ffffff);
+}
+
+.avix-csf--theme-paper:not(.avix-csk-on-dark) .avix-csk-mat--paper::before,
+.avix-csf--theme-paper:not(.avix-csk-on-dark) .avix-csk-mat--tint::before {
+	border: 1px solid rgba(26, 26, 26, 0.07);
+}
+
+/* Dark tone: every mat becomes a dark surface (the Mat setting still picks
+   its shade) and the frames switch to dark chrome. The kit's light mats set
+   light chrome on themselves, so the dark tokens are restated here. Mats
+   are mixed from the section colour, so a dark Background picked in the
+   Style tab (navy, say) gets a matching navy mat, not a black hole. */
+.avix-csf.avix-csk-on-dark .avix-csk-mat {
+	--csk-chrome: #151618;
+	--csk-chrome-line: rgba(255, 255, 255, 0.1);
+	--csk-chrome-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+	--csk-bar: #1c1d20;
+	--csk-dot: #3a3b3f;
+	--csk-pill: #26272b;
+	--csk-pill-ink: rgba(255, 255, 255, 0.66);
+	--csk-screen-bg: #121315;
+	--csk-phone-ring: 0 0 0 1px rgba(255, 255, 255, 0.12);
+	--csk-phone-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.85);
+	--csk-mat-bg: color-mix(in srgb, #ffffff 5%, var(--csf-bg));
+	--csk-cover: color-mix(in srgb, #ffffff 5%, var(--csf-bg));
+}
+
+.avix-csf.avix-csk-on-dark .avix-csk-mat::before {
+	border: 0;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.avix-csf.avix-csk-on-dark .avix-csk-mat--white {
+	--csk-mat-bg: color-mix(in srgb, #ffffff 9%, var(--csf-bg));
+	--csk-cover: color-mix(in srgb, #ffffff 9%, var(--csf-bg));
+}
+
+.avix-csf.avix-csk-on-dark .avix-csk-mat--tint {
+	--csk-mat-bg: color-mix(in srgb, var(--csk-accent, #fb6007) 15%, var(--csf-bg));
+	--csk-cover: color-mix(in srgb, var(--csk-accent, #fb6007) 15%, var(--csf-bg));
+}
+
+.avix-csf.avix-csk-on-dark .avix-csk-mat--dark {
+	--csk-mat-bg: color-mix(in srgb, #000000 35%, var(--csf-bg));
+	--csk-cover: color-mix(in srgb, #000000 35%, var(--csf-bg));
+}
+
 /* The screenshot is never cropped: full width, natural height. */
 .avix-csf .avix-csf__media .avix-csk-frame__screen img {
 	display: block;
@@ -532,18 +647,22 @@
 	pointer-events: none;
 }
 
-/* A 28px rounded square: the pixel motif. Positions are percentages of the
-   screenshot; the clamp only keeps a pin within the frame on tiny screens.
-   --csf-ex/--csf-ey come from the editor's sliders (instant preview) and
-   equal --x/--y on the page. Heavy reset: theme and Elementor-kit button
-   styles must not leak in. */
+/* A small rounded square: the pixel motif, kept small so it marks the UI
+   without hiding it. Positions are percentages of the screenshot; the clamp
+   only keeps a pin within the frame on tiny screens. --csf-ex/--csf-ey come
+   from the editor's sliders (instant preview) and equal --x/--y on the page.
+   --csf-dx/--csf-dy are set by the script when two pins would touch, and
+   --csf-hit (half the touch target) shrinks between close pins so each
+   pin's own centre always lands on that pin. Earlier pins sit on top.
+   Heavy reset: theme and Elementor-kit button styles must not leak in. */
 .avix-csf .avix-csf__pin {
-	--csf-pin-size: 28px;
+	--csf-pin-size: 20px;
 	--csf-pin-edge: calc(var(--csf-pin-size) / 2 + 4px);
+	--csf-hit: 22px;
 	position: absolute;
 	top: clamp(var(--csf-pin-edge), var(--csf-ey, var(--y, 50%)), calc(100% - var(--csf-pin-edge)));
 	left: clamp(var(--csf-pin-edge), var(--csf-ex, var(--x, 50%)), calc(100% - var(--csf-pin-edge)));
-	z-index: 1;
+	z-index: calc(20 - var(--n, 0));
 	display: grid;
 	place-items: center;
 	width: var(--csf-pin-size);
@@ -553,12 +672,12 @@
 	margin: 0;
 	padding: 0;
 	border: 0;
-	border-radius: 6px;
+	border-radius: 5px;
 	color: var(--csf-pin-ink);
 	background: var(--csf-pin);
-	box-shadow: 0 0 0 4px color-mix(in srgb, var(--csf-pin) 22%, transparent), 0 6px 16px -4px rgba(0, 0, 0, 0.35);
+	box-shadow: 0 0 0 2px #ffffff, 0 4px 10px -2px rgba(0, 0, 0, 0.4);
 	font-family: var(--csf-font-display);
-	font-size: 13px;
+	font-size: 11px;
 	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 	letter-spacing: 0;
@@ -569,11 +688,17 @@
 	text-transform: none;
 	cursor: pointer;
 	pointer-events: auto;
-	translate: -50% -50%;
+	translate: calc(-50% + var(--csf-dx, 0px)) calc(-50% + var(--csf-dy, 0px));
 	-webkit-appearance: none;
 	appearance: none;
 	-webkit-tap-highlight-color: transparent;
 	transition: scale 0.25s var(--csf-ease), box-shadow 0.25s ease;
+}
+
+/* In the editor a slider move changes left/top: the near-instant transition
+   gives the script a transitionend to re-check close pins. */
+.avix-csf.is-editor .avix-csf__pin {
+	transition: scale 0.25s var(--csf-ease), box-shadow 0.25s ease, left 1ms linear, top 1ms linear;
 }
 
 .avix-csf .avix-csf__pin:hover,
@@ -584,10 +709,10 @@
 	text-decoration: none;
 }
 
-/* 44px touch target. */
+/* 44px touch target (smaller only between pins that sit close). */
 .avix-csf .avix-csf__pin::before {
 	position: absolute;
-	inset: -8px;
+	inset: calc(var(--csf-pin-size) / 2 - var(--csf-hit));
 	border-radius: 10px;
 	content: "";
 }
@@ -595,9 +720,9 @@
 /* Pulse: a ring that breathes. Opacity only, so it runs on the compositor. */
 .avix-csf .avix-csf__pin::after {
 	position: absolute;
-	inset: -8px;
+	inset: -5px;
 	border: 2px solid color-mix(in srgb, var(--csf-pin) 70%, transparent);
-	border-radius: 11px;
+	border-radius: 8px;
 	opacity: 0;
 	pointer-events: none;
 	content: "";
@@ -621,7 +746,7 @@
 
 .avix-csf .avix-csf__pin.is-active,
 .avix-csf .avix-csf__pin[aria-expanded="true"] {
-	z-index: 2;
+	z-index: 30;
 	scale: 1.12;
 	box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px color-mix(in srgb, var(--csf-pin) 42%, transparent), 0 10px 22px -6px rgba(0, 0, 0, 0.45);
 }
@@ -637,7 +762,7 @@
 }
 
 .avix-csf .avix-csf__pin:focus-visible {
-	z-index: 2;
+	z-index: 30;
 	outline: 2px solid var(--csf-pin);
 	outline-offset: 7px;
 	scale: 1.12;
@@ -645,14 +770,14 @@
 }
 
 /* Pixel squares: quieter markers, a white pixel in an orange one. */
-.avix-csf--squares .avix-csf__pin {
-	--csf-pin-size: 22px;
+.avix-csf.avix-csf--squares .avix-csf__pin {
+	--csf-pin-size: 18px;
 	border-radius: 4px;
 }
 
 .avix-csf--squares .avix-csf__pin-num {
-	width: 8px;
-	height: 8px;
+	width: 7px;
+	height: 7px;
 	background: var(--csf-pin-ink);
 }
 
@@ -677,7 +802,7 @@
 	border-radius: 14px;
 	color: var(--csf-callout-ink);
 	background: var(--csf-callout);
-	box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(11, 11, 12, 0.05);
+	box-shadow: var(--csf-callout-shadow), 0 0 0 1px var(--csf-callout-edge);
 	font-family: var(--csf-font-body);
 	text-align: left;
 	pointer-events: none;
@@ -846,7 +971,7 @@
 
 	.avix-csf .avix-csf__full:hover .avix-csf__full-icon {
 		border-color: var(--csf-accent);
-		color: var(--csf-pin-ink);
+		color: var(--csf-on-accent);
 		background: var(--csf-accent);
 	}
 }
@@ -880,7 +1005,7 @@
 	width: 44px;
 	height: 44px;
 	border-radius: 12px;
-	color: var(--csf-pin-ink);
+	color: var(--csf-on-accent);
 	background: var(--csf-accent);
 }
 
@@ -1262,7 +1387,10 @@
 	}
 }
 
-/* ---------- Phones: no floating callouts, cards instead ---------- */
+/* ---------- Phones: proof first, no floating callouts ----------
+   The screenshot and its numbered cards come straight after the title, so
+   visitors see the evidence before they read: index, title, screenshot,
+   legend, the problem, what we built, meta. Pins shrink to 18px. */
 
 @container avix-csf (max-width: 600px) {
 	.avix-csf .avix-csf__index {
@@ -1274,23 +1402,55 @@
 		line-height: 1.12;
 	}
 
+	.avix-csf .avix-csf__media {
+		order: 3;
+		padding-top: 4px;
+	}
+
+	.avix-csf .avix-csf__legend {
+		order: 4;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 8px;
+		margin-top: 18px;
+	}
+
+	.avix-csf .avix-csf__qa {
+		order: 5;
+		margin-top: 36px;
+	}
+
+	/* No screenshot: the text simply follows the title. */
+	.avix-csf.no-media .avix-csf__qa {
+		order: 3;
+		margin-top: 0;
+	}
+
+	.avix-csf .avix-csf__meta {
+		order: 6;
+	}
+
 	.avix-csf .avix-csf__qa dd {
 		font-size: 16px;
 		line-height: 1.68;
 	}
 
-	.avix-csf .avix-csf__media {
-		padding-top: 30px;
+	.avix-csf .avix-csf__pin {
+		--csf-pin-size: 18px;
+		font-size: 10px;
 	}
 
-	.avix-csf .avix-csf__media .avix-csk-mat {
-		padding: 12px;
+	.avix-csf .avix-csf__pin::after {
+		inset: -4px;
+		border-radius: 7px;
 	}
 
-	.avix-csf .avix-csf__legend {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
-		margin-top: 18px;
+	.avix-csf.avix-csf--squares .avix-csf__pin {
+		--csf-pin-size: 16px;
+	}
+
+	.avix-csf--squares .avix-csf__pin-num {
+		width: 6px;
+		height: 6px;
 	}
 
 	.avix-csf .avix-csf__legend-item:last-child:nth-child(odd) {

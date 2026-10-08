@@ -19,6 +19,12 @@
 	--csg-render-bg: #0b0b0c;
 	--csg-btn-bg: #ffffff;
 	--csg-btn-ink: #1a1a1a;
+	/* The tile colour: the theme's (or the mat's) unless one is picked in
+	   the editor, which sets --csg-tile on this element. */
+	--csg-tile: var(--csg-tile-auto);
+	/* Text set on a tile (the carousel's and the phone rows' captions). */
+	--csg-tile-ink: var(--csg-ink);
+	--csg-tile-muted: var(--csg-muted);
 	--csg-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
 	--csg-font-body: "Inter", Arial, sans-serif;
 	--csg-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -43,12 +49,13 @@
 .avix-csg--white {
 	--csg-bg: #ffffff;
 	--csg-tile-auto: #f5f3ef;
+	--csg-line: rgba(26, 26, 26, 0.14);
 }
 
 .avix-csg--dark {
 	--csg-bg: #0b0b0c;
 	--csg-ink: #ffffff;
-	--csg-muted: rgba(255, 255, 255, 0.62);
+	--csg-muted: rgba(255, 255, 255, 0.64);
 	--csg-line: rgba(255, 255, 255, 0.14);
 	--csg-accent-text: #ff8a3d;
 	--csg-tile-auto: #151517;
@@ -56,7 +63,23 @@
 	--csg-btn-ink: #ffffff;
 	/* The pixel reveal covers screens in the tile colour. */
 	--csk-cover: #151517;
-	--csk-eyebrow-ink: rgba(255, 255, 255, 0.62);
+	--csk-eyebrow-ink: rgba(255, 255, 255, 0.64);
+}
+
+/* A tile colour picked in the editor: the widget prints the tone that
+   reads on it, so captions set on the tile keep their contrast. The muted
+   tone is mixed from the ink and the picked colour, so it stays readable
+   on a mid-tone too. */
+.avix-csg--tile-dark {
+	--csg-tile-ink: #ffffff;
+	--csg-tile-muted: rgba(255, 255, 255, 0.8);
+	--csg-tile-muted: color-mix(in srgb, #ffffff 80%, var(--csg-tile));
+}
+
+.avix-csg--tile-light {
+	--csg-tile-ink: #1a1a1a;
+	--csg-tile-muted: #45484e;
+	--csg-tile-muted: color-mix(in srgb, #1a1a1a 78%, var(--csg-tile));
 }
 
 /* Tint: the case study's brand colour (printed as --csk-accent on the root)
@@ -104,7 +127,6 @@
 	--csg-tpad: clamp(22px, 4.2cqi, 56px);
 	--csg-radius: 28px;
 	--csg-render-radius: 24px;
-	--csg-tile: var(--csg-tile-auto);
 	--csg-phone-w: 260px;
 
 	position: relative;
@@ -185,23 +207,37 @@
 }
 
 /* Every item: a figure holding its tile and caption. Items in a row share a
-   height (stretch), so tiles line up as one bento grid. */
+   height (stretch), so tiles line up as one bento grid.
+   Themes style every <figure> (Algenix: display flex, align-items centre,
+   overflow hidden, margin-bottom 1em). A centred column shrink-wraps the
+   tile, and the frames inside size from their container, so they collapsed
+   to 0px: every box property the theme sets is restated here (a class pair
+   always outranks the theme's type selector; keep this rule at that weight
+   so the row rules below can still size the items). */
 .avix-csg .avix-csg__item {
 	position: relative;
 	display: flex;
 	flex: 1 1 0%;
 	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
 	min-width: 0;
+	max-width: none;
 	margin: 0;
 	padding: 0;
+	overflow: visible;
+	border: 0;
+	background: none;
 }
 
 .avix-csg__tile {
 	position: relative;
 	display: flex;
 	flex: 1 1 auto;
+	align-self: stretch;
 	align-items: center;
 	justify-content: center;
+	min-width: 0;
 	min-height: 0;
 	padding: var(--csg-tpad);
 	border-radius: var(--csg-radius);
@@ -291,12 +327,23 @@
    tile adds no height of its own (size containment) and the phone is sized
    from the tile's height, so both tiles end on the same line whatever the
    wide shot's shape. */
-.avix-csg__row--a > .avix-csg__item:first-child {
+.avix-csg__row--a > .avix-csg__item:not(.avix-csg__item--phone) {
 	flex: 2 1 0%;
 }
 
 .avix-csg__row--a > .avix-csg__item--phone {
 	flex: 1 1 0%;
+}
+
+/* After a dark studio render, the phone beside it sits on the render's
+   near-black with the same warm rim light, so the row reads as one band. */
+.avix-csg__row--band > .avix-csg__item--phone .avix-csg__tile {
+	border-radius: var(--csg-render-radius);
+	background:
+		radial-gradient(90% 55% at 50% 108%, rgba(251, 96, 7, 0.2), transparent 72%),
+		#0b0b0c;
+	box-shadow: 0 44px 80px -52px rgba(11, 11, 12, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+	--csk-cover: #0b0b0c;
 }
 
 .avix-csg__row--a > .avix-csg__item--phone .avix-csg__tile {
@@ -365,9 +412,16 @@
 	width: 100%;
 }
 
-.avix-csg__row--phones .avix-csg__cap {
+/* The phones' captions sit on the row's tile: they take the tile's text
+   tones (a tile colour picked in the editor brings its own). */
+.avix-csg .avix-csg__row--phones .avix-csg__cap {
 	justify-content: center;
+	color: var(--csg-tile-muted);
 	text-align: center;
+}
+
+.avix-csg .avix-csg__row--phones .avix-csg__cap .avix-csg__cap-link {
+	color: var(--csg-tile-ink);
 }
 
 /* Pairs: each item grows with its own shape, so both tiles share a height
@@ -395,17 +449,25 @@
 
 /* ---------- Captions ---------- */
 
+/* Themes style "figure figcaption" too (Algenix: padding 10px 0 0
+   !important, a 6em scroll box with a reserved scrollbar gutter). */
 .avix-csg .avix-csg__cap {
 	position: static;
 	display: flex;
+	flex: none;
 	align-items: center;
 	gap: 10px;
 	min-height: 20px;
+	max-height: none;
 	margin: 16px 0 0;
-	padding: 0 4px;
+	padding: var(--csg-cap-pad, 0 4px) !important;
+	overflow: visible;
+	scrollbar-gutter: auto;
 	color: var(--csg-muted);
+	background: none;
 	font-family: var(--csg-font-body);
 	font-size: 14px;
+	font-style: normal;
 	font-weight: 500;
 	line-height: 1.4;
 	text-align: left;
@@ -640,6 +702,7 @@
 	padding: 0;
 	border-radius: 0;
 	background: none;
+	box-shadow: none;
 }
 
 .avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__device {
@@ -684,13 +747,18 @@
 .avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap {
 	justify-content: flex-start;
 	margin: 14px 0 0;
-	padding: 0;
 	text-align: left;
+	color: var(--csg-tile-muted);
+	--csg-cap-pad: 0;
+}
+
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap-link {
+	color: var(--csg-tile-ink);
 }
 
 .avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--render .avix-csg__cap {
-	padding: 0 var(--csg-tpad);
 	color: rgba(255, 255, 255, 0.72);
+	--csg-cap-pad: 0 var(--csg-tpad);
 }
 
 .avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--render .avix-csg__cap-link {
@@ -699,6 +767,11 @@
 
 .avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap-link::after {
 	border-radius: var(--csg-radius);
+}
+
+/* The strip clips a ring drawn outside the card: draw it inside. */
+.avix-csg--carousel.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap-link:focus-visible::after {
+	outline-offset: -3px;
 }
 
 .avix-csg--carousel.avix-csg--mat-none .avix-csg__stage .avix-csg__track .avix-csg__item:not(.avix-csg__item--render) {
@@ -830,6 +903,7 @@
 		padding: 0;
 		border-radius: 0;
 		background: none;
+		box-shadow: none;
 	}
 
 	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__device {
@@ -874,13 +948,18 @@
 	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap {
 		justify-content: flex-start;
 		margin: 14px 0 0;
-		padding: 0;
 		text-align: left;
+		color: var(--csg-tile-muted);
+		--csg-cap-pad: 0;
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap-link {
+		color: var(--csg-tile-ink);
 	}
 
 	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--render .avix-csg__cap {
-		padding: 0 var(--csg-tpad);
 		color: rgba(255, 255, 255, 0.72);
+		--csg-cap-pad: 0 var(--csg-tpad);
 	}
 
 	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__item--render .avix-csg__cap-link {
@@ -889,6 +968,21 @@
 
 	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap-link::after {
 		border-radius: var(--csg-radius);
+	}
+
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__cap-link:focus-visible::after {
+		outline-offset: -3px;
+	}
+
+	/* The phone that shares the render's band stays on the dark card. */
+	.avix-csg .avix-csg__stage .avix-csg__track .avix-csg__row--band > .avix-csg__item--phone {
+		background:
+			radial-gradient(90% 50% at 50% 100%, rgba(251, 96, 7, 0.18), transparent 72%),
+			var(--csg-render-bg);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+		--csk-cover: var(--csg-render-bg);
+		--csg-tile-ink: #ffffff;
+		--csg-tile-muted: rgba(255, 255, 255, 0.72);
 	}
 
 	.avix-csg--mat-none .avix-csg__stage .avix-csg__track .avix-csg__item:not(.avix-csg__item--render) {

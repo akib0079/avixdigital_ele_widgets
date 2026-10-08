@@ -9,17 +9,22 @@
 .avix-csc {
 	--csc-bg: #ffffff;
 	--csc-ink: #1a1a1a;
-	--csc-lead: #34363b;
+	/* The lead sits between the headline and the body: derived from the ink,
+	   so a picked headline colour carries it along. */
+	--csc-lead: color-mix(in srgb, var(--csc-ink) 88%, var(--csc-bg));
 	--csc-muted: #5c5f66;
 	--csc-line: rgba(26, 26, 26, 0.1);
 	--csc-accent: #fb6007;
-	--csc-accent-text: #c54804;
+	--csc-accent-text: #bf4604;
 	/* Large orange words on white: a touch deeper than the button orange so
 	   the highlight keeps 3:1 contrast. */
 	--csc-accent-title: color-mix(in srgb, var(--csc-accent) 88%, #000000);
 	--csc-card-bg: #f5f3ef;
+	--csc-card-ink: var(--csc-ink);
+	--csc-card-muted: var(--csc-muted);
 	--csc-chip-bg: #ffffff;
 	--csc-chip-line: rgba(26, 26, 26, 0.12);
+	--csc-focus: #bf4604;
 	--csc-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
 	--csc-font-body: "Inter", Arial, sans-serif;
 	--csc-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -74,7 +79,6 @@
 .avix-csc--dark {
 	--csc-bg: #0b0b0c;
 	--csc-ink: #ffffff;
-	--csc-lead: rgba(255, 255, 255, 0.84);
 	--csc-muted: rgba(255, 255, 255, 0.64);
 	--csc-line: rgba(255, 255, 255, 0.1);
 	--csc-accent-text: #ff8a3d;
@@ -82,6 +86,7 @@
 	--csc-card-bg: #141416;
 	--csc-chip-bg: rgba(255, 255, 255, 0.05);
 	--csc-chip-line: rgba(255, 255, 255, 0.12);
+	--csc-focus: var(--csc-accent);
 }
 
 /* ---------- Frame ---------- */
@@ -161,16 +166,16 @@
 /* The challenge: a statement, not a shout. */
 .avix-csc .avix-csc__title--statement {
 	max-width: 30ch;
-	font-size: clamp(26px, 3cqi, 44px);
+	font-size: clamp(30px, 3.4cqi, 48px);
 	font-weight: 500;
-	line-height: 1.18;
+	line-height: 1.16;
 	letter-spacing: -0.02em;
 	text-wrap: pretty;
 }
 
 .avix-csc .avix-csc__title--display {
 	max-width: 16ch;
-	font-size: clamp(34px, 4.2cqi, 60px);
+	font-size: clamp(36px, 4.2cqi, 60px);
 	font-weight: 600;
 	line-height: 1.06;
 	letter-spacing: -0.035em;
@@ -179,6 +184,10 @@
 
 .avix-csc .avix-csc__title .avix-csc__accent {
 	color: var(--csc-accent-title);
+}
+
+.avix-csc .avix-csc__nowrap {
+	white-space: nowrap;
 }
 
 /* ---------- Split layout ---------- */
@@ -469,7 +478,7 @@
 .avix-csc .avix-csc__chip--link:focus-visible,
 .avix-csc .avix-csc__body a:focus-visible,
 .avix-csc .avix-csc__lead a:focus-visible {
-	outline: 2px solid var(--csc-accent) !important;
+	outline: 2px solid var(--csc-focus) !important;
 	outline-offset: 3px !important;
 }
 
@@ -563,6 +572,12 @@
 	box-shadow: 0 1px 2px rgba(26, 26, 26, 0.03), 0 18px 40px -30px rgba(26, 26, 26, 0.22);
 }
 
+/* Dark: a lifted graphite card with a faint top light. */
+.avix-csc--dark .avix-csc__card {
+	border-color: rgba(255, 255, 255, 0.07);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
 .avix-csc__card-index {
 	position: relative;
 	z-index: 2;
@@ -595,7 +610,7 @@
 	grid-area: title;
 	margin: 0;
 	padding: 0;
-	color: var(--csc-ink);
+	color: var(--csc-card-ink);
 	font-family: var(--csc-font-display);
 	font-size: clamp(20px, 1.7cqi, 22px);
 	font-weight: 600;
@@ -614,7 +629,7 @@
 	grid-area: text;
 	margin: var(--csc-text-gap) 0 0;
 	padding: 0;
-	color: var(--csc-muted);
+	color: var(--csc-card-muted);
 	font-family: var(--csc-font-body);
 	font-size: clamp(15px, 1.2cqi, 16px);
 	line-height: 1.65;
@@ -868,9 +883,10 @@
 		--csc-card-gap: 12px;
 	}
 
+	/* Statements share one phone size with the Results statement. */
 	.avix-csc .avix-csc__title--statement {
-		font-size: clamp(25px, 6.8cqi, 30px);
-		line-height: 1.22;
+		font-size: clamp(26px, 7.2cqi, 32px);
+		line-height: 1.2;
 	}
 
 	.avix-csc .avix-csc__title--display {

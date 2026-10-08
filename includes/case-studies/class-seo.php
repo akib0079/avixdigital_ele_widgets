@@ -22,6 +22,106 @@ final class SEO {
 		add_filter( 'wpseo_schema_graph_pieces', array( __CLASS__, 'graph_pieces' ), 11, 2 );
 		add_filter( 'wpseo_schema_webpage', array( __CLASS__, 'webpage' ) );
 		add_action( 'wp_head', array( __CLASS__, 'print_fallback' ), 30 );
+		// One Open Graph block: unhook the theme's copy once the query is known, and
+		// again first thing in wp_head for anything hooked after template_redirect.
+		add_action( 'template_redirect', array( __CLASS__, 'drop_theme_og' ), PHP_INT_MAX );
+		add_action( 'wp_head', array( __CLASS__, 'drop_theme_og' ), -9999 );
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* One Open Graph block                                               */
+	/* ------------------------------------------------------------------ */
+
+	/**
+	 * ThemeREX Addons callbacks known to print og:* tags in wp_head.
+	 */
+	const THEME_OG_CALLBACKS = array( 'trx_addons_add_og_tags', 'trx_addons_add_og_meta', 'trx_addons_og_tags', 'trx_addons_add_open_graph_tags' );
+
+	/**
+	 * With Yoast active, Yoast prints the page's Open Graph tags (on a case study
+	 * the designed 1200 × 630 avix-cs-<slug>-og.jpg). ThemeREX Addons ("Add Open
+	 * Graph tags") prints a second og:type/url/title/description/image block after
+	 * it: on case studies the featured render as og:image and a cut description,
+	 * on the index an empty og:description. Social sites may take either, so on
+	 * singular pages (the index included) the theme's block is unhooked. Without
+	 * Yoast, or with Yoast's Open Graph switched off, nothing changes: the theme's
+	 * block is then the only one. Matching by name keeps working if the theme
+	 * moves the priority. Head-only, nothing is logged.
+	 */
+	public static function drop_theme_og(): void {
+		if ( is_admin() || is_feed() || ! self::yoast_prints_og() ) {
+			return;
+		}
+		$scope = is_singular() || self::is_index();
+		/**
+		 * Filters whether the ThemeREX Addons Open Graph block is removed on this request.
+		 *
+		 * @param bool $scope True on singular pages and the case-studies index while Yoast prints Open Graph.
+		 */
+		if ( ! apply_filters( 'avix_cs_drop_theme_og', $scope ) ) {
+			return;
+		}
+		global $wp_filter;
+		if ( ! isset( $wp_filter['wp_head'] ) || ! is_object( $wp_filter['wp_head'] ) || ! isset( $wp_filter['wp_head']->callbacks ) || ! is_array( $wp_filter['wp_head']->callbacks ) ) {
+			return;
+		}
+		$found = array();
+		foreach ( $wp_filter['wp_head']->callbacks as $priority => $callbacks ) {
+			if ( ! is_array( $callbacks ) ) {
+				continue;
+			}
+			foreach ( $callbacks as $callback ) {
+				$fn = isset( $callback['function'] ) ? $callback['function'] : null;
+				if ( self::is_theme_og_callback( $fn ) ) {
+					$found[] = array( $fn, $priority );
+				}
+			}
+		}
+		// Removed after the walk, so the array being read is never changed underneath it.
+		foreach ( $found as $hook ) {
+			remove_action( 'wp_head', $hook[0], $hook[1] );
+		}
+	}
+
+	/**
+	 * True when Yoast is active and its Open Graph output is on (Yoast SEO >
+	 * Settings > Social; on by default). Without Yoast's class the setting is
+	 * assumed on, as Yoast ships it.
+	 */
+	public static function yoast_prints_og(): bool {
+		if ( ! self::has_yoast() ) {
+			return false;
+		}
+		if ( class_exists( '\WPSEO_Options' ) && method_exists( '\WPSEO_Options', 'get' ) ) {
+			try {
+				return (bool) \WPSEO_Options::get( 'opengraph', true );
+			} catch ( \Throwable $error ) {
+				return true;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Pure helper (unit-testable): true for a ThemeREX Addons Open Graph callback.
+	 *
+	 * @param mixed $fn A wp_head callback.
+	 */
+	public static function is_theme_og_callback( $fn ): bool {
+		$name = '';
+		if ( is_string( $fn ) ) {
+			$name = $fn;
+		} elseif ( is_array( $fn ) && 2 === count( $fn ) && is_string( $fn[1] ) ) {
+			$owner = is_object( $fn[0] ) ? get_class( $fn[0] ) : ( is_string( $fn[0] ) ? $fn[0] : '' );
+			$name  = $owner . '::' . $fn[1];
+		}
+		if ( '' === $name ) {
+			return false;
+		}
+		if ( in_array( $name, self::THEME_OG_CALLBACKS, true ) ) {
+			return true;
+		}
+		return 0 === stripos( $name, 'trx_addons' ) && (bool) preg_match( '/(^|_|::)(og|open_?graph)(_|$)/i', $name );
 	}
 
 	/**

@@ -37,6 +37,14 @@ class Case_Study_Gallery extends Widget_Base {
 
 	const LAYOUTS = array( 'mosaic', 'phones', 'carousel' );
 
+	/**
+	 * Frame chrome for a tile colour picked against the theme: "dark" (a dark
+	 * tile in a light section), "light" (a light tile in a dark one) or ''.
+	 *
+	 * @var string
+	 */
+	private $frame_tone = '';
+
 	/** Phones per row in the mosaic (rows are balanced: 5 → 3 + 2). */
 	const PHONES_PER_ROW = 4;
 
@@ -403,7 +411,7 @@ class Case_Study_Gallery extends Widget_Base {
 			'theme',
 			array(
 				'label'       => esc_html__( 'Theme', 'avix-widgets' ),
-				'description' => esc_html__( 'Paper follows the dark results section on case-study pages.', 'avix-widgets' ),
+				'description' => esc_html__( 'Sets every colour at once: background, tiles, device frames, captions and the carousel buttons. Paper follows the dark results section on case-study pages. The colours below override single parts.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SELECT,
 				'default'     => 'paper',
 				'options'     => array(
@@ -414,23 +422,38 @@ class Case_Study_Gallery extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'colours_note',
+			array(
+				'type'            => Controls_Manager::RAW_HTML,
+				'raw'             => esc_html__( 'Leave the colours empty to use the theme. A background or tile colour you pick also switches the text on it to dark or light, so it stays readable.', 'avix-widgets' ),
+				'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+			)
+		);
+
+		// Empty by default: the theme's tokens apply until a colour is picked.
+		// Background and tile colours re-render, so the text on them follows.
 		$colours = array(
-			'bg'     => array( esc_html__( 'Background', 'avix-widgets' ), '--csg-bg' ),
-			'ink'    => array( esc_html__( 'Title', 'avix-widgets' ), '--csg-ink' ),
-			'muted'  => array( esc_html__( 'Text & captions', 'avix-widgets' ), '--csg-muted' ),
-			'line'   => array( esc_html__( 'Lines & buttons', 'avix-widgets' ), '--csg-line' ),
-			'accent' => array( esc_html__( 'Accent', 'avix-widgets' ), '--csg-accent' ),
-			'tile'   => array( esc_html__( 'Tiles', 'avix-widgets' ), '--csg-tile' ),
+			'bg'        => array( esc_html__( 'Background', 'avix-widgets' ), '--csg-bg: {{VALUE}};', true ),
+			'ink'       => array( esc_html__( 'Title', 'avix-widgets' ), '--csg-ink: {{VALUE}};', false ),
+			'muted'     => array( esc_html__( 'Text & captions', 'avix-widgets' ), '--csg-muted: {{VALUE}};', false ),
+			'line'      => array( esc_html__( 'Lines', 'avix-widgets' ), '--csg-line: {{VALUE}};', false ),
+			'accent'    => array( esc_html__( 'Accent', 'avix-widgets' ), '--csg-accent: {{VALUE}};', false ),
+			'tile'      => array( esc_html__( 'Tiles', 'avix-widgets' ), '--csg-tile: {{VALUE}};', true ),
+			'tile_text' => array( esc_html__( 'Text on tiles (carousel captions)', 'avix-widgets' ), '--csg-tile-ink: {{VALUE}}; --csg-tile-muted: {{VALUE}};', false ),
+			'btn_bg'    => array( esc_html__( 'Carousel buttons', 'avix-widgets' ), '--csg-btn-bg: {{VALUE}};', false ),
+			'btn_ink'   => array( esc_html__( 'Carousel button arrows', 'avix-widgets' ), '--csg-btn-ink: {{VALUE}};', false ),
 		);
 		foreach ( $colours as $key => $colour ) {
-			$this->add_control(
-				'color_' . $key,
-				array(
-					'label'     => $colour[0],
-					'type'      => Controls_Manager::COLOR,
-					'selectors' => array( '{{WRAPPER}} .avix-csg' => $colour[1] . ': {{VALUE}};' ),
-				)
+			$control = array(
+				'label'     => $colour[0],
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => array( '{{WRAPPER}} .avix-csg' => $colour[1] ),
 			);
+			if ( $colour[2] ) {
+				$control['render_type'] = 'template';
+			}
+			$this->add_control( 'color_' . $key, $control );
 		}
 
 		$this->add_responsive_control(
@@ -540,16 +563,35 @@ class Case_Study_Gallery extends Widget_Base {
 
 		$theme  = in_array( (string) ( $s['theme'] ?? '' ), array( 'paper', 'white', 'dark' ), true ) ? (string) $s['theme'] : 'paper';
 		$mat    = in_array( (string) ( $s['mat'] ?? '' ), array( 'paper', 'tint', 'none' ), true ) ? (string) $s['mat'] : 'paper';
+		// A background colour picked in the editor brings the matching text
+		// tones with it (dark text on a light colour, light on a dark one).
+		$bg_tone = $this->tone( $this->picked( $s, 'color_bg' ) );
+		if ( 'dark' === $bg_tone && 'dark' !== $theme ) {
+			$theme = 'dark';
+		} elseif ( 'light' === $bg_tone && 'dark' === $theme ) {
+			$theme = 'paper';
+		}
+		$tile_tone = $this->tone( $this->picked( $s, 'color_tile' ) );
+		// Frames take the chrome that reads on a picked tile colour.
+		$this->frame_tone = '';
+		if ( 'dark' === $tile_tone && 'dark' !== $theme ) {
+			$this->frame_tone = 'dark';
+		} elseif ( 'light' === $tile_tone && 'dark' === $theme ) {
+			$this->frame_tone = 'light';
+		}
 		$uid    = $this->get_id();
 		$client = trim( (string) ( $cs['client'] ?? '' ) );
 		$accent = (string) ( $cs['accent'] ?? '' );
-		$rows   = $this->plan( $items, $layout );
+		$rows   = $this->plan( $items, $layout, 'none' !== $mat );
 		$count  = count( $items );
 		$pixels = 'yes' === ( $s['pixels'] ?? '' );
 
 		$classes = array( 'avix-csg', 'avix-csg--' . $theme, 'avix-csg--' . $layout, 'avix-csg--mat-' . $mat );
 		if ( 'dark' === $theme ) {
 			$classes[] = 'avix-csk-on-dark';
+		}
+		if ( '' !== $tile_tone ) {
+			$classes[] = 'avix-csg--tile-' . $tile_tone;
 		}
 		if ( 1 === $count ) {
 			$classes[] = 'avix-csg--single';
@@ -603,9 +645,10 @@ class Case_Study_Gallery extends Widget_Base {
 					<div class="avix-csg__track" data-csg-track>
 						<?php
 						foreach ( $rows as $row ) {
-							echo '<div class="avix-csg__row avix-csg__row--' . esc_attr( $row['type'] ) . ' avix-csg__row--n' . (int) count( $row['items'] ) . '" data-csg-row>';
+							$band = ! empty( $row['band'] );
+							echo '<div class="avix-csg__row avix-csg__row--' . esc_attr( $row['type'] ) . ' avix-csg__row--n' . (int) count( $row['items'] ) . ( $band ? ' avix-csg__row--band' : '' ) . ( ! empty( $row['flip'] ) ? ' avix-csg__row--flip' : '' ) . '" data-csg-row>';
 							foreach ( $row['items'] as $slot => $item ) {
-								echo $this->figure( $item, $row['type'], $index, $count, $slot, $client, $pixels ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in figure().
+								echo $this->figure( $item, $row['type'], $index, $count, $slot, $client, $pixels, $band ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in figure().
 								++$index;
 							}
 							echo '</div>';
@@ -745,12 +788,16 @@ class Case_Study_Gallery extends Widget_Base {
 	 *   row "a": D[0] (8 cols) beside P[0] (4 cols);
 	 *   "phones": the other phones, staggered, balanced rows of up to 4;
 	 *   "pair": the other desktop shots two by two, "solo": a last odd one.
+	 * A single phone left over joins the next desktop shot as a mirrored row
+	 * "a" (phone first) instead of standing alone in a full-width tile. Row
+	 * "a" with a render is a "band": the phone sits on the render's dark.
 	 * Carousel: one flat row. Rows without items are skipped.
 	 *
 	 * @param array  $items  Normalised items.
 	 * @param string $layout mosaic | phones | carousel.
+	 * @param bool   $tiles  Whether items sit on tiles (mat is not "none").
 	 */
-	private function plan( array $items, $layout ) {
+	private function plan( array $items, $layout, $tiles = true ) {
 		if ( 'carousel' === $layout ) {
 			return array(
 				array(
@@ -779,9 +826,22 @@ class Case_Study_Gallery extends Widget_Base {
 		}
 
 		if ( $wide && $phones ) {
+			$first  = array_shift( $wide );
 			$rows[] = array(
 				'type'  => 'a',
-				'items' => array( array_shift( $wide ), array_shift( $phones ) ),
+				'band'  => $tiles && 'render' === $first['device'],
+				'items' => array( $first, array_shift( $phones ) ),
+			);
+		}
+
+		// One phone left: beside the next desktop shot, mirrored.
+		if ( 1 === count( $phones ) && $wide && 'phones' !== $layout ) {
+			$first  = array_shift( $wide );
+			$rows[] = array(
+				'type'  => 'a',
+				'flip'  => true,
+				'band'  => $tiles && 'render' === $first['device'],
+				'items' => array( array_shift( $phones ), $first ),
 			);
 		}
 
@@ -842,8 +902,9 @@ class Case_Study_Gallery extends Widget_Base {
 	 * @param int    $slot   Position in its row.
 	 * @param string $client Client name.
 	 * @param bool   $pixels Pixel reveal.
+	 * @param bool   $band   The row is a dark band (a render beside a phone).
 	 */
-	private function figure( array $item, $row, $index, $count, $slot, $client, $pixels ) {
+	private function figure( array $item, $row, $index, $count, $slot, $client, $pixels, $band = false ) {
 		$device  = $item['device'];
 		$alt     = $this->alt( $item, $client );
 		$img     = $this->image( $item, $this->sizes( $device, $row ), $alt );
@@ -876,7 +937,10 @@ class Case_Study_Gallery extends Widget_Base {
 					'pixels'    => $pixels,
 				)
 			);
-			$tile  = '<div class="avix-csg__tile"><div class="avix-csg__device"' . ( 'phone' === $device ? ' data-csg-depth' : '' ) . '>' . $frame . '</div></div>';
+			// On the band's dark tile, or a tile colour picked against the
+			// theme, the frame takes the chrome that reads on it.
+			$tone = $band && 'phone' === $device ? 'dark' : $this->frame_tone;
+			$tile = '<div class="avix-csg__tile' . ( '' !== $tone ? ' avix-csk-on-' . $tone : '' ) . '"><div class="avix-csg__device"' . ( 'phone' === $device ? ' data-csg-depth' : '' ) . '>' . $frame . '</div></div>';
 		}
 
 		$cap = '';
@@ -921,12 +985,26 @@ class Case_Study_Gallery extends Widget_Base {
 
 	/**
 	 * Responsive image, lazy (the gallery is never the first screen).
+	 * Some sites filter attachment images to loading="eager", which fetched
+	 * every screenshot (about 1 MB) before the first scroll and let
+	 * "sizes=auto" pick the largest file: the lazy loading is restored.
 	 *
 	 * @param array  $item  Normalised item.
 	 * @param string $sizes Sizes attribute.
 	 * @param string $alt   Alt text.
 	 */
 	private function image( array $item, $sizes, $alt ) {
+		return $this->lazy( $this->image_html( $item, $sizes, $alt ) );
+	}
+
+	/**
+	 * Image markup before the lazy check.
+	 *
+	 * @param array  $item  Normalised item.
+	 * @param string $sizes Sizes attribute.
+	 * @param string $alt   Alt text.
+	 */
+	private function image_html( array $item, $sizes, $alt ) {
 		$attr = array(
 			'class'    => 'avix-csg__img',
 			'alt'      => $alt,
@@ -948,6 +1026,33 @@ class Case_Study_Gallery extends Widget_Base {
 			esc_url( $item['url'] ),
 			esc_attr( $alt )
 		);
+	}
+
+	/**
+	 * Sets loading="lazy" and drops fetchpriority on the first <img>, when a
+	 * filter changed them. Untouched markup is returned as it came.
+	 *
+	 * @param string $html Image markup.
+	 */
+	private function lazy( $html ) {
+		$html = (string) $html;
+		if ( '' === $html || ! class_exists( '\WP_HTML_Tag_Processor' ) ) {
+			return $html;
+		}
+		$tags = new \WP_HTML_Tag_Processor( $html );
+		if ( ! $tags->next_tag( 'img' ) ) {
+			return $html;
+		}
+		$changed = false;
+		if ( 'lazy' !== $tags->get_attribute( 'loading' ) ) {
+			$tags->set_attribute( 'loading', 'lazy' );
+			$changed = true;
+		}
+		if ( null !== $tags->get_attribute( 'fetchpriority' ) ) {
+			$tags->remove_attribute( 'fetchpriority' );
+			$changed = true;
+		}
+		return $changed ? $tags->get_updated_html() : $html;
 	}
 
 	/**
@@ -1028,6 +1133,72 @@ class Case_Study_Gallery extends Widget_Base {
 		$w    = absint( is_array( $meta ) ? ( $meta['width'] ?? 0 ) : 0 );
 		$h    = absint( is_array( $meta ) ? ( $meta['height'] ?? 0 ) : 0 );
 		return $w && $h ? $w . ' / ' . $h : '';
+	}
+
+	/**
+	 * A colour control's value, or the value of the global colour picked
+	 * instead of a plain one ('' when neither can be read).
+	 *
+	 * @param array  $s   Settings.
+	 * @param string $key Control name.
+	 */
+	private function picked( array $s, $key ) {
+		$value = isset( $s[ $key ] ) && is_string( $s[ $key ] ) ? trim( $s[ $key ] ) : '';
+		if ( '' !== $value ) {
+			return $value;
+		}
+		$globals = isset( $s['__globals__'] ) && is_array( $s['__globals__'] ) ? $s['__globals__'] : $this->get_settings( '__globals__' );
+		$ref     = is_array( $globals ) && isset( $globals[ $key ] ) && is_string( $globals[ $key ] ) ? $globals[ $key ] : '';
+		if ( ! preg_match( '#^globals/colors\?id=([\w-]+)$#', $ref, $m ) || ! class_exists( '\Elementor\Plugin' ) || empty( \Elementor\Plugin::$instance->kits_manager ) ) {
+			return '';
+		}
+		foreach ( array( 'system_colors', 'custom_colors' ) as $group ) {
+			$list = \Elementor\Plugin::$instance->kits_manager->get_current_settings( $group );
+			foreach ( is_array( $list ) ? $list : array() as $row ) {
+				if ( is_array( $row ) && (string) ( $row['_id'] ?? '' ) === $m[1] ) {
+					return (string) ( $row['color'] ?? '' );
+				}
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * "dark" or "light" for a colour picked in the editor, so the text on it
+	 * can follow; '' when it cannot be read (a global colour, a mostly
+	 * transparent one).
+	 *
+	 * @param mixed $value Colour control value (#hex or rgb()/rgba()).
+	 */
+	private function tone( $value ) {
+		$value = strtolower( trim( is_scalar( $value ) ? (string) $value : '' ) );
+		$rgb   = array();
+		$alpha = 1.0;
+		if ( preg_match( '/^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/', $value, $m ) ) {
+			$hex = $m[1];
+			if ( strlen( $hex ) <= 4 ) {
+				$hex = preg_replace( '/(.)/', '$1$1', $hex );
+			}
+			$rgb = array( hexdec( substr( $hex, 0, 2 ) ), hexdec( substr( $hex, 2, 2 ) ), hexdec( substr( $hex, 4, 2 ) ) );
+			if ( 8 === strlen( $hex ) ) {
+				$alpha = hexdec( substr( $hex, 6, 2 ) ) / 255;
+			}
+		} elseif ( preg_match( '/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:[\s,\/]+([\d.]+)(%?))?/', $value, $m ) ) {
+			$rgb = array( (float) $m[1], (float) $m[2], (float) $m[3] );
+			if ( isset( $m[4] ) && '' !== $m[4] ) {
+				$alpha = (float) $m[4] / ( '%' === ( $m[5] ?? '' ) ? 100 : 1 );
+			}
+		}
+		if ( 3 !== count( $rgb ) || $alpha < 0.5 ) {
+			return '';
+		}
+		$lum = 0;
+		foreach ( array( 0.2126, 0.7152, 0.0722 ) as $i => $weight ) {
+			$c    = max( 0, min( 255, (float) $rgb[ $i ] ) ) / 255;
+			$lum += $weight * ( $c <= 0.03928 ? $c / 12.92 : pow( ( $c + 0.055 ) / 1.055, 2.4 ) );
+		}
+		// Near-black and white text reach the same contrast at about 0.18.
+		return $lum < 0.18 ? 'dark' : 'light';
 	}
 
 	/**

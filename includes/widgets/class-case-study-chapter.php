@@ -365,7 +365,7 @@ class Case_Study_Chapter extends Widget_Base {
 			'theme',
 			array(
 				'label'       => esc_html__( 'Theme', 'avix-widgets' ),
-				'description' => esc_html__( 'Automatic: white for the challenge and What we built, warm paper for the approach, so the chapters alternate.', 'avix-widgets' ),
+				'description' => esc_html__( 'Automatic: white for the challenge and What we built, warm paper for the approach, so the chapters alternate. Every theme sets all the colours (text, cards, chips, lines); any colour you pick below still wins.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SELECT,
 				'default'     => 'auto',
 				'options'     => array(
@@ -377,6 +377,16 @@ class Case_Study_Chapter extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'colors_note',
+			array(
+				'type'            => Controls_Manager::RAW_HTML,
+				'raw'             => esc_html__( 'Leave the colours empty to follow the theme. When you change a background or the cards, set the matching text colours too, so nothing disappears.', 'avix-widgets' ),
+				'content_classes' => 'elementor-descriptor',
+				'separator'       => 'before',
+			)
+		);
+
 		$colors = array(
 			'bg'          => array( esc_html__( 'Background', 'avix-widgets' ), '--csc-bg' ),
 			'ink'         => array( esc_html__( 'Headline', 'avix-widgets' ), '--csc-ink' ),
@@ -385,6 +395,8 @@ class Case_Study_Chapter extends Widget_Base {
 			'accent'      => array( esc_html__( 'Accent', 'avix-widgets' ), '--csc-accent' ),
 			'accent_text' => array( esc_html__( 'Small orange text', 'avix-widgets' ), '--csc-accent-text' ),
 			'card_bg'     => array( esc_html__( 'Cards', 'avix-widgets' ), '--csc-card-bg' ),
+			'card_ink'    => array( esc_html__( 'Card titles', 'avix-widgets' ), '--csc-card-ink' ),
+			'card_muted'  => array( esc_html__( 'Card text', 'avix-widgets' ), '--csc-card-muted' ),
 		);
 		foreach ( $colors as $key => $color ) {
 			$this->add_control(
@@ -393,7 +405,6 @@ class Case_Study_Chapter extends Widget_Base {
 					'label'     => $color[0],
 					'type'      => Controls_Manager::COLOR,
 					'selectors' => array( '{{WRAPPER}} .avix-csc' => $color[1] . ': {{VALUE}};' ),
-					'separator' => 'bg' === $key ? 'before' : '',
 				)
 			);
 		}
@@ -466,7 +477,9 @@ class Case_Study_Chapter extends Widget_Base {
 	 * @param string $text Raw text.
 	 */
 	private function accent_html( $text ) {
-		$html  = esc_html( trim( (string) $text ) );
+		$html = esc_html( trim( (string) $text ) );
+		// Short hyphenated words ("e-commerce") never split at the hyphen in a large headline.
+		$html = (string) preg_replace( '/(?<![\p{L}\d-])([\p{L}\d]{1,3}-[\p{L}\d]{2,12})(?![\p{L}\d-])/u', '<span class="avix-csc__nowrap">$1</span>', $html );
 		$html  = preg_replace( '/\[([^\[\]]+)\]/u', '<span class="avix-csc__accent">$1</span>', $html );
 		$lines = preg_split( '/\r\n|\r|\n/', (string) $html );
 		return implode( ' <br class="avix-csc__break">', array_map( 'trim', $lines ) );

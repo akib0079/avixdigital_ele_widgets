@@ -168,9 +168,11 @@ final class Kit {
 		if ( '' === $text ) {
 			return '';
 		}
+		// A " · " separator stays at the end of a line, never starts one.
+		$html = str_replace( ' · ', '&nbsp;· ', esc_html( $text ) );
 		return '<p class="' . esc_attr( trim( $class . ' avix-csk-eyebrow' ) ) . '">'
 			. '<span class="avix-csk-eyebrow__px" aria-hidden="true"></span>'
-			. '<span class="avix-csk-eyebrow__text">' . esc_html( $text ) . '</span></p>';
+			. '<span class="avix-csk-eyebrow__text">' . $html . '</span></p>';
 	}
 
 	/**

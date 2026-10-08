@@ -32,7 +32,9 @@
 	--csk-cover: #0b0b0c;
 }
 
-/* Light mats inside a dark section switch the frames back to light. */
+/* Light mats inside a dark section switch the frames back to light;
+   `.avix-csk-on-light` does the same for a whole light-themed widget. */
+.avix-csk-on-light,
 .avix-csk-mat--paper,
 .avix-csk-mat--white,
 .avix-csk-mat--tint {
@@ -302,6 +304,37 @@
 	pointer-events: none;
 }
 
+.avix-csk-on-light {
+	--csk-cover: #f5f3ef;
+}
+
+/* ---------- Shader background ----------
+   Added by AvixCsk.shader() inside an absolutely positioned background
+   layer: anchored to its top left (no layout shift), sized by the script,
+   faded out at the bottom, and faded in once the first frame is drawn. */
+.avix-csk-shader {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	opacity: 0;
+	pointer-events: none;
+	-webkit-mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - var(--csk-shader-fade, 30%)), transparent 100%);
+	mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - var(--csk-shader-fade, 30%)), transparent 100%);
+	transition: opacity 0.9s ease;
+}
+
+.avix-csk-shader.is-on {
+	opacity: 1;
+}
+
 /* ---------- Eyebrow ---------- */
 
 .avix-csk-eyebrow.avix-csk-eyebrow {
@@ -413,9 +446,13 @@
 }
 
 /* A <figure> wrapper for frames: the theme clips every figure
-   (overflow: hidden), which would cut the frame shadows. Margins stay at
+   (overflow: hidden) and lays it out as a centred flex row
+   (figure { display: flex; align-items: center }), which would cut the
+   frame shadows and shrink the frame. Block and margins stay at
    single-class strength so a widget's own (doubled) selector can set them. */
 .avix-csk-figure {
+	display: block;
+	align-items: stretch;
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -520,7 +557,11 @@
 		display: none;
 	}
 
-	.avix-csk-chips .avix-csk-chip {
+	.avix-csk-chips .avix-csk-chip,
+	.avix-csk-shader {
 		transition-duration: 0.01ms !important;
 	}
 }
+
+/* The Algenix theme styles every figure as a centred flex column; kit figures must not collapse or clip. */
+.avix-csk-figure { overflow: visible; }

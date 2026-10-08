@@ -2,9 +2,9 @@
 /**
  * Case Study Grid: the /case-studies/ index. A breadcrumb and an editorial
  * header, service filter chips, then the case studies as cards in the home
- * page's Selected Work language: the image with a dark info panel over its
- * foot (client, tags, summary, the "Designed for" line, one checked metric
- * and a "View case study" pill). The first card is wide. Filters and "Load
+ * page's Selected Work language: the image with an info panel at its foot
+ * (client, tags, summary, the "Designed for" line, one checked metric and a
+ * "View case study" pill), light or dark with the theme. The first card is wide. Filters and "Load
  * more" work without a reload, and as plain ?service= / ?pg= links without
  * JavaScript.
  *
@@ -258,7 +258,7 @@ class Case_Study_Grid extends Widget_Base {
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'panel',
 				'options' => array(
-					'panel'   => esc_html__( 'Dark panel (as on the home page)', 'avix-widgets' ),
+					'panel'   => esc_html__( 'Panel (as on the home page)', 'avix-widgets' ),
 					'minimal' => esc_html__( 'Minimal', 'avix-widgets' ),
 				),
 			)
@@ -387,10 +387,11 @@ class Case_Study_Grid extends Widget_Base {
 		$this->add_control(
 			'theme',
 			array(
-				'label'   => esc_html__( 'Theme', 'avix-widgets' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => 'paper',
-				'options' => array(
+				'label'       => esc_html__( 'Theme', 'avix-widgets' ),
+				'description' => esc_html__( 'Sets every colour at once: background, headings, filter chips, card panels and buttons. Paper and White give light card panels, Dark gives dark ones.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'paper',
+				'options'     => array(
 					'paper' => esc_html__( 'Paper', 'avix-widgets' ),
 					'white' => esc_html__( 'White', 'avix-widgets' ),
 					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
@@ -398,24 +399,55 @@ class Case_Study_Grid extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'card_panel',
+			array(
+				'label'       => esc_html__( 'Card panel', 'avix-widgets' ),
+				'description' => esc_html__( 'Auto follows the theme. Dark gives the home page\'s dark panels on a light section.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'auto',
+				'options'     => array(
+					'auto'  => esc_html__( 'Auto (follows the theme)', 'avix-widgets' ),
+					'light' => esc_html__( 'Light', 'avix-widgets' ),
+					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
+				),
+				'condition'   => array( 'card_style' => 'panel' ),
+			)
+		);
+
+		$this->add_control(
+			'colours_note',
+			array(
+				'type'            => Controls_Manager::RAW_HTML,
+				'raw'             => esc_html__( 'Leave the colours empty to use the theme. A background or card panel colour you pick also switches the text on it to dark or light, so it stays readable.', 'avix-widgets' ),
+				'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+				'separator'       => 'before',
+			)
+		);
+
+		// Empty by default: the theme's tokens apply until a colour is picked.
+		// Background and panel colours re-render, so the text on them follows.
 		$colours = array(
-			'bg'       => array( esc_html__( 'Background', 'avix-widgets' ), '--csi-bg' ),
-			'ink'      => array( esc_html__( 'Headings', 'avix-widgets' ), '--csi-ink' ),
-			'muted'    => array( esc_html__( 'Body text', 'avix-widgets' ), '--csi-muted' ),
-			'line'     => array( esc_html__( 'Lines', 'avix-widgets' ), '--csi-line' ),
-			'accent'   => array( esc_html__( 'Accent', 'avix-widgets' ), '--csi-accent' ),
-			'panel'    => array( esc_html__( 'Card panel', 'avix-widgets' ), '--csi-panel' ),
-			'panel_hi' => array( esc_html__( 'Card highlight (on the panel)', 'avix-widgets' ), '--csi-panel-accent' ),
+			'bg'          => array( esc_html__( 'Background', 'avix-widgets' ), '--csi-bg: {{VALUE}};', true ),
+			'ink'         => array( esc_html__( 'Headings', 'avix-widgets' ), '--csi-ink: {{VALUE}};', false ),
+			'muted'       => array( esc_html__( 'Body text', 'avix-widgets' ), '--csi-muted: {{VALUE}};', false ),
+			'line'        => array( esc_html__( 'Lines', 'avix-widgets' ), '--csi-line: {{VALUE}};', false ),
+			'accent'      => array( esc_html__( 'Accent', 'avix-widgets' ), '--csi-accent: {{VALUE}};', false ),
+			'panel'       => array( esc_html__( 'Card panel', 'avix-widgets' ), '--csi-panel: {{VALUE}};', true ),
+			'panel_ink'   => array( esc_html__( 'Card text (client name, figures)', 'avix-widgets' ), '--csi-panel-ink: {{VALUE}};', false ),
+			'panel_muted' => array( esc_html__( 'Card secondary text', 'avix-widgets' ), '--csi-panel-muted: {{VALUE}}; --csi-panel-dim: {{VALUE}};', false ),
+			'panel_hi'    => array( esc_html__( 'Card highlight (number, key line)', 'avix-widgets' ), '--csi-panel-accent: {{VALUE}};', false ),
 		);
 		foreach ( $colours as $key => $colour ) {
-			$this->add_control(
-				'color_' . $key,
-				array(
-					'label'     => $colour[0],
-					'type'      => Controls_Manager::COLOR,
-					'selectors' => array( '{{WRAPPER}} .avix-csi' => $colour[1] . ': {{VALUE}};' ),
-				)
+			$control = array(
+				'label'     => $colour[0],
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => array( '{{WRAPPER}} .avix-csi' => $colour[1] ),
 			);
+			if ( $colour[2] ) {
+				$control['render_type'] = 'template';
+			}
+			$this->add_control( 'color_' . $key, $control );
 		}
 
 		$this->add_responsive_control(
@@ -576,10 +608,13 @@ class Case_Study_Grid extends Widget_Base {
 
 		$classes = array(
 			'avix-csi',
-			'avix-csi--' . ( in_array( (string) ( $s['theme'] ?? '' ), array( 'paper', 'white', 'dark' ), true ) ? $s['theme'] : 'paper' ),
+			'avix-csi--' . $this->theme( $s ),
 			'avix-csi--cols-' . ( '3' === (string) ( $s['columns'] ?? '2' ) ? '3' : '2' ),
 			'avix-csi--' . $args['style'],
 		);
+		if ( 'panel' === $args['style'] ) {
+			$classes = array_merge( $classes, $this->panel_classes( $s ) );
+		}
 		if ( 'yes' === ( $s['clear_header'] ?? '' ) && $has_head ) {
 			$classes[] = 'avix-csi--clear';
 		}
@@ -652,7 +687,9 @@ class Case_Study_Grid extends Widget_Base {
 				<p class="avix-csi__sr" role="status" aria-live="polite" data-csi-announce></p>
 				<?php
 				$this->render_empty( $s, 0 === $total );
-				if ( $show_more ) {
+				// Nothing can ever be loaded (every study fits the first page, and
+				// a filter only narrows that): no button, no link to an empty ?pg=2.
+				if ( $show_more && ( $base_total > $args['per_page'] || $args['page'] > 1 ) ) {
 					$this->render_more( $s, $args, $base, $total, $shown, $has_more );
 				}
 				?>
@@ -806,7 +843,8 @@ class Case_Study_Grid extends Widget_Base {
 				<?php if ( $args['page'] > 1 ) : ?>
 					<a class="avix-csi__prev" href="<?php echo esc_url( $this->page_url( $args, $base, $args['page'] - 1 ) ); ?>"><?php esc_html_e( 'Previous page', 'avix-widgets' ); ?></a>
 				<?php endif; ?>
-				<a class="avix-csi__more" href="<?php echo esc_url( $next ); ?>" data-csi-more<?php echo $has_more ? '' : ' hidden'; ?>>
+				<?php // Without a next page there is no address yet: the script sets it when a filter brings more. ?>
+				<a class="avix-csi__more"<?php echo $has_more ? ' href="' . esc_url( $next ) . '"' : ' hidden'; ?> data-csi-more>
 					<span class="avix-csi__more-text" data-csi-more-text><?php echo esc_html( $text ); ?></span>
 					<span class="avix-csi__more-icon" aria-hidden="true">
 						<svg class="avix-csi__plus" viewBox="0 0 24 24" focusable="false"><path d="M12 5v14M5 12h14"/></svg>
@@ -929,6 +967,115 @@ class Case_Study_Grid extends Widget_Base {
 				'{total}' => '<strong data-csi-total>' . esc_html( number_format_i18n( $total ) ) . '</strong>',
 			)
 		);
+	}
+
+	/**
+	 * The section theme. A background colour picked in the editor brings the
+	 * matching text tones (a dark colour switches to Dark, a light one away
+	 * from it), so headings never vanish into it.
+	 *
+	 * @param array $s Settings.
+	 */
+	private function theme( array $s ) {
+		$theme = in_array( (string) ( $s['theme'] ?? '' ), array( 'paper', 'white', 'dark' ), true ) ? (string) $s['theme'] : 'paper';
+		$tone  = $this->tone( $this->picked( $s, 'color_bg' ) );
+		if ( 'dark' === $tone && 'dark' !== $theme ) {
+			return 'dark';
+		}
+		if ( 'light' === $tone && 'dark' === $theme ) {
+			return 'paper';
+		}
+		return $theme;
+	}
+
+	/**
+	 * Card panel classes: the tone (light on Paper and White, dark on Dark,
+	 * or the "Card panel" pick; a picked panel colour decides the text) and
+	 * the surface when it would melt into the section.
+	 *
+	 * @param array $s Settings.
+	 */
+	private function panel_classes( array $s ) {
+		$theme = $this->theme( $s );
+		$pick  = (string) ( $s['card_panel'] ?? 'auto' );
+		$tone  = in_array( $pick, array( 'light', 'dark' ), true ) ? $pick : ( 'dark' === $theme ? 'dark' : 'light' );
+		$own   = $this->tone( $this->picked( $s, 'color_panel' ) );
+		if ( '' !== $own ) {
+			return array( 'avix-csi--panel-' . $own, 'avix-csi--panel-picked' );
+		}
+		$classes = array( 'avix-csi--panel-' . $tone );
+		if ( 'light' === $tone && 'white' === $theme ) {
+			$classes[] = 'avix-csi--panel-paper';
+		} elseif ( 'dark' === $tone && 'dark' === $theme ) {
+			$classes[] = 'avix-csi--panel-graphite';
+		}
+		return $classes;
+	}
+
+	/**
+	 * A colour control's value, or the value of the global colour picked
+	 * instead of a plain one ('' when neither can be read).
+	 *
+	 * @param array  $s   Settings.
+	 * @param string $key Control name.
+	 */
+	private function picked( array $s, $key ) {
+		$value = isset( $s[ $key ] ) && is_string( $s[ $key ] ) ? trim( $s[ $key ] ) : '';
+		if ( '' !== $value ) {
+			return $value;
+		}
+		$globals = isset( $s['__globals__'] ) && is_array( $s['__globals__'] ) ? $s['__globals__'] : $this->get_settings( '__globals__' );
+		$ref     = is_array( $globals ) && isset( $globals[ $key ] ) && is_string( $globals[ $key ] ) ? $globals[ $key ] : '';
+		if ( ! preg_match( '#^globals/colors\?id=([\w-]+)$#', $ref, $m ) || ! class_exists( '\Elementor\Plugin' ) || empty( \Elementor\Plugin::$instance->kits_manager ) ) {
+			return '';
+		}
+		foreach ( array( 'system_colors', 'custom_colors' ) as $group ) {
+			$list = \Elementor\Plugin::$instance->kits_manager->get_current_settings( $group );
+			foreach ( is_array( $list ) ? $list : array() as $row ) {
+				if ( is_array( $row ) && (string) ( $row['_id'] ?? '' ) === $m[1] ) {
+					return (string) ( $row['color'] ?? '' );
+				}
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * "dark" or "light" for a colour picked in the editor, so the text on it
+	 * can follow; '' when it cannot be read (a global colour, a mostly
+	 * transparent one).
+	 *
+	 * @param mixed $value Colour control value (#hex or rgb()/rgba()).
+	 */
+	private function tone( $value ) {
+		$value = strtolower( trim( is_scalar( $value ) ? (string) $value : '' ) );
+		$rgb   = array();
+		$alpha = 1.0;
+		if ( preg_match( '/^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/', $value, $m ) ) {
+			$hex = $m[1];
+			if ( strlen( $hex ) <= 4 ) {
+				$hex = preg_replace( '/(.)/', '$1$1', $hex );
+			}
+			$rgb = array( hexdec( substr( $hex, 0, 2 ) ), hexdec( substr( $hex, 2, 2 ) ), hexdec( substr( $hex, 4, 2 ) ) );
+			if ( 8 === strlen( $hex ) ) {
+				$alpha = hexdec( substr( $hex, 6, 2 ) ) / 255;
+			}
+		} elseif ( preg_match( '/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:[\s,\/]+([\d.]+)(%?))?/', $value, $m ) ) {
+			$rgb = array( (float) $m[1], (float) $m[2], (float) $m[3] );
+			if ( isset( $m[4] ) && '' !== $m[4] ) {
+				$alpha = (float) $m[4] / ( '%' === ( $m[5] ?? '' ) ? 100 : 1 );
+			}
+		}
+		if ( 3 !== count( $rgb ) || $alpha < 0.5 ) {
+			return '';
+		}
+		$lum = 0;
+		foreach ( array( 0.2126, 0.7152, 0.0722 ) as $i => $weight ) {
+			$c    = max( 0, min( 255, (float) $rgb[ $i ] ) ) / 255;
+			$lum += $weight * ( $c <= 0.03928 ? $c / 12.92 : pow( ( $c + 0.055 ) / 1.055, 2.4 ) );
+		}
+		// Near-black and white text reach the same contrast at about 0.18.
+		return $lum < 0.18 ? 'dark' : 'light';
 	}
 
 	private function is_editor() {

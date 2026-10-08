@@ -458,7 +458,13 @@
 		}
 		if (this.more) {
 			this.more.hidden = !hasMore;
-			this.more.href = this.url({ page: this.page + 1 });
+			// Only a next page that exists gets an address (crawlers read the
+			// rendered DOM too: no links to empty pages).
+			if (hasMore) {
+				this.more.href = this.url({ page: this.page + 1 });
+			} else {
+				this.more.removeAttribute('href');
+			}
 		}
 		// The no-JS "Previous page" link belongs to the page it was printed on.
 		var prev = this.root.querySelector('.avix-csi__prev');
@@ -507,7 +513,7 @@
 	Grid.prototype.url = function (opts) {
 		var cfg = this.cfg;
 		if (!window.URL) {
-			return this.more ? this.more.href : window.location.href;
+			return this.more && this.more.href ? this.more.href : window.location.href;
 		}
 		var url = new window.URL(window.location.href);
 		url.searchParams.delete(cfg.pageVar || 'pg');

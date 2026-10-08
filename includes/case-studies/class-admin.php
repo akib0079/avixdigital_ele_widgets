@@ -38,7 +38,7 @@ final class Admin {
 		'overview' => array(
 			array(
 				'title' => 'Headline',
-				'note'  => 'The dark hero at the top of the page.',
+				'note'  => 'The hero at the top of the page.',
 				'keys'  => array( 'client', 'display_title', 'summary' ),
 			),
 			array(
@@ -769,7 +769,7 @@ final class Admin {
 				)
 			);
 			if ( ! empty( $_POST['index_page'] ) ) {
-				Importer::index_page( array( 'publish' => true ) );
+				Importer::index_page( array( 'publish' => true, 'reset' => true ) );
 			}
 		} catch ( \Throwable $error ) {
 			error_log( 'Avix case studies: import failed: ' . $error->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log

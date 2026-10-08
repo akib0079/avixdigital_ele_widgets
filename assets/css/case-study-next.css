@@ -1,30 +1,43 @@
 /*!
  * Avix Digital · Case Study Next
- * The end of a case study: a white call-to-action card with the page's one
- * pixel character seated on its top edge, then the next case study as a
- * large render with a dark info panel overlapping its right edge (stacked
- * under the image on narrow cards). Layout follows the widget width
- * (container queries), and each card follows its own width.
+ * The end of a case study: a call-to-action card with the page's one pixel
+ * character seated on its top edge, then the next case study as a large
+ * render with an info panel overlapping its right edge (stacked under the
+ * image on narrow cards). The section comes in warm paper (default), white
+ * or dark; the panel is light (default) or dark. Layout follows the widget
+ * width (container queries), and each card follows its own width.
  */
 
 .avix-csn {
+	/* Warm paper: the default. */
 	--csn-bg: #f5f3ef;
 	--csn-card: #ffffff;
 	--csn-card-line: rgba(26, 26, 26, 0.07);
+	--csn-card-shadow: 0 1px 2px rgba(26, 26, 26, 0.03), 0 30px 60px -40px rgba(26, 26, 26, 0.28);
 	--csn-ink: #1a1a1a;
 	--csn-muted: #5c5f66;
 	--csn-line: rgba(26, 26, 26, 0.1);
 	--csn-accent: #fb6007;
-	--csn-accent-text: #c54804;
+	--csn-accent-text: #bf4604;
 	--csn-accent-title: color-mix(in srgb, var(--csn-accent) 88%, #000000);
+	--csn-focus: #bf4604;
 	--csn-btn-hover: #e25504;
-	--csn-panel: #111111;
-	--csn-panel-ink: #ffffff;
-	--csn-panel-muted: #b9b6b1;
-	--csn-panel-soft: rgba(255, 255, 255, 0.07);
-	--csn-panel-accent: #ff7a2c;
-	--csn-panel-glow: rgba(251, 96, 7, 0.13);
+	--csn-pal-glow: color-mix(in srgb, var(--csn-accent) 20%, transparent);
 	--csn-mat: #e9e6df;
+	--csn-mat-ink: rgba(26, 26, 26, 0.18);
+	/* The next card's panel: light by default (see the panel tones below). */
+	--csn-panel: #ffffff;
+	--csn-panel-ink: #1a1a1a;
+	--csn-panel-muted: #5c5f66;
+	--csn-panel-accent: #bf4604;
+	--csn-panel-line: rgba(26, 26, 26, 0.07);
+	--csn-panel-soft: #f5f3ef;
+	--csn-panel-tag-line: rgba(26, 26, 26, 0.06);
+	--csn-panel-tag-ink: #3a3c40;
+	--csn-panel-glow: rgba(251, 96, 7, 0.07);
+	--csn-panel-shadow: 0 1px 2px rgba(26, 26, 26, 0.04), 0 30px 60px -30px rgba(11, 11, 12, 0.32);
+	--csn-go: #1a1a1a;
+	--csn-go-ink: #ffffff;
 	--csn-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
 	--csn-font-body: "Inter", Arial, sans-serif;
 	--csn-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -53,6 +66,45 @@
 	--csn-bg: #ffffff;
 	--csn-card: #f7f5f1;
 	--csn-card-line: rgba(26, 26, 26, 0.05);
+	--csn-card-shadow: none;
+	--csn-panel-line: rgba(26, 26, 26, 0.09);
+}
+
+.avix-csn--dark {
+	--csn-bg: #0b0b0c;
+	--csn-card: #141416;
+	--csn-card-line: rgba(255, 255, 255, 0.08);
+	--csn-card-shadow: 0 40px 80px -48px rgba(0, 0, 0, 0.9);
+	--csn-ink: #ffffff;
+	--csn-muted: rgba(255, 255, 255, 0.68);
+	--csn-line: rgba(255, 255, 255, 0.1);
+	--csn-accent-text: #ff7a2c;
+	--csn-accent-title: #ff7a2c;
+	--csn-focus: var(--csn-accent);
+	--csn-pal-glow: color-mix(in srgb, var(--csn-accent) 30%, transparent);
+	--csn-mat: #161719;
+	--csn-mat-ink: rgba(255, 255, 255, 0.16);
+	--csn-panel-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
+}
+
+/* Dark panel: the Selected Work language, on any section theme. */
+.avix-csn--panel-dark {
+	--csn-panel: #111111;
+	--csn-panel-ink: #ffffff;
+	--csn-panel-muted: #b9b6b1;
+	--csn-panel-accent: #ff7a2c;
+	--csn-panel-line: rgba(255, 255, 255, 0.06);
+	--csn-panel-soft: rgba(255, 255, 255, 0.07);
+	--csn-panel-tag-line: rgba(255, 255, 255, 0.06);
+	--csn-panel-tag-ink: #dcdcdc;
+	--csn-panel-glow: rgba(251, 96, 7, 0.13);
+	--csn-go: #ffffff;
+	--csn-go-ink: #111111;
+}
+
+.avix-csn--dark.avix-csn--panel-dark {
+	--csn-panel: #151517;
+	--csn-panel-line: rgba(255, 255, 255, 0.09);
 }
 
 /* Container queries style descendants only: width-based tokens live on the
@@ -67,21 +119,32 @@
 
 /* ---------- Call to action ---------- */
 
+/* The headline runs across the card; the text and the buttons share the
+   row below it. */
 .avix-csn__cta {
 	position: relative;
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-areas: "title title" "text actions";
 	align-items: end;
-	gap: 28px clamp(32px, 5cqi, 72px);
-	padding: clamp(28px, 4cqi, 48px);
+	gap: clamp(16px, 1.6cqi, 22px) clamp(32px, 5cqi, 72px);
+	padding: clamp(32px, 5cqi, 72px);
 	border: 1px solid var(--csn-card-line);
-	border-radius: 24px;
+	border-radius: 28px;
 	background: var(--csn-card);
-	box-shadow: 0 1px 2px rgba(26, 26, 26, 0.03), 0 30px 60px -40px rgba(26, 26, 26, 0.28);
+	box-shadow: var(--csn-card-shadow);
 }
 
-.avix-csn--white .avix-csn__cta {
-	box-shadow: none;
+/* The brand's CTA: an orange hairline along the top edge. */
+.avix-csn__cta::before {
+	position: absolute;
+	top: -1px;
+	left: 6%;
+	right: 6%;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--csn-accent) 75%, transparent) 30%, color-mix(in srgb, var(--csn-accent) 75%, transparent) 70%, transparent);
+	pointer-events: none;
+	content: "";
 }
 
 /* Seated on the card's top edge: the seat (row 7 of 12) lines up with the
@@ -95,6 +158,20 @@
 	line-height: 0;
 	margin-top: calc(var(--csn-pal) * -1.2 * 7 / 12);
 	pointer-events: none;
+}
+
+/* The hero glow, small, behind the character. */
+.avix-csn__perch::before {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: -1;
+	width: calc(var(--csn-pal) * 4.2);
+	height: calc(var(--csn-pal) * 4.2);
+	border-radius: 50%;
+	background: radial-gradient(closest-side, var(--csn-pal-glow), transparent);
+	transform: translate(-50%, -50%);
+	content: "";
 }
 
 .avix-csn .avix-csn__pal {
@@ -120,25 +197,28 @@
 }
 
 .avix-csn__cta-copy {
-	min-width: 0;
+	display: contents;
 }
 
 .avix-csn .avix-csn__title {
-	max-width: 22ch;
+	grid-area: title;
+	align-self: start;
+	max-width: 19ch;
 	margin: 0;
 	padding: 0;
 	color: var(--csn-ink);
 	font-family: var(--csn-font-display);
-	font-size: clamp(26px, 3cqi, 40px);
+	font-size: clamp(36px, 4.2cqi, 60px);
 	font-weight: 600;
-	line-height: 1.1;
-	letter-spacing: -0.03em;
+	line-height: 1.04;
+	letter-spacing: -0.04em;
 	text-transform: none;
 	text-wrap: balance;
 	overflow-wrap: break-word;
 }
 
 .avix-csn--pal .avix-csn__title {
+	max-width: calc(19ch + var(--csn-pal) + 24px);
 	padding-right: calc(var(--csn-pal) + 24px);
 }
 
@@ -147,8 +227,11 @@
 }
 
 .avix-csn .avix-csn__text {
+	grid-area: text;
+	align-self: center;
+	min-width: 0;
 	max-width: 52ch;
-	margin: clamp(12px, 1.2cqi, 16px) 0 0;
+	margin: 0;
 	padding: 0;
 	color: var(--csn-muted);
 	font-family: var(--csn-font-body);
@@ -158,6 +241,7 @@
 }
 
 .avix-csn__actions {
+	grid-area: actions;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -172,12 +256,12 @@
 	justify-content: space-between;
 	gap: 14px;
 	max-width: 100%;
-	min-height: 56px;
+	min-height: 60px;
 	margin: 0;
 	border: 0;
 	border-radius: 999px;
 	font-family: var(--csn-font-body);
-	font-size: 15.5px;
+	font-size: 17px;
 	font-weight: 600;
 	line-height: 1.2;
 	letter-spacing: -0.005em;
@@ -192,7 +276,7 @@
 .avix-csn .avix-csn__btn--primary,
 .avix-csn .avix-csn__btn--primary:visited,
 .avix-csn .avix-csn__btn--primary:focus {
-	padding: 6px 6px 6px 26px;
+	padding: 6px 6px 6px 28px;
 	color: #ffffff;
 	background: var(--csn-accent);
 	box-shadow: 0 16px 30px -16px color-mix(in srgb, var(--csn-accent) 85%, transparent);
@@ -202,8 +286,8 @@
 	display: grid;
 	flex: none;
 	place-items: center;
-	width: 44px;
-	height: 44px;
+	width: 48px;
+	height: 48px;
 	border-radius: 50%;
 	color: var(--csn-accent);
 	background: #ffffff;
@@ -283,7 +367,7 @@
 .avix-csn .avix-csn__btn:focus-visible,
 .avix-csn .avix-csn__more:focus-visible,
 .avix-csn .avix-csn__card:focus-visible {
-	outline: 2px solid var(--csn-accent) !important;
+	outline: 2px solid var(--csn-focus) !important;
 	outline-offset: 4px !important;
 }
 
@@ -340,6 +424,17 @@
 	background: #0b0b0c;
 }
 
+/* A render on a dark section: a hairline keeps the card's edge. */
+.avix-csn--dark .avix-csn__media::before {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: inherit;
+	pointer-events: none;
+	content: "";
+}
+
 /* A soft warm wash on hover, like the home Selected Work cards. */
 .avix-csn__media::after {
 	position: absolute;
@@ -376,7 +471,7 @@
 	place-items: center;
 	width: 100%;
 	height: 100%;
-	color: rgba(26, 26, 26, 0.18);
+	color: var(--csn-mat-ink);
 	font-family: var(--csn-font-display);
 	font-size: clamp(64px, 12cqi, 160px);
 	font-weight: 600;
@@ -392,11 +487,12 @@
 	margin: -56px 14px 0;
 	padding: clamp(24px, 6cqi, 34px);
 	overflow: hidden;
+	border: 1px solid var(--csn-panel-line);
 	border-radius: 22px;
 	color: var(--csn-panel-ink);
 	background-color: var(--csn-panel);
 	background-image: radial-gradient(90% 46% at 100% 0%, var(--csn-panel-glow), transparent 70%);
-	box-shadow: 0 30px 60px -30px rgba(11, 11, 12, 0.45);
+	box-shadow: var(--csn-panel-shadow);
 	transition: transform 0.52s var(--csn-ease);
 }
 
@@ -437,16 +533,17 @@
 
 .avix-csn .avix-csn__summary {
 	display: -webkit-box;
-	max-width: 40ch;
+	max-width: 46ch;
 	margin-top: 16px;
 	overflow: hidden;
 	color: var(--csn-panel-muted);
 	font-family: var(--csn-font-body);
 	font-size: 15px;
 	line-height: 1.55;
+	text-wrap: pretty;
 	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
-	line-clamp: 2;
+	-webkit-line-clamp: 5;
+	line-clamp: 5;
 }
 
 .avix-csn__foot {
@@ -470,9 +567,9 @@
 	align-items: center;
 	min-height: 28px;
 	padding: 7px 11px;
-	border: 1px solid rgba(255, 255, 255, 0.06);
+	border: 1px solid var(--csn-panel-tag-line);
 	border-radius: 999px;
-	color: #dcdcdc;
+	color: var(--csn-panel-tag-ink);
 	background: var(--csn-panel-soft);
 	font-family: var(--csn-font-body);
 	font-size: 11.5px;
@@ -489,8 +586,8 @@
 	height: 56px;
 	margin-left: auto;
 	border-radius: 50%;
-	color: #111111;
-	background: #ffffff;
+	color: var(--csn-go-ink);
+	background: var(--csn-go);
 	transition: background-color 0.3s ease, color 0.3s ease, transform 0.45s var(--csn-ease);
 }
 
@@ -553,9 +650,8 @@
 	}
 
 	.avix-csn .avix-csn__summary {
-		max-width: 34ch;
-		-webkit-line-clamp: 3;
-		line-clamp: 3;
+		-webkit-line-clamp: 4;
+		line-clamp: 4;
 	}
 
 	.avix-csn__foot {
@@ -639,11 +735,17 @@
 @container avix-csn (max-width: 1100px) {
 	.avix-csn__cta {
 		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas: "title" "text" "actions";
 		align-items: start;
+	}
+
+	.avix-csn .avix-csn__text {
+		align-self: start;
 	}
 
 	.avix-csn__actions {
 		justify-content: flex-start;
+		margin-top: 12px;
 	}
 }
 
@@ -663,7 +765,7 @@
 	}
 
 	.avix-csn__cta {
-		gap: 24px;
+		gap: 16px;
 		border-radius: 22px;
 	}
 
@@ -672,7 +774,12 @@
 	}
 
 	.avix-csn .avix-csn__title {
-		font-size: clamp(26px, 7.4cqi, 32px);
+		font-size: clamp(32px, 8.8cqi, 40px);
+		line-height: 1.08;
+	}
+
+	.avix-csn__cta {
+		padding: 32px 24px 24px;
 	}
 
 	.avix-csn__actions {

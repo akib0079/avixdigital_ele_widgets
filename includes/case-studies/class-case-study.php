@@ -78,18 +78,19 @@ final class Case_Study {
 			'label'   => 'Header style',
 			'group'   => 'overview',
 			'options' => array(
-				'dark'  => 'Dark (Header Home, for the dark hero)',
-				'light' => 'Light (mani header, for a light hero)',
+				'auto'  => 'Automatic (matches the hero)',
+				'dark'  => 'Dark (Header Home)',
+				'light' => 'Light (mani header)',
 			),
-			'default' => 'dark',
-			'help'    => 'Which theme header this page uses. The dark hero needs the dark header.',
+			'default' => 'auto',
+			'help'    => 'The header always matches the Case Study Hero\'s Style > Theme: switch the hero to Light in Elementor and save, and the light header follows. This setting only picks the header for a layout without a Case Study Hero.',
 		),
 		'logo'                => array(
 			'type'  => 'image',
 			'max'   => 0,
 			'label' => 'Client logo',
 			'group' => 'overview',
-			'help'  => 'White or mono logo for the dark hero (transparent PNG or SVG).',
+			'help'  => 'White or mono logo (transparent PNG or SVG). A light hero shows it in ink (the widget\'s Logo on Light setting).',
 		),
 		'hero_render'         => array(
 			'type'  => 'image',
@@ -673,7 +674,7 @@ final class Case_Study {
 
 		// Defaults and fallbacks.
 		if ( '' === $d['header'] || ! isset( self::FIELDS['header']['options'][ $d['header'] ] ) ) {
-			$d['header'] = 'dark';
+			$d['header'] = self::FIELDS['header']['default'];
 		}
 		$d['accent']   = (string) sanitize_hex_color( $d['accent'] );
 		$d['year']     = preg_match( '/^\d{4}$/', $d['year'] ) ? $d['year'] : '';
@@ -947,6 +948,77 @@ final class Case_Study {
 		}
 		self::$spotlights[ $post_id ] = $out;
 		return $out;
+	}
+
+	/**
+	 * The Style > Theme of the first Case Study Hero in the post's Elementor
+	 * layout: 'light' or 'dark', or '' when the layout has no hero. Read fresh
+	 * (no cache): it runs right after Elementor saves the layout. The header
+	 * follows it (Case_Studies::header_tone()).
+	 */
+	public static function hero_theme( int $post_id ): string {
+		if ( $post_id <= 0 ) {
+			return '';
+		}
+		$data = get_post_meta( $post_id, '_elementor_data', true );
+		if ( is_string( $data ) && '' !== $data ) {
+			$data = json_decode( $data, true );
+		}
+		if ( ! is_array( $data ) ) {
+			return '';
+		}
+		$hero = self::find_widget( $data, 'avix-case-study-hero' );
+		if ( null === $hero ) {
+			return '';
+		}
+		// Elementor saves only the settings that differ from the control default.
+		$theme = isset( $hero['theme'] ) && is_string( $hero['theme'] ) && '' !== $hero['theme'] ? $hero['theme'] : self::control_default( 'avix-case-study-hero', 'theme', 'dark' );
+		return 'light' === $theme ? 'light' : 'dark';
+	}
+
+	/**
+	 * Settings of the first widget of $type in document order, or null.
+	 *
+	 * @param array  $elements Elementor elements.
+	 * @param string $type     widgetType.
+	 */
+	private static function find_widget( array $elements, string $type ) {
+		foreach ( $elements as $el ) {
+			if ( ! is_array( $el ) ) {
+				continue;
+			}
+			if ( isset( $el['widgetType'] ) && $type === $el['widgetType'] ) {
+				return isset( $el['settings'] ) && is_array( $el['settings'] ) ? $el['settings'] : array();
+			}
+			if ( ! empty( $el['elements'] ) && is_array( $el['elements'] ) ) {
+				$found = self::find_widget( $el['elements'], $type );
+				if ( null !== $found ) {
+					return $found;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * A widget control's default from Elementor's registry, else $fallback.
+	 */
+	private static function control_default( string $widget, string $control, string $fallback ): string {
+		if ( ! did_action( 'init' ) || ! class_exists( '\Elementor\Plugin' ) || ! isset( \Elementor\Plugin::$instance ) || ! isset( \Elementor\Plugin::$instance->widgets_manager ) ) {
+			return $fallback;
+		}
+		try {
+			$type = \Elementor\Plugin::$instance->widgets_manager->get_widget_types( $widget );
+			if ( is_object( $type ) && method_exists( $type, 'get_controls' ) ) {
+				$c = $type->get_controls( $control );
+				if ( is_array( $c ) && isset( $c['default'] ) && is_string( $c['default'] ) && '' !== $c['default'] ) {
+					return $c['default'];
+				}
+			}
+		} catch ( \Throwable $error ) {
+			return $fallback;
+		}
+		return $fallback;
 	}
 
 	/**

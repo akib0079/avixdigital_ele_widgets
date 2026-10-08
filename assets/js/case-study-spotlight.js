@@ -4,8 +4,10 @@
  * side with the most room (never over the pin, always inside the viewport);
  * pins and legend items light each other up; on phones a tap scrolls to the
  * pin's legend card instead. "View full screenshot" opens a native <dialog>.
- * No loops: the pulse is CSS (paused off screen) and the only rAF is a
- * one-frame callout re-placement while one is open.
+ * Pins that would touch on a narrow screenshot are nudged apart (at most
+ * 12px each) and their touch targets trimmed, so every tap lands on the pin
+ * it meant. No loops: the pulse is CSS (paused off screen) and the only rAF
+ * is a one-frame callout re-placement while one is open.
  */
 (function (window, document) {
 	'use strict';
@@ -17,6 +19,9 @@
 	var CLOSE_DELAY = 140;
 	var FLASH_MS = 1600;
 	var PINS_WAIT = 450;
+	var PIN_ROOM = 30; // px: closest two pin centres may be
+	var PIN_SHIFT = 12; // px: most a pin moves off its spot to make that room
+	var PIN_HIT = 22; // px: half the 44px touch target
 	var reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
 	var instances = [];
 	var openInstance = null;
@@ -60,6 +65,7 @@
 		this.items = Array.prototype.slice.call(root.querySelectorAll('[data-csf-item]'));
 		this.callout = root.querySelector('[data-csf-callout]');
 		this.screen = root.querySelector('.avix-csk-frame__screen');
+		this.pinBox = root.querySelector('.avix-csf__pins');
 		this.full = root.querySelector('[data-csf-full]');
 		this.dialog = null;
 		this.open = -1;
@@ -263,6 +269,26 @@
 			this.observers.push(ro);
 		}
 		this.layout();
+		this.spread();
+
+		// Without a reserved ratio the screen only gets its height on load.
+		var img = this.screen ? this.screen.querySelector('img') : null;
+		if (img && !img.complete && this.pins.length > 1) {
+			this.on(img, 'load', function () {
+				if (self.check()) {
+					self.spread();
+				}
+			});
+		}
+
+		// Editor: a slider moved a pin (left/top transition), re-check its neighbours.
+		if (this.editor && this.pinBox) {
+			this.on(this.pinBox, 'transitionend', function (event) {
+				if ((event.propertyName === 'left' || event.propertyName === 'top') && self.check()) {
+					self.spread();
+				}
+			});
+		}
 
 		if (this.full && typeof window.HTMLDialogElement === 'function') {
 			this.on(this.full, 'click', function (event) {
@@ -351,6 +377,7 @@
 			return;
 		}
 		this.layout();
+		this.spread();
 		if (this.open > -1) {
 			this.schedulePlace();
 		}
@@ -372,6 +399,94 @@
 			if (self.check() && self.open > -1) {
 				self.place();
 			}
+		});
+	};
+
+	/* ---------- Close pins ---------- */
+
+	/**
+	 * Keeps pins apart on narrow screenshots. Two centres closer than
+	 * PIN_ROOM are pushed apart along the axis where they are already
+	 * furthest apart, each by at most PIN_SHIFT and never out of the screen.
+	 * Then every pin's touch target is trimmed to stop short of its nearest
+	 * neighbour's centre, and earlier pins sit on top (CSS), so a tap on any
+	 * pin's centre lands on that pin. Positions are re-read from CSS (left/
+	 * top without the nudge) every time, so this is safe to run again.
+	 */
+	Spotlight.prototype.spread = function () {
+		var pins = this.pins;
+		var box = this.pinBox;
+		if (!box || pins.length < 2) {
+			return;
+		}
+		var w = box.clientWidth;
+		var h = box.clientHeight;
+		if (!w || !h) {
+			return;
+		}
+		var size = pins[0].offsetWidth || 20;
+		var edge = size / 2 + 4;
+		var pts = pins.map(function (pin) {
+			var style = window.getComputedStyle(pin);
+			return { x: parseFloat(style.left) || 0, y: parseFloat(style.top) || 0, dx: 0, dy: 0 };
+		});
+
+		// Moves a point by up to `amount` along an axis; returns how far it went.
+		function nudge(p, axis, amount) {
+			var key = axis === 'x' ? 'dx' : 'dy';
+			var base = axis === 'x' ? p.x : p.y;
+			var max = axis === 'x' ? w : h;
+			var next = clamp(p[key] + amount, -PIN_SHIFT, PIN_SHIFT);
+			next = clamp(base + next, edge, Math.max(edge, max - edge)) - base;
+			var moved = next - p[key];
+			p[key] = next;
+			return moved;
+		}
+
+		for (var pass = 0; pass < 6; pass++) {
+			var changed = false;
+			for (var i = 0; i < pts.length; i++) {
+				for (var j = i + 1; j < pts.length; j++) {
+					var a = pts[i];
+					var b = pts[j];
+					var ddx = b.x + b.dx - (a.x + a.dx);
+					var ddy = b.y + b.dy - (a.y + a.dy);
+					if (Math.sqrt(ddx * ddx + ddy * ddy) >= PIN_ROOM - 0.5) {
+						continue;
+					}
+					var axis = Math.abs(ddx) >= Math.abs(ddy) ? 'x' : 'y';
+					var d = axis === 'x' ? ddx : ddy;
+					var dir = d < 0 ? -1 : 1;
+					var need = PIN_ROOM - Math.abs(d);
+					// Half each; whatever one pin cannot take, the other tries.
+					var gotA = Math.abs(nudge(a, axis, -dir * need / 2));
+					var gotB = Math.abs(nudge(b, axis, dir * (need - gotA)));
+					if (gotA + gotB < need - 0.5) {
+						gotA += Math.abs(nudge(a, axis, -dir * (need - gotA - gotB)));
+					}
+					if (gotA + gotB > 0.25) {
+						changed = true;
+					}
+				}
+			}
+			if (!changed) {
+				break;
+			}
+		}
+
+		pts.forEach(function (p, n) {
+			var gap = Infinity;
+			pts.forEach(function (q, m) {
+				if (m !== n) {
+					gap = Math.min(gap, Math.max(Math.abs(q.x + q.dx - p.x - p.dx), Math.abs(q.y + q.dy - p.y - p.dy)));
+				}
+			});
+			// An open pin grows by 12%: its target must still stop short.
+			var hit = Math.max(size / 2, Math.min(PIN_HIT, gap / 1.15 - 1));
+			var pin = pins[n];
+			pin.style.setProperty('--csf-dx', Math.round(p.dx * 10) / 10 + 'px');
+			pin.style.setProperty('--csf-dy', Math.round(p.dy * 10) / 10 + 'px');
+			pin.style.setProperty('--csf-hit', Math.round(hit * 10) / 10 + 'px');
 		});
 	};
 

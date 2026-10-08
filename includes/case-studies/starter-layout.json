@@ -1,35 +1,383 @@
 [
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"Hero","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-hero","settings":{"after_color":"#ffffff"},"elements":[]}
-	]},
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"01 · The challenge","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-chapter","settings":{"chapter":"challenge"},"elements":[]}
-	]},
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"02 · Approach","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-chapter","settings":{"chapter":"approach"},"elements":[]}
-	]},
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"03 · What we built","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-chapter","settings":{"chapter":"features"},"elements":[]}
-	]},
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"Feature 1","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-spotlight","settings":{"side":"auto"},"elements":[]}
-	]},
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"Feature 2","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-spotlight","settings":{"side":"auto"},"elements":[]}
-	]},
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"Feature 3","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-spotlight","settings":{"side":"auto"},"elements":[]}
-	]},
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"04 · The impact","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-results","settings":{},"elements":[]}
-	]},
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"05 · Across devices","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-gallery","settings":{},"elements":[]}
-	]},
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"06 · Stack","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-stack","settings":{},"elements":[]}
-	]},
-	{"id":"","elType":"container","isInner":false,"settings":{"_title":"CTA + next case study","content_width":"full","flex_direction":"column","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"padding":{"unit":"px","top":"0","right":"0","bottom":"0","left":"0","isLinked":true}},"elements":[
-		{"id":"","elType":"widget","widgetType":"avix-case-study-next","settings":{},"elements":[]}
-	]}
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "Hero",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-hero",
+				"settings": {},
+				"elements": []
+			}
+		]
+	},
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "01 · The challenge",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-chapter",
+				"settings": {
+					"chapter": "challenge"
+				},
+				"elements": []
+			}
+		]
+	},
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "02 · Approach",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-chapter",
+				"settings": {
+					"chapter": "approach"
+				},
+				"elements": []
+			}
+		]
+	},
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "03 · What we built",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-chapter",
+				"settings": {
+					"chapter": "features"
+				},
+				"elements": []
+			}
+		]
+	},
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "Feature 1",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-spotlight",
+				"settings": {
+					"side": "auto"
+				},
+				"elements": []
+			}
+		]
+	},
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "Feature 2",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-spotlight",
+				"settings": {
+					"side": "auto"
+				},
+				"elements": []
+			}
+		]
+	},
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "Feature 3",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-spotlight",
+				"settings": {
+					"side": "auto"
+				},
+				"elements": []
+			}
+		]
+	},
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "04 · The impact",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-results",
+				"settings": {},
+				"elements": []
+			}
+		]
+	},
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "05 · Across devices",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-gallery",
+				"settings": {
+					"theme": "white"
+				},
+				"elements": []
+			}
+		]
+	},
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "06 · Stack",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-stack",
+				"settings": {
+					"theme": "paper"
+				},
+				"elements": []
+			}
+		]
+	},
+	{
+		"id": "",
+		"elType": "container",
+		"isInner": false,
+		"settings": {
+			"_title": "CTA + next case study",
+			"content_width": "full",
+			"flex_direction": "column",
+			"flex_gap": {
+				"unit": "px",
+				"size": 0,
+				"column": "0",
+				"row": "0"
+			},
+			"padding": {
+				"unit": "px",
+				"top": "0",
+				"right": "0",
+				"bottom": "0",
+				"left": "0",
+				"isLinked": true
+			}
+		},
+		"elements": [
+			{
+				"id": "",
+				"elType": "widget",
+				"widgetType": "avix-case-study-next",
+				"settings": {
+					"theme": "white"
+				},
+				"elements": []
+			}
+		]
+	}
 ]

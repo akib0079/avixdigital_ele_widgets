@@ -4,7 +4,7 @@
 	"post": {
 		"title": "Ovabalance: Architecting a Seamless Subscription Ecosystem",
 		"excerpt": "A bespoke Shopify theme for a Dutch women's health brand, with a custom subscription selector, real-time pricing and a modular section library.",
-		"menu_order": 2,
+		"menu_order": 4,
 		"featured": [
 			"@media:avix-cs-ovabalance-render-hero.webp",
 			"@media:2025/12/Untitled-design-7.webp",
@@ -14,20 +14,23 @@
 	"terms": {
 		"service": [
 			"shopify",
-			"uiux-brand-design"
+			"uiux-brand-design",
+			"web-development"
 		],
 		"industry": [
 			"Health & wellness"
 		]
 	},
 	"yoast": {
-		"title": "Ovabalance Case Study: Shopify Subscriptions | AvixDigital",
-		"metadesc": "How we designed and built Ovabalance's Shopify store: a custom subscription selector, real-time pricing and a modular theme the team runs without code.",
+		"focuskw": "Ovabalance Shopify case study",
+		"title": "Ovabalance Shopify Case Study: Subscriptions | AvixDigital",
+		"metadesc": "Ovabalance Shopify case study: how we built a bespoke theme with a custom subscription selector, real-time pricing and sections the team edits without code.",
+		"bctitle": "Ovabalance",
 		"og_image": "@media:avix-cs-ovabalance-og.jpg"
 	},
 	"meta": {
 		"client": "Ovabalance",
-		"display_title": "Architecting a Seamless [Subscription Ecosystem]",
+		"display_title": "Ovabalance: Architecting a Seamless Shopify [Subscription Ecosystem]",
 		"summary": "Ovabalance needed a brand refresh that reflected its evolving values, and a product page that makes a complex subscription choice feel simple. We designed and built a bespoke Shopify theme with a custom subscription engine at its heart.",
 		"logo": "@media:avix-cs-ovabalance-logo-white.png",
 		"hero_desktop": "@media:avix-cs-ovabalance-hero-desktop.webp",
@@ -35,7 +38,7 @@
 		"hero_render": "@media:avix-cs-ovabalance-render-hero.webp",
 		"accent": "#F7BABF",
 		"year": "2025",
-		"services": "Shopify, Web Development, Website Design",
+		"services": "Shopify, Web Development, UI/UX & Brand Design",
 		"platform": "Shopify",
 		"role": "End-to-end design & development",
 		"market": "Netherlands",
@@ -44,16 +47,16 @@
 		"card_tags": "Shopify, Liquid, Subscription",
 		"card_label": "Designed for",
 		"card_value": "Repeat purchase",
-		"challenge_statement": "Our client needed a [brand refresh] to better reflect their evolving business values, and a complex PDP design that is more UX-friendly.",
+		"challenge_statement": "Ovabalance needed a [brand refresh] to better reflect its evolving business values, and a complex PDP design that is more UX-friendly.",
 		"challenge_body": [
 			"Ovabalance is a Dutch women's health brand built around hormonal balance: cycle, fertility and pregnancy, energy, skin and hair. Supplements only work when they're taken every day, so subscription sits at the heart of the offer.",
-			"Standard Shopify architectures often struggle with complex, highly customised subscription flows. The challenge was to engineer a custom Product Detail Page (PDP) that could seamlessly handle dynamic price calculations and recurring order mechanics without relying on clunky, off-the-shelf third-party UI widgets that would break the brand's aesthetic."
+			"Standard Shopify architectures often struggle with complex, highly customised subscription flows. The challenge was to engineer a custom Product Detail Page (PDP) that could handle dynamic price calculations and recurring orders seamlessly. And it had to do so without clunky, off-the-shelf third-party UI widgets that would break the brand's aesthetic."
 		],
 		"constraints": "Brand refresh, Custom subscription flow, Live price calculation, No off-the-shelf widgets",
 		"approach_intro": "Akib led the end-to-end design and development of the platform, crafting a bespoke Shopify theme. By leveraging advanced Liquid coding, we built a scalable infrastructure that beautifully balances technical complexity with a highly intuitive user experience.",
 		"approach_body": [
-			"The work starts with the customer, not the catalogue. Shoppers can begin with \"Jouw doel\" (your goal), such as hormones and cycle, fertility and pregnancy, or skin and hair, before they ever see a product list.",
-			"Subscription was treated as a core product decision, not a plugin. The recurring plans sit inside the PDP under Ovabalance's own OvaRepeat identity, with their savings and terms written in plain Dutch. Every section was built to be modular, so the in-house team can reshape pages, launch products and grow the site without touching code."
+			"The <a href=\"/service/uiux-and-brand-design/\">UX and brand design</a> work starts with the customer, not the catalogue. Shoppers can begin with \"Jouw doel\" (your goal), such as hormones and cycle, fertility and pregnancy, or skin and hair, before they ever see a product list.",
+			"Subscription was treated as a core product decision, not a plugin. The recurring plans sit inside the PDP under Ovabalance's own OvaRepeat identity, with their savings and terms written in plain Dutch. Every section of the <a href=\"/service/shopify-plus/\">custom Shopify theme</a> was built to be modular, so the in-house team can reshape pages, launch products and grow the site without touching code."
 		],
 		"implementations": [
 			"Custom PDP Subscription Engine: Developed a bespoke subscription UI directly on the product pages, allowing users to effortlessly toggle between one-time purchases and recurring orders.",
@@ -82,14 +85,14 @@
 		"metric_1_value": "3",
 		"metric_1_label": "Purchase paths on every product page: every 3 months, monthly or one-time",
 		"metric_1_source": "observed on ovabalance.eu/products/hairformula-complex, 8 Oct 2026",
-		"metric_2_value": "Up to 20%",
-		"metric_2_label": "Subscriber saving shown at the moment of choice (−20% quarterly, −10% monthly)",
+		"metric_2_value": "−20\u2060%",
+		"metric_2_label": "Subscriber saving on the quarterly plan, shown at the moment of choice (−10% monthly)",
 		"metric_2_source": "observed on the product page and ovabalance.eu/pages/ovarepeat, 8 Oct 2026",
 		"metric_3_value": "43",
 		"metric_3_label": "Products served by the same modular templates",
 		"metric_3_source": "observed on ovabalance.eu/collections/all (\"43 producten\"), 8 Oct 2026",
 		"metric_4_value": "4",
-		"metric_4_label": "Custom technical features delivered: subscription engine, dynamic pricing, recurring orders, modular theme",
+		"metric_4_label": "Custom features: subscription engine, dynamic pricing, recurring orders, modular theme",
 		"metric_4_source": "AvixDigital project record (portfolio)",
 		"stack": [
 			"Shopify (Online Store 2.0): storefront, selling plans and checkout",
@@ -102,8 +105,11 @@
 		"header": "dark"
 	},
 	"layout": {
+		"hero": {
+			"eyebrow": "Ovabalance case study · Shopify · Netherlands"
+		},
 		"features": {
-			"title": "Six features behind [effortless subscribing]"
+			"title": "Six Shopify features behind [effortless subscribing]"
 		},
 		"spotlights": [
 			{
@@ -119,17 +125,17 @@
 				"visual_max": 460,
 				"hotspots": [
 					{
-						"x": 38.4,
+						"x": 48,
 						"y": 45,
 						"label": "Quarterly plan pre-selected, saving badge −20%"
 					},
 					{
-						"x": 18.7,
+						"x": 48,
 						"y": 64.7,
 						"label": "Monthly plan at −10%, one tap away"
 					},
 					{
-						"x": 23.5,
+						"x": 48,
 						"y": 83.9,
 						"label": "One-time purchase kept as a clear fallback"
 					}
@@ -148,17 +154,17 @@
 				"visual_max": 460,
 				"hotspots": [
 					{
-						"x": 76.7,
-						"y": 18.7,
+						"x": 66,
+						"y": 17,
 						"label": "Per-month price calculated from the 3-month plan"
 					},
 					{
-						"x": 79.2,
-						"y": 23.8,
+						"x": 62,
+						"y": 26,
 						"label": "Recurring total per delivery shown alongside"
 					},
 					{
-						"x": 76.4,
+						"x": 66,
 						"y": 50.6,
 						"label": "Switching plan updates the selection instantly"
 					}
@@ -176,18 +182,18 @@
 				"mat": "tint",
 				"hotspots": [
 					{
-						"x": 23.4,
-						"y": 56.9,
+						"x": 42,
+						"y": 55,
 						"label": "Subscriber benefits: cancel any time, up to 20% off"
 					},
 					{
-						"x": 43.8,
-						"y": 84,
+						"x": 44,
+						"y": 77,
 						"label": "Direct route into the OvaRepeat flow"
 					},
 					{
-						"x": 79.5,
-						"y": 80.7,
+						"x": 88,
+						"y": 70,
 						"label": "A lifestyle story that sells the convenience"
 					}
 				]
@@ -204,8 +210,8 @@
 				"mat": "paper",
 				"hotspots": [
 					{
-						"x": 24,
-						"y": 40,
+						"x": 38,
+						"y": 48,
 						"label": "Shop by life stage and goal, not by product"
 					},
 					{
@@ -215,7 +221,7 @@
 					},
 					{
 						"x": 65.5,
-						"y": 9,
+						"y": 21,
 						"label": "Quiz button pinned in the navigation"
 					}
 				]
@@ -232,18 +238,18 @@
 				"mat": "tint",
 				"hotspots": [
 					{
-						"x": 18.9,
+						"x": 11,
 						"y": 24.3,
 						"label": "Goal tiles with sub-collection links"
 					},
 					{
-						"x": 50,
-						"y": 83.7,
+						"x": 60,
+						"y": 83,
 						"label": "Hover reveals a \"Bekijk producten\" button per tile"
 					},
 					{
-						"x": 50,
-						"y": 92.7,
+						"x": 70.5,
+						"y": 8,
 						"label": "Reusable section, set up without code"
 					}
 				]
@@ -260,17 +266,17 @@
 				"mat": "paper",
 				"hotspots": [
 					{
-						"x": 50,
-						"y": 55,
+						"x": 44.5,
+						"y": 48.2,
 						"label": "Goal chips with custom line icons"
 					},
 					{
 						"x": 70,
-						"y": 63.8,
+						"y": 69.2,
 						"label": "\"Toon meer\" keeps the first screen calm"
 					},
 					{
-						"x": 50,
+						"x": 25,
 						"y": 74.4,
 						"label": "One-tap filters: goal, ingredient, type, price"
 					}
@@ -332,23 +338,23 @@
 	"alt": {
 		"avix-cs-ovabalance-hero-desktop.webp": "Ovabalance.eu homepage on desktop",
 		"avix-cs-ovabalance-hero-mobile.webp": "Ovabalance.eu homepage on a phone",
-		"avix-cs-ovabalance-feature-subscription-pdp.webp": "Ovabalance product page with OvaRepeat plan cards for every 3 months, monthly and a one-time order",
-		"avix-cs-ovabalance-feature-dynamic-pricing.webp": "Ovabalance plan selector showing prices per month and the total per delivery",
+		"avix-cs-ovabalance-feature-subscription-pdp.webp": "Ovabalance Shopify product page with OvaRepeat plan cards for every 3 months, monthly and a one-time order",
+		"avix-cs-ovabalance-feature-dynamic-pricing.webp": "Ovabalance Shopify plan selector showing prices per month and the total per delivery",
 		"avix-cs-ovabalance-feature-ovarepeat-programme.webp": "OvaRepeat section on the Ovabalance homepage listing subscriber benefits beside a lifestyle photo",
-		"avix-cs-ovabalance-feature-goal-navigation.webp": "Ovabalance Jouw doel mega menu grouping products by life stage and goal",
+		"avix-cs-ovabalance-feature-goal-navigation.webp": "Ovabalance Shopify mega menu 'Jouw doel' grouping products by life stage and goal",
 		"avix-cs-ovabalance-feature-modular-sections.webp": "Ovabalance goal grid with photo tiles linking to collections",
 		"avix-cs-ovabalance-feature-goal-collection-mobile.webp": "Ovabalance collection page on a phone with goal chips and a filter button",
-		"avix-cs-ovabalance-gallery-desktop-collection.webp": "Ovabalance collection page with goal icons and a filter bar",
+		"avix-cs-ovabalance-gallery-desktop-collection.webp": "Ovabalance Shopify collection page with goal icons and a filter bar",
 		"avix-cs-ovabalance-gallery-mobile-pdp.webp": "Ovabalance product page on a phone",
 		"avix-cs-ovabalance-gallery-mobile-subscription.webp": "Ovabalance plan cards on a phone",
 		"avix-cs-ovabalance-gallery-mobile-menu.webp": "Ovabalance mobile menu with goal categories",
-		"avix-cs-ovabalance-gallery-mobile-ovarepeat.webp": "OvaRepeat programme section on a phone",
+		"avix-cs-ovabalance-gallery-mobile-ovarepeat.webp": "Ovabalance OvaRepeat programme section on a phone",
 		"avix-cs-ovabalance-gallery-desktop-bestsellers.webp": "Ovabalance bestseller products row",
 		"avix-cs-ovabalance-gallery-desktop-why-ovabalance.webp": "Waarom Ovabalance section with benefit cards",
 		"avix-cs-ovabalance-logo-white.png": "Ovabalance logo",
 		"avix-cs-ovabalance-og.jpg": "Ovabalance case study by AvixDigital, with the Ovabalance.eu homepage in a browser window",
-		"avix-cs-ovabalance-render-hero.webp": "Ovabalance.eu homepage on a laptop and a phone",
-		"avix-cs-ovabalance-render-subscription.webp": "OvaRepeat plan selector and a product page on two phones",
+		"avix-cs-ovabalance-render-hero.webp": "Ovabalance Shopify store homepage on a laptop and a phone",
+		"avix-cs-ovabalance-render-subscription.webp": "Ovabalance Shopify OvaRepeat plan selector and a product page on two phones",
 		"avix-cs-ovabalance-render-mobile.webp": "Ovabalance goal menu, collection page and OvaRepeat section on three phones"
 	}
 }

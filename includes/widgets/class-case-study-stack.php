@@ -2,9 +2,10 @@
 /**
  * Case Study Stack: the services and technology behind a case study. A
  * sticky "06 · Stack" label sits beside the services (linked to the matching
- * service pages), the client's industry and market, and a two-column list
- * of the tools used, each with its brand mark and one line on what it does
- * here. Tools only seen on the live site carry a "Seen on the live site" tag.
+ * service pages), the client's industry and market, and a two-column spec
+ * list of the tools used, each with one line on what it does here. A real
+ * brand mark sits in the marker column when one exists; tools seen running
+ * on the live site carry an orange dot, explained once beside the heading.
  *
  * @package AvixWidgets
  */
@@ -214,10 +215,10 @@ class Case_Study_Stack extends Widget_Base {
 		$this->add_control(
 			'observed_label',
 			array(
-				'label'       => esc_html__( 'Observed tag', 'avix-widgets' ),
-				'description' => esc_html__( 'Shown on tools marked “| observed”, so visitors know they were seen on the live site rather than built by us.', 'avix-widgets' ),
+				'label'       => esc_html__( 'Observed note', 'avix-widgets' ),
+				'description' => esc_html__( 'Tools marked “| observed” get an orange dot; this note beside the heading says what the dot means (seen running on the live site rather than built by us).', 'avix-widgets' ),
 				'type'        => Controls_Manager::TEXT,
-				'default'     => esc_html__( 'Seen on the live site', 'avix-widgets' ),
+				'default'     => esc_html__( 'Seen running on the live site', 'avix-widgets' ),
 				'dynamic'     => array( 'active' => true ),
 			)
 		);
@@ -259,14 +260,25 @@ class Case_Study_Stack extends Widget_Base {
 		$this->add_control(
 			'theme',
 			array(
-				'label'   => esc_html__( 'Theme', 'avix-widgets' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => 'white',
-				'options' => array(
+				'label'       => esc_html__( 'Theme', 'avix-widgets' ),
+				'description' => esc_html__( 'Sets every colour in the section: background, text, lines, chips and brand-mark tiles. Any colour you pick below still wins.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'white',
+				'options'     => array(
 					'white' => esc_html__( 'White', 'avix-widgets' ),
 					'paper' => esc_html__( 'Warm paper', 'avix-widgets' ),
 					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
 				),
+			)
+		);
+
+		$this->add_control(
+			'colors_note',
+			array(
+				'type'            => Controls_Manager::RAW_HTML,
+				'raw'             => esc_html__( 'Leave the colours empty to follow the theme. When you change the background, set the Headline and Text colours too, so nothing disappears.', 'avix-widgets' ),
+				'content_classes' => 'elementor-descriptor',
+				'separator'       => 'before',
 			)
 		);
 
@@ -277,7 +289,7 @@ class Case_Study_Stack extends Widget_Base {
 			'line'        => array( esc_html__( 'Lines', 'avix-widgets' ), '--cst-line' ),
 			'accent'      => array( esc_html__( 'Accent', 'avix-widgets' ), '--cst-accent' ),
 			'accent_text' => array( esc_html__( 'Small orange text', 'avix-widgets' ), '--cst-accent-text' ),
-			'tile'        => array( esc_html__( 'Icon tiles', 'avix-widgets' ), '--cst-tile' ),
+			'tile'        => array( esc_html__( 'Brand-mark tiles', 'avix-widgets' ), '--cst-tile' ),
 		);
 		foreach ( $colors as $key => $color ) {
 			$this->add_control(
@@ -286,7 +298,6 @@ class Case_Study_Stack extends Widget_Base {
 					'label'     => $color[0],
 					'type'      => Controls_Manager::COLOR,
 					'selectors' => array( '{{WRAPPER}} .avix-cst' => $color[1] . ': {{VALUE}};' ),
-					'separator' => 'bg' === $key ? 'before' : '',
 				)
 			);
 		}
@@ -614,25 +625,48 @@ class Case_Study_Stack extends Widget_Base {
 							</dl>
 						<?php endif; ?>
 						<?php if ( $tools ) : ?>
+							<?php
+							$has_observed = '' !== $observed && in_array( true, array_column( $tools, 2 ), true );
+							$tech_label   = trim( (string) ( $s['tech_label'] ?? '' ) );
+							$marks        = array();
+							foreach ( $tools as $i => $tool ) {
+								$marks[ $i ] = $this->mark( $tool[0] );
+							}
+							// The marker column only exists when some row has a mark or a dot.
+							$has_markers = $has_observed || '' !== implode( '', $marks );
+							?>
 							<div class="avix-cst__tech">
-								<?php if ( '' !== trim( (string) ( $s['tech_label'] ?? '' ) ) ) : ?>
-									<h3 class="avix-cst__tech-title avix-cst__rise" style="--i:3;"><?php echo esc_html( trim( (string) $s['tech_label'] ) ); ?><span class="avix-cst__count"><?php echo esc_html( str_pad( (string) count( $tools ), 2, '0', STR_PAD_LEFT ) ); ?></span></h3>
+								<?php if ( '' !== $tech_label || $has_observed ) : ?>
+									<div class="avix-cst__tech-head avix-cst__rise" style="--i:3;">
+										<?php if ( '' !== $tech_label ) : ?>
+											<h3 class="avix-cst__tech-title"><?php echo esc_html( $tech_label ); ?><span class="avix-cst__count"><?php echo esc_html( str_pad( (string) count( $tools ), 2, '0', STR_PAD_LEFT ) ); ?></span></h3>
+										<?php endif; ?>
+										<?php if ( $has_observed ) : ?>
+											<p class="avix-cst__legend"><span class="avix-cst__dot-mark" aria-hidden="true"></span><?php echo esc_html( $observed ); ?></p>
+										<?php endif; ?>
+									</div>
 								<?php endif; ?>
-								<ul class="avix-cst__list">
+								<ul class="avix-cst__list<?php echo $has_markers ? ' avix-cst__list--markers' : ''; ?>">
 									<?php foreach ( $tools as $i => $tool ) : ?>
-										<?php $mark = $this->mark( $tool[0] ); ?>
-										<li class="avix-cst__item" style="--i:<?php echo (int) $i; ?>;">
-											<span class="avix-cst__icon<?php echo '' === $mark ? ' avix-cst__icon--px' : ''; ?>" aria-hidden="true"><?php
-											// Trusted inline SVG from Brand_Icons, or a pixel square.
-											echo '' !== $mark ? $mark : '<i></i>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static brand SVG.
-											?></span>
+										<?php
+										$mark = $marks[ $i ];
+										$seen = $tool[2] && '' !== $observed;
+										?>
+										<li class="avix-cst__item<?php echo $seen ? ' is-observed' : ''; ?>" style="--i:<?php echo (int) $i; ?>;">
+											<?php if ( $has_markers ) : ?>
+												<span class="avix-cst__marker" aria-hidden="true"><?php
+												if ( '' !== $mark ) {
+													// Trusted inline SVG from Brand_Icons, on a small tile (with the dot on its corner when observed).
+													echo '<span class="avix-cst__icon">' . $mark . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static brand SVG.
+												} elseif ( $seen ) {
+													echo '<span class="avix-cst__dot-mark"></span>';
+												}
+												?></span>
+											<?php endif; ?>
 											<span class="avix-cst__copy">
-												<span class="avix-cst__name"><?php echo esc_html( $tool[0] ); ?></span>
+												<span class="avix-cst__name"><?php echo esc_html( $tool[0] ); ?><?php if ( $seen ) : ?><span class="avix-cst__sr">, <?php echo esc_html( $observed ); ?></span><?php endif; ?></span>
 												<?php if ( '' !== $tool[1] ) : ?>
 													<span class="avix-cst__text"><?php echo esc_html( $tool[1] ); ?></span>
-												<?php endif; ?>
-												<?php if ( $tool[2] && '' !== $observed ) : ?>
-													<span class="avix-cst__tag"><?php echo esc_html( $observed ); ?></span>
 												<?php endif; ?>
 											</span>
 										</li>

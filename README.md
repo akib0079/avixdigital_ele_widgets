@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.15.0**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.15.1**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.15.0.zip](dist/avix-elementor-widgets-1.15.0.zip).
+1. Download [avix-elementor-widgets-1.15.1.zip](dist/avix-elementor-widgets-1.15.1.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,16 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.15.1
+
+Case-study polish after the first live QA, plus two new case studies.
+
+- Case Study Hero: the client logo now sits above the title, the hero spans the full width with the header's side margins, and a WebGL shader in the brand orange moves behind it and follows the pointer (a static frame for reduced motion, paused off screen, falls back to the CSS glow). The H1 shows from the first paint, so it no longer delays LCP.
+- Every case-study widget has a working dark/light Theme switch in the editor; colour pickers start empty so the theme applies. The Results section is light by default, the Next card has a light panel option, and the Grid has a Card panel select (Auto, Light, Dark).
+- Gallery: frames no longer collapse under themes that style `figure` as a flex column; below-the-fold images stay lazy.
+- SEO: Yoast focus keyphrases from the data files, client names in the H1s, refreshed titles and descriptions, the theme's duplicate Open Graph block removed when Yoast is active.
+- New case studies: Products for Home (WordPress, WooCommerce and Bricks with a FunnelKit checkout funnel) and Kampeerwinkel Roermond (Shopify).
 
 ### 1.15.0
 
