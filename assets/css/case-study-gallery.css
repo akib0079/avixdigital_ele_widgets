@@ -96,6 +96,25 @@
 	--csg-tile-auto: transparent;
 }
 
+/* Paper mats get a layer of their own: a faint warm light rising from the
+   foot (the renders' rim light, much softer) and a hairline with a lit top
+   edge, so the mats read as cards on the section, not flat patches. */
+.avix-csg--mat-paper {
+	--csg-mat-glow: radial-gradient(70% 55% at 50% 100%, rgba(251, 96, 7, 0.07), transparent 72%);
+	--csg-mat-edge: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 0 0 1px rgba(26, 26, 26, 0.04);
+}
+
+.avix-csg--dark.avix-csg--mat-paper,
+.avix-csg--mat-paper.avix-csg--tile-dark {
+	--csg-mat-glow: radial-gradient(70% 55% at 50% 100%, rgba(251, 96, 7, 0.09), transparent 72%);
+	--csg-mat-edge: inset 0 1px 0 rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.avix-csg--dark.avix-csg--mat-paper.avix-csg--tile-light {
+	--csg-mat-glow: radial-gradient(70% 55% at 50% 100%, rgba(251, 96, 7, 0.07), transparent 72%);
+	--csg-mat-edge: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 0 0 1px rgba(26, 26, 26, 0.04);
+}
+
 .avix-csg *,
 .avix-csg *::before,
 .avix-csg *::after {
@@ -163,7 +182,7 @@
 	padding: 0;
 	color: var(--csg-ink);
 	font-family: var(--csg-font-display);
-	font-size: clamp(34px, 4.2cqi, 60px);
+	font-size: clamp(28px, 3.1cqi, 44px);
 	font-weight: 600;
 	line-height: 1.06;
 	letter-spacing: -0.035em;
@@ -241,7 +260,8 @@
 	min-height: 0;
 	padding: var(--csg-tpad);
 	border-radius: var(--csg-radius);
-	background: var(--csg-tile);
+	background: var(--csg-mat-glow, none), var(--csg-tile);
+	box-shadow: var(--csg-mat-edge, none);
 	/* The pixel reveal covers screens in the tile's colour. */
 	--csk-cover: var(--csg-tile);
 }
@@ -368,7 +388,8 @@
 	gap: clamp(14px, 3.4cqi, 56px);
 	padding: var(--csg-tpad) var(--csg-tpad) calc(var(--csg-tpad) * 0.9);
 	border-radius: var(--csg-radius);
-	background: var(--csg-tile);
+	background: var(--csg-mat-glow, none), var(--csg-tile);
+	box-shadow: var(--csg-mat-edge, none);
 	--csk-cover: var(--csg-tile);
 }
 
@@ -406,6 +427,7 @@
 	padding: 0;
 	border-radius: 0;
 	background: none;
+	box-shadow: none;
 }
 
 .avix-csg__row--phones .avix-csg__item--phone .avix-csg__device {
@@ -422,6 +444,21 @@
 
 .avix-csg .avix-csg__row--phones .avix-csg__cap .avix-csg__cap-link {
 	color: var(--csg-tile-ink);
+}
+
+/* Under a narrow phone a caption can wrap: the marker then flows with the
+   first word, so the centred lines and the marker stay together. */
+@container avix-csg (min-width: 768px) {
+	.avix-csg:not(.avix-csg--carousel) .avix-csg__row--phones .avix-csg__cap {
+		display: block;
+		text-wrap: balance;
+	}
+
+	.avix-csg:not(.avix-csg--carousel) .avix-csg__row--phones .avix-csg__px {
+		display: inline-block;
+		margin: 0 10px 0 0;
+		vertical-align: 0.14em;
+	}
 }
 
 /* Pairs: each item grows with its own shape, so both tiles share a height
@@ -689,7 +726,8 @@
 	width: var(--csg-slide);
 	padding: var(--csg-tpad) var(--csg-tpad) 18px;
 	border-radius: var(--csg-radius);
-	background: var(--csg-tile);
+	background: var(--csg-mat-glow, none), var(--csg-tile);
+	box-shadow: var(--csg-mat-edge, none);
 	scroll-snap-align: center;
 	scroll-snap-stop: always;
 	--csk-cover: var(--csg-tile);
@@ -720,6 +758,7 @@
 	padding: 0 0 18px;
 	overflow: hidden;
 	background: var(--csg-render-bg);
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
 	--csk-cover: var(--csg-render-bg);
 }
 
@@ -890,7 +929,8 @@
 		width: var(--csg-slide);
 		padding: var(--csg-tpad) var(--csg-tpad) 18px;
 		border-radius: var(--csg-radius);
-		background: var(--csg-tile);
+		background: var(--csg-mat-glow, none), var(--csg-tile);
+		box-shadow: var(--csg-mat-edge, none);
 		scroll-snap-align: center;
 		scroll-snap-stop: always;
 		--csk-cover: var(--csg-tile);
@@ -921,6 +961,7 @@
 		padding: 0 0 18px;
 		overflow: hidden;
 		background: var(--csg-render-bg);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
 		--csk-cover: var(--csg-render-bg);
 	}
 

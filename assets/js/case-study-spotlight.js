@@ -19,7 +19,7 @@
 	var CLOSE_DELAY = 140;
 	var FLASH_MS = 1600;
 	var PINS_WAIT = 450;
-	var PIN_ROOM = 30; // px: closest two pin centres may be
+	var PIN_GAP = 10; // px: least room between two pins' edges
 	var PIN_SHIFT = 12; // px: most a pin moves off its spot to make that room
 	var PIN_HIT = 22; // px: half the 44px touch target
 	var reduceMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
@@ -405,8 +405,8 @@
 	/* ---------- Close pins ---------- */
 
 	/**
-	 * Keeps pins apart on narrow screenshots. Two centres closer than
-	 * PIN_ROOM are pushed apart along the axis where they are already
+	 * Keeps pins apart on narrow screenshots. Two centres closer than a pin
+	 * plus PIN_GAP are pushed apart along the axis where they are already
 	 * furthest apart, each by at most PIN_SHIFT and never out of the screen.
 	 * Then every pin's touch target is trimmed to stop short of its nearest
 	 * neighbour's centre, and earlier pins sit on top (CSS), so a tap on any
@@ -424,8 +424,9 @@
 		if (!w || !h) {
 			return;
 		}
-		var size = pins[0].offsetWidth || 20;
+		var size = pins[0].offsetWidth || 28;
 		var edge = size / 2 + 4;
+		var room = size + PIN_GAP;
 		var pts = pins.map(function (pin) {
 			var style = window.getComputedStyle(pin);
 			return { x: parseFloat(style.left) || 0, y: parseFloat(style.top) || 0, dx: 0, dy: 0 };
@@ -451,13 +452,13 @@
 					var b = pts[j];
 					var ddx = b.x + b.dx - (a.x + a.dx);
 					var ddy = b.y + b.dy - (a.y + a.dy);
-					if (Math.sqrt(ddx * ddx + ddy * ddy) >= PIN_ROOM - 0.5) {
+					if (Math.sqrt(ddx * ddx + ddy * ddy) >= room - 0.5) {
 						continue;
 					}
 					var axis = Math.abs(ddx) >= Math.abs(ddy) ? 'x' : 'y';
 					var d = axis === 'x' ? ddx : ddy;
 					var dir = d < 0 ? -1 : 1;
-					var need = PIN_ROOM - Math.abs(d);
+					var need = room - Math.abs(d);
 					// Half each; whatever one pin cannot take, the other tries.
 					var gotA = Math.abs(nudge(a, axis, -dir * need / 2));
 					var gotB = Math.abs(nudge(b, axis, dir * (need - gotA)));

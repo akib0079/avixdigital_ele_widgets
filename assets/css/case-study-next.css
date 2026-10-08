@@ -3,9 +3,10 @@
  * The end of a case study: a call-to-action card with the page's one pixel
  * character seated on its top edge, then the next case study as a large
  * render with an info panel overlapping its right edge (stacked under the
- * image on narrow cards). The section comes in warm paper (default), white
- * or dark; the panel is light (default) or dark. Layout follows the widget
- * width (container queries), and each card follows its own width.
+ * image on narrow cards). The panel is dark by default, in the language of
+ * the home page's Selected Work cards (a light panel is available). The
+ * section comes in warm paper (default), white or dark. Layout follows the
+ * widget width (container queries), and each card follows its own width.
  */
 
 .avix-csn {
@@ -20,24 +21,24 @@
 	--csn-accent: #fb6007;
 	--csn-accent-text: #bf4604;
 	--csn-accent-title: color-mix(in srgb, var(--csn-accent) 88%, #000000);
+	/* Focus rings: the deeper AA orange on light, the brand orange on dark. */
 	--csn-focus: #bf4604;
 	--csn-btn-hover: #e25504;
-	--csn-pal-glow: color-mix(in srgb, var(--csn-accent) 20%, transparent);
 	--csn-mat: #e9e6df;
 	--csn-mat-ink: rgba(26, 26, 26, 0.18);
-	/* The next card's panel: light by default (see the panel tones below). */
-	--csn-panel: #ffffff;
-	--csn-panel-ink: #1a1a1a;
-	--csn-panel-muted: #5c5f66;
-	--csn-panel-accent: #bf4604;
-	--csn-panel-line: rgba(26, 26, 26, 0.07);
-	--csn-panel-soft: #f5f3ef;
-	--csn-panel-tag-line: rgba(26, 26, 26, 0.06);
-	--csn-panel-tag-ink: #3a3c40;
-	--csn-panel-glow: rgba(251, 96, 7, 0.07);
-	--csn-panel-shadow: 0 1px 2px rgba(26, 26, 26, 0.04), 0 30px 60px -30px rgba(11, 11, 12, 0.32);
-	--csn-go: #1a1a1a;
-	--csn-go-ink: #ffffff;
+	/* The next card's panel: dark by default (see the panel tones below). */
+	--csn-panel: #111111;
+	--csn-panel-ink: #ffffff;
+	--csn-panel-muted: #b9b6b1;
+	--csn-panel-soft: rgba(255, 255, 255, 0.07);
+	--csn-panel-accent: #ff7a2c;
+	--csn-panel-glow: rgba(251, 96, 7, 0.13);
+	--csn-panel-line: rgba(255, 255, 255, 0.06);
+	--csn-panel-tag-line: rgba(255, 255, 255, 0.06);
+	--csn-panel-tag-ink: #dcdcdc;
+	--csn-panel-shadow: 0 30px 60px -30px rgba(11, 11, 12, 0.45);
+	--csn-go: #ffffff;
+	--csn-go-ink: #111111;
 	--csn-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
 	--csn-font-body: "Inter", Arial, sans-serif;
 	--csn-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -67,7 +68,6 @@
 	--csn-card: #f7f5f1;
 	--csn-card-line: rgba(26, 26, 26, 0.05);
 	--csn-card-shadow: none;
-	--csn-panel-line: rgba(26, 26, 26, 0.09);
 }
 
 .avix-csn--dark {
@@ -81,30 +81,35 @@
 	--csn-accent-text: #ff7a2c;
 	--csn-accent-title: #ff7a2c;
 	--csn-focus: var(--csn-accent);
-	--csn-pal-glow: color-mix(in srgb, var(--csn-accent) 30%, transparent);
 	--csn-mat: #161719;
 	--csn-mat-ink: rgba(255, 255, 255, 0.16);
+	--csn-panel: #151517;
+	--csn-panel-line: rgba(255, 255, 255, 0.09);
 	--csn-panel-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
 }
 
-/* Dark panel: the Selected Work language, on any section theme. */
-.avix-csn--panel-dark {
-	--csn-panel: #111111;
-	--csn-panel-ink: #ffffff;
-	--csn-panel-muted: #b9b6b1;
-	--csn-panel-accent: #ff7a2c;
-	--csn-panel-line: rgba(255, 255, 255, 0.06);
-	--csn-panel-soft: rgba(255, 255, 255, 0.07);
-	--csn-panel-tag-line: rgba(255, 255, 255, 0.06);
-	--csn-panel-tag-ink: #dcdcdc;
-	--csn-panel-glow: rgba(251, 96, 7, 0.13);
-	--csn-go: #ffffff;
-	--csn-go-ink: #111111;
+/* Light panel (on request): a white card with a hairline and a warm corner. */
+.avix-csn--panel-light {
+	--csn-panel: #ffffff;
+	--csn-panel-ink: #1a1a1a;
+	--csn-panel-muted: #5c5f66;
+	--csn-panel-accent: #bf4604;
+	--csn-panel-line: rgba(26, 26, 26, 0.07);
+	--csn-panel-soft: #f5f3ef;
+	--csn-panel-tag-line: rgba(26, 26, 26, 0.06);
+	--csn-panel-tag-ink: #3a3c40;
+	--csn-panel-glow: rgba(251, 96, 7, 0.07);
+	--csn-panel-shadow: 0 1px 2px rgba(26, 26, 26, 0.04), 0 30px 60px -30px rgba(11, 11, 12, 0.32);
+	--csn-go: #1a1a1a;
+	--csn-go-ink: #ffffff;
 }
 
-.avix-csn--dark.avix-csn--panel-dark {
-	--csn-panel: #151517;
-	--csn-panel-line: rgba(255, 255, 255, 0.09);
+.avix-csn--white.avix-csn--panel-light {
+	--csn-panel-line: rgba(26, 26, 26, 0.09);
+}
+
+.avix-csn--dark.avix-csn--panel-light {
+	--csn-panel-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
 }
 
 /* Container queries style descendants only: width-based tokens live on the
@@ -119,32 +124,17 @@
 
 /* ---------- Call to action ---------- */
 
-/* The headline runs across the card; the text and the buttons share the
-   row below it. */
 .avix-csn__cta {
 	position: relative;
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
-	grid-template-areas: "title title" "text actions";
 	align-items: end;
-	gap: clamp(16px, 1.6cqi, 22px) clamp(32px, 5cqi, 72px);
-	padding: clamp(32px, 5cqi, 72px);
+	gap: 28px clamp(32px, 5cqi, 72px);
+	padding: clamp(28px, 4cqi, 48px);
 	border: 1px solid var(--csn-card-line);
-	border-radius: 28px;
+	border-radius: 24px;
 	background: var(--csn-card);
 	box-shadow: var(--csn-card-shadow);
-}
-
-/* The brand's CTA: an orange hairline along the top edge. */
-.avix-csn__cta::before {
-	position: absolute;
-	top: -1px;
-	left: 6%;
-	right: 6%;
-	height: 1px;
-	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--csn-accent) 75%, transparent) 30%, color-mix(in srgb, var(--csn-accent) 75%, transparent) 70%, transparent);
-	pointer-events: none;
-	content: "";
 }
 
 /* Seated on the card's top edge: the seat (row 7 of 12) lines up with the
@@ -158,20 +148,6 @@
 	line-height: 0;
 	margin-top: calc(var(--csn-pal) * -1.2 * 7 / 12);
 	pointer-events: none;
-}
-
-/* The hero glow, small, behind the character. */
-.avix-csn__perch::before {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	z-index: -1;
-	width: calc(var(--csn-pal) * 4.2);
-	height: calc(var(--csn-pal) * 4.2);
-	border-radius: 50%;
-	background: radial-gradient(closest-side, var(--csn-pal-glow), transparent);
-	transform: translate(-50%, -50%);
-	content: "";
 }
 
 .avix-csn .avix-csn__pal {
@@ -197,28 +173,25 @@
 }
 
 .avix-csn__cta-copy {
-	display: contents;
+	min-width: 0;
 }
 
 .avix-csn .avix-csn__title {
-	grid-area: title;
-	align-self: start;
-	max-width: 19ch;
+	max-width: 22ch;
 	margin: 0;
 	padding: 0;
 	color: var(--csn-ink);
 	font-family: var(--csn-font-display);
-	font-size: clamp(36px, 4.2cqi, 60px);
+	font-size: clamp(26px, 3cqi, 40px);
 	font-weight: 600;
-	line-height: 1.04;
-	letter-spacing: -0.04em;
+	line-height: 1.1;
+	letter-spacing: -0.03em;
 	text-transform: none;
 	text-wrap: balance;
 	overflow-wrap: break-word;
 }
 
 .avix-csn--pal .avix-csn__title {
-	max-width: calc(19ch + var(--csn-pal) + 24px);
 	padding-right: calc(var(--csn-pal) + 24px);
 }
 
@@ -227,11 +200,8 @@
 }
 
 .avix-csn .avix-csn__text {
-	grid-area: text;
-	align-self: center;
-	min-width: 0;
 	max-width: 52ch;
-	margin: 0;
+	margin: clamp(12px, 1.2cqi, 16px) 0 0;
 	padding: 0;
 	color: var(--csn-muted);
 	font-family: var(--csn-font-body);
@@ -241,7 +211,6 @@
 }
 
 .avix-csn__actions {
-	grid-area: actions;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -256,12 +225,12 @@
 	justify-content: space-between;
 	gap: 14px;
 	max-width: 100%;
-	min-height: 60px;
+	min-height: 56px;
 	margin: 0;
 	border: 0;
 	border-radius: 999px;
 	font-family: var(--csn-font-body);
-	font-size: 17px;
+	font-size: 15.5px;
 	font-weight: 600;
 	line-height: 1.2;
 	letter-spacing: -0.005em;
@@ -276,7 +245,7 @@
 .avix-csn .avix-csn__btn--primary,
 .avix-csn .avix-csn__btn--primary:visited,
 .avix-csn .avix-csn__btn--primary:focus {
-	padding: 6px 6px 6px 28px;
+	padding: 6px 6px 6px 26px;
 	color: #ffffff;
 	background: var(--csn-accent);
 	box-shadow: 0 16px 30px -16px color-mix(in srgb, var(--csn-accent) 85%, transparent);
@@ -286,8 +255,8 @@
 	display: grid;
 	flex: none;
 	place-items: center;
-	width: 48px;
-	height: 48px;
+	width: 44px;
+	height: 44px;
 	border-radius: 50%;
 	color: var(--csn-accent);
 	background: #ffffff;
@@ -524,7 +493,7 @@
 	margin: 0;
 	color: var(--csn-panel-ink);
 	font-family: var(--csn-font-display);
-	font-size: clamp(34px, 9cqi, 64px);
+	font-size: clamp(30px, 8cqi, 52px);
 	font-weight: 500;
 	line-height: 0.98;
 	letter-spacing: -0.05em;
@@ -533,7 +502,7 @@
 
 .avix-csn .avix-csn__summary {
 	display: -webkit-box;
-	max-width: 46ch;
+	max-width: 40ch;
 	margin-top: 16px;
 	overflow: hidden;
 	color: var(--csn-panel-muted);
@@ -542,8 +511,8 @@
 	line-height: 1.55;
 	text-wrap: pretty;
 	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 5;
-	line-clamp: 5;
+	-webkit-line-clamp: 4;
+	line-clamp: 4;
 }
 
 .avix-csn__foot {
@@ -646,10 +615,11 @@
 	}
 
 	.avix-csn .avix-csn__name {
-		font-size: clamp(34px, 4.6cqi, 64px);
+		font-size: clamp(30px, 3.8cqi, 52px);
 	}
 
 	.avix-csn .avix-csn__summary {
+		max-width: 34ch;
 		-webkit-line-clamp: 4;
 		line-clamp: 4;
 	}
@@ -735,17 +705,11 @@
 @container avix-csn (max-width: 1100px) {
 	.avix-csn__cta {
 		grid-template-columns: minmax(0, 1fr);
-		grid-template-areas: "title" "text" "actions";
 		align-items: start;
-	}
-
-	.avix-csn .avix-csn__text {
-		align-self: start;
 	}
 
 	.avix-csn__actions {
 		justify-content: flex-start;
-		margin-top: 12px;
 	}
 }
 
@@ -765,7 +729,7 @@
 	}
 
 	.avix-csn__cta {
-		gap: 16px;
+		gap: 24px;
 		border-radius: 22px;
 	}
 
@@ -774,12 +738,7 @@
 	}
 
 	.avix-csn .avix-csn__title {
-		font-size: clamp(32px, 8.8cqi, 40px);
-		line-height: 1.08;
-	}
-
-	.avix-csn__cta {
-		padding: 32px 24px 24px;
+		font-size: clamp(26px, 7.4cqi, 32px);
 	}
 
 	.avix-csn__actions {
@@ -819,9 +778,19 @@
 	}
 }
 
-/* Client names with one long word ("Kampeerwinkel") step down a size rather than breaking mid-word. */
-.avix-csn .avix-csn__name { overflow-wrap: normal; hyphens: manual; }
-.avix-csn .avix-csn__name.avix-csn__name--long { font-size: clamp(28px, 6.6cqi, 50px); }
+/* Client names with one long word ("Kampeerwinkel") step down a size rather
+   than breaking mid-word. */
+.avix-csn .avix-csn__name {
+	overflow-wrap: normal;
+	hyphens: manual;
+}
+
+.avix-csn .avix-csn__name.avix-csn__name--long {
+	font-size: clamp(28px, 6.6cqi, 50px);
+}
+
 @container (min-width: 861px) {
-	.avix-csn .avix-csn__name.avix-csn__name--long { font-size: clamp(28px, 3.4cqi, 50px); }
+	.avix-csn .avix-csn__name.avix-csn__name--long {
+		font-size: clamp(28px, 3.4cqi, 50px);
+	}
 }

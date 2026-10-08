@@ -4,8 +4,8 @@
  * a similar challenge on Shopify?") with the page's only pixel character
  * seated on its top edge (it waves once when the card comes into view, and
  * again when the main button is hovered), followed by a large card for the
- * next case study: its studio render with an info panel (white by default,
- * or dark), in the language of the home page's Selected Work cards. The
+ * next case study: its studio render with a dark info panel (or a light one
+ * on request), in the language of the home page's Selected Work cards. The
  * section comes in warm paper, white or dark.
  *
  * @package AvixWidgets
@@ -310,10 +310,10 @@ class Case_Study_Next extends Widget_Base {
 				'label'       => esc_html__( 'Next card panel', 'avix-widgets' ),
 				'description' => esc_html__( 'The info panel beside the next case study’s image.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SELECT,
-				'default'     => 'light',
+				'default'     => 'dark',
 				'options'     => array(
-					'light' => esc_html__( 'Light', 'avix-widgets' ),
 					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
+					'light' => esc_html__( 'Light', 'avix-widgets' ),
 				),
 			)
 		);
@@ -619,7 +619,7 @@ class Case_Study_Next extends Widget_Base {
 		}
 
 		$theme = in_array( $s['theme'] ?? 'paper', array( 'paper', 'white', 'dark' ), true ) ? (string) $s['theme'] : 'paper';
-		$tone  = 'dark' === ( $s['panel_tone'] ?? 'light' ) ? 'dark' : 'light';
+		$tone  = 'light' === ( $s['panel_tone'] ?? 'dark' ) ? 'light' : 'dark';
 		$tag   = Utils::validate_html_tag( $s['cta_title_tag'] ?? 'h2' );
 		$tid   = 'avix-csn-title-' . $this->get_id();
 

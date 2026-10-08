@@ -1,12 +1,14 @@
 <?php
 /**
  * Case Study Hero: the top of every case study, full width with the header's
- * side margins. A breadcrumb, then the client's logo, an eyebrow and the
- * headline as one lock-up, a lead beside the two buttons, a facts bar
- * (client, services, platform, year, role, website) and the live site itself:
- * the homepage in a browser frame with the phone overlapping it, or a studio
+ * side margins, compact so the copy and the facts share the first screen. A
+ * breadcrumb, then the client's logo, an eyebrow and the headline as one
+ * lock-up, a lead with the two buttons under it, a facts bar (client,
+ * services, platform, year, role, website) and the live site itself: the
+ * homepage in a browser frame with the phone overlapping it, or a studio
  * render of the site on devices. Behind it, an animated orange shader that
- * follows the pointer (WebGL, with the CSS glow and grid as the fallback).
+ * follows the pointer: a mosaic of the brand's pixel squares or a smooth flow
+ * (WebGL, with the CSS glow and grid as the fallback).
  * Dark by default; the Light theme re-themes all of it. The lower part of the
  * devices can sit on a white band, so the next section starts under them.
  *
@@ -51,8 +53,8 @@ class Case_Study_Hero extends Widget_Base {
 	/** The phone overlapping the browser (22–26% of it). */
 	const SIZES_PHONE = '(max-width: 1024px) 26vw, 250px';
 
-	/** The studio render, at most 1360px wide (edge to edge on phones). */
-	const SIZES_RENDER = '(max-width: 600px) 100vw, (max-width: 1490px) 92vw, 1360px';
+	/** The studio render, at most 1240px wide (edge to edge on phones). */
+	const SIZES_RENDER = '(max-width: 600px) 100vw, (max-width: 1370px) 92vw, 1240px';
 
 	public function get_name(): string {
 		return 'avix-case-study-hero';
@@ -177,11 +179,11 @@ class Case_Study_Hero extends Widget_Base {
 				'range'          => array( 'px' => array( 'min' => 16, 'max' => 64 ) ),
 				'description'    => esc_html__( 'Wide wordmarks stop at 240px wide (200px on phones).', 'avix-widgets' ),
 				'default'        => array(
-					'size' => 32,
+					'size' => 28,
 					'unit' => 'px',
 				),
 				'tablet_default' => array(
-					'size' => 28,
+					'size' => 26,
 					'unit' => 'px',
 				),
 				'mobile_default' => array(
@@ -734,7 +736,7 @@ class Case_Study_Hero extends Widget_Base {
 			'devices_width',
 			array(
 				'label'       => esc_html__( 'Devices width', 'avix-widgets' ),
-				'description' => esc_html__( 'Empty: 1120px for the screenshots, 1360px for a studio render.', 'avix-widgets' ),
+				'description' => esc_html__( 'Empty: 1120px for the screenshots, 1240px for a studio render.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SLIDER,
 				'size_units'  => array( 'px' ),
 				'range'       => array( 'px' => array( 'min' => 600, 'max' => 1600 ) ),
@@ -757,9 +759,65 @@ class Case_Study_Hero extends Widget_Base {
 			'shader',
 			array(
 				'label'       => esc_html__( 'Animated shader', 'avix-widgets' ),
-				'description' => esc_html__( 'A slow, flowing orange field (WebGL) with a soft light that follows the pointer. It stays dark behind the text, pauses off screen and shows one still frame with reduced motion. Without WebGL the glow and grid below show instead.', 'avix-widgets' ),
+				'description' => esc_html__( 'A slow, flowing orange field (WebGL) with a light that follows the pointer. It stays dark behind the text, pauses off screen and shows one still frame with reduced motion. Without WebGL the glow and grid below show instead.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
+			)
+		);
+
+		$this->add_control(
+			'shader_style',
+			array(
+				'label'       => esc_html__( 'Shader style', 'avix-widgets' ),
+				'description' => esc_html__( 'Pixel mosaic: the flow drawn as glowing orange squares (the brand pixel) that lift under the pointer, with a quiet square grid and the odd sparkle. Smooth flow: soft orange smoke.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'pixel',
+				'options'     => array(
+					'pixel'  => esc_html__( 'Pixel mosaic', 'avix-widgets' ),
+					'smooth' => esc_html__( 'Smooth flow', 'avix-widgets' ),
+				),
+				'condition'   => array( 'shader' => 'yes' ),
+			)
+		);
+
+		$this->add_responsive_control(
+			'shader_pixel',
+			array(
+				'label'          => esc_html__( 'Pixel size', 'avix-widgets' ),
+				'description'    => esc_html__( 'One square with its gap. Empty: 18px, 16px on tablets, 12px on phones.', 'avix-widgets' ),
+				'type'           => Controls_Manager::SLIDER,
+				'size_units'     => array( 'px' ),
+				'range'          => array( 'px' => array( 'min' => 8, 'max' => 40 ) ),
+				'default'        => array(
+					'size' => 18,
+					'unit' => 'px',
+				),
+				'tablet_default' => array(
+					'size' => 16,
+					'unit' => 'px',
+				),
+				'mobile_default' => array(
+					'size' => 12,
+					'unit' => 'px',
+				),
+				'condition'      => array(
+					'shader'       => 'yes',
+					'shader_style' => 'pixel',
+				),
+			)
+		);
+
+		$this->add_control(
+			'shader_sparkles',
+			array(
+				'label'       => esc_html__( 'Sparkles', 'avix-widgets' ),
+				'description' => esc_html__( 'Now and then a single square lights up fully orange and fades. Sparse, never behind the text.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+				'condition'   => array(
+					'shader'       => 'yes',
+					'shader_style' => 'pixel',
+				),
 			)
 		);
 
@@ -991,7 +1049,7 @@ class Case_Study_Hero extends Widget_Base {
 				<div class="avix-csh__frame">
 					<?php $this->render_crumbs( $s, $cs, $client ); ?>
 					<div class="avix-csh__top">
-						<div class="avix-csh__copy<?php echo '' !== $lead ? ' has-lead' : ''; ?>">
+						<div class="avix-csh__copy">
 							<?php
 							// The headline and the lead are visible from the first paint (the
 							// headline is the LCP element); only the parts around them rise.
@@ -1087,11 +1145,22 @@ class Case_Study_Hero extends Widget_Base {
 		if ( 'yes' !== ( $s['shader'] ?? 'yes' ) ) {
 			return false;
 		}
-		$size = function ( $key ) use ( $s ) {
+		$size  = function ( $key ) use ( $s ) {
 			$value = $s[ $key ]['size'] ?? '';
 			return '' === $value || null === $value ? 100.0 : max( 0.0, min( 300.0, (float) $value ) );
 		};
+		$pixel = function ( $key, $fallback ) use ( $s ) {
+			$value = $s[ $key ]['size'] ?? '';
+			return '' === $value || null === $value ? $fallback : (int) max( 8, min( 40, (float) $value ) );
+		};
 		return array(
+			'style'     => 'smooth' === ( $s['shader_style'] ?? 'pixel' ) ? 'smooth' : 'pixel',
+			'cell'      => array(
+				'd' => $pixel( 'shader_pixel', 18 ),
+				't' => $pixel( 'shader_pixel_tablet', 16 ),
+				'm' => $pixel( 'shader_pixel_mobile', 12 ),
+			),
+			'sparkles'  => 'yes' === ( $s['shader_sparkles'] ?? 'yes' ),
 			'intensity' => round( $size( 'shader_intensity' ) / 100, 3 ),
 			'speed'     => round( $size( 'shader_speed' ) / 100, 3 ),
 			'pointer'   => 'yes' === ( $s['shader_pointer'] ?? 'yes' ),

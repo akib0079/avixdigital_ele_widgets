@@ -5,9 +5,10 @@
  * scroll with a fine pointer, and fills the reading-progress line. One
  * passive scroll listener, throttled to one rAF; the glow pauses off screen
  * and in hidden tabs. Nothing moves with reduced motion or in the editor.
- * Starts the orange shader background (AvixCsk.shader, case-study-kit.js)
- * after the page has loaded and the browser is idle, keeping it dark behind
- * every line of text (the headline and lead are never hidden: LCP), and
+ * Starts the orange shader background (AvixCsk.shader, case-study-kit.js:
+ * the pixel mosaic or the smooth flow) after the page has loaded and the
+ * browser is idle, keeping it dark behind every line of text (the headline
+ * and lead are never hidden: LCP), and
  * lands "#anchor" buttons below the fixed header like the chapter chips.
  */
 (function (window, document) {
@@ -227,9 +228,20 @@
 		if (!this.alive || this.shader || !root.isConnected) {
 			return;
 		}
+		var cell = cfg.cell || {};
 		this.shader = window.AvixCsk.shader(this.bg, {
 			className: 'avix-csh__shader',
 			root: root,
+			style: cfg.style === 'smooth' ? 'smooth' : 'pixel',
+			// The pixel size for the Elementor breakpoint the hero's width
+			// falls in (the hero spans the page).
+			cell: function (width) {
+				var pick = width <= 767 ? cell.m : (width <= 1024 ? cell.t : cell.d);
+				return pick || (width <= 767 ? 12 : (width <= 1024 ? 16 : 18));
+			},
+			sparkles: cfg.sparkles !== false,
+			// No assembly replay on every change while editing.
+			assemble: !this.editor,
 			intensity: typeof cfg.intensity === 'number' ? cfg.intensity : 1,
 			speed: typeof cfg.speed === 'number' ? cfg.speed : 1,
 			pointer: cfg.pointer !== false,

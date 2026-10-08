@@ -4,7 +4,7 @@
 	"post": {
 		"title": "Ovabalance: Architecting a Seamless Subscription Ecosystem",
 		"excerpt": "A bespoke Shopify theme for a Dutch women's health brand, with a custom subscription selector, real-time pricing and a modular section library.",
-		"menu_order": 4,
+		"menu_order": 2,
 		"featured": [
 			"@media:avix-cs-ovabalance-render-hero.webp",
 			"@media:2025/12/Untitled-design-7.webp",

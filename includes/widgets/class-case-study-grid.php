@@ -2,11 +2,11 @@
 /**
  * Case Study Grid: the /case-studies/ index. A breadcrumb and an editorial
  * header, service filter chips, then the case studies as cards in the home
- * page's Selected Work language: the image with an info panel at its foot
- * (client, tags, summary, the "Designed for" line, one checked metric and a
- * "View case study" pill), light or dark with the theme. The first card is wide. Filters and "Load
- * more" work without a reload, and as plain ?service= / ?pg= links without
- * JavaScript.
+ * page's Selected Work language: the image with a dark info panel over its
+ * foot (client, tags, summary, the "Designed for" line, one checked metric
+ * and a "View case study" pill; light when the "Card panel" control asks).
+ * The first card is wide. Filters and "Load more" work without a reload, and
+ * as plain ?service= / ?pg= links without JavaScript.
  *
  * Cards come from \AvixWidgets\Case_Studies\Cards (includes/case-studies/
  * cards.php), which also answers the AJAX requests, so filtered and loaded
@@ -388,7 +388,7 @@ class Case_Study_Grid extends Widget_Base {
 			'theme',
 			array(
 				'label'       => esc_html__( 'Theme', 'avix-widgets' ),
-				'description' => esc_html__( 'Sets every colour at once: background, headings, filter chips, card panels and buttons. Paper and White give light card panels, Dark gives dark ones.', 'avix-widgets' ),
+				'description' => esc_html__( 'Sets every colour at once: background, headings, filter chips, card panels and buttons. Card panels stay dark, as on the home page, unless "Card panel" picks light ones.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SELECT,
 				'default'     => 'paper',
 				'options'     => array(
@@ -403,11 +403,11 @@ class Case_Study_Grid extends Widget_Base {
 			'card_panel',
 			array(
 				'label'       => esc_html__( 'Card panel', 'avix-widgets' ),
-				'description' => esc_html__( 'Auto follows the theme. Dark gives the home page\'s dark panels on a light section.', 'avix-widgets' ),
+				'description' => esc_html__( 'Auto gives the home page\'s dark panels on every theme (graphite on Dark). Light gives white panels (paper on the White theme).', 'avix-widgets' ),
 				'type'        => Controls_Manager::SELECT,
 				'default'     => 'auto',
 				'options'     => array(
-					'auto'  => esc_html__( 'Auto (follows the theme)', 'avix-widgets' ),
+					'auto'  => esc_html__( 'Auto (dark, as on the home page)', 'avix-widgets' ),
 					'light' => esc_html__( 'Light', 'avix-widgets' ),
 					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
 				),
@@ -989,16 +989,16 @@ class Case_Study_Grid extends Widget_Base {
 	}
 
 	/**
-	 * Card panel classes: the tone (light on Paper and White, dark on Dark,
-	 * or the "Card panel" pick; a picked panel colour decides the text) and
-	 * the surface when it would melt into the section.
+	 * Card panel classes: the tone (dark, the home page's panels, unless the
+	 * "Card panel" control picks light; a picked panel colour decides the
+	 * text) and the surface when it would melt into the section.
 	 *
 	 * @param array $s Settings.
 	 */
 	private function panel_classes( array $s ) {
 		$theme = $this->theme( $s );
 		$pick  = (string) ( $s['card_panel'] ?? 'auto' );
-		$tone  = in_array( $pick, array( 'light', 'dark' ), true ) ? $pick : ( 'dark' === $theme ? 'dark' : 'light' );
+		$tone  = 'light' === $pick ? 'light' : 'dark';
 		$own   = $this->tone( $this->picked( $s, 'color_panel' ) );
 		if ( '' !== $own ) {
 			return array( 'avix-csi--panel-' . $own, 'avix-csi--panel-picked' );

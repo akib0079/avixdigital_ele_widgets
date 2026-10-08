@@ -4,7 +4,7 @@
 	"post": {
 		"title": "Flow Storage: Architecting a Dynamic Webflow Ecosystem",
 		"excerpt": "A pixel-perfect Figma-to-Webflow build for a self-storage company near Roermond, with a custom CMS and lead forms that route enquiries to the team.",
-		"menu_order": 5,
+		"menu_order": 4,
 		"featured": [
 			"@media:avix-cs-flow-storage-render-hero.webp",
 			"@media:2025/12/Untitled-design-6.webp",

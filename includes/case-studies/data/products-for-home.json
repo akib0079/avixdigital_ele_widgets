@@ -4,7 +4,7 @@
 	"post": {
 		"title": "Products for Home: A One-of-a-Kind Store and a WooCommerce Checkout Funnel Built to Sell",
 		"excerpt": "A one-of-a-kind Bricks store for a Dutch shop selling Greek honey, olive oil and Gia Giamas drinks, built around a WooCommerce checkout funnel with a side cart and order bumps.",
-		"menu_order": 1,
+		"menu_order": 5,
 		"featured": [
 			"@media:avix-cs-products-for-home-render-hero.webp",
 			"@media:avix-cs-products-for-home-hero-desktop.webp"

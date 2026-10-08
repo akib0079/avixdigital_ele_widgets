@@ -2,9 +2,9 @@
  * Avix Digital · Case Study Grid
  * The /case-studies/ index: an editorial header, service filter chips and
  * case-study cards in the home page's Selected Work language (the image with
- * an info panel at its foot, light or dark with the theme). The first card
- * is wide. Layout follows the widget width (container queries), not the
- * viewport.
+ * a dark info panel over its foot; a light one when the "Card panel" control
+ * asks for it). The first card is wide. Layout follows the widget width
+ * (container queries), not the viewport.
  */
 
 .avix-csi {
@@ -15,8 +15,8 @@
 	--csi-accent: #fb6007;
 	--csi-accent-text: #c54804;
 	--csi-media-bg: #ece9e2;
-	/* Card panel: dark by default; .avix-csi--panel-light/-dark (from the
-	   theme, or the "Card panel" control) set the whole set. */
+	/* Card panel: dark by default, as on the home page; .avix-csi--panel-light
+	   and -dark (from the "Card panel" control) set the whole set. */
 	--csi-panel: #111111;
 	--csi-panel-ink: #ffffff;
 	--csi-panel-muted: #b9b6b1;
@@ -72,8 +72,9 @@
 	--csi-btn-ink: #1a1a1a;
 }
 
-/* Card panels. Paper and White themes get light panels (white on paper,
-   paper on white), Dark gets dark ones; "Card panel" can pick either. */
+/* Card panels. Auto gives every theme the home page's dark panels (graphite
+   on Dark); "Card panel" can pick light ones (white on Paper, paper on
+   White), which keep the same overlap, glow and shadow. */
 .avix-csi--panel-light {
 	--csi-panel: #ffffff;
 	--csi-panel-ink: #1a1a1a;
@@ -177,6 +178,10 @@
 	--csi-gap-auto: clamp(20px, 2.6cqi, 32px);
 	--csi-row-gap: clamp(40px, 4.6cqi, 64px);
 	--csi-radius: 24px;
+	--csi-panel-radius: 20px;
+	/* The panel rides up over the image's foot, inset from its sides. */
+	--csi-overlap: 48px;
+	--csi-inset: clamp(12px, 1.4cqi, 18px);
 
 	position: relative;
 	width: min(calc(100% - 2 * var(--csi-gutter)), var(--csi-max));
@@ -465,7 +470,6 @@
 .avix-csi .avix-csi__link {
 	border-radius: var(--csi-radius);
 	outline: none;
-	transition: transform 0.55s var(--csi-ease);
 }
 
 .avix-csi__media {
@@ -481,11 +485,6 @@
 
 .avix-csi__media.is-render {
 	background: #0b0b0c;
-}
-
-/* Panel cards are one piece: the image on top, the panel flush below it. */
-.avix-csi--panel .avix-csi__card:not(.avix-csi__card--featured) .avix-csi__media {
-	border-radius: var(--csi-radius) var(--csi-radius) 0 0;
 }
 
 /* A warm wash comes up on hover (opacity only). */
@@ -559,14 +558,14 @@
 	display: flex;
 	flex: 1 1 auto;
 	flex-direction: column;
-	margin: 0;
+	margin: calc(var(--csi-overlap) * -1) var(--csi-inset) 0;
 	padding: clamp(22px, 6.4cqi, 32px);
-	border-radius: 0 0 var(--csi-radius) var(--csi-radius);
+	border-radius: var(--csi-panel-radius);
 	color: var(--csi-panel-ink);
 	background-color: var(--csi-panel);
 	background-image: radial-gradient(90% 46% at 100% 0%, var(--csi-panel-glow), transparent 70%);
 	box-shadow: var(--csi-panel-shadow), inset 0 0 0 1px var(--csi-panel-edge);
-	transition: box-shadow 0.55s var(--csi-ease);
+	transition: transform 0.55s var(--csi-ease), box-shadow 0.55s var(--csi-ease);
 }
 
 .avix-csi .avix-csi__meta {
@@ -766,6 +765,10 @@
 /* Narrow cards (two columns on a tablet, phones): the image keeps more of
    itself, and the two figures become spec rows, label left, value right. */
 @container avix-csi-card (max-width: 440px) {
+	.avix-csi .avix-csi__panel {
+		margin-top: -28px;
+	}
+
 	.avix-csi .avix-csi__stats--two {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 0;
@@ -783,9 +786,14 @@
 		padding-bottom: 0;
 	}
 
+	/* A spec row has the width for the whole label: it wraps, never "...". */
 	.avix-csi .avix-csi__card .avix-csi__stats .avix-csi__stat-label {
+		display: block;
+		flex: 1 1 auto;
 		min-height: 0;
-		max-width: 62%;
+		max-width: none;
+		overflow: visible;
+		-webkit-line-clamp: none;
 	}
 
 	.avix-csi .avix-csi__stat-value {
@@ -820,8 +828,6 @@
 	border-radius: var(--csi-radius);
 	background-image: radial-gradient(100% 52% at 100% 0%, var(--csi-panel-glow), transparent 72%);
 }
-
-/* The wide card has no lift: the image zooms instead. */
 
 .avix-csi .avix-csi__card--featured .avix-csi__name {
 	font-size: clamp(40px, 4.8cqi, 64px);
@@ -925,13 +931,15 @@
 		opacity: 1;
 	}
 
-	/* The card lifts as one piece (image and panel together). */
-	.avix-csi--panel .avix-csi__card:not(.avix-csi__card--featured) .avix-csi__link:hover {
+	/* The panel lifts off the image; the wide card's image zooms instead. */
+	.avix-csi .avix-csi__link:hover .avix-csi__panel {
 		transform: translateY(-4px);
+		box-shadow: var(--csi-panel-shadow-hover), inset 0 0 0 1px var(--csi-panel-edge);
 	}
 
-	.avix-csi .avix-csi__link:hover .avix-csi__panel {
-		box-shadow: var(--csi-panel-shadow-hover), inset 0 0 0 1px var(--csi-panel-edge);
+	.avix-csi .avix-csi__card--featured .avix-csi__link:hover .avix-csi__panel,
+	.avix-csi--minimal .avix-csi__link:hover .avix-csi__panel {
+		transform: none;
 	}
 
 	.avix-csi--minimal .avix-csi__link:hover .avix-csi__panel {
@@ -1253,7 +1261,8 @@
 /* ---------- Layout by width ---------- */
 
 @container avix-csi (max-width: 1024px) {
-	/* The wide card becomes a normal card spanning the row. */
+	/* The wide card becomes a normal card spanning the row, its panel over
+	   the image's foot like the others (no gap, so the overlap matches). */
 	.avix-csi .avix-csi__card--featured .avix-csi__link {
 		display: flex;
 		gap: 0;
@@ -1265,14 +1274,10 @@
 		aspect-ratio: 16 / 9;
 	}
 
-	.avix-csi--panel .avix-csi__card--featured .avix-csi__media {
-		border-radius: var(--csi-radius) var(--csi-radius) 0 0;
-	}
-
 	.avix-csi__card--featured .avix-csi__panel {
-		margin: 0;
+		margin: calc(var(--csi-overlap) * -1) var(--csi-inset) 0;
 		padding: clamp(24px, 3.4cqi, 36px);
-		border-radius: 0 0 var(--csi-radius) var(--csi-radius);
+		border-radius: var(--csi-panel-radius);
 	}
 
 	.avix-csi--minimal .avix-csi__card--featured .avix-csi__panel {
@@ -1307,7 +1312,10 @@
 	.avix-csi__inner {
 		--csi-tracks: 1;
 		--csi-row-gap: 40px;
+		--csi-overlap: 24px;
+		--csi-inset: 10px;
 		--csi-radius: 20px;
+		--csi-panel-radius: 18px;
 	}
 
 	.avix-csi .avix-csi__card {
@@ -1394,6 +1402,10 @@
 }
 
 @container avix-csi (max-width: 420px) {
+	.avix-csi__inner {
+		--csi-inset: 8px;
+	}
+
 	.avix-csi__panel {
 		padding: 22px 20px 20px;
 	}

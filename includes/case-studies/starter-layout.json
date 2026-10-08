@@ -303,9 +303,7 @@
 				"id": "",
 				"elType": "widget",
 				"widgetType": "avix-case-study-gallery",
-				"settings": {
-					"theme": "white"
-				},
+				"settings": {},
 				"elements": []
 			}
 		]
@@ -338,9 +336,7 @@
 				"id": "",
 				"elType": "widget",
 				"widgetType": "avix-case-study-stack",
-				"settings": {
-					"theme": "paper"
-				},
+				"settings": {},
 				"elements": []
 			}
 		]
@@ -373,9 +369,7 @@
 				"id": "",
 				"elType": "widget",
 				"widgetType": "avix-case-study-next",
-				"settings": {
-					"theme": "white"
-				},
+				"settings": {},
 				"elements": []
 			}
 		]

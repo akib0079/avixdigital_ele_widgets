@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.15.2**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.15.3**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.15.2.zip](dist/avix-elementor-widgets-1.15.2.zip).
+1. Download [avix-elementor-widgets-1.15.3.zip](dist/avix-elementor-widgets-1.15.3.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,13 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.15.3
+
+- Case Study Hero: compact, easy-to-read type (H1 about 46px at 1440 over two or three lines), buttons back under the lead, and a new "Pixel mosaic" shader style (default): the orange flow drawn as glowing brand squares that brighten around the pointer, with occasional sparkles, fading out behind the text. The smooth flow stays available under Shader style; Pixel size and Sparkles are adjustable.
+- The case-study layout, spacing and card styling are back to the 1.15.0 design, now in a lighter palette: the Impact section is a warm, lightly tinted band with the same glow, big figures and layered cards; the index cards use the dark info panels again by default.
+- Section titles are capped at 44px so the hero headline leads the page.
+- Case study order: Rehall, Ovabalance, Kampeerwinkel Roermond, Flow Storage, Products for Home.
 
 ### 1.15.2
 

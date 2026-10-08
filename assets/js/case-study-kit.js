@@ -6,6 +6,8 @@
  * canvas pixel per square) drawn in a single rAF loop, then removed. Skipped
  * with reduced motion, in the editor, without IntersectionObserver, and for
  * screenshots already on screen at load (the LCP image is never hidden).
+ * Also the WebGL shader background (AvixCsk.shader): the brand's pixel
+ * squares glowing in an orange flow, or the smooth flow on its own.
  * Exposes window.AvixCsk.
  */
 (function (window, document) {
@@ -312,28 +314,40 @@
 	/* ---------- Shader background ----------
 	   A slow, domain-warped noise field in the accent colour on the section's
 	   background, with a soft light that follows the pointer (or wanders on
-	   touch screens). Plain WebGL 1, one full-screen triangle pair. Rendered
-	   at half the CSS size (three quarters on dense screens), paused off
-	   screen and in hidden tabs, one still frame with reduced motion. Text
-	   stays readable: inside the "calm" rectangles the field is capped at a
-	   dark tone (dark themes) or a faint tint (light themes). */
+	   touch screens). Plain WebGL 1. Two styles:
+
+	   - "pixel" (default): the brand's pixel square. The field is sampled once
+	     per square cell into a tiny texture (one texel per cell), then drawn
+	     as glowing squares with hairline gaps whose size and brightness follow
+	     the flow, over a soft haze of the same field. The pointer light lifts
+	     and brightens the squares near it, a fast pointer sends a ripple of
+	     squares outwards, a few squares now and then light up fully orange and
+	     fade (sparkles), a quiet square grid shows in the dark parts, and on
+	     first load the squares assemble from the focus outwards. Rendered at
+	     the screen's density (at most 1.5x) so the squares stay crisp.
+	   - "smooth": the flowing smoke, rendered at half the CSS size.
+
+	   Both pause off screen and in hidden tabs and draw one still frame with
+	   reduced motion. Text stays readable: inside the "calm" rectangles the
+	   field is capped at a dark tone (dark themes) or a faint tint (light
+	   themes), and the squares dissolve cell by cell. */
 
 	var SHADER_VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
-	var SHADER_FS = [
+	var GLSL_HEAD = [
 		'#ifdef GL_FRAGMENT_PRECISION_HIGH',
 		'precision highp float;',
 		'#else',
 		'precision mediump float;',
-		'#endif',
-		'uniform vec2 R;uniform float S,T,O,A,K;uniform vec3 F,C0,C1,C2,C3;uniform vec4 P,Q[10];',
+		'#endif'
+	].join('\n');
+	var GLSL_NOISE = [
 		'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
 		'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
 		'return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}',
-		'float fbm(vec2 p){float v=0.,a=.5;for(int k=0;k<4;k++){v+=a*n(p);p=mat2(1.6,1.2,-1.2,1.6)*p;a*=.5;}return v;}',
-		'void main(){',
-		// CSS px from the top left of the canvas.
-		'vec2 c=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y)*S;',
-		'vec2 d=c-P.xy;float pl=P.z*exp(-dot(d,d)/(P.w*P.w));',
+		'float fbm(vec2 p){float v=0.,a=.5;for(int k=0;k<4;k++){v+=a*n(p);p=mat2(1.6,1.2,-1.2,1.6)*p;a*=.5;}return v;}'
+	].join('\n');
+	// The flow at CSS position c: f (field), q (warp), v (bands), g (filaments).
+	var GLSL_FLOW = [
 		'vec2 p=c/560.+vec2(0.,O);',
 		// The pointer gently pushes the smoke aside.
 		'p-=d/(length(d)+80.)*pl*.28;',
@@ -344,23 +358,117 @@
 		'float v=smoothstep(.35,.95,f+.2*q.x);',
 		// Thin aurora filaments where the field crosses its middle.
 		'float g=pow(1.-abs(2.*f-1.),9.);',
-		'vec2 e=(c-F.xy)/F.z;float fo=exp(-dot(e,e)*1.4);',
-		'float a=(.14*v+.06*g+fo*(.12+.6*v*v+.75*g)+pl*(.14+.42*v+.3*g))*A;',
-		// Behind text: capped, with a wide edge the smoke itself frays, so
-		// it reads as smoke parting around the words, never as a box.
-		'float m=0.;',
-		'for(int i=0;i<10;i++){vec2 o=max(max(Q[i].xy-c,c-Q[i].zw),0.);m=max(m,1.-smoothstep(0.,150.,length(o)+(f-.5)*180.));}',
-		'a=mix(a,min(a,K),m);',
-		// base → ember → deep → accent → warm highlight.
-		'vec3 col=mix(C0,mix(C0,C1,.38),smoothstep(0.,.4,a));',
+		'vec2 e=(c-F.xy)/F.z;float fo=exp(-dot(e,e)*1.4);'
+	].join('\n');
+	// Behind text: a mask with a wide edge the smoke itself frays, so it
+	// reads as smoke parting around the words, never as a box.
+	var GLSL_CALM = 'float m=0.;for(int i=0;i<10;i++){vec2 o=max(max(Q[i].xy-c,c-Q[i].zw),0.);m=max(m,1.-smoothstep(0.,150.,length(o)+(f-.5)*180.));}';
+	// base → ember → deep → accent → warm highlight.
+	var GLSL_PALETTE = [
+		'vec3 pal(float a){vec3 col=mix(C0,mix(C0,C1,.38),smoothstep(0.,.4,a));',
 		'col=mix(col,C1,smoothstep(.3,.75,a));',
 		'col=mix(col,C2,smoothstep(.65,1.05,a));',
-		'col=mix(col,C3,smoothstep(.95,1.45,a));',
+		'return mix(col,C3,smoothstep(.95,1.45,a));}'
+	].join('\n');
+
+	/* Smooth flow: one pass at half the CSS size. */
+	var SMOOTH_FS = [
+		GLSL_HEAD,
+		'uniform vec2 R;uniform float S,T,O,A,K;uniform vec3 F,C0,C1,C2,C3;uniform vec4 P,Q[10];',
+		GLSL_NOISE,
+		GLSL_PALETTE,
+		'void main(){',
+		// CSS px from the top left of the canvas.
+		'vec2 c=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y)*S;',
+		'vec2 d=c-P.xy;float pl=P.z*exp(-dot(d,d)/(P.w*P.w));',
+		GLSL_FLOW,
+		'float a=(.14*v+.06*g+fo*(.12+.6*v*v+.75*g)+pl*(.14+.42*v+.3*g))*A;',
+		GLSL_CALM,
+		'a=mix(a,min(a,K),m);',
+		'vec3 col=pal(a);',
 		// Film grain, also against banding.
 		'col+=(h(gl_FragCoord.xy+fract(T*.37)*97.)-.5)*.025;',
 		'gl_FragColor=vec4(col,1.);}'
 	].join('\n');
+
+	/* Pixel mosaic, pass 1: one fragment per square cell (G = columns, rows;
+	   Z = the grid's origin and cell size in CSS px). Writes the field
+	   (r, halved), the calm mask (g) and the filaments (b). */
+	var FIELD_FS = [
+		GLSL_HEAD,
+		'uniform vec2 G;uniform vec3 Z,F;uniform float T,O,A;uniform vec4 P,Q[10];',
+		GLSL_NOISE,
+		'void main(){',
+		'vec2 id=vec2(floor(gl_FragCoord.x),G.y-1.-floor(gl_FragCoord.y));',
+		'vec2 c=Z.xy+(id+.5)*Z.z;',
+		'vec2 d=c-P.xy;float pl=P.z*exp(-dot(d,d)/(P.w*P.w));',
+		GLSL_FLOW,
+		'float a=(.14*v+.06*g+fo*(.12+.6*v*v+.75*g))*A;',
+		GLSL_CALM,
+		'gl_FragColor=vec4(clamp(a*.5,0.,1.),m,g,1.);}'
+	].join('\n');
+
+	/* Pixel mosaic, pass 2: the squares. W = seconds since start (sparkles,
+	   ripples), B = seconds of the first-load assembly (large = done),
+	   SP = sparkle density (0 = off), HZ = haze strength, L = hairline
+	   colour and alpha, RP = up to four ripples (x, y, start, strength). */
+	var MOSAIC_FS = [
+		GLSL_HEAD,
+		'uniform sampler2D X;uniform vec2 R,G;uniform vec3 Z,F,C0,C1,C2,C3,AC;uniform float S,T,W,B,K,SP,HZ,SQ;uniform vec4 P,L,RP[4];',
+		'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+		GLSL_PALETTE,
+		'vec4 tx(vec2 u){return texture2D(X,vec2(u.x/G.x,1.-u.y/G.y));}',
+		'void main(){',
+		'vec2 c=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y)*S;',
+		'vec2 u=(c-Z.xy)/Z.z;vec2 id=floor(u);vec2 l=fract(u)-.5;',
+		'vec2 cc=Z.xy+(id+.5)*Z.z;',
+		'vec4 fx=tx(id+.5);float a=fx.r*2.,m=fx.g,g=fx.b;',
+		// The haze: the same field, blurred over five taps.
+		'vec4 hz=(tx(u)*2.+tx(u+vec2(1.6,0.))+tx(u-vec2(1.6,0.))+tx(u+vec2(0.,1.6))+tx(u-vec2(0.,1.6)))/6.;',
+		'float ha=hz.r*2.;ha=mix(ha,min(ha,K),hz.g);',
+		// First load: the squares assemble from the focus outwards, each with
+		// a brief flash as it lands; the haze fades in under them.
+		'float bd=clamp(length(cc-F.xy)/(F.z*3.2),0.,1.)*.62+h(id*.913+vec2(1.3,7.7))*.38;',
+		'float bk=smoothstep(bd*1.15,bd*1.15+.32,B);float fl=bk*(1.-bk)*2.4;',
+		'ha*=smoothstep(0.,1.4,B);',
+		// The pointer light (per cell, so a whole square lifts) and ripples.
+		'vec2 d=cc-P.xy;float pl=P.z*exp(-dot(d,d)/(P.w*P.w));',
+		'float rp=0.;',
+		'for(int i=0;i<4;i++){vec4 r=RP[i];float age=W-r.z;',
+		'if(age>0.&&age<1.8){float dd=length(cc-r.xy)-age*380.;float k=1.-age/1.8;rp+=r.w*exp(-dd*dd/2200.)*k*k;}}',
+		// Each square keeps a little of its own brightness, like a real
+		// LED wall; the pointer lifts the squares under it (more light than
+		// size, so the gaps stay open).
+		'float pt=pl*(.08+.34*a);',
+		'float lv=a*(.84+.32*h(id*1.71+vec2(4.2,8.6)))+pt+rp*(.8+.3*a)+fl*.5;',
+		// Behind text the squares dissolve, cell by cell.
+		'float keep=smoothstep(m-.18,m+.18,h(id*1.31+vec2(7.1,2.3))*.9+.05);',
+		'lv*=keep*(1.-m*.6);float lz=lv-pt*.45*keep;',
+		// Sparkles: now and then a square lights up fully and fades.
+		'float sp=0.;',
+		'if(SP>0.){float per=6.+h(id+vec2(3.7,9.1))*8.;float ph=W/per+h(id+vec2(11.3,2.9));',
+		'float k=floor(ph);float ta=fract(ph)*per;',
+		'float luck=step(h(vec2(id.x*1.7+mod(k,97.)*.131,id.y*2.3-mod(k,89.)*.077)),SP*(.4+.6*smoothstep(.04,.5,a)));',
+		'sp=luck*smoothstep(0.,.16,ta)*exp(-ta*1.5)*(1.-smoothstep(.05,.35,m))*bk;}',
+		// Square size follows the light (area ~ brightness), tiny gaps at full.
+		'float s=smoothstep(.14,1.2,lz);',
+		'float side=.84*pow(s,.85)*bk;side=max(side,.9*sqrt(sp));side=min(side,.9);',
+		'float aa=S/Z.z;float db=max(abs(l.x),abs(l.y));',
+		'float inq=1.-smoothstep(side*.5-aa*.5,side*.5+aa*.5,db);',
+		'vec3 bg=pal(ha*HZ);',
+		// The quiet grid: a hairline on the cell edges, only where it is dark.
+		'float ln=1.-smoothstep(0.,aa,.5-db);',
+		'bg=mix(bg,L.rgb,ln*L.a*(1.-smoothstep(.02,.45,ha))*(1.-hz.g*.75)*smoothstep(0.,1.,B));',
+		'bg+=(h(gl_FragCoord.xy+fract(T*.37)*97.)-.5)*.02;',
+		'vec3 sq=pal(lv*.95+SQ);',
+		// A soft light in the middle of every square: glowing pixels.
+		'sq*=1.+.06*(1.-db*2.);',
+		'sq=mix(sq,AC,smoothstep(0.,.8,sp));sq=mix(sq,C3,smoothstep(.75,1.,sp)*.5);',
+		'gl_FragColor=vec4(mix(bg,sq,inq),1.);}'
+	].join('\n');
+
 	var CALM = 10;
+	var RIPPLES = 4;
 	var FAR = [-1e5, -1e5, -1e5 + 1, -1e5 + 1];
 
 	var finePointer = mq('(hover: hover) and (pointer: fine)');
@@ -387,20 +495,31 @@
 		return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 	}
 
-	/** base → deep → accent → warm highlight; softer tints on a light base. */
-	function shaderPalette(base, accent) {
+	/**
+	 * base → deep → accent → warm highlight; softer tints on a light base.
+	 * On paper the pixel squares run all the way to the brand orange (the
+	 * haze stays a soft tint), so the light mosaic is as rich as the dark.
+	 */
+	function shaderPalette(base, accent, pixel) {
 		var hot = mixRgb(accent, [1, 0.86, 0.62], 0.35);
 		var luma = 0.2126 * base[0] + 0.7152 * base[1] + 0.0722 * base[2];
-		if (luma > 0.5) {
-			return { light: true, c: [base, mixRgb(base, accent, 0.14), mixRgb(base, accent, 0.34), mixRgb(base, hot, 0.62)] };
+		if (luma > 0.5 && pixel) {
+			return { light: true, accent: accent, c: [base, mixRgb(base, accent, 0.16), mixRgb(base, accent, 0.62), mixRgb(accent, hot, 0.3)] };
 		}
-		return { light: false, c: [base, [accent[0] * 0.78, accent[1] * 0.78, accent[2] * 0.78], accent, hot] };
+		if (luma > 0.5) {
+			return { light: true, accent: accent, c: [base, mixRgb(base, accent, 0.14), mixRgb(base, accent, 0.34), mixRgb(base, hot, 0.62)] };
+		}
+		return { light: false, accent: accent, c: [base, [accent[0] * 0.78, accent[1] * 0.78, accent[2] * 0.78], accent, hot] };
 	}
 
 	/**
 	 * @param {Element} host  Positioned element the canvas fills (top left).
 	 * @param {Object}  opts {
 	 *   className: extra canvas class;
+	 *   style: 'pixel' (the default) or 'smooth';
+	 *   cell(width): the pixel size in CSS px for a host this wide (or a number);
+	 *   sparkles: squares that light up now and then (true);
+	 *   assemble: the squares assemble on first load (true);
 	 *   intensity: 1 = designed look; speed: 1 = designed pace (0 = still);
 	 *   pointer: follow a fine pointer (true);
 	 *   colors(): { base, accent } as CSS colours (read on every refresh);
@@ -414,13 +533,20 @@
 		this.opts = opts || {};
 		this.alive = true;
 		this.visible = true;
+		this.style = this.opts.style === 'smooth' ? 'smooth' : 'pixel';
 		this.time = 7 + Math.random() * 40;
+		this.wall = 0;
 		this.quality = 1;
 		this.slow = 0;
 		this.raf = 0;
 		this.timers = [];
 		this.ptr = { x: 0, y: 0, s: 0, tx: 0, ty: 0, ts: 0, inside: false, set: false };
+		this.ripples = new Float32Array(RIPPLES * 4);
+		this.rippleAt = -1;
+		this.rippleNext = 0;
+		this.speed = 0;
 		this.animate = !reduceMotion.matches && (this.opts.speed > 0 || this.opts.pointer !== false);
+		this.build_t = this.animate && this.opts.assemble !== false ? 0 : 99;
 		this.frame = this.frame.bind(this);
 		this.refresh = this.refresh.bind(this);
 		this.onVisibility = this.onVisibility.bind(this);
@@ -428,13 +554,17 @@
 		this.onLeave = this.onLeave.bind(this);
 		this.onLost = this.onLost.bind(this);
 		this.onRestored = this.onRestored.bind(this);
+		for (var i = 0; i < RIPPLES; i++) {
+			this.ripples[i * 4] = -1e5;
+			this.ripples[i * 4 + 2] = -100;
+		}
 		this.ok = this.init();
 	}
 
 	Shader.prototype.init = function () {
 		var self = this;
 		var canvas = document.createElement('canvas');
-		canvas.className = ('avix-csk-shader ' + (this.opts.className || '')).trim();
+		canvas.className = ('avix-csk-shader avix-csk-shader--' + this.style + ' ' + (this.opts.className || '')).trim();
 		canvas.setAttribute('aria-hidden', 'true');
 		this.canvas = canvas;
 		var gl = null;
@@ -507,6 +637,7 @@
 		return true;
 	};
 
+	/** Compiles the programs (and the pixel style's cell texture). */
 	Shader.prototype.build = function () {
 		var gl = this.gl;
 		var compile = function (type, src) {
@@ -515,32 +646,77 @@
 			gl.compileShader(s);
 			return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
 		};
-		var vs = compile(gl.VERTEX_SHADER, SHADER_VS);
-		var fs = compile(gl.FRAGMENT_SHADER, SHADER_FS);
-		if (!vs || !fs) {
-			return false;
-		}
-		var prog = gl.createProgram();
-		gl.attachShader(prog, vs);
-		gl.attachShader(prog, fs);
-		gl.linkProgram(prog);
-		if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-			return false;
-		}
-		gl.useProgram(prog);
+		var program = function (src, names) {
+			var vs = compile(gl.VERTEX_SHADER, SHADER_VS);
+			var fs = compile(gl.FRAGMENT_SHADER, src);
+			if (!vs || !fs) {
+				return null;
+			}
+			var prog = gl.createProgram();
+			gl.attachShader(prog, vs);
+			gl.attachShader(prog, fs);
+			gl.bindAttribLocation(prog, 0, 'a');
+			gl.linkProgram(prog);
+			if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+				return null;
+			}
+			var u = {};
+			names.forEach(function (name) {
+				u[name] = gl.getUniformLocation(prog, name);
+			});
+			return { prog: prog, u: u };
+		};
 		var buf = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, buf);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-		var loc = gl.getAttribLocation(prog, 'a');
-		gl.enableVertexAttribArray(loc);
-		gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-		var u = {};
-		['R', 'S', 'T', 'O', 'A', 'K', 'F', 'C0', 'C1', 'C2', 'C3', 'P', 'Q'].forEach(function (name) {
-			u[name] = gl.getUniformLocation(prog, name);
-		});
-		this.u = u;
+		gl.enableVertexAttribArray(0);
+		gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+		this.field = null;
+		this.mosaic = null;
+		this.smooth = null;
+		this.cols = 0;
+		this.rows = 0;
+		if (this.style === 'pixel') {
+			this.field = program(FIELD_FS, ['G', 'Z', 'F', 'T', 'O', 'A', 'P', 'Q']);
+			this.mosaic = program(MOSAIC_FS, ['X', 'R', 'G', 'Z', 'F', 'C0', 'C1', 'C2', 'C3', 'AC', 'S', 'T', 'W', 'B', 'K', 'SP', 'HZ', 'SQ', 'P', 'L', 'RP']);
+			if (!this.field || !this.mosaic || !this.cellTarget()) {
+				// A GPU that cannot run the mosaic still gets the smooth flow.
+				this.style = 'smooth';
+				this.field = this.mosaic = null;
+				this.canvas.classList.remove('avix-csk-shader--pixel');
+				this.canvas.classList.add('avix-csk-shader--smooth');
+			}
+		}
+		if (this.style === 'smooth') {
+			this.smooth = program(SMOOTH_FS, ['R', 'S', 'T', 'O', 'A', 'K', 'F', 'C0', 'C1', 'C2', 'C3', 'P', 'Q']);
+			if (!this.smooth) {
+				return false;
+			}
+			gl.useProgram(this.smooth.prog);
+		}
 		this.dirty = true;
 		return true;
+	};
+
+	/** The cell texture and its framebuffer (pixel style). */
+	Shader.prototype.cellTarget = function () {
+		var gl = this.gl;
+		var tex = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, tex);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		var fbo = gl.createFramebuffer();
+		gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+		gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+		var ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		this.tex = tex;
+		this.fbo = fbo;
+		return ok;
 	};
 
 	Shader.prototype.later = function (fn, ms, key) {
@@ -551,6 +727,17 @@
 				fn();
 			}
 		}, ms);
+	};
+
+	/** The pixel size in CSS px for the current width (8–64). */
+	Shader.prototype.cellSize = function (width) {
+		var cell = this.opts.cell;
+		var size = typeof cell === 'function' ? cell(width) : cell;
+		size = +size;
+		if (!size || size !== size) {
+			size = width <= 767 ? 12 : (width <= 1024 ? 16 : 18);
+		}
+		return Math.max(8, Math.min(64, size));
 	};
 
 	/** Re-reads the colours and the layout, resizes the canvas, redraws. */
@@ -566,7 +753,10 @@
 		var w = Math.max(1, Math.round(rect.width));
 		var lay = (this.opts.layout && this.opts.layout(rect)) || {};
 		var h = Math.max(1, Math.round(Math.min(lay.height || rect.height, rect.height || 1)));
-		var scale = Math.min(window.devicePixelRatio || 1, 1.5) * 0.5 * this.quality;
+		var pixel = this.style === 'pixel';
+		// Pixel squares need the screen's density for crisp edges (capped at
+		// 1.5x); the smooth flow is soft anyway and renders at half that.
+		var scale = Math.min(window.devicePixelRatio || 1, 1.5) * (pixel ? 1 : 0.5) * this.quality;
 		var bw = Math.max(1, Math.round(w * scale));
 		var bh = Math.max(1, Math.round(h * scale));
 		var canvas = this.canvas;
@@ -580,10 +770,25 @@
 		this.h = h;
 		this.css = w / bw;
 
+		if (pixel) {
+			// A grid centred on the section, one texel per cell.
+			var size = this.cellSize(w);
+			var cols = Math.ceil(w / size) + 1;
+			var rows = Math.ceil(h / size) + 1;
+			this.grid = [(w - cols * size) / 2, 0, size];
+			if (cols !== this.cols || rows !== this.rows) {
+				var gl = this.gl;
+				gl.bindTexture(gl.TEXTURE_2D, this.tex);
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, cols, rows, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+				this.cols = cols;
+				this.rows = rows;
+			}
+		}
+
 		var colors = (this.opts.colors && this.opts.colors()) || {};
 		var base = parseColor(canvas, colors.base, [0.043, 0.043, 0.047]);
 		var accent = parseColor(canvas, colors.accent, [0.984, 0.376, 0.027]);
-		this.pal = shaderPalette(base, accent);
+		this.pal = shaderPalette(base, accent, pixel);
 
 		var focus = lay.focus || [w * 0.8, Math.min(h * 0.3, 360), Math.max(260, w * 0.36)];
 		this.focus = focus;
@@ -609,12 +814,21 @@
 
 	Shader.prototype.draw = function () {
 		var gl = this.gl;
-		var u = this.u;
-		if (!gl || this.lost || !u || !this.pal) {
+		if (!gl || this.lost || !this.pal) {
 			return;
 		}
+		if (this.style === 'pixel') {
+			this.drawPixel();
+			return;
+		}
+		var p = this.smooth;
+		if (!p) {
+			return;
+		}
+		var u = p.u;
 		var o = this.opts;
 		var c = this.pal.c;
+		gl.useProgram(p.prog);
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 		if (this.dirty) {
 			gl.uniform2f(u.R, this.canvas.width, this.canvas.height);
@@ -633,6 +847,77 @@
 		gl.uniform1f(u.T, this.time);
 		gl.uniform1f(u.O, this.animate ? (window.pageYOffset || 0) / 2400 : 0);
 		gl.uniform4f(u.P, this.ptr.x, this.ptr.y, this.ptr.s, radius);
+		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	};
+
+	/** Pass 1 fills the cell texture, pass 2 draws the squares. */
+	Shader.prototype.drawPixel = function () {
+		var gl = this.gl;
+		var f = this.field;
+		var m = this.mosaic;
+		if (!f || !m || !this.cols) {
+			return;
+		}
+		var o = this.opts;
+		var c = this.pal.c;
+		var light = this.pal.light;
+		var dirty = this.dirty;
+		var radius = Math.max(150, Math.min(260, this.w * 0.18));
+		var offset = this.animate ? (window.pageYOffset || 0) / 2400 : 0;
+		var grid = this.grid;
+
+		gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
+		gl.viewport(0, 0, this.cols, this.rows);
+		gl.useProgram(f.prog);
+		if (dirty) {
+			gl.uniform2f(f.u.G, this.cols, this.rows);
+			gl.uniform3f(f.u.Z, grid[0], grid[1], grid[2]);
+			gl.uniform3f(f.u.F, this.focus[0], this.focus[1], this.focus[2]);
+			gl.uniform1f(f.u.A, (o.intensity >= 0 ? o.intensity : 1) * (light ? 1.1 : 1));
+			gl.uniform4fv(f.u.Q, this.calm);
+		}
+		gl.uniform1f(f.u.T, this.time);
+		gl.uniform1f(f.u.O, offset);
+		gl.uniform4f(f.u.P, this.ptr.x, this.ptr.y, this.ptr.s, radius * 1.6);
+		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+		gl.useProgram(m.prog);
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, this.tex);
+		if (dirty) {
+			var a = this.pal.accent;
+			gl.uniform1i(m.u.X, 0);
+			gl.uniform2f(m.u.R, this.canvas.width, this.canvas.height);
+			gl.uniform2f(m.u.G, this.cols, this.rows);
+			gl.uniform3f(m.u.Z, grid[0], grid[1], grid[2]);
+			gl.uniform3f(m.u.F, this.focus[0], this.focus[1], this.focus[2]);
+			gl.uniform3f(m.u.C0, c[0][0], c[0][1], c[0][2]);
+			gl.uniform3f(m.u.C1, c[1][0], c[1][1], c[1][2]);
+			gl.uniform3f(m.u.C2, c[2][0], c[2][1], c[2][2]);
+			gl.uniform3f(m.u.C3, c[3][0], c[3][1], c[3][2]);
+			gl.uniform3f(m.u.AC, a[0], a[1], a[2]);
+			gl.uniform1f(m.u.S, this.css);
+			gl.uniform1f(m.u.K, light ? 0.3 : 0.2);
+			gl.uniform1f(m.u.HZ, light ? 0.9 : 0.6);
+			// On paper even the smallest squares carry a clear tint.
+			gl.uniform1f(m.u.SQ, light ? 0.26 : 0.04);
+			// Sparse: about one square in 160 per cycle lights up.
+			gl.uniform1f(m.u.SP, o.sparkles === false ? 0 : 0.0065);
+			// The hairline grid: white on dark, ink on paper.
+			if (light) {
+				gl.uniform4f(m.u.L, 0.1, 0.1, 0.1, 0.05);
+			} else {
+				gl.uniform4f(m.u.L, 1, 1, 1, 0.045);
+			}
+			this.dirty = false;
+		}
+		gl.uniform1f(m.u.T, this.time);
+		gl.uniform1f(m.u.W, this.wall);
+		gl.uniform1f(m.u.B, this.build_t);
+		gl.uniform4f(m.u.P, this.ptr.x, this.ptr.y, this.ptr.s, radius);
+		gl.uniform4fv(m.u.RP, this.ripples);
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 	};
 
@@ -661,6 +946,11 @@
 		var dt = this.last ? Math.min(0.1, (now - this.last) / 1000) : 1 / 60;
 		this.last = now;
 		this.time += dt * (this.opts.speed >= 0 ? this.opts.speed : 1);
+		// Wrapped, so the sparkle hashes keep their precision on long visits.
+		this.wall = (this.wall + dt) % 3600;
+		if (this.build_t < 99) {
+			this.build_t = Math.min(99, this.build_t + dt);
+		}
 
 		// The light: eased towards the pointer, or wandering around the focus.
 		var p = this.ptr;
@@ -674,6 +964,7 @@
 		p.x += (p.tx - p.x) * k;
 		p.y += (p.ty - p.y) * k;
 		p.s += (p.ts - p.s) * k;
+		this.speed *= Math.pow(0.9, dt * 60);
 
 		// A slow GPU: drop the resolution once or twice (never below 0.5).
 		this.avg = this.avg ? this.avg * 0.95 + dt * 0.05 : dt;
@@ -692,14 +983,37 @@
 			return;
 		}
 		var rect = this.canvas.getBoundingClientRect();
-		this.ptr.tx = event.clientX - rect.left;
-		this.ptr.ty = event.clientY - rect.top;
+		var x = event.clientX - rect.left;
+		var y = event.clientY - rect.top;
+		var t = now();
+		// A quick flick of the pointer sends a ripple of squares outwards
+		// (at most one every 280ms, four at a time).
+		if (this.style === 'pixel' && this.moved) {
+			var gap = t - this.moved.t;
+			if (gap > 0 && gap < 120) {
+				var v = Math.sqrt((x - this.moved.x) * (x - this.moved.x) + (y - this.moved.y) * (y - this.moved.y)) / gap;
+				this.speed = this.speed * 0.6 + v * 0.4;
+				if (this.speed > 1 && t - this.rippleAt > 280 && y < this.h) {
+					var i = this.rippleNext;
+					this.ripples[i * 4] = x;
+					this.ripples[i * 4 + 1] = y;
+					this.ripples[i * 4 + 2] = this.wall;
+					this.ripples[i * 4 + 3] = Math.min(1, 0.5 + (this.speed - 1) * 0.25);
+					this.rippleNext = (i + 1) % RIPPLES;
+					this.rippleAt = t;
+				}
+			}
+		}
+		this.moved = { x: x, y: y, t: t };
+		this.ptr.tx = x;
+		this.ptr.ty = y;
 		this.ptr.ts = 1;
 		this.ptr.inside = true;
 	};
 
 	Shader.prototype.onLeave = function () {
 		this.ptr.inside = false;
+		this.moved = null;
 	};
 
 	Shader.prototype.onVisibility = function () {

@@ -166,16 +166,16 @@
 /* The challenge: a statement, not a shout. */
 .avix-csc .avix-csc__title--statement {
 	max-width: 30ch;
-	font-size: clamp(30px, 3.4cqi, 48px);
+	font-size: clamp(26px, 3cqi, 44px);
 	font-weight: 500;
-	line-height: 1.16;
+	line-height: 1.18;
 	letter-spacing: -0.02em;
 	text-wrap: pretty;
 }
 
 .avix-csc .avix-csc__title--display {
 	max-width: 16ch;
-	font-size: clamp(36px, 4.2cqi, 60px);
+	font-size: clamp(28px, 3.1cqi, 44px);
 	font-weight: 600;
 	line-height: 1.06;
 	letter-spacing: -0.035em;
@@ -883,10 +883,9 @@
 		--csc-card-gap: 12px;
 	}
 
-	/* Statements share one phone size with the Results statement. */
 	.avix-csc .avix-csc__title--statement {
-		font-size: clamp(26px, 7.2cqi, 32px);
-		line-height: 1.2;
+		font-size: clamp(25px, 6.8cqi, 30px);
+		line-height: 1.22;
 	}
 
 	.avix-csc .avix-csc__title--display {
