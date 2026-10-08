@@ -398,6 +398,11 @@
 			}
 		}
 		this.reveal(cards, true);
+		// The site-wide pixel reveal (includes/pixel-reveal.php) forgets the
+		// cards that left and gives the new ones their reveal.
+		if (window.AvixPixelReveal) {
+			window.AvixPixelReveal.scan(grid);
+		}
 		if (this.empty) {
 			this.empty.hidden = this.total > 0;
 		}
@@ -416,6 +421,11 @@
 		this.shown = parseInt(data.shown, 10) || this.shown;
 		this.update(!!data.hasMore);
 		this.reveal(cards, true);
+		// The site-wide pixel reveal (includes/pixel-reveal.php) forgets the
+		// cards that left and gives the new ones their reveal.
+		if (window.AvixPixelReveal) {
+			window.AvixPixelReveal.scan(grid);
+		}
 		if (this.status && this.cfg.countText) {
 			this.announce(this.status.textContent);
 		}

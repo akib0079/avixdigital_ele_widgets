@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.15.4**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.16.0**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.15.4.zip](dist/avix-elementor-widgets-1.15.4.zip).
+1. Download [avix-elementor-widgets-1.16.0.zip](dist/avix-elementor-widgets-1.16.0.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,12 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.16.0
+
+- Site-wide pixel reveal: content images across the site dissolve in from brand squares as they scroll into view, the same effect as the case-study pages (16px squares, about 640ms). Images already on screen at load, the header and footer, logos, avatars, SVGs, sliders and marquees, the case-study hero and anything with the class `no-pixel-reveal` are left alone. It waits for a widget's own fade-in to finish so the dissolve is always seen, and stays off under reduced motion, in the Elementor editor and in print.
+- Settings › Avix pixel reveal: on/off, scope (all content images, Avix widgets only, or case studies only), minimum image size, square size and extra exclusions. A section can set the square colour with `--avix-pxr-cover`.
+- No extra stylesheet request; one small deferred script, a single animation loop and at most six reveals at once.
 
 ### 1.15.4
 
