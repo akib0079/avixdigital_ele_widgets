@@ -444,12 +444,12 @@
 		// Behind text the squares dissolve, cell by cell.
 		'float keep=smoothstep(m-.18,m+.18,h(id*1.31+vec2(7.1,2.3))*.9+.05);',
 		'lv*=keep*(1.-m*.6);float lz=lv-pt*.45*keep;',
-		// Sparkles: now and then a square lights up fully and fades.
+		// Sparkles: now and then a square glows up and slowly fades.
 		'float sp=0.;',
 		'if(SP>0.){float per=6.+h(id+vec2(3.7,9.1))*8.;float ph=W/per+h(id+vec2(11.3,2.9));',
 		'float k=floor(ph);float ta=fract(ph)*per;',
 		'float luck=step(h(vec2(id.x*1.7+mod(k,97.)*.131,id.y*2.3-mod(k,89.)*.077)),SP*(.4+.6*smoothstep(.04,.5,a)));',
-		'sp=luck*smoothstep(0.,.16,ta)*exp(-ta*1.5)*(1.-smoothstep(.05,.35,m))*bk;}',
+		'sp=luck*smoothstep(0.,.4,ta)*exp(-ta*1.1)*(1.-smoothstep(.05,.35,m))*bk;}',
 		// Square size follows the light (area ~ brightness), tiny gaps at full.
 		'float s=smoothstep(.14,1.2,lz);',
 		'float side=.84*pow(s,.85)*bk;side=max(side,.9*sqrt(sp));side=min(side,.9);',
@@ -518,7 +518,7 @@
 	 *   className: extra canvas class;
 	 *   style: 'pixel' (the default) or 'smooth';
 	 *   cell(width): the pixel size in CSS px for a host this wide (or a number);
-	 *   sparkles: squares that light up now and then (true);
+	 *   sparkles: squares that light up now and then (true; a number scales how many);
 	 *   assemble: the squares assemble on first load (true);
 	 *   intensity: 1 = designed look; speed: 1 = designed pace (0 = still);
 	 *   pointer: follow a fine pointer (true);
@@ -903,8 +903,9 @@
 			gl.uniform1f(m.u.HZ, light ? 0.9 : 0.6);
 			// On paper even the smallest squares carry a clear tint.
 			gl.uniform1f(m.u.SQ, light ? 0.26 : 0.04);
-			// Sparse: about one square in 160 per cycle lights up.
-			gl.uniform1f(m.u.SP, o.sparkles === false ? 0 : 0.0065);
+			// Sparse: about one square in 160 per cycle lights up (a number
+			// scales that: 0.4 = fewer).
+			gl.uniform1f(m.u.SP, o.sparkles === false ? 0 : 0.0065 * (typeof o.sparkles === 'number' ? Math.max(0, o.sparkles) : 1));
 			// The hairline grid: white on dark, ink on paper.
 			if (light) {
 				gl.uniform4f(m.u.L, 0.1, 0.1, 0.1, 0.05);

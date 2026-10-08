@@ -29,8 +29,8 @@
 	},
 	"meta": {
 		"client": "Flow Storage",
-		"display_title": "Flow Storage: Architecting a Dynamic [Webflow Ecosystem]",
-		"summary": "Flow Storage required a digital presence that perfectly balanced high-end aesthetic design with operational flexibility. We built it in Webflow: pixel-perfect, fully responsive and easy for the team to run.",
+		"display_title": "Flow Storage: A [Webflow Website] Built for Enquiries",
+		"summary": "A pixel-perfect Figma-to-Webflow build for a self-storage company near Roermond, with a CMS the team runs itself.",
 		"logo": "@media:avix-cs-flow-storage-logo-white.png",
 		"hero_desktop": "@media:avix-cs-flow-storage-hero-desktop.webp",
 		"hero_mobile": "@media:avix-cs-flow-storage-hero-mobile.webp",
@@ -103,7 +103,7 @@
 	},
 	"layout": {
 		"hero": {
-			"eyebrow": "Flow Storage case study · Webflow · Roermond, Netherlands"
+			"eyebrow": "Case study · Webflow"
 		},
 		"features": {
 			"title": "Six Webflow features that turn [visits into enquiries]"

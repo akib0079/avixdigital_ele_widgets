@@ -29,8 +29,8 @@
 	},
 	"meta": {
 		"client": "Products for Home",
-		"display_title": "Products for Home: A One-of-a-Kind Store and a WooCommerce [Checkout Funnel] Built to Sell",
-		"summary": "Products for Home sells Greek honey, olive oil and Gia Giamas fruit drinks to shoppers in the Netherlands and Belgium. We designed and built a storefront that looks nothing like a stock WordPress theme. Then we turned the buying journey into a WooCommerce checkout funnel. Every step, from product card to checkout, gives shoppers a reason to add one more thing.",
+		"display_title": "Products for Home: A WooCommerce Store With a [Checkout Funnel]",
+		"summary": "A one-of-a-kind Bricks store for Greek honey, olive oil and drinks, with a checkout funnel designed to grow every basket.",
 		"logo": "@media:avix-cs-products-for-home-logo-white.png",
 		"hero_desktop": "@media:avix-cs-products-for-home-hero-desktop.webp",
 		"hero_mobile": "@media:avix-cs-products-for-home-hero-mobile.webp",
@@ -111,7 +111,7 @@
 	},
 	"layout": {
 		"hero": {
-			"eyebrow": "Case study · WooCommerce checkout funnel · Netherlands & Belgium"
+			"eyebrow": "Case study · WooCommerce"
 		},
 		"features": {
 			"title": "Six details of a checkout funnel that [sells every day]"

@@ -3,19 +3,21 @@
  * Reveals the hero once (copy, then the facts cell by cell, then the
  * devices as they come into view), drifts the phone or render a little on
  * scroll with a fine pointer, and fills the reading-progress line. One
- * passive scroll listener, throttled to one rAF; the glow pauses off screen
- * and in hidden tabs. Nothing moves with reduced motion or in the editor.
- * Starts the orange shader background (AvixCsk.shader, case-study-kit.js:
- * the pixel mosaic or the smooth flow) after the page has loaded and the
- * browser is idle, keeping it dark behind every line of text (the headline
- * and lead are never hidden: LCP), and
- * lands "#anchor" buttons below the fixed header like the chapter chips.
+ * passive scroll listener, throttled to one rAF; the glow and the float
+ * pause off screen and in hidden tabs. Nothing moves with reduced motion or
+ * in the editor. Starts the orange shader background (AvixCsk.shader,
+ * case-study-kit.js: the pixel mosaic or the smooth flow) after the page has
+ * loaded and the browser is idle, keeping it dark behind the text (the
+ * headline and lead are never hidden: LCP); in the split layout it gathers
+ * around the visual's column, as atmosphere, with fewer sparkles. Lands
+ * "#anchor" buttons below the fixed header like the chapter chips.
  */
 (function (window, document) {
 	'use strict';
 
 	var ROOT_SELECTOR = '[data-avix-csh]';
 	var DRIFT = 24; // px the phone / render rises over the hero's scroll range
+	var DRIFT_SPLIT = 14; // less beside the copy, where it also floats
 	var instances = [];
 	var mq = function (query) {
 		return window.matchMedia ? window.matchMedia(query) : { matches: false };
@@ -100,15 +102,25 @@
 		this.editor = isEditMode();
 		this.visible = true;
 		this.ticking = false;
+		this.split = root.classList.contains('avix-csh--split');
 		this.row = root.querySelector('.avix-csh__devices-row');
 		this.drift = config.parallax ? (root.querySelector('[data-csh-phone]') || root.querySelector('[data-csh-drift]')) : null;
 		this.progress = null;
 		if (config.progress) {
 			// The bar is printed right after the section (a fixed element
-			// cannot live inside the size-contained section).
+			// cannot live inside the size-contained section), before the
+			// facts strip; a few siblings are checked, never past the next
+			// hero.
 			var next = root.nextElementSibling;
-			if (next && next.hasAttribute('data-csh-progress')) {
-				this.progress = next.querySelector('.avix-csh__progress-bar');
+			for (var hops = 0; next && hops < 3; hops++) {
+				if (next.hasAttribute('data-csh-progress')) {
+					this.progress = next.querySelector('.avix-csh__progress-bar');
+					break;
+				}
+				if (next.hasAttribute('data-avix-csh')) {
+					break;
+				}
+				next = next.nextElementSibling;
 			}
 		}
 		this.content = root.closest ? root.closest('.elementor') : null;
@@ -239,7 +251,8 @@
 				var pick = width <= 767 ? cell.m : (width <= 1024 ? cell.t : cell.d);
 				return pick || (width <= 767 ? 12 : (width <= 1024 ? 16 : 18));
 			},
-			sparkles: cfg.sparkles !== false,
+			// Split: the mosaic is atmosphere around the visual, so fewer.
+			sparkles: cfg.sparkles === false ? false : (this.split ? 0.4 : 1),
 			// No assembly replay on every change while editing.
 			assemble: !this.editor,
 			intensity: typeof cfg.intensity === 'number' ? cfg.intensity : 1,
@@ -282,6 +295,12 @@
 	 * backdrop would otherwise show as a box.
 	 */
 	Hero.prototype.shaderLayout = function (box) {
+		if (this.split) {
+			var lay = this.splitLayout(box);
+			if (lay) {
+				return lay;
+			}
+		}
 		var root = this.root;
 		var calm = [];
 		var add = function (rect, pad) {
@@ -342,6 +361,76 @@
 			fade = clamp(height * 0.35, 200, 420);
 		}
 		return { height: height, fade: fade, focus: focus, calm: calm };
+	};
+
+	/**
+	 * Split layout: the field gathers around the visual (the brightest part
+	 * hidden behind the frame, so it glows out from under it), the whole text
+	 * column stays calm (one wide rectangle, so it reads as dark air, not as
+	 * smoke parting around single lines) and the field fades out well above
+	 * the hero's end, which stays the plain background for the strip below.
+	 * Null without a visual (the stacked rules apply).
+	 */
+	Hero.prototype.splitLayout = function (box) {
+		var root = this.root;
+		var media = root.querySelector('.avix-csh__render') || root.querySelector('.avix-csh__devices');
+		var copy = root.querySelector('.avix-csh__copy');
+		if (!media || !copy) {
+			return null;
+		}
+		var m = media.getBoundingClientRect();
+		if (!m.width || !m.height) {
+			return null;
+		}
+		var w = box.width;
+		var wide = w > 1024;
+		var calm = [];
+		var add = function (rect, pad) {
+			pad = pad || 0;
+			if (rect && rect.width && rect.height) {
+				calm.push([rect.left - box.left - pad, rect.top - box.top - pad, rect.right - box.left + pad, rect.bottom - box.top + pad]);
+			}
+		};
+		var parts = ['.avix-csh__crumb-list', '.avix-csh__logo-img', '.avix-csh__eyebrow', '.avix-csh__title', '.avix-csh__lead', '.avix-csh__actions'];
+		if (wide) {
+			// One rectangle around the whole text block.
+			var u = null;
+			parts.forEach(function (selector) {
+				var el = root.querySelector(selector);
+				var r = el && (selector === '.avix-csh__title' || selector === '.avix-csh__lead' ? textRect(el) : el.getBoundingClientRect());
+				if (!r || !r.width || !r.height) {
+					return;
+				}
+				u = u ? { left: Math.min(u.left, r.left), top: Math.min(u.top, r.top), right: Math.max(u.right, r.right), bottom: Math.max(u.bottom, r.bottom) } : { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+			});
+			if (u) {
+				u.width = u.right - u.left;
+				u.height = u.bottom - u.top;
+				add(u, 36);
+			}
+		} else {
+			parts.forEach(function (selector) {
+				var el = root.querySelector(selector);
+				var r = el && (selector === '.avix-csh__title' || selector === '.avix-csh__lead' ? textRect(el) : el.getBoundingClientRect());
+				add(r, selector === '.avix-csh__actions' ? 24 : 6);
+			});
+		}
+		var facts = root.querySelector('.avix-csh__facts-wrap');
+		add(facts && facts.getBoundingClientRect());
+		var header = root.classList.contains('avix-csh--clear') ? cssPx('--avix-header-h') : 0;
+		if (header > 0) {
+			calm.push([0, 0, box.width, header - 12]);
+		}
+		var cx = m.left - box.left + m.width / 2;
+		var cy = m.top - box.top + m.height / 2;
+		var r = wide ? clamp(m.width * 0.62, 280, 480) : clamp(m.width * 0.6, 200, 420);
+		var height = box.height;
+		return {
+			height: height,
+			fade: clamp(height * 0.24, 140, 260),
+			focus: [cx, cy, r],
+			calm: calm
+		};
 	};
 
 	// "#anchor" buttons: land the target below the fixed header (as the
@@ -420,7 +509,7 @@
 			// 0 at the top of the hero, 1 when its bottom leaves the screen.
 			var range = Math.max(1, rect.height);
 			var p = clamp(-rect.top / range, 0, 1);
-			this.drift.style.translate = '0 ' + (-DRIFT * p).toFixed(2) + 'px';
+			this.drift.style.translate = '0 ' + (-(this.split ? DRIFT_SPLIT : DRIFT) * p).toFixed(2) + 'px';
 		}
 
 		if (this.useProgress) {

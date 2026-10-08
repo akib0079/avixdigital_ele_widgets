@@ -30,8 +30,8 @@
 	},
 	"meta": {
 		"client": "Ovabalance",
-		"display_title": "Ovabalance: Architecting a Seamless Shopify [Subscription Ecosystem]",
-		"summary": "Ovabalance needed a brand refresh that reflected its evolving values, and a product page that makes a complex subscription choice feel simple. We designed and built a bespoke Shopify theme with a custom subscription engine at its heart.",
+		"display_title": "Ovabalance: Shopify [Subscriptions] Made Simple",
+		"summary": "A bespoke Shopify theme for a Dutch women's health brand, with a custom subscription selector and real-time pricing.",
 		"logo": "@media:avix-cs-ovabalance-logo-white.png",
 		"hero_desktop": "@media:avix-cs-ovabalance-hero-desktop.webp",
 		"hero_mobile": "@media:avix-cs-ovabalance-hero-mobile.webp",
@@ -85,7 +85,7 @@
 		"metric_1_value": "3",
 		"metric_1_label": "Purchase paths on every product page: every 3 months, monthly or one-time",
 		"metric_1_source": "observed on ovabalance.eu/products/hairformula-complex, 8 Oct 2026",
-		"metric_2_value": "−20\u2060%",
+		"metric_2_value": "−20⁠%",
 		"metric_2_label": "Subscriber saving on the quarterly plan, shown at the moment of choice (−10% monthly)",
 		"metric_2_source": "observed on the product page and ovabalance.eu/pages/ovarepeat, 8 Oct 2026",
 		"metric_3_value": "43",
@@ -106,7 +106,7 @@
 	},
 	"layout": {
 		"hero": {
-			"eyebrow": "Ovabalance case study · Shopify · Netherlands"
+			"eyebrow": "Case study · Shopify"
 		},
 		"features": {
 			"title": "Six Shopify features behind [effortless subscribing]"

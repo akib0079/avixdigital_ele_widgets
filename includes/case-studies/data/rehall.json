@@ -30,8 +30,8 @@
 	},
 	"meta": {
 		"client": "Rehall",
-		"display_title": "Rehall: Scaling Shopify E-Commerce Through [Custom Architecture] & High-Converting Design",
-		"summary": "Rehall needed a digital storefront that didn't just serve as a visual catalogue, but acted as a high-performance sales engine. We turned a static, high-fidelity design into a dynamic, scalable Shopify ecosystem built for revenue.",
+		"display_title": "Rehall: A Shopify Store Built to [Scale]",
+		"summary": "A pixel-perfect Shopify theme for a Dutch skiwear brand, with fast navigation, smart filters and a smoother path to checkout.",
 		"logo": "@media:avix-cs-rehall-logo-white.png",
 		"hero_desktop": "@media:avix-cs-rehall-hero-desktop.webp",
 		"hero_mobile": "@media:avix-cs-rehall-hero-mobile.webp",
@@ -106,7 +106,7 @@
 	},
 	"layout": {
 		"hero": {
-			"eyebrow": "Rehall case study · Shopify · Netherlands, Belgium & Germany"
+			"eyebrow": "Case study · Shopify"
 		},
 		"features": {
 			"title": "Six Shopify details that do the selling"

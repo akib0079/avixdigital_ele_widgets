@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.15.3**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.15.4**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.15.3.zip](dist/avix-elementor-widgets-1.15.3.zip).
+1. Download [avix-elementor-widgets-1.15.4.zip](dist/avix-elementor-widgets-1.15.4.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,13 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.15.4
+
+- Case Study Hero: a calmer two-column banner in the spirit of the service-page hero. The copy sits on the left (breadcrumb, client logo, a short headline, a two-line lead, one button and a quiet "See what we built" link) and the studio render on the right in a rounded frame with an orange glow; the pixel-mosaic shader is now atmosphere around the render.
+- The facts (Client, Platform, Year, Website) move out of the banner into a slim "at a glance" strip under it, a label/value list on phones. New controls: Layout (Split or Stacked), Facts position (below or inside), Strip colour and Strip background.
+- The eyebrow is off by default (new Eyebrow switch), since the breadcrumb, headline and facts already say it.
+- Two columns down to 901px, as on the service pages; shorter case-study titles and leads for all five studies.
 
 ### 1.15.3
 

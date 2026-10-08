@@ -29,8 +29,8 @@
 	},
 	"meta": {
 		"client": "Kampeerwinkel Roermond",
-		"display_title": "Kampeerwinkel Roermond: A Shopify Camping Store That Makes 9,400+ Products Easy to [Find, Buy and Collect]",
-		"summary": "Kampeerwinkel Roermond's range runs from family tents and caravan awnings to hiking boots and ski wear. We designed and built a Shopify camping store that guides shoppers through 9,400+ products in three languages. Every product page answers their questions, and the journey can even end at the counter in Roermond.",
+		"display_title": "Kampeerwinkel Roermond: A Shopify [Camping Store]",
+		"summary": "9,400+ outdoor products made easy to find, buy and collect, in three languages and with free pickup in Roermond.",
 		"logo": "@media:avix-cs-kampeerwinkel-roermond-logo-white.png",
 		"hero_desktop": "@media:avix-cs-kampeerwinkel-roermond-hero-desktop.webp",
 		"hero_mobile": "@media:avix-cs-kampeerwinkel-roermond-hero-mobile.webp",
@@ -112,7 +112,7 @@
 	},
 	"layout": {
 		"hero": {
-			"eyebrow": "Case study · Shopify camping store · Netherlands, Belgium & Germany"
+			"eyebrow": "Case study · Shopify"
 		},
 		"features": {
 			"title": "Six details that keep this Shopify camping store [selling every day]"

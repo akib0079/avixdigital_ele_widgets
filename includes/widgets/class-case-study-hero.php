@@ -1,16 +1,23 @@
 <?php
 /**
- * Case Study Hero: the top of every case study, full width with the header's
- * side margins, compact so the copy and the facts share the first screen. A
- * breadcrumb, then the client's logo, an eyebrow and the headline as one
- * lock-up, a lead with the two buttons under it, a facts bar (client,
- * services, platform, year, role, website) and the live site itself: the
- * homepage in a browser frame with the phone overlapping it, or a studio
- * render of the site on devices. Behind it, an animated orange shader that
+ * Case Study Hero: the top of every case study.
+ *
+ * Split (the default), in the spirit of the service-page hero: the copy on
+ * the left (breadcrumb, the client's logo, an optional eyebrow, the headline,
+ * a short lead, one button and a quiet "See what we built" link) and the
+ * studio render on the right in a rounded frame with an orange glow, the
+ * two centred on each other with plenty of air. The facts (client, platform,
+ * year, website) leave the banner: a slim, light "at a glance" strip right
+ * under it, so the hero ends cleanly. Stacked keeps the earlier one-column
+ * hero (copy, facts bar, then the devices below), and the facts can move
+ * back inside the hero.
+ *
+ * The visual is the studio render, or the live homepage in a browser frame
+ * with the phone overlapping it. Behind it, an animated orange shader that
  * follows the pointer: a mosaic of the brand's pixel squares or a smooth flow
- * (WebGL, with the CSS glow and grid as the fallback).
- * Dark by default; the Light theme re-themes all of it. The lower part of the
- * devices can sit on a white band, so the next section starts under them.
+ * (WebGL, with the CSS glow and grid as the fallback), concentrated around
+ * the visual and kept dark behind the text. Dark by default; the Light theme
+ * re-themes all of it.
  *
  * @package AvixWidgets
  */
@@ -55,6 +62,16 @@ class Case_Study_Hero extends Widget_Base {
 
 	/** The studio render, at most 1240px wide (edge to edge on phones). */
 	const SIZES_RENDER = '(max-width: 600px) 100vw, (max-width: 1370px) 92vw, 1240px';
+
+	/**
+	 * Split layout: the visual's column (about 52% of a 1240px row) on
+	 * desktop, at most 760px under the copy on tablets, the full width
+	 * inside the gutters on phones.
+	 */
+	const SIZES_SPLIT = '(max-width: 767px) calc(100vw - 40px), (max-width: 900px) min(760px, 90vw), (max-width: 1370px) 47vw, 640px';
+
+	/** Split layout: the phone beside the browser frame (22–26% of it). */
+	const SIZES_PHONE_SPLIT = '(max-width: 1024px) 26vw, 150px';
 
 	public function get_name(): string {
 		return 'avix-case-study-hero';
@@ -108,6 +125,21 @@ class Case_Study_Hero extends Widget_Base {
 
 	private function controls_content() {
 		$this->start_controls_section( 'section_content', array( 'label' => esc_html__( 'Hero content', 'avix-widgets' ) ) );
+
+		$this->add_control(
+			'layout',
+			array(
+				'label'       => esc_html__( 'Layout', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'split',
+				'options'     => array(
+					'split'   => esc_html__( 'Split (text left, render right)', 'avix-widgets' ),
+					'stacked' => esc_html__( 'Stacked (devices below the text)', 'avix-widgets' ),
+				),
+				'description' => esc_html__( 'Split: the copy beside the render in a glowing frame, like the service pages. Tablets and phones show the render under the copy.', 'avix-widgets' ),
+				'separator'   => 'after',
+			)
+		);
 
 		$this->add_control(
 			'show_breadcrumb',
@@ -179,7 +211,7 @@ class Case_Study_Hero extends Widget_Base {
 				'range'          => array( 'px' => array( 'min' => 16, 'max' => 64 ) ),
 				'description'    => esc_html__( 'Wide wordmarks stop at 240px wide (200px on phones).', 'avix-widgets' ),
 				'default'        => array(
-					'size' => 28,
+					'size' => 26,
 					'unit' => 'px',
 				),
 				'tablet_default' => array(
@@ -196,16 +228,27 @@ class Case_Study_Hero extends Widget_Base {
 		);
 
 		$this->add_control(
-			'eyebrow',
+			'show_eyebrow',
 			array(
 				'label'       => esc_html__( 'Eyebrow', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => '',
+				'description' => esc_html__( 'Off keeps the hero calm: the breadcrumb, the headline and the facts already say it is a case study and name the platform.', 'avix-widgets' ),
+				'separator'   => 'before',
+			)
+		);
+
+		$this->add_control(
+			'eyebrow',
+			array(
+				'label'       => esc_html__( 'Eyebrow text', 'avix-widgets' ),
 				'type'        => Controls_Manager::TEXT,
 				'default'     => '',
 				'placeholder' => esc_html__( 'Case study · Shopify · Netherlands', 'avix-widgets' ),
 				'description' => esc_html__( 'Empty: "Case study", the first service and the market.', 'avix-widgets' ),
 				'label_block' => true,
 				'dynamic'     => array( 'active' => true ),
-				'separator'   => 'before',
+				'condition'   => array( 'show_eyebrow' => 'yes' ),
 			)
 		);
 
@@ -278,9 +321,10 @@ class Case_Study_Hero extends Widget_Base {
 		$this->add_control(
 			'show_button_2',
 			array(
-				'label'   => esc_html__( 'Second button', 'avix-widgets' ),
-				'type'    => Controls_Manager::SWITCHER,
-				'default' => 'yes',
+				'label'       => esc_html__( 'Second button', 'avix-widgets' ),
+				'description' => esc_html__( 'Split layout: a quiet text link beside the button.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
 			)
 		);
 
@@ -340,6 +384,12 @@ class Case_Study_Hero extends Widget_Base {
 			'operator' => 'in',
 			'value'    => array( 'auto', 'devices', 'browser' ),
 		);
+		// The blend and the band belong to the stacked layout: the split
+		// layout always frames its visual.
+		$stacked = array(
+			'name'  => 'layout',
+			'value' => 'stacked',
+		);
 
 		$this->add_control(
 			'image_render',
@@ -360,10 +410,10 @@ class Case_Study_Hero extends Widget_Base {
 			'image_blend',
 			array(
 				'label'       => esc_html__( 'Blend into the hero', 'avix-widgets' ),
-				'description' => esc_html__( 'On: no frame, the render\'s edges fade into the dark background so the devices float. Off: a rounded frame.', 'avix-widgets' ),
+				'description' => esc_html__( 'Stacked layout. On: no frame, the render\'s edges fade into the dark background so the devices float. Off: a rounded frame.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
-				'conditions'  => array( 'terms' => array( $render_modes ) ),
+				'conditions'  => array( 'terms' => array( $render_modes, $stacked ) ),
 			)
 		);
 
@@ -434,11 +484,11 @@ class Case_Study_Hero extends Widget_Base {
 			'bleed',
 			array(
 				'label'       => esc_html__( 'Band under the screenshots', 'avix-widgets' ),
-				'description' => esc_html__( 'The lower part of the devices sits on a band in the next section\'s colour, so the page flows on under them.', 'avix-widgets' ),
+				'description' => esc_html__( 'Stacked layout: the lower part of the devices sits on a band in the next section\'s colour, so the page flows on under them.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
 				'separator'   => 'before',
-				'conditions'  => array( 'terms' => array( $shot_modes ) ),
+				'conditions'  => array( 'terms' => array( $shot_modes, $stacked ) ),
 			)
 		);
 
@@ -452,6 +502,7 @@ class Case_Study_Hero extends Widget_Base {
 				'conditions'  => array(
 					'terms' => array(
 						$render_modes,
+						$stacked,
 						array(
 							'name'     => 'image_blend',
 							'operator' => '!==',
@@ -469,6 +520,7 @@ class Case_Study_Hero extends Widget_Base {
 					'relation' => 'and',
 					'terms'    => array(
 						$shot_modes,
+						$stacked,
 						array(
 							'name'  => 'bleed',
 							'value' => 'yes',
@@ -479,6 +531,7 @@ class Case_Study_Hero extends Widget_Base {
 					'relation' => 'and',
 					'terms'    => array(
 						$render_modes,
+						$stacked,
 						array(
 							'name'  => 'image_bleed',
 							'value' => 'yes',
@@ -533,6 +586,54 @@ class Case_Study_Hero extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'facts_position',
+			array(
+				'label'       => esc_html__( 'Facts position', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'below',
+				'options'     => array(
+					'below'  => esc_html__( 'Below hero (a slim strip)', 'avix-widgets' ),
+					'inside' => esc_html__( 'Inside hero', 'avix-widgets' ),
+				),
+				'description' => esc_html__( 'Below: a quiet "at a glance" strip under the banner, so the hero itself stays calm. One row on desktop, two by two on phones.', 'avix-widgets' ),
+				'condition'   => array( 'show_facts' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'facts_theme',
+			array(
+				'label'       => esc_html__( 'Strip colour', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'light',
+				'options'     => array(
+					'light' => esc_html__( 'Light (white, hairlines)', 'avix-widgets' ),
+					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
+				),
+				'condition'   => array(
+					'show_facts'     => 'yes',
+					'facts_position' => 'below',
+				),
+			)
+		);
+
+		$this->add_control(
+			'facts_bg',
+			array(
+				'label'       => esc_html__( 'Strip background', 'avix-widgets' ),
+				'description' => esc_html__( 'Empty: white (Light) or #0b0b0c (Dark). Match the next section; the text turns light or dark to suit it.', 'avix-widgets' ),
+				'type'        => Controls_Manager::COLOR,
+				'selectors'   => array( '{{WRAPPER}} .avix-csh-strip' => '--csh-strip-bg: {{VALUE}};' ),
+				// The strip's text tone follows the colour (a class in the markup).
+				'render_type' => 'template',
+				'condition'   => array(
+					'show_facts'     => 'yes',
+					'facts_position' => 'below',
+				),
+			)
+		);
+
 		$labels = array(
 			'client'   => esc_html__( 'Client', 'avix-widgets' ),
 			'services' => esc_html__( 'Services', 'avix-widgets' ),
@@ -549,7 +650,9 @@ class Case_Study_Hero extends Widget_Base {
 				array(
 					'label'     => $label,
 					'type'      => Controls_Manager::SWITCHER,
-					'default'   => in_array( $key, array( 'market', 'credits' ), true ) ? '' : 'yes',
+					// Services and role are off: the services chips are in the
+					// Stack chapter, and four short facts keep the strip calm.
+					'default'   => in_array( $key, array( 'services', 'role', 'market', 'credits' ), true ) ? '' : 'yes',
 					'separator' => 'client' === $key ? 'before' : '',
 					'condition' => array( 'show_facts' => 'yes' ),
 				)
@@ -711,7 +814,7 @@ class Case_Study_Hero extends Widget_Base {
 			'padding',
 			array(
 				'label'              => esc_html__( 'Padding', 'avix-widgets' ),
-				'description'        => esc_html__( 'Top: the space under the header. Bottom: used when there is no band under the devices.', 'avix-widgets' ),
+				'description'        => esc_html__( 'Top: the space under the header. Bottom: used when there is no band under the devices. Split layout on desktop: the hero is at least one screen tall (at most 920px) with the copy and the render centred in it.', 'avix-widgets' ),
 				'type'               => Controls_Manager::DIMENSIONS,
 				'size_units'         => array( 'px', 'vh' ),
 				'allowed_dimensions' => 'vertical',
@@ -724,11 +827,11 @@ class Case_Study_Hero extends Widget_Base {
 			'max_width',
 			array(
 				'label'       => esc_html__( 'Content width', 'avix-widgets' ),
-				'description' => esc_html__( 'Empty: the full width, with the same side margins as the header.', 'avix-widgets' ),
+				'description' => esc_html__( 'Empty: 1240px for Split (the width of the chapters below), the full width with the header\'s side margins for Stacked. The facts strip follows it.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SLIDER,
 				'size_units'  => array( 'px' ),
 				'range'       => array( 'px' => array( 'min' => 760, 'max' => 1920 ) ),
-				'selectors'   => array( '{{WRAPPER}} .avix-csh' => '--csh-max: {{SIZE}}{{UNIT}};' ),
+				'selectors'   => array( '{{WRAPPER}} .avix-csh, {{WRAPPER}} .avix-csh-strip' => '--csh-max: {{SIZE}}{{UNIT}};' ),
 			)
 		);
 
@@ -741,7 +844,10 @@ class Case_Study_Hero extends Widget_Base {
 				'size_units'  => array( 'px' ),
 				'range'       => array( 'px' => array( 'min' => 600, 'max' => 1600 ) ),
 				'selectors'   => array( '{{WRAPPER}} .avix-csh' => '--csh-devices-max: {{SIZE}}{{UNIT}};' ),
-				'condition'   => array( 'visual!' => 'none' ),
+				'condition'   => array(
+					'visual!' => 'none',
+					'layout'  => 'stacked',
+				),
 			)
 		);
 
@@ -942,7 +1048,7 @@ class Case_Study_Hero extends Widget_Base {
 			array(
 				'name'     => 'fact_typography',
 				'label'    => esc_html__( 'Fact values', 'avix-widgets' ),
-				'selector' => '{{WRAPPER}} .avix-csh .avix-csh__fact-value',
+				'selector' => '{{WRAPPER}} .avix-csh .avix-csh__fact-value, {{WRAPPER}} .avix-csh-strip .avix-csh__fact-value',
 			)
 		);
 
@@ -976,7 +1082,8 @@ class Case_Study_Hero extends Widget_Base {
 		$tag      = Utils::validate_html_tag( $s['title_tag'] ?? 'h1' );
 		$title_id = 'avix-csh-title-' . $this->get_id();
 		$eager    = 'yes' === ( $s['image_eager'] ?? '' );
-		$visual   = $this->visual_html( $s, $cs, $client, $eager );
+		$split    = 'stacked' !== ( $s['layout'] ?? 'split' );
+		$visual   = $this->visual_html( $s, $cs, $client, $eager, $split );
 		$mode     = $visual['mode'];
 		$bleed    = $visual['bleed'];
 
@@ -984,6 +1091,7 @@ class Case_Study_Hero extends Widget_Base {
 			'avix-csh',
 			'avix-csh--' . $theme,
 			'avix-csh--visual-' . $mode,
+			$split ? 'avix-csh--split' : 'avix-csh--stacked',
 		);
 		$classes[] = 'dark' === $theme ? 'avix-csk-on-dark' : 'avix-csk-on-light';
 		if ( 'light' === $theme && 'original' !== ( $s['logo_light'] ?? 'dark' ) ) {
@@ -1033,10 +1141,11 @@ class Case_Study_Hero extends Widget_Base {
 			$this->add_render_attribute( 'root', 'aria-label', '' !== $client ? $client : esc_html__( 'Case study', 'avix-widgets' ) );
 		}
 
-		$eyebrow = $this->pick( $s, 'eyebrow', $this->auto_eyebrow( $cs ) );
-		$lead    = $this->pick( $s, 'text', '' !== (string) ( $cs['summary'] ?? '' ) ? $cs['summary'] : ( $cs['excerpt'] ?? '' ) );
-		$logo    = 'yes' === ( $s['show_logo'] ?? '' ) ? $this->logo_html( $s, $cs, $client ) : '';
-		$facts   = 'yes' === ( $s['show_facts'] ?? '' ) ? $this->facts( $s, $cs ) : array();
+		$eyebrow  = 'yes' === ( $s['show_eyebrow'] ?? '' ) ? $this->pick( $s, 'eyebrow', $this->auto_eyebrow( $cs ) ) : '';
+		$lead     = $this->pick( $s, 'text', '' !== (string) ( $cs['summary'] ?? '' ) ? $cs['summary'] : ( $cs['excerpt'] ?? '' ) );
+		$logo     = 'yes' === ( $s['show_logo'] ?? '' ) ? $this->logo_html( $s, $cs, $client ) : '';
+		$facts    = 'yes' === ( $s['show_facts'] ?? '' ) ? $this->facts( $s, $cs ) : array();
+		$facts_in = 'inside' === ( $s['facts_position'] ?? 'below' );
 		?>
 		<section <?php $this->print_render_attribute_string( 'root' ); ?>>
 			<?php // The script adds the shader canvas here; the grid and glow are its fallback. ?>
@@ -1047,10 +1156,10 @@ class Case_Study_Hero extends Widget_Base {
 			</div>
 			<div class="avix-csh__inner">
 				<div class="avix-csh__frame">
-					<?php $this->render_crumbs( $s, $cs, $client ); ?>
 					<div class="avix-csh__top">
 						<div class="avix-csh__copy">
 							<?php
+							$this->render_crumbs( $s, $cs, $client );
 							// The headline and the lead are visible from the first paint (the
 							// headline is the LCP element); only the parts around them rise.
 							if ( '' !== $logo ) :
@@ -1066,21 +1175,35 @@ class Case_Study_Hero extends Widget_Base {
 							<?php if ( '' !== $lead ) : ?>
 								<p class="avix-csh__lead"><?php echo Case_Study::accent_html( $lead, 'avix-csh__accent' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></p>
 							<?php endif; ?>
-							<?php $this->render_buttons( $s, $cs, $editor ); ?>
+							<?php $this->render_buttons( $s, $cs, $editor, $split ); ?>
 						</div>
+						<?php
+						// Split: the visual is the copy's right-hand column.
+						if ( $split && '' !== $visual['html'] ) {
+							echo $visual['html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts in visual_html().
+						}
+						?>
 					</div>
-					<?php $this->render_facts( $facts ); ?>
+					<?php
+					if ( $facts_in ) {
+						$this->render_facts( $facts );
+					}
+					?>
 				</div>
 				<?php
-				if ( '' !== $visual['html'] ) {
+				if ( ! $split && '' !== $visual['html'] ) {
 					echo $visual['html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts in visual_html().
 				}
 				?>
 			</div>
 		</section>
 		<?php
+		// The progress bar stays the section's next sibling (the script finds it there).
 		if ( $progress ) {
 			echo '<div class="avix-csh__progress" data-csh-progress aria-hidden="true"><span class="avix-csh__progress-bar"></span></div>';
+		}
+		if ( ! $facts_in ) {
+			$this->render_strip( $facts, $s, $split, $theme );
 		}
 	}
 
@@ -1106,13 +1229,14 @@ class Case_Study_Hero extends Widget_Base {
 	 * "dark" or "light" for a background colour picked under Style (plain
 	 * hex or rgb), or '' when none is set or it is a global colour.
 	 *
-	 * @param array $s Settings.
+	 * @param array  $s   Settings.
+	 * @param string $key The colour control: the hero's or the strip's background.
 	 */
-	private function bg_tone( array $s ) {
-		if ( ! empty( $s['__globals__']['color_bg'] ) ) {
+	private function bg_tone( array $s, $key = 'color_bg' ) {
+		if ( ! empty( $s['__globals__'][ $key ] ) ) {
 			return '';
 		}
-		$color = strtolower( trim( (string) ( $s['color_bg'] ?? '' ) ) );
+		$color = strtolower( trim( (string) ( $s[ $key ] ?? '' ) ) );
 		$rgb   = null;
 		if ( preg_match( '/^#([0-9a-f]{3,8})$/', $color, $m ) ) {
 			$hex = $m[1];
@@ -1285,11 +1409,15 @@ class Case_Study_Hero extends Widget_Base {
 	}
 
 	/**
+	 * One primary button; the second is a ghost button (stacked) or a quiet
+	 * text link beside it (split).
+	 *
 	 * @param array $s      Settings.
 	 * @param array $cs     Case study.
 	 * @param bool  $editor Editing in Elementor.
+	 * @param bool  $split  Split layout.
 	 */
-	private function render_buttons( array $s, array $cs, $editor ) {
+	private function render_buttons( array $s, array $cs, $editor, $split = false ) {
 		$primary   = trim( (string) ( $s['button_text'] ?? '' ) );
 		$secondary = 'yes' === ( $s['show_button_2'] ?? '' ) ? trim( (string) ( $s['button_2_text'] ?? '' ) ) : '';
 
@@ -1338,7 +1466,7 @@ class Case_Study_Hero extends Widget_Base {
 			);
 		}
 		if ( '' !== $secondary ) {
-			$this->add_render_attribute( 'btn2', 'class', 'avix-csh__btn avix-csh__btn--ghost' );
+			$this->add_render_attribute( 'btn2', 'class', $split ? 'avix-csh__btn avix-csh__btn--link' : 'avix-csh__btn avix-csh__btn--ghost' );
 			$raw = (string) ( $s['button_2_link']['url'] ?? '' );
 			if ( '' !== $url_2 ) {
 				$this->add_link_attributes( 'btn2', $s['button_2_link'] );
@@ -1535,15 +1663,143 @@ class Case_Study_Hero extends Widget_Base {
 	}
 
 	/**
-	 * The visual under the facts.
+	 * The facts as a slim "at a glance" strip under the hero, its own band
+	 * so the banner ends cleanly: one row on desktop (up to six columns, more
+	 * wrap) and up to four on tablets, the columns following their content so
+	 * a long domain is never cut; two by two on phones (see strip_phone()).
+	 *
+	 * @param array  $facts From facts().
+	 * @param array  $s     Settings.
+	 * @param bool   $split Split layout (the strip lines up with its row).
+	 * @param string $theme The hero's theme: a strip in the same tone gets a hairline on top.
+	 */
+	private function render_strip( array $facts, array $s, $split, $theme = 'dark' ) {
+		$n = count( $facts );
+		if ( ! $n ) {
+			return;
+		}
+		// A background picked for the strip sets its text tone, as in the hero.
+		$tone   = $this->bg_tone( $s, 'facts_bg' );
+		$tone   = '' !== $tone ? $tone : ( 'dark' === ( $s['facts_theme'] ?? 'light' ) ? 'dark' : 'light' );
+		$cols_d = $n <= 6 ? $n : (int) ceil( $n / ceil( $n / 6 ) );
+		$cols_t = $n <= 4 ? $n : (int) ceil( $n / ceil( $n / 3 ) );
+
+		$phone = $this->strip_phone( $facts );
+
+		$mods = array( $split ? 'avix-csh-strip--split' : 'avix-csh-strip--stacked' );
+		if ( $tone === $theme ) {
+			$mods[] = 'avix-csh-strip--ruled';
+		}
+
+		printf(
+			'<div class="avix-csh-strip avix-csh-strip--%1$s %2$s %3$s"><div class="avix-csh-strip__inner"><dl class="avix-csh-strip__list" style="--csh-cols-d: %4$d; --csh-cols-t: %5$d;">',
+			esc_attr( $tone ),
+			esc_attr( implode( ' ', $mods ) ),
+			'dark' === $tone ? 'avix-csk-on-dark' : 'avix-csk-on-light',
+			(int) $cols_d,
+			(int) $cols_t
+		);
+		foreach ( $facts as $i => $fact ) {
+			$cls = array( 'avix-csh-strip__item', 'avix-csh-strip__item--' . sanitize_html_class( $fact[0] ) );
+			foreach ( array( 'd' => $cols_d, 't' => $cols_t ) as $bp => $cols ) {
+				if ( 0 === $i % $cols ) {
+					$cls[] = 'is-' . $bp . '-start';
+				}
+				if ( $i < $cols ) {
+					$cls[] = 'is-' . $bp . '-top';
+				}
+			}
+			$cls = array_merge( $cls, $phone[ $i ] );
+			printf(
+				'<div class="%1$s"><dt class="avix-csh__fact-label">%2$s</dt><dd class="avix-csh__fact-value">%3$s</dd></div>',
+				esc_attr( implode( ' ', $cls ) ),
+				esc_html( $fact[1] ),
+				$fact[2] // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in facts().
+			);
+		}
+		echo '</dl></div></div>';
+	}
+
+	/**
+	 * Phone classes for the strip's facts, two columns: short facts pair up;
+	 * a long one (a domain that would not fit half the width, a long text,
+	 * the services chips) takes a row of its own, and a fact left alone
+	 * beside it spans its row too, so no row has a hole. The services come
+	 * last (CSS order). is-m-start: first in its row; is-m-top: first row;
+	 * is-m-full: the whole row.
+	 *
+	 * @param array $facts From facts().
+	 * @return array Index => class names.
+	 */
+	private function strip_phone( array $facts ) {
+		$order = array();
+		$last  = array();
+		foreach ( $facts as $i => $fact ) {
+			if ( 'services' === $fact[0] ) {
+				$last[] = $i;
+			} else {
+				$order[] = $i;
+			}
+		}
+		$order = array_merge( $order, $last );
+
+		$out   = array();
+		$row   = 0;
+		$alone = -1;
+		foreach ( $order as $i ) {
+			$fact = $facts[ $i ];
+			$html = (string) $fact[2];
+			// A link: its visible text only (not the screen-reader note).
+			$link = preg_match( '#<span class="avix-csh__fact-link-text">(.*?)</span>#s', $html, $m ) ? $m[1] : '';
+			$text = trim( html_entity_decode( wp_strip_all_tags( '' !== $link ? $link : $html ), ENT_QUOTES, 'UTF-8' ) );
+			$len  = function_exists( 'mb_strlen' ) ? mb_strlen( $text, 'UTF-8' ) : strlen( $text );
+			$wide = 'services' === $fact[0] || ( '' !== $link && $len > 15 ) || $len > 24;
+
+			$out[ $i ] = array();
+			if ( $wide || $alone < 0 ) {
+				if ( $wide && $alone >= 0 ) {
+					// The short fact before it would sit alone: it spans its row.
+					$out[ $alone ][] = 'is-m-full';
+					++$row;
+					$alone = -1;
+				}
+				$out[ $i ][] = 'is-m-start';
+				if ( 0 === $row ) {
+					$out[ $i ][] = 'is-m-top';
+				}
+				if ( $wide ) {
+					$out[ $i ][] = 'is-m-full';
+					++$row;
+				} else {
+					$alone = $i;
+				}
+				continue;
+			}
+			// The second short fact of a row.
+			if ( 0 === $row ) {
+				$out[ $i ][] = 'is-m-top';
+			}
+			++$row;
+			$alone = -1;
+		}
+		if ( $alone >= 0 ) {
+			$out[ $alone ][] = 'is-m-full';
+		}
+		return $out;
+	}
+
+	/**
+	 * The visual: the right-hand column (split) or the row under the copy
+	 * (stacked).
 	 *
 	 * @param array  $s      Settings.
 	 * @param array  $cs     Case study.
 	 * @param string $client Client name.
 	 * @param bool   $eager  Load the main image first (LCP).
+	 * @param bool   $split  Split layout.
 	 * @return array{mode:string,html:string,bleed:bool,ratio:string}
 	 */
-	private function visual_html( array $s, array $cs, $client, $eager ) {
+	private function visual_html( array $s, array $cs, $client, $eager, $split = false ) {
 		$mode = in_array( $s['visual'] ?? 'auto', self::VISUALS, true ) ? (string) $s['visual'] : 'auto';
 		$out  = array(
 			'mode'  => 'none',
@@ -1569,7 +1825,7 @@ class Case_Study_Hero extends Widget_Base {
 				// Image mode without a render falls back to the screenshots.
 				$mode = 'devices';
 			} else {
-				return $this->render_html( $s, $render, $client, $eager );
+				return $this->render_html( $s, $render, $client, $eager, $split );
 			}
 		}
 
@@ -1596,9 +1852,9 @@ class Case_Study_Hero extends Widget_Base {
 			$attr['loading']       = 'eager';
 			$attr['fetchpriority'] = 'high';
 		}
-		$html  = '<div class="avix-csh__devices-row"><figure class="avix-csh__devices avix-csk-figure">';
+		$html  = '<div class="avix-csh__devices-row' . ( $split ? ' avix-csh__media' : '' ) . '"><figure class="avix-csh__devices avix-csk-figure">';
 		$html .= '<div class="avix-csh__browser">' . Kit::frame(
-			Kit::img( $desktop, 'full', self::SIZES_DESKTOP, $attr ),
+			Kit::img( $desktop, 'full', $split ? self::SIZES_SPLIT : self::SIZES_DESKTOP, $attr ),
 			'browser',
 			array(
 				'url_label' => $label,
@@ -1610,7 +1866,7 @@ class Case_Study_Hero extends Widget_Base {
 				Kit::img(
 					$mobile,
 					'large',
-					self::SIZES_PHONE,
+					$split ? self::SIZES_PHONE_SPLIT : self::SIZES_PHONE,
 					array(
 						'class' => 'avix-csh__shot',
 						/* translators: %s: client name. */
@@ -1633,21 +1889,23 @@ class Case_Study_Hero extends Widget_Base {
 
 		$out['mode']  = $mode;
 		$out['html']  = $html;
-		$out['bleed'] = 'yes' === ( $s['bleed'] ?? '' );
+		$out['bleed'] = ! $split && 'yes' === ( $s['bleed'] ?? '' );
 		$out['ratio'] = $this->ratio_factor( $ratio );
 		return $out;
 	}
 
 	/**
-	 * Image mode: the studio render, centred on the glow.
+	 * Image mode: the studio render, centred on the glow (stacked), or in a
+	 * rounded frame with an orange glow under and around it (split).
 	 *
 	 * @param array  $s      Settings.
 	 * @param int    $id     Render attachment.
 	 * @param string $client Client name.
 	 * @param bool   $eager  Load it first (LCP).
+	 * @param bool   $split  Split layout.
 	 */
-	private function render_html( array $s, $id, $client, $eager ) {
-		$blend = 'yes' === ( $s['image_blend'] ?? '' );
+	private function render_html( array $s, $id, $client, $eager, $split = false ) {
+		$blend = ! $split && 'yes' === ( $s['image_blend'] ?? '' );
 		$attr  = array(
 			'class' => 'avix-csh__render-img',
 			/* translators: %s: client name. */
@@ -1657,7 +1915,7 @@ class Case_Study_Hero extends Widget_Base {
 			$attr['loading']       = 'eager';
 			$attr['fetchpriority'] = 'high';
 		}
-		$img = Kit::img( $id, 'full', self::SIZES_RENDER, $attr );
+		$img = Kit::img( $id, 'full', $split ? self::SIZES_SPLIT : self::SIZES_RENDER, $attr );
 		if ( '' === $img ) {
 			return array(
 				'mode'  => 'none',
@@ -1667,8 +1925,8 @@ class Case_Study_Hero extends Widget_Base {
 			);
 		}
 		$ratio = Kit::ratio( $id );
-		$html  = '<div class="avix-csh__devices-row avix-csh__devices-row--render">'
-			. '<figure class="avix-csh__render avix-csk-figure' . ( $blend ? ' is-blend' : ' is-framed' ) . '"' . ( '' !== $ratio ? ' style="--csh-render-ratio: ' . esc_attr( $ratio ) . ';"' : '' ) . '>'
+		$html  = '<div class="avix-csh__devices-row avix-csh__devices-row--render' . ( $split ? ' avix-csh__media' : '' ) . '">'
+			. '<figure class="avix-csh__render avix-csk-figure' . ( $blend ? ' is-blend' : ' is-framed' ) . ( $split ? ' is-glow' : '' ) . '"' . ( '' !== $ratio ? ' style="--csh-render-ratio: ' . esc_attr( $ratio ) . ';"' : '' ) . '>'
 			. '<div class="avix-csh__render-frame" data-csh-drift>' . $img . '</div>';
 		if ( '' !== $client ) {
 			/* translators: %s: client name. */
@@ -1679,8 +1937,9 @@ class Case_Study_Hero extends Widget_Base {
 		return array(
 			'mode'  => 'image',
 			'html'  => $html,
-			// A blended render fades out at the bottom: a band under it would show through.
-			'bleed' => ! $blend && 'yes' === ( $s['image_bleed'] ?? '' ),
+			// A blended render fades out at the bottom: a band under it would show
+			// through. The split layout has no band.
+			'bleed' => ! $split && ! $blend && 'yes' === ( $s['image_bleed'] ?? '' ),
 			'ratio' => $this->ratio_factor( $ratio ),
 		);
 	}
