@@ -554,7 +554,7 @@
    a year does not need); narrower layouts use equal columns. */
 .avix-csh .avix-csh__facts {
 	display: grid;
-	grid-template-columns: repeat(var(--csh-cols-d, 6), minmax(0, auto));
+	grid-template-columns: repeat(var(--csh-cols-d, 6), minmax(min-content, auto));
 	margin: 0;
 	padding: 0;
 }

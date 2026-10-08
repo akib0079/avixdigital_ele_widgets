@@ -44,7 +44,7 @@ final class Importer {
 		'slug'     => 'case-studies',
 		'eyebrow'  => 'Selected work',
 		'heading'  => 'Ecommerce & Website [Case Studies]',
-		'text'     => 'Ecommerce case studies from live projects for brands in the Netherlands: a Shopify store for technical skiwear, a subscription-first supplement brand and a Webflow site that turns local searches into enquiries. Every screenshot comes from the live site, with the features that solved each problem marked.',
+		'text'     => 'Ecommerce case studies from live stores and websites we designed and built: Shopify and WooCommerce webshops for skiwear, camping gear and Greek natural products, a subscription-first supplement brand and a Webflow site that turns local searches into enquiries. Every screenshot comes from the live site, with the features that solved each problem marked.',
 		'seo'      => 'Ecommerce Case Studies & Website Projects | AvixDigital',
 		'desc'     => 'Ecommerce case studies from AvixDigital: live stores and websites we built for growing brands, with annotated screenshots of the features that win customers.',
 		'focuskw'  => 'ecommerce case studies',

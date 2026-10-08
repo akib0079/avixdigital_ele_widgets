@@ -62,7 +62,7 @@
 			"Bespoke Bricks element library: Designed and coded the storefront as our own Bricks elements, not a bought theme. It covers the header with its image mega menu and the hero slider with its scrolling text band. Category cards, bento sections, product cards, the product template, reviews and the footer complete the set. All of them share one brand system.",
 			"Conversion-led product experience: Built product cards with quick add, a wishlist and volume-discount badges. Our product template then puts tiered pricing right beside the add-to-cart button. Payment methods, same-day dispatch, the free-shipping thresholds and loyalty points sit there too.",
 			"Re-skinned side cart: Restyled FunnelKit's slide-out cart to match the store and added our own free-shipping progress bar. It tracks the Dutch and Belgian thresholds separately. Beside the basket, an often-bought-together column offers one-click add-ons.",
-			"WooCommerce checkout funnel with order bumps: Set up a branded one-page FunnelKit checkout with three delivery options and five local payment methods, including bol.checkout. An order bump waits at the payment step, and one-click add-ons sit beside the basket. Our own live review slider sits next to the total."
+			"WooCommerce checkout funnel with order bumps: Set up a branded one-page FunnelKit checkout with three delivery options and five local payment methods, including bol.checkout. An order bump waits at the payment step, and one-click add-ons sit beside the basket. A live review slider sits next to the total."
 		],
 		"solution_body": [
 			"The result is a bespoke <a href=\"/service/wordpress-development/\">WooCommerce store on WordPress</a>, built around the basket rather than the single jar. Today, the live homepage opens on a three-slide hero for Gia Giamas, Greek honey and Greek olive oil. Floating product photography sits above a teal band of copy that never stops moving. Hovering Honing or Olijfolie opens a panel of image tiles, one per product family. Product cards then show their volume discount, a wishlist heart and a second lifestyle photo on hover. Their basket button adds the product without leaving the page.",
@@ -269,7 +269,7 @@
 				"tag": "Checkout funnel",
 				"title": "A checkout with a [last-second offer]",
 				"problem": "WooCommerce's default checkout is long and generic. It also closes the door on selling more at the very moment a shopper is most ready to buy.",
-				"built": "We set up a branded one-page FunnelKit checkout with no menu to wander off to. It offers five ways to pay, from iDEAL | Wero to Klarna and bol.checkout. Below the payment options waits a \"Speciale aanbieding\" order bump. One tick adds a 750 ml olive oil for €15.75 instead of €17.50. Three more one-click add-ons sit beside the basket. Next to the total sit our trust column and live review slider.",
+				"built": "We set up a branded one-page FunnelKit checkout with no menu to wander off to. It offers five ways to pay, from iDEAL | Wero to Klarna and bol.checkout. Below the payment options waits a \"Speciale aanbieding\" order bump. One tick adds a 750 ml olive oil for €15.75 instead of €17.50. Three more one-click add-ons sit beside the basket. Next to the total sit a trust column and a live review slider.",
 				"attribution": "built",
 				"source_link": "https://productsforhome.nl/",
 				"image": "@media:avix-cs-products-for-home-feature-order-bump.webp",

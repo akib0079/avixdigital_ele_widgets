@@ -25,7 +25,7 @@ class Case_Study_Results extends Widget_Base {
 
 	use \AvixWidgets\Case_Studies\Source;
 
-	const FOOTNOTE = 'These figures describe the build and were observed on the live site on the date shown. We only publish client revenue or conversion figures with the client\'s permission.';
+	const FOOTNOTE = 'Every figure shows its source and date. We only publish client revenue or conversion figures with the client\'s permission.';
 
 	public function get_name(): string {
 		return 'avix-case-study-results';
@@ -223,7 +223,7 @@ class Case_Study_Results extends Widget_Base {
 			array(
 				'label'     => esc_html__( 'Heading', 'avix-widgets' ),
 				'type'      => Controls_Manager::TEXT,
-				'default'   => esc_html__( 'Verified on the live site', 'avix-widgets' ),
+				'default'   => esc_html__( 'The build in numbers', 'avix-widgets' ),
 				'dynamic'   => array( 'active' => true ),
 				'condition' => array( 'show_metrics' => 'yes' ),
 			)

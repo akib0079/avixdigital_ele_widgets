@@ -818,3 +818,10 @@
 		opacity: 0;
 	}
 }
+
+/* Client names with one long word ("Kampeerwinkel") step down a size rather than breaking mid-word. */
+.avix-csn .avix-csn__name { overflow-wrap: normal; hyphens: manual; }
+.avix-csn .avix-csn__name.avix-csn__name--long { font-size: clamp(28px, 6.6cqi, 50px); }
+@container (min-width: 861px) {
+	.avix-csn .avix-csn__name.avix-csn__name--long { font-size: clamp(28px, 3.4cqi, 50px); }
+}

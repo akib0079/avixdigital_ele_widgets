@@ -769,7 +769,8 @@ class Case_Study_Next extends Widget_Base {
 				</span>
 				<span class="avix-csn__panel">
 					<span class="avix-csn__kicker" id="<?php echo esc_attr( $base . '-k' ); ?>"><?php echo esc_html( $kick ); ?></span>
-					<span class="avix-csn__name" id="<?php echo esc_attr( $base . '-n' ); ?>"><?php echo esc_html( $name ); ?></span>
+					<?php $avix_csn_long = max( array_map( 'strlen', preg_split( '/\s+/', (string) $name ) ) ) > 10; ?>
+					<span class="avix-csn__name<?php echo $avix_csn_long ? ' avix-csn__name--long' : ''; ?>" id="<?php echo esc_attr( $base . '-n' ); ?>"><?php echo esc_html( $name ); ?></span>
 					<?php if ( '' !== $sum ) : ?>
 						<span class="avix-csn__summary"><?php echo esc_html( $sum ); ?></span>
 					<?php endif; ?>

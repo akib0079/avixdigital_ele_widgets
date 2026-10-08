@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.15.1**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.15.2**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.15.1.zip](dist/avix-elementor-widgets-1.15.1.zip).
+1. Download [avix-elementor-widgets-1.15.2.zip](dist/avix-elementor-widgets-1.15.2.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,14 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.15.2
+
+- Two new case studies: Products for Home and Kampeerwinkel Roermond, first on the index.
+- Hero facts bar: columns never shrink below their content, so the website link is no longer cut off at 1025–1280px.
+- Next card: client names with one long word step down a size instead of breaking mid-word.
+- Results: neutral "The build in numbers" eyebrow and a footnote that fits every source.
+- Index intro mentions all five projects.
 
 ### 1.15.1
 
