@@ -1,0 +1,1174 @@
+/*!
+ * Avix Digital · Values
+ * "How we work" principles on a bento grid of cards with 8×8 pixel icons that
+ * build themselves, and the pixel character sitting on the hovered card's top
+ * edge. The "side" layout puts a sticky text column beside the cards, shown as
+ * rows. Layout follows the widget width (container queries), not the viewport.
+ */
+
+.avix-vl {
+	--vl-bg: #ffffff;
+	--vl-ink: #1a1a1a;
+	--vl-muted: #5c5f66;
+	--vl-line: rgba(26, 26, 26, 0.1);
+	--vl-accent: #fb6007;
+	--vl-accent-text: #c54804;
+	/* Links are 14px text, so they need the darker orange for AA on paper. */
+	--vl-link: #b84304;
+	--vl-card: #f6f3ef;
+	--vl-card-line: #ece6de;
+	--vl-card-ink: #1a1a1a;
+	--vl-card-muted: #5c5f66;
+	--vl-tile-bg: #ffffff;
+	--vl-white: #ffffff;
+	--vl-white-ink: #1a1a1a;
+	--vl-white-muted: #5c5f66;
+	--vl-white-line: var(--vl-line);
+	--vl-white-tile: var(--vl-card);
+	--vl-white-link: var(--vl-link);
+	--vl-dark: #111111;
+	--vl-shadow: 0 28px 54px -30px rgba(26, 26, 26, 0.3);
+	--vl-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--vl-font-body: "Inter", Arial, sans-serif;
+	--vl-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--vl-max: 1240px;
+	--vl-gutter: 24px;
+	--vl-gap: clamp(16px, 2.4cqi, 32px);
+	--vl-radius: 24px;
+	--vl-card-h: clamp(270px, 25cqi, 318px);
+	--vl-pal-w: 40px;
+
+	container: avix-vl / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(88px, 10vw, 140px) 0;
+	overflow: clip;
+	color: var(--vl-ink);
+	background: var(--vl-bg);
+	font-family: var(--vl-font-body);
+	font-style: normal;
+	font-weight: 400;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Dark section: every token swaps, Style-tab colours still win. */
+.avix-vl--dark {
+	--vl-bg: #050608;
+	--vl-ink: #f5f2ee;
+	--vl-muted: rgba(255, 255, 255, 0.64);
+	--vl-line: rgba(255, 255, 255, 0.09);
+	--vl-accent-text: #ff8a3d;
+	--vl-link: #ff8a3d;
+	--vl-card: rgba(255, 255, 255, 0.04);
+	--vl-card-line: rgba(255, 255, 255, 0.09);
+	--vl-card-ink: #ffffff;
+	--vl-card-muted: rgba(255, 255, 255, 0.64);
+	--vl-tile-bg: rgba(255, 255, 255, 0.06);
+	--vl-white-line: transparent;
+	--vl-white-tile: #f6f3ef;
+	--vl-white-link: #b84304;
+	--vl-dark: #16171a;
+	--vl-shadow: 0 28px 54px -30px rgba(0, 0, 0, 0.8);
+}
+
+.avix-vl *,
+.avix-vl *::before,
+.avix-vl *::after {
+	box-sizing: border-box;
+}
+
+/* Container queries style descendants only: tokens are reset on the inner wrapper. */
+.avix-vl__inner {
+	--vl-pad: clamp(24px, 2.6cqi, 34px);
+	--vl-tile: 56px;
+	--vl-cell: 16px;
+	--vl-grid-gap: var(--vl-gap);
+	width: min(calc(100% - var(--vl-gutter) * 2), var(--vl-max));
+	margin-inline: auto;
+}
+
+/* Side margins "Line up with the header": 5% of the width (16px at least),
+   the Smart Header's own side padding, at every width. */
+.avix-vl--edge-header .avix-vl__inner {
+	--vl-gutter: clamp(16px, 5cqi, 72px);
+}
+
+/* The character sits between rows, so the gutter leaves room for its head.
+   One gutter in both directions keeps the bento even. */
+.avix-vl--pal .avix-vl__inner {
+	--vl-grid-gap: max(var(--vl-gap), calc(var(--vl-pal-w) * 0.7 + 10px));
+}
+
+/* ---------- Header ---------- */
+
+/* The family split (as Journey and Team), so consecutive sections on a page
+   share one paragraph column. */
+.avix-vl__head {
+	display: grid;
+	grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+	align-items: end;
+	gap: 20px clamp(32px, 6cqi, 96px);
+	margin-bottom: clamp(48px, 6cqi, 80px);
+}
+
+.avix-vl__head > :only-child {
+	grid-column: 1 / -1;
+}
+
+/* Room above the first row for the character's head and its "hi", also
+   when there is no header at all. */
+.avix-vl--pal .avix-vl__head {
+	margin-bottom: max(clamp(48px, 6cqi, 80px), calc(var(--vl-pal-w) * 1.35 + 18px));
+}
+
+.avix-vl--pal .avix-vl__inner > .avix-vl__board:first-child {
+	margin-top: calc(var(--vl-pal-w) * 1.35 + 18px);
+}
+
+.avix-vl--head-stacked .avix-vl__head {
+	grid-template-columns: minmax(0, 1fr);
+	align-items: start;
+	gap: 20px;
+}
+
+.avix-vl--head-stacked .avix-vl__head > .avix-vl__head-main,
+.avix-vl--head-stacked .avix-vl__head > .avix-vl__text {
+	grid-column: 1 / -1;
+}
+
+.avix-vl .avix-vl__eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 22px;
+	padding: 0;
+	color: var(--vl-ink);
+	font-family: var(--vl-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	line-height: 1.3;
+	text-transform: uppercase;
+}
+
+/* A single orange "pixel" ties the eyebrow to the character. */
+.avix-vl .avix-vl__eyebrow::before {
+	width: 8px;
+	height: 8px;
+	flex: none;
+	background: var(--vl-accent);
+	content: "";
+}
+
+.avix-vl .avix-vl__title {
+	max-width: 18ch;
+	margin: 0;
+	padding: 0;
+	color: var(--vl-ink);
+	font-family: var(--vl-font-display);
+	font-size: clamp(36px, 4.6cqi, 60px);
+	font-weight: 600;
+	letter-spacing: -0.035em;
+	line-height: 1.06;
+	text-transform: none;
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+	hyphens: manual;
+	/* Only long compounds break, never everyday words like "development". */
+	hyphenate-limit-chars: 14 6 6;
+}
+
+.avix-vl__accent {
+	color: var(--vl-accent-text);
+}
+
+.avix-vl .avix-vl__text {
+	max-width: 42ch;
+	margin: 0;
+	padding: 0 0 6px;
+	color: var(--vl-muted);
+	font-family: var(--vl-font-body);
+	font-size: clamp(15px, 1.4cqi, 17px);
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1.7;
+	text-wrap: pretty;
+	overflow-wrap: anywhere;
+}
+
+.avix-vl--head-stacked .avix-vl__text {
+	max-width: 56ch;
+}
+
+/* ---------- Bento grid ---------- */
+
+.avix-vl__board {
+	position: relative;
+}
+
+.avix-vl .avix-vl__grid {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	gap: var(--vl-grid-gap);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-vl .avix-vl__item {
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	grid-column: span var(--vl-span, 2);
+	list-style: none;
+}
+
+.avix-vl .avix-vl__item::before,
+.avix-vl .avix-vl__item::marker {
+	display: none;
+	content: none;
+}
+
+/* Card colours live on the card so each tone only swaps tokens. */
+.avix-vl__card {
+	--vc-bg: var(--vl-card);
+	--vc-line: var(--vl-card-line);
+	--vc-ink: var(--vl-card-ink);
+	--vc-muted: var(--vl-card-muted);
+	--vc-tile: var(--vl-tile-bg);
+	--vc-tile-line: var(--vl-card-line);
+	--vc-px: var(--vl-card-ink);
+	--vc-canvas: var(--vl-tile-bg);
+	--vc-grid: color-mix(in srgb, var(--vl-accent) 9%, transparent);
+	--vc-glow: color-mix(in srgb, var(--vl-accent) 14%, transparent);
+	--vc-link: var(--vl-link);
+	--vl-pad-top: var(--vl-pad);
+
+	position: relative;
+	display: flex;
+	height: 100%;
+	min-height: var(--vl-card-h);
+	flex-direction: column;
+	padding: var(--vl-pad-top) var(--vl-pad) var(--vl-pad);
+	border: 1px solid var(--vc-line);
+	border-radius: var(--vl-radius);
+	color: var(--vc-ink);
+	background: var(--vc-bg);
+	transition: border-color 0.35s ease, box-shadow 0.55s var(--vl-ease);
+}
+
+/* Self-contained: its own background, ink and tiles, so it stays readable
+   whatever the warm paper card colours are. */
+.avix-vl__card--white {
+	--vc-bg: var(--vl-white);
+	--vc-line: var(--vl-white-line);
+	--vc-ink: var(--vl-white-ink);
+	--vc-muted: var(--vl-white-muted);
+	--vc-px: var(--vl-white-ink);
+	--vc-tile: var(--vl-white-tile);
+	--vc-tile-line: transparent;
+	--vc-canvas: var(--vl-white-tile);
+	--vc-link: var(--vl-white-link);
+}
+
+.avix-vl__card--dark {
+	--vc-bg: var(--vl-dark);
+	--vc-line: rgba(255, 255, 255, 0.08);
+	--vc-ink: #ffffff;
+	--vc-muted: rgba(255, 255, 255, 0.64);
+	--vc-tile: rgba(255, 255, 255, 0.06);
+	--vc-tile-line: rgba(255, 255, 255, 0.1);
+	--vc-px: #ffffff;
+	--vc-canvas: rgba(255, 255, 255, 0.03);
+	--vc-grid: rgba(255, 255, 255, 0.06);
+	--vc-glow: color-mix(in srgb, var(--vl-accent) 24%, transparent);
+	--vc-link: #ff8a3d;
+}
+
+/* Its dangling legs (5 of 12 rows) never touch the icon tile. */
+.avix-vl--pal .avix-vl__card {
+	--vl-pad-top: max(var(--vl-pad), calc(var(--vl-pal-w) * 0.5 + 10px));
+}
+
+/* Where the character sits: the top edge, right above the icon tile. */
+.avix-vl__perch {
+	position: absolute;
+	top: 0;
+	left: var(--vl-pad);
+	width: var(--vl-tile);
+	height: 0;
+	pointer-events: none;
+}
+
+.avix-vl__main {
+	display: flex;
+	min-width: 0;
+	flex: 1 1 auto;
+	flex-direction: column;
+}
+
+.avix-vl__top {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	min-height: var(--vl-tile);
+}
+
+.avix-vl__tile {
+	display: grid;
+	width: var(--vl-tile);
+	height: var(--vl-tile);
+	flex: none;
+	place-items: center;
+	border: 1px solid var(--vc-tile-line);
+	overflow: hidden;
+	border-radius: 16px;
+	background: var(--vc-tile);
+	transition: border-color 0.35s ease, background-color 0.35s ease;
+}
+
+.avix-vl__num {
+	padding-top: 2px;
+	color: var(--vc-muted);
+	font-family: var(--vl-font-display);
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	line-height: 1;
+}
+
+.avix-vl__of {
+	opacity: 0.75;
+}
+
+.avix-vl__body {
+	margin-top: auto;
+	padding-top: 36px;
+}
+
+/* No icon and no number: the title starts at the top padding. */
+.avix-vl .avix-vl__main > .avix-vl__body:first-child {
+	padding-top: 0;
+}
+
+.avix-vl .avix-vl__name {
+	max-width: 24ch;
+	margin: 0 0 10px;
+	padding: 0;
+	color: var(--vc-ink);
+	font-family: var(--vl-font-display);
+	font-size: clamp(20px, 1.85cqi, 24px);
+	font-weight: 600;
+	letter-spacing: -0.022em;
+	line-height: 1.2;
+	text-transform: none;
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+	hyphens: manual;
+	hyphenate-limit-chars: 14 6 6;
+}
+
+.avix-vl .avix-vl__desc {
+	max-width: 44ch;
+	margin: 0;
+	padding: 0;
+	color: var(--vc-muted);
+	font-family: var(--vl-font-body);
+	font-size: clamp(15px, 1.3cqi, 16px);
+	font-style: normal;
+	font-weight: 400;
+	letter-spacing: -0.1px;
+	line-height: 1.65;
+	text-wrap: pretty;
+	overflow-wrap: anywhere;
+	hyphens: manual;
+	hyphenate-limit-chars: 14 6 6;
+}
+
+/* ---------- Optional link: the whole card becomes the target ---------- */
+
+.avix-vl .avix-vl__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 18px;
+	padding: 0;
+	border: 0;
+	color: var(--vc-link);
+	background: none;
+	box-shadow: none;
+	font-family: var(--vl-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.4;
+	text-decoration: none;
+	text-transform: none;
+}
+
+.avix-vl .avix-vl__link:hover,
+.avix-vl .avix-vl__link:focus,
+.avix-vl .avix-vl__link:active {
+	color: var(--vc-link);
+	text-decoration: none;
+}
+
+.avix-vl .avix-vl__link::after {
+	position: absolute;
+	z-index: 1;
+	inset: -1px;
+	border-radius: var(--vl-radius);
+	content: "";
+}
+
+.avix-vl__link-text {
+	overflow-wrap: anywhere;
+	background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+	transition: background-size 0.4s var(--vl-ease);
+}
+
+.avix-vl__link svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 2.2;
+	transition: transform 0.35s var(--vl-ease);
+}
+
+/* The theme swaps focus rings for a 1px dotted one once a key is pressed
+   (`body.show_outline :focus { … !important }`): the rings are restated with
+   !important, and a click keeps no ring. */
+.avix-vl :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
+.avix-vl .avix-vl__link:focus-visible {
+	outline: none !important;
+}
+
+/* The focus ring is drawn around the whole card the link covers. */
+.avix-vl .avix-vl__link:focus-visible::after {
+	outline: 2px solid var(--vl-accent) !important;
+	outline-offset: 4px !important;
+}
+
+.avix-vl__sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+/* ---------- Pixel icons ---------- */
+
+.avix-vl .avix-vl__px {
+	display: block;
+	width: 32px;
+	height: 32px;
+	overflow: visible;
+	shape-rendering: crispEdges;
+}
+
+.avix-vl__px rect {
+	transform-box: view-box;
+}
+
+.avix-vl__px .i {
+	fill: var(--vc-px);
+}
+
+.avix-vl__px .a {
+	fill: var(--vl-accent);
+}
+
+.avix-vl__custom {
+	display: grid;
+	place-items: center;
+	color: var(--vl-accent);
+	font-size: 26px;
+	line-height: 1;
+}
+
+.avix-vl__custom svg {
+	width: 1em;
+	height: 1em;
+	fill: currentColor;
+}
+
+/* The wide card's graph paper: icon pixels land exactly on its cells. One
+   tile per cell, so the 50% offset resolves against the cell and the lines
+   fall at the canvas centre ± whole cells, on the icon's pixel edges. */
+.avix-vl__canvas {
+	position: relative;
+	display: none;
+	overflow: hidden;
+	border-radius: max(8px, calc(var(--vl-radius) - 8px));
+	background:
+		radial-gradient(closest-side, var(--vc-glow), transparent),
+		var(--vc-canvas);
+}
+
+.avix-vl__canvas::before {
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(var(--vc-grid) 0 1px, transparent 1px),
+		linear-gradient(90deg, var(--vc-grid) 0 1px, transparent 1px);
+	background-size: var(--vl-cell) var(--vl-cell);
+	background-position: calc(50% + var(--vl-cell) / 2) calc(50% + var(--vl-cell) / 2);
+	-webkit-mask-image: radial-gradient(closest-side, #000 45%, transparent);
+	mask-image: radial-gradient(closest-side, #000 45%, transparent);
+	content: "";
+}
+
+.avix-vl .avix-vl__px--big {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: calc(var(--vl-cell) * 8);
+	height: calc(var(--vl-cell) * 8);
+	margin: calc(var(--vl-cell) * -4) 0 0 calc(var(--vl-cell) * -4);
+}
+
+.avix-vl__canvas .avix-vl__custom {
+	position: absolute;
+	inset: 0;
+	font-size: calc(var(--vl-cell) * 6);
+}
+
+/* Wide cards: text on the left, the big icon on the right, inset like a photo. */
+.avix-vl__card--wide {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) clamp(180px, 40%, 380px);
+	gap: clamp(20px, 3cqi, 40px);
+}
+
+
+.avix-vl__card--wide .avix-vl__canvas {
+	display: block;
+	margin: calc(10px - var(--vl-pad-top)) calc(10px - var(--vl-pad)) calc(10px - var(--vl-pad)) 0;
+}
+
+.avix-vl__card--wide:not(.has-icon) {
+	display: flex;
+}
+
+/* ---------- Hover and focus ---------- */
+
+@media (hover: hover) {
+	.avix-vl__card:hover {
+		border-color: color-mix(in srgb, var(--vl-accent) 34%, var(--vc-line));
+		box-shadow: var(--vl-shadow);
+	}
+
+	.avix-vl__card:hover .avix-vl__tile {
+		border-color: color-mix(in srgb, var(--vl-accent) 38%, transparent);
+	}
+
+	.avix-vl__card--dark:hover {
+		border-color: color-mix(in srgb, var(--vl-accent) 45%, transparent);
+	}
+
+	.avix-vl__card:hover .avix-vl__link-text {
+		background-size: 100% 1px;
+	}
+
+	.avix-vl__card:hover .avix-vl__link svg {
+		transform: translateX(4px);
+	}
+}
+
+.avix-vl__card:focus-within .avix-vl__tile {
+	border-color: color-mix(in srgb, var(--vl-accent) 38%, transparent);
+}
+
+/* ---------- The pixel character ---------- */
+
+.avix-vl__mover {
+	position: absolute;
+	z-index: 4;
+	top: calc(var(--vl-pal-w) * -0.7);
+	left: calc(var(--vl-pad) + var(--vl-tile) / 2 - var(--vl-pal-w) / 2);
+	display: block;
+	width: var(--vl-pal-w);
+	height: calc(var(--vl-pal-w) * 1.2);
+	pointer-events: none;
+}
+
+/* With JS the mover is placed by transform, measured from the board. */
+.avix-vl.is-js .avix-vl__mover {
+	top: 0;
+	left: 0;
+	will-change: transform;
+}
+
+.avix-vl__mover.is-wait {
+	opacity: 0;
+}
+
+.avix-vl .avix-vl__pal {
+	--pal-w: var(--vl-pal-w);
+	--pal-color: var(--vl-accent);
+	display: block;
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--vl-accent) 40%, transparent));
+	transform-origin: 50% 58%;
+}
+
+/* Sitting on the edge: legs dangle and swing, arms rest. */
+.avix-vl .avix-vl__pal .avix-pal__leg--l {
+	animation: avix-vl-swing 1.5s steps(1) infinite;
+}
+
+.avix-vl .avix-vl__pal .avix-pal__leg--r {
+	animation: avix-vl-swing 1.5s steps(1) -0.75s infinite;
+}
+
+.avix-vl .avix-vl__pal:not(.is-fly):not(.is-hi):not(.is-wave) .avix-pal__arm {
+	transform: translate(0, 1px);
+}
+
+/* In the air: arms up, legs tucked. */
+.avix-vl .avix-vl__pal.is-fly .avix-pal__arm {
+	transform: translate(0, -2px);
+}
+
+.avix-vl .avix-vl__pal.is-fly .avix-pal__leg {
+	animation: none;
+	transform: translate(0, -1px);
+}
+
+/* First arrival: it falls a few whole sprite units (--vl-drop, set by JS
+   to the free space above the perch) one unit per step. */
+.avix-vl__mover.is-drop .avix-vl__pal {
+	animation: avix-vl-drop 0.42s steps(var(--vl-drop-steps, 6), end) both;
+}
+
+/* Landing: a pixel-true squash, the upper body sinks one row for a step. */
+.avix-vl .avix-vl__mover.is-land .avix-pal__head,
+.avix-vl .avix-vl__mover.is-land .avix-pal__body {
+	animation: avix-vl-squash 0.3s steps(1) both;
+}
+
+.avix-vl .avix-vl__mover.is-land .avix-pal__arm {
+	animation: avix-vl-squash-arm 0.3s steps(1) both;
+}
+
+.avix-vl.is-off .avix-pal,
+.avix-vl.is-off .avix-pal * {
+	animation-play-state: paused;
+}
+
+/* ---------- Reveal and icon build ---------- */
+
+/* Each card rises as it enters; cards entering together stagger by --k. */
+.avix-vl.is-armed .avix-vl__item {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 0.7s ease, transform 0.8s var(--vl-ease);
+	transition-delay: calc(var(--k, 0) * 90ms);
+}
+
+.avix-vl.is-armed .avix-vl__item.is-in {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-vl__card.is-pending .avix-vl__px rect {
+	opacity: 0;
+}
+
+/* Pixels fall into place one whole grid unit per step (--s = units to fall),
+   bottom row first. */
+.avix-vl__card.is-build .avix-vl__px rect {
+	animation: avix-vl-build 0.36s steps(var(--s, 3), end) both;
+	animation-delay: calc(var(--d, 0) * 22ms);
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-vl-build {
+	0% {
+		opacity: 0;
+		transform: translate(0, calc(var(--s, 3) * -1px));
+	}
+
+	1% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes avix-vl-swing {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-vl-drop {
+	0% { opacity: 0; transform: translateY(calc(var(--vl-drop, 24px) * -1)); }
+	100% { opacity: 1; transform: none; }
+}
+
+@keyframes avix-vl-squash {
+	0% { transform: translate(0, 1px); }
+	60% { transform: none; }
+}
+
+@keyframes avix-vl-squash-arm {
+	0% { transform: translate(0, 2px); }
+	60% { transform: translate(0, 1px); }
+}
+
+/* ---------- Narrower widget ---------- */
+
+@container avix-vl (max-width: 1024px) {
+	.avix-vl__inner {
+		--vl-cell: 12px;
+	}
+}
+
+@container avix-vl (max-width: 900px) {
+	.avix-vl__head {
+		grid-template-columns: minmax(0, 1fr);
+		align-items: start;
+		gap: 20px;
+	}
+
+	.avix-vl .avix-vl__text {
+		max-width: 56ch;
+	}
+
+	.avix-vl .avix-vl__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.avix-vl .avix-vl__item {
+		grid-column: span var(--vl-span-md, 1);
+	}
+
+	.avix-vl__card--wide {
+		display: flex;
+	}
+
+	.avix-vl__card--wide .avix-vl__canvas {
+		display: none;
+	}
+
+	.avix-vl__card--wide-md.has-icon {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) clamp(160px, 38%, 300px);
+		gap: clamp(20px, 3cqi, 32px);
+	}
+
+	.avix-vl__card--wide-md .avix-vl__canvas {
+		display: block;
+		margin: calc(10px - var(--vl-pad-top)) calc(10px - var(--vl-pad)) calc(10px - var(--vl-pad)) 0;
+	}
+}
+
+@container avix-vl (max-width: 600px) {
+	.avix-vl__inner {
+		--vl-gutter: 16px;
+		--vl-pad: 24px;
+		--vl-tile: 52px;
+	}
+
+	/* One column: the character only ever sits on the first card, so the
+	   gap is the user's own (16px by default at this width). */
+	.avix-vl--pal .avix-vl__inner {
+		--vl-grid-gap: var(--vl-gap);
+	}
+
+	.avix-vl__head {
+		margin-bottom: 40px;
+	}
+
+	.avix-vl--pal .avix-vl__head {
+		margin-bottom: max(40px, calc(var(--vl-pal-w) * 1.35 + 18px));
+	}
+
+	.avix-vl .avix-vl__eyebrow {
+		margin-bottom: 18px;
+	}
+
+	.avix-vl .avix-vl__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-vl .avix-vl__item {
+		grid-column: auto;
+	}
+
+	.avix-vl__card,
+	.avix-vl__card--wide-md.has-icon {
+		display: flex;
+		min-height: 0;
+	}
+
+	.avix-vl__card .avix-vl__canvas,
+	.avix-vl__card--wide-md .avix-vl__canvas {
+		display: none;
+	}
+
+	.avix-vl__body {
+		padding-top: 28px;
+	}
+
+	.avix-vl .avix-vl__name {
+		font-size: 21px;
+	}
+
+	.avix-vl .avix-vl__desc {
+		font-size: 15px;
+	}
+}
+
+@container avix-vl (max-width: 380px) {
+	.avix-vl__inner {
+		--vl-pad: 20px;
+	}
+
+	.avix-vl .avix-vl__title {
+		font-size: clamp(30px, 9.4cqi, 36px);
+	}
+}
+
+/* ---------- Rich header text (any layout) ---------- */
+
+/* Paragraphs inherit the text style the Typography control sets on the wrapper. */
+.avix-vl .avix-vl__text--rich p {
+	margin: 0;
+	padding: 0;
+	color: inherit;
+	font: inherit;
+	letter-spacing: inherit;
+	text-wrap: pretty;
+}
+
+.avix-vl .avix-vl__text--rich p + p {
+	margin-top: 1.1em;
+}
+
+/* Highlights: ink weight plus a soft orange marker under the lower half. */
+.avix-vl .avix-vl__text strong,
+.avix-vl .avix-vl__text b {
+	color: var(--vl-ink);
+	font-weight: 600;
+	background: linear-gradient(transparent 56%, color-mix(in srgb, var(--vl-accent) 12%, transparent) 56% 92%, transparent 92%);
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
+}
+
+.avix-vl .avix-vl__text a {
+	color: var(--vl-accent-text);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+
+.avix-vl .avix-vl__text a:hover,
+.avix-vl .avix-vl__text a:focus {
+	color: var(--vl-ink);
+}
+
+.avix-vl .avix-vl__text a:focus-visible {
+	outline: 2px solid var(--vl-accent) !important;
+	outline-offset: 3px !important;
+	border-radius: 2px;
+}
+
+/* ---------- Watermark (optional, any layout) ---------- */
+
+.avix-vl--mark .avix-vl__inner {
+	--vl-mark-auto: 1100px;
+	position: relative;
+}
+
+.avix-vl__mark {
+	position: absolute;
+	z-index: 0;
+	top: 50%;
+	left: 0;
+	display: block;
+	width: var(--vl-mark-w, var(--vl-mark-auto));
+	opacity: var(--vl-mark-o, 0.06);
+	transform: translate(-8%, -50%);
+	/* It bleeds off the left edge and fades out before it reaches the text,
+	   so a wide logo shows only its mark. */
+	-webkit-mask-image: linear-gradient(90deg, #000 0 24%, transparent 40%);
+	mask-image: linear-gradient(90deg, #000 0 24%, transparent 40%);
+	pointer-events: none;
+	user-select: none;
+}
+
+/* The mark comes first in the markup, so the board is no longer :first-child. */
+.avix-vl--bare.avix-vl--pal .avix-vl__inner > .avix-vl__board {
+	margin-top: calc(var(--vl-pal-w) * 1.35 + 18px);
+}
+
+/* Bento layouts: behind the header, never across the cards' middle. */
+.avix-vl--head-split .avix-vl__mark,
+.avix-vl--head-stacked .avix-vl__mark {
+	top: 0;
+	transform: translate(-8%, -20%);
+}
+
+.avix-vl .avix-vl__mark-img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: auto;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+/* A static filter on a still image costs nothing per frame. */
+.avix-vl--mark-mono .avix-vl__mark-img {
+	filter: grayscale(1);
+}
+
+.avix-vl--mark .avix-vl__head,
+.avix-vl--mark .avix-vl__board {
+	position: relative;
+	z-index: 1;
+}
+
+/* ---------- Side layout: text column + cards as rows ---------- */
+
+/* Placed after the bento queries so the row cards win at every width. */
+.avix-vl.avix-vl--head-side .avix-vl__grid {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.avix-vl.avix-vl--head-side .avix-vl__item {
+	grid-column: auto;
+}
+
+.avix-vl.avix-vl--head-side .avix-vl__card {
+	display: block;
+	min-height: 0;
+	padding-bottom: calc(var(--vl-pad) + 2px);
+}
+
+/* Row card: the icon tile on the left, title and text beside it, the number
+   in the top corner. */
+.avix-vl--head-side .avix-vl__main {
+	display: grid;
+	grid-template-columns: var(--vl-tile) minmax(0, 1fr);
+	align-items: start;
+	column-gap: clamp(18px, 2.2cqi, 28px);
+}
+
+.avix-vl--head-side .avix-vl__top {
+	display: contents;
+}
+
+.avix-vl--head-side .avix-vl__tile {
+	grid-column: 1;
+	grid-row: 1 / span 2;
+}
+
+.avix-vl--head-side .avix-vl__num {
+	position: absolute;
+	top: var(--vl-pad-top);
+	right: var(--vl-pad);
+	padding-top: 6px;
+}
+
+.avix-vl.avix-vl--head-side .avix-vl__body {
+	grid-column: 2;
+	grid-row: 1;
+	margin: 0;
+	padding: 4px 0 0;
+}
+
+.avix-vl.avix-vl--head-side .avix-vl__card:not(.has-icon) .avix-vl__body {
+	grid-column: 1 / -1;
+}
+
+.avix-vl.avix-vl--head-side .avix-vl__name {
+	max-width: none;
+	margin-bottom: 8px;
+	font-size: clamp(19px, 1.6cqi, 22px);
+}
+
+.avix-vl.avix-vl--head-side .has-num .avix-vl__name {
+	padding-right: 56px;
+}
+
+.avix-vl.avix-vl--head-side .avix-vl__desc {
+	max-width: 58ch;
+}
+
+.avix-vl.avix-vl--head-side .avix-vl__card .avix-vl__canvas {
+	display: none;
+}
+
+/* Dark row cards: a faint orange wash in the icon corner, like a lit tile. */
+.avix-vl--head-side .avix-vl__card--dark {
+	background:
+		radial-gradient(420px 220px at 0 0, color-mix(in srgb, var(--vl-accent) 9%, transparent), transparent 70%),
+		var(--vc-bg);
+}
+
+.avix-vl--head-side .avix-vl__card--dark .avix-vl__tile {
+	border-color: color-mix(in srgb, var(--vl-accent) 22%, rgba(255, 255, 255, 0.08));
+}
+
+@container avix-vl (min-width: 901px) {
+	.avix-vl--head-side .avix-vl__inner {
+		display: grid;
+		grid-template-columns: minmax(0, var(--vl-side-w, 42%)) minmax(0, 1fr);
+		align-items: start;
+		column-gap: clamp(40px, 6.4cqi, 104px);
+	}
+
+	.avix-vl--head-side.avix-vl--bare .avix-vl__board {
+		grid-column: 1 / -1;
+	}
+
+	.avix-vl--head-side.avix-vl--bare.avix-vl--pal .avix-vl__board {
+		margin-top: 0;
+	}
+
+	.avix-vl.avix-vl--head-side .avix-vl__head {
+		grid-template-columns: minmax(0, 1fr);
+		align-items: start;
+		gap: 26px;
+		margin: 0;
+	}
+
+	.avix-vl.avix-vl--head-side .avix-vl__title {
+		max-width: 15ch;
+		font-size: clamp(34px, 3.8cqi, 54px);
+	}
+
+	.avix-vl.avix-vl--head-side .avix-vl__text {
+		max-width: 46ch;
+		line-height: 1.75;
+	}
+
+	/* Room above the first card for the character's head and its "hi". */
+	.avix-vl--head-side.avix-vl--pal .avix-vl__board {
+		padding-top: calc(var(--vl-pal-w) * 1.35 + 18px);
+	}
+
+	/* Sticky works here because the section clips (overflow: clip) instead of
+	   scrolling; Elementor wrappers set to hidden are switched to clip by JS. */
+	.avix-vl--sticky .avix-vl__head {
+		position: sticky;
+		top: calc(var(--avix-header-h, 0px) + 40px);
+	}
+
+	.admin-bar .avix-vl--sticky .avix-vl__head {
+		top: calc(var(--avix-header-h, 0px) + 72px);
+	}
+
+	/* While the Smart Header slides away on scroll-down, the column moves up
+	   with it instead of leaving a header-sized gap above. */
+	.avix-vl--sticky .avix-vl__head {
+		transition: top 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	body:has(.avix-sh.is-hidden) .avix-vl--sticky:not(.is-unstick) .avix-vl__head {
+		top: 40px;
+	}
+
+	body.admin-bar:has(.avix-sh.is-hidden) .avix-vl--sticky:not(.is-unstick) .avix-vl__head {
+		top: 72px;
+	}
+
+	/* Taller than the screen (JS adds is-unstick): scroll normally. */
+	.avix-vl--sticky.is-unstick .avix-vl__head,
+	.elementor-editor-active .avix-vl--sticky .avix-vl__head {
+		position: relative;
+		top: auto;
+	}
+}
+
+/* Side layout: the mark stays inside the text column, starting on its edge,
+   so it reads as part of the column instead of a stray shape at the page
+   edge. A wide logo keeps its proportions (only its mark shows). */
+@container avix-vl (min-width: 901px) {
+	.avix-vl--head-side .avix-vl__mark {
+		left: 0;
+		width: min(var(--vl-side-w, 42%), var(--vl-mark-w, 420px));
+		transform: translateY(-50%);
+	}
+
+	.avix-vl--head-side .avix-vl__mark-img {
+		object-fit: contain;
+		object-position: left center;
+	}
+}
+
+/* Stacked side layout (tablets and phones): the text runs the full width, so
+   there is no column to hold the mark; it would sit behind the eyebrow and
+   title as a grey disc. */
+@container avix-vl (max-width: 900px) {
+	.avix-vl--head-side .avix-vl__mark {
+		display: none;
+	}
+}
+
+@container avix-vl (max-width: 600px) {
+	.avix-vl--mark .avix-vl__inner {
+		--vl-mark-auto: 720px;
+	}
+}
+
+/* Narrow phones: the tile and number share the top row, the text gets the
+   full card width underneath. */
+@container avix-vl (max-width: 480px) {
+	.avix-vl--head-side .avix-vl__main {
+		row-gap: 20px;
+	}
+
+	.avix-vl--head-side .avix-vl__tile {
+		grid-row: 1;
+	}
+
+	.avix-vl.avix-vl--head-side .avix-vl__body {
+		grid-column: 1 / -1;
+		grid-row: 2;
+		padding-top: 0;
+	}
+
+	.avix-vl.avix-vl--head-side .has-num .avix-vl__name {
+		padding-right: 0;
+	}
+
+	/* Without a tile the title still starts beside the corner number. */
+	.avix-vl.avix-vl--head-side .has-num:not(.has-icon) .avix-vl__name {
+		padding-right: 56px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-vl *,
+	.avix-vl *::before,
+	.avix-vl *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-vl.is-armed .avix-vl__item,
+	.avix-vl__card.is-pending .avix-vl__px rect,
+	.avix-vl__mover.is-wait {
+		opacity: 1;
+		transform: none;
+	}
+}

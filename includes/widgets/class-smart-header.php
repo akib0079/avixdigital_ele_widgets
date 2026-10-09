@@ -378,6 +378,28 @@ class Smart_Header extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'all_services_link',
+			array(
+				'label'       => esc_html__( '"View all" link (optional)', 'avix-widgets' ),
+				'description' => esc_html__( 'Adds a text link to a services overview page at the end of the dropdown and of the mobile services list. Empty = no link.', 'avix-widgets' ),
+				'type'        => Controls_Manager::URL,
+				'placeholder' => self::SITE . 'service/',
+				'separator'   => 'before',
+			)
+		);
+
+		$this->add_control(
+			'all_services_label',
+			array(
+				'label'       => esc_html__( '"View all" link text', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => esc_html__( 'View all services', 'avix-widgets' ),
+				'label_block' => true,
+				'condition'   => array( 'all_services_link[url]!' => '' ),
+			)
+		);
+
 		$this->end_controls_section();
 	}
 
@@ -462,44 +484,15 @@ class Smart_Header extends Widget_Base {
 		$this->start_controls_section( 'section_behaviour', array( 'label' => esc_html__( 'Light & Dark', 'avix-widgets' ) ) );
 
 		$this->add_control(
-			'top_style',
+			'light_mode',
 			array(
-				'label'       => esc_html__( 'At the top of the page', 'avix-widgets' ),
-				'description' => esc_html__( 'The header is see-through at the top. Auto looks at what is behind it (a dark hero or photo gets white text and the white logo; a light page gets dark text and the dark logo). Add data-avix-header="dark" or "light" to any section to force it.', 'avix-widgets' ),
-				'type'        => Controls_Manager::SELECT,
-				'default'     => 'auto',
-				'options'     => array(
-					'auto'  => esc_html__( 'Auto (match the page)', 'avix-widgets' ),
-					'dark'  => esc_html__( 'Over a dark background', 'avix-widgets' ),
-					'light' => esc_html__( 'Over a light background', 'avix-widgets' ),
-				),
-			)
-		);
-
-		$this->add_control(
-			'scrolled_style',
-			array(
-				'label'       => esc_html__( 'After scrolling', 'avix-widgets' ),
-				'description' => esc_html__( 'The frosted bar the header turns into once the page scrolls.', 'avix-widgets' ),
-				'type'        => Controls_Manager::SELECT,
-				'default'     => 'dark',
-				'options'     => array(
-					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
-					'light' => esc_html__( 'Light', 'avix-widgets' ),
-				),
-			)
-		);
-
-		$this->add_control(
-			'mobile_style',
-			array(
-				'label'   => esc_html__( 'Mobile menu', 'avix-widgets' ),
-				'type'    => Controls_Manager::SELECT,
-				'default' => 'dark',
-				'options' => array(
-					'dark'  => esc_html__( 'Dark', 'avix-widgets' ),
-					'light' => esc_html__( 'Light', 'avix-widgets' ),
-				),
+				'label'        => esc_html__( 'Light mode', 'avix-widgets' ),
+				'description'  => esc_html__( 'Off (Dark): for dark heroes like the homepage. See-through with white text, the white logo and a white notch; a dark bar after scrolling, a dark dropdown and mobile menu. On (Light): for light pages. Dark text, the dark logo and a dark notch; a white bar after scrolling, a white dropdown and mobile menu.', 'avix-widgets' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Light', 'avix-widgets' ),
+				'label_off'    => esc_html__( 'Dark', 'avix-widgets' ),
+				'return_value' => 'yes',
+				'default'      => '',
 			)
 		);
 
@@ -510,7 +503,6 @@ class Smart_Header extends Widget_Base {
 				'description' => esc_html__( 'Slides away while reading and comes back as soon as the visitor scrolls up.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
-				'separator'   => 'before',
 			)
 		);
 
@@ -580,20 +572,16 @@ class Smart_Header extends Widget_Base {
 			)
 		);
 		$every    = isset( $s['hi_every']['size'] ) && '' !== $s['hi_every']['size'] ? (float) $s['hi_every']['size'] : 9;
-		$top      = in_array( $s['top_style'], array( 'auto', 'dark', 'light' ), true ) ? $s['top_style'] : 'auto';
-		$scrolled = 'light' === $s['scrolled_style'] ? 'light' : 'dark';
-		$mobile   = 'light' === $s['mobile_style'] ? 'light' : 'dark';
+		$tone     = 'yes' === ( $s['light_mode'] ?? '' ) ? 'light' : 'dark';
+		$all      = $this->all_services( $s );
 
 		$this->add_render_attribute(
 			'root',
 			array(
-				'class'       => array( 'avix-sh', 'avix-sh--on-' . ( 'light' === $top ? 'light' : 'dark' ) ),
-				'id'          => 'avix-smart-header',
+				'class'        => array( 'avix-sh', 'avix-sh--on-' . $tone ),
+				'id'           => 'avix-smart-header',
 				'data-avix-sh' => wp_json_encode(
 					array(
-						'top'      => $top,
-						'scrolled' => $scrolled,
-						'mobile'   => $mobile,
 						'hide'     => 'yes' === $s['hide_on_scroll'],
 						'current'  => 'yes' === $s['mark_current'],
 						'hiEvery'  => max( 0, min( 60, $every ) ),
@@ -609,7 +597,7 @@ class Smart_Header extends Widget_Base {
 				<nav class="avix-sh__nav" aria-label="<?php esc_attr_e( 'Main', 'avix-widgets' ); ?>">
 					<ul class="avix-sh__menu">
 						<?php foreach ( (array) $s['menu'] as $i => $item ) : ?>
-							<?php $this->render_menu_item( $item, $i, $services, $id ); ?>
+							<?php $this->render_menu_item( $item, $i, $services, $id, $all ); ?>
 						<?php endforeach; ?>
 					</ul>
 				</nav>
@@ -633,7 +621,49 @@ class Smart_Header extends Widget_Base {
 			</div>
 		</header>
 		<?php
-		$this->render_mobile_menu( $s, $services, $id, $mobile );
+		$this->render_mobile_menu( $s, $services, $id, $tone, $all );
+	}
+
+	/**
+	 * The optional "View all services" link: text and link settings, or null
+	 * when either is empty (the default), so nothing is printed.
+	 *
+	 * @param array $s Widget settings.
+	 * @return array{label:string, link:array}|null
+	 */
+	private function all_services( array $s ) {
+		$link  = (array) ( $s['all_services_link'] ?? array() );
+		$label = trim( (string) ( $s['all_services_label'] ?? '' ) );
+		if ( empty( $link['url'] ) || '' === $label ) {
+			return null;
+		}
+		return array(
+			'label' => $label,
+			'link'  => $link,
+		);
+	}
+
+	/**
+	 * "View all services" at the end of the desktop panel or the mobile list.
+	 * Prints nothing when the option is off.
+	 *
+	 * @param array|null $all    Result of all_services().
+	 * @param string     $key    Render attribute key, unique per link.
+	 * @param bool       $mobile True for the mobile menu list.
+	 */
+	private function render_all_services( $all, $key, $mobile ) {
+		if ( ! $all ) {
+			return;
+		}
+		$this->add_link_attributes( $key, $all['link'] );
+		$this->add_render_attribute( $key, 'class', $mobile ? 'avix-sh-menu__sublink avix-sh-menu__sublink--all' : 'avix-sh__item avix-sh__item--all' );
+		$arrow = $mobile ? 'avix-sh-menu__all-arrow' : 'avix-sh__item-arrow';
+		?>
+		<a <?php $this->print_render_attribute_string( $key ); ?>>
+			<span class="avix-sh__item-title"><?php echo esc_html( $all['label'] ); ?></span>
+			<span class="<?php echo esc_attr( $arrow ); ?>" aria-hidden="true"><?php echo $this->arrow_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup. ?></span>
+		</a>
+		<?php
 	}
 
 	private function render_notch( array $s ) {
@@ -713,7 +743,7 @@ class Smart_Header extends Widget_Base {
 		return $src ? $src : (string) ( $media['url'] ?? '' );
 	}
 
-	private function render_menu_item( array $item, $index, array $services, $id ) {
+	private function render_menu_item( array $item, $index, array $services, $id, $all = null ) {
 		$label = trim( (string) ( $item['label'] ?? '' ) );
 		if ( '' === $label ) {
 			return;
@@ -737,7 +767,7 @@ class Smart_Header extends Widget_Base {
 				<div class="avix-sh__panel" id="<?php echo esc_attr( $panel ); ?>">
 					<?php foreach ( $services as $i => $service ) : ?>
 						<?php $this->render_service( $service, 'svc-' . $i, 'avix-sh__item' ); ?>
-					<?php endforeach; ?>
+					<?php endforeach; ?><?php $this->render_all_services( $all, 'all-svc-' . $index, false ); ?>
 				</div>
 			</li>
 			<?php
@@ -794,7 +824,7 @@ class Smart_Header extends Widget_Base {
 		echo '</span>';
 	}
 
-	private function render_mobile_menu( array $s, array $services, $id, $style ) {
+	private function render_mobile_menu( array $s, array $services, $id, $style, $all = null ) {
 		$index = 0;
 		?>
 		<div class="avix-sh-menu avix-sh-menu--<?php echo esc_attr( $style ); ?>" id="avix-sh-menu-<?php echo esc_attr( $id ); ?>" data-sh-menu aria-hidden="true">
@@ -816,7 +846,7 @@ class Smart_Header extends Widget_Base {
 									<div class="avix-sh-menu__sub-inner">
 										<?php foreach ( $services as $j => $service ) : ?>
 											<?php $this->render_service( $service, 'msvc-' . $j, 'avix-sh-menu__sublink' ); ?>
-										<?php endforeach; ?>
+										<?php endforeach; ?><?php $this->render_all_services( $all, 'mall-svc-' . $i, true ); ?>
 									</div>
 								</div>
 							<?php else : ?>

@@ -60,21 +60,18 @@
 	--sh-panel-hover: rgba(0, 0, 0, 0.035);
 }
 
-/* After scrolling: a frosted bar. */
+/* After scrolling: a near-solid bar. No live blur: re-blurring the page
+   behind a full-width bar on every scroll frame is what made pages lag. */
 .avix-sh.is-scrolled.avix-sh--on-dark {
 	border-bottom-color: rgba(255, 255, 255, 0.08);
-	background-color: rgba(10, 11, 13, 0.9);
+	background-color: rgba(10, 11, 13, 0.96);
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-	-webkit-backdrop-filter: blur(14px) saturate(140%);
-	backdrop-filter: blur(14px) saturate(140%);
 }
 
 .avix-sh.is-scrolled.avix-sh--on-light {
 	border-bottom-color: rgba(0, 0, 0, 0.07);
-	background-color: rgba(255, 255, 255, 0.88);
+	background-color: rgba(255, 255, 255, 0.96);
 	box-shadow: 0 10px 30px rgba(20, 16, 12, 0.07);
-	-webkit-backdrop-filter: blur(14px) saturate(160%);
-	backdrop-filter: blur(14px) saturate(160%);
 }
 
 .avix-sh.is-hidden {
@@ -86,9 +83,25 @@
 	border-bottom-color: transparent;
 	background-color: transparent;
 	box-shadow: none;
-	-webkit-backdrop-filter: none;
-	backdrop-filter: none;
 	transform: none;
+}
+
+/* Height of the header at the top of the page, for sections that sit under it
+   (the JS keeps it exact). */
+:root {
+	--avix-header-h: 106px;
+}
+
+@media (max-width: 900px) {
+	:root {
+		--avix-header-h: 91px;
+	}
+}
+
+@media (max-width: 480px) {
+	:root {
+		--avix-header-h: 84px;
+	}
 }
 
 body.admin-bar .avix-sh {
@@ -433,6 +446,38 @@ body.admin-bar .avix-sh {
 	transform: translateY(-2px) rotate(-5deg);
 }
 
+/* Optional "View all services" text link under a hairline at the end of the panel. */
+.avix-sh .avix-sh__item--all {
+	position: relative;
+	grid-template-columns: minmax(0, 1fr) auto;
+	margin-top: 9px;
+	padding: 13px 12px;
+}
+
+.avix-sh .avix-sh__item--all::before {
+	position: absolute;
+	top: -6px;
+	right: 12px;
+	left: 12px;
+	height: 1px;
+	background: var(--sh-panel-line);
+	content: "";
+}
+
+.avix-sh__item--all .avix-sh__item-title {
+	font-size: 14px;
+}
+
+.avix-sh__item--all .avix-sh__item-arrow {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-sh__item--all:hover .avix-sh__item-arrow,
+.avix-sh__item--all:focus-visible .avix-sh__item-arrow {
+	transform: translateX(3px);
+}
+
 /* ---------- Button + toggle ---------- */
 
 .avix-sh__actions {
@@ -569,28 +614,36 @@ body.admin-bar .avix-sh {
 /* ---------- The notch ---------- */
 
 .avix-sh .avix-sh__notch {
-	--sh-corner: 20px;
+	/* One fixed height, so the shape is predictable. The flare (where the notch
+	   meets the top edge) plus the lower rounding must fit inside it; otherwise
+	   the page shows through as a hairline at the joins. */
+	--sh-notch-h: 34px;
+	--sh-corner: 14px;
+	--sh-round: 18px;
 	--pal-w: 20px;
 	position: absolute;
 	top: 0;
-	left: 50%;
+	right: 0;
+	left: 0;
 	z-index: 3;
 	display: flex;
+	width: max-content;
+	height: var(--sh-notch-h);
 	align-items: center;
 	gap: 10px;
-	margin: 0;
-	padding: 8px 30px 12px;
-	border-radius: 0 0 20px 20px;
+	margin: 0 auto;
+	padding: 0 28px 3px;
+	border: 0;
+	border-radius: 0 0 var(--sh-round) var(--sh-round);
 	color: var(--sh-notch-ink);
 	background: var(--sh-notch-bg);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+	box-shadow: none;
 	font-family: var(--sh-font-body);
 	font-size: 14px;
 	font-weight: 600;
 	line-height: 1;
 	text-decoration: none;
 	white-space: nowrap;
-	transform: translateX(-50%);
 	transition: transform 0.45s var(--sh-ease), opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -603,12 +656,13 @@ a.avix-sh__notch:focus {
 	color: var(--sh-notch-ink);
 }
 
-/* Inverted corners, so the notch flows out of the top edge. */
+/* The flared top corners. Each overlaps the pill by 2px, so the two shapes
+   never meet edge to edge (no seam at any zoom or screen density). */
 .avix-sh__notch::before,
 .avix-sh__notch::after {
 	position: absolute;
 	top: 0;
-	width: var(--sh-corner);
+	width: calc(var(--sh-corner) + 2px);
 	height: var(--sh-corner);
 	pointer-events: none;
 	content: "";
@@ -616,28 +670,37 @@ a.avix-sh__notch:focus {
 
 .avix-sh__notch::before {
 	left: calc(var(--sh-corner) * -1);
-	background: radial-gradient(circle at 0 100%, transparent calc(var(--sh-corner) - 0.5px), var(--sh-notch-bg) var(--sh-corner));
+	background: radial-gradient(circle at 0 100%, transparent calc(var(--sh-corner) - 0.6px), var(--sh-notch-bg) var(--sh-corner));
 }
 
 .avix-sh__notch::after {
 	right: calc(var(--sh-corner) * -1);
-	background: radial-gradient(circle at 100% 100%, transparent calc(var(--sh-corner) - 0.5px), var(--sh-notch-bg) var(--sh-corner));
+	background: radial-gradient(circle at 100% 100%, transparent calc(var(--sh-corner) - 0.6px), var(--sh-notch-bg) var(--sh-corner));
 }
 
 .avix-sh.is-scrolled .avix-sh__notch,
 .avix-sh.is-menu-open .avix-sh__notch {
 	opacity: 0;
 	pointer-events: none;
-	transform: translate(-50%, -115%);
+	transform: translateY(-115%);
 }
 
 .avix-sh__dot {
+	position: relative;
 	width: 8px;
 	height: 8px;
 	flex: none;
 	border-radius: 50%;
 	background: #51ca58;
-	animation: avix-sh-dot 1.5s ease-in infinite;
+}
+
+.avix-sh__dot::after {
+	position: absolute;
+	inset: -4px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(81, 202, 88, 0.55), rgba(81, 202, 88, 0) 70%);
+	animation: avix-sh-dot 1.5s ease-in-out infinite;
+	content: "";
 }
 
 .avix-sh__notch-short {
@@ -935,6 +998,34 @@ body.admin-bar .avix-sh-menu {
 	color: var(--m-ink);
 }
 
+/* Optional "View all services" link at the end of the list. */
+.avix-sh-menu .avix-sh-menu__sublink--all {
+	min-height: 36px;
+	gap: 8px;
+	color: var(--m-ink);
+}
+
+.avix-sh-menu__all-arrow {
+	display: flex;
+	color: var(--sh-accent);
+	transition: transform 0.3s var(--sh-ease);
+}
+
+.avix-sh-menu__all-arrow svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 2.4;
+}
+
+.avix-sh-menu__sublink--all:hover .avix-sh-menu__all-arrow,
+.avix-sh-menu__sublink--all:focus-visible .avix-sh-menu__all-arrow {
+	transform: translateX(3px);
+}
+
 .avix-sh-menu .avix-sh__tile {
 	width: 36px;
 	height: 36px;
@@ -1051,11 +1142,12 @@ html.avix-sh-lock body {
 	}
 
 	.avix-sh .avix-sh__notch {
-		--sh-corner: 16px;
+		--sh-notch-h: 27px;
+		--sh-corner: 11px;
+		--sh-round: 14px;
 		--pal-w: 16px;
 		gap: 8px;
-		padding: 6px 20px 8px;
-		border-radius: 0 0 16px 16px;
+		padding: 0 18px 2px;
 		font-size: 12px;
 	}
 }
@@ -1080,11 +1172,12 @@ html.avix-sh-lock body {
 	}
 
 	.avix-sh .avix-sh__notch {
-		--sh-corner: 12px;
+		--sh-notch-h: 24px;
+		--sh-corner: 10px;
+		--sh-round: 12px;
 		--pal-w: 14px;
 		gap: 6px;
-		padding: 5px 15px 7px;
-		border-radius: 0 0 12px 12px;
+		padding: 0 14px 2px;
 		font-size: 11px;
 	}
 
@@ -1104,12 +1197,12 @@ html.avix-sh-lock body {
 	0%,
 	100% {
 		opacity: 1;
-		box-shadow: 0 0 8px rgba(81, 202, 88, 0.6);
+		transform: scale(1);
 	}
 
 	50% {
-		opacity: 0.35;
-		box-shadow: 0 0 2px rgba(81, 202, 88, 0.1);
+		opacity: 0.2;
+		transform: scale(0.6);
 	}
 }
 

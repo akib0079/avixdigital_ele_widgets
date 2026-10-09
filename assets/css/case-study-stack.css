@@ -1,0 +1,705 @@
+/*!
+ * Avix Digital · Case Study Stack
+ * Services & technology for a case study: a sticky label and headline on
+ * the left; service chips, the industry and a two-column list of tools with
+ * brand marks on the right. Layout follows the widget width (container
+ * queries).
+ */
+
+.avix-cst {
+	--cst-bg: #ffffff;
+	--cst-ink: #1a1a1a;
+	--cst-muted: #5c5f66;
+	--cst-line: rgba(26, 26, 26, 0.1);
+	--cst-accent: #fb6007;
+	--cst-accent-text: #bf4604;
+	--cst-accent-title: color-mix(in srgb, var(--cst-accent) 88%, #000000);
+	--cst-tile: #f5f3ef;
+	--cst-tile-line: rgba(26, 26, 26, 0.06);
+	--cst-chip-bg: #faf8f5;
+	--cst-chip-line: rgba(26, 26, 26, 0.12);
+	/* Focus rings: the deeper AA orange on light, the brand orange on dark. */
+	--cst-focus: #bf4604;
+	--cst-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--cst-font-body: "Inter", Arial, sans-serif;
+	--cst-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--cst-max: 1240px;
+
+	container: avix-cst / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: var(--cst-pad-top, clamp(72px, 9vw, 140px)) 0 var(--cst-pad-bottom, clamp(72px, 9vw, 140px));
+	overflow: hidden;
+	overflow: clip;
+	color: var(--cst-ink);
+	background: var(--cst-bg);
+	font-family: var(--cst-font-body);
+	-webkit-font-smoothing: antialiased;
+	scroll-margin-top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--avix-header-h, 0px));
+}
+
+.avix-cst *,
+.avix-cst *::before,
+.avix-cst *::after {
+	box-sizing: border-box;
+}
+
+.avix-cst--paper {
+	--cst-bg: #f5f3ef;
+	--cst-tile: #ffffff;
+	--cst-chip-bg: #ffffff;
+}
+
+.avix-cst--dark {
+	--cst-bg: #0b0b0c;
+	--cst-ink: #ffffff;
+	--cst-muted: rgba(255, 255, 255, 0.64);
+	--cst-line: rgba(255, 255, 255, 0.1);
+	--cst-accent-text: #ff8a3d;
+	--cst-accent-title: var(--cst-accent);
+	--cst-focus: var(--cst-accent);
+	/* Brand marks keep their own colours, so tiles stay light on dark. */
+	--cst-tile: #f5f3ef;
+	--cst-tile-line: rgba(255, 255, 255, 0.1);
+	--cst-chip-bg: rgba(255, 255, 255, 0.05);
+	--cst-chip-line: rgba(255, 255, 255, 0.14);
+}
+
+/* Container queries style descendants only: width-based tokens live on the
+   inner wrapper. */
+.avix-cst__inner {
+	--cst-gutter: max(18px, clamp(16px, 5cqi, 72px));
+
+	width: min(calc(100% - 2 * var(--cst-gutter)), var(--cst-max));
+	margin-inline: auto;
+}
+
+.avix-cst__grid {
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	column-gap: clamp(24px, 3cqi, 48px);
+	align-items: start;
+}
+
+.avix-cst__aside {
+	grid-column: 1 / span 4;
+}
+
+.avix-cst__main {
+	grid-column: 5 / span 8;
+	min-width: 0;
+}
+
+/* ---------- Header ---------- */
+
+.avix-cst .avix-cst__eyebrow {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	color: var(--cst-muted);
+	font-family: var(--cst-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+/* Locked to the first line, so a two-line label keeps its marker at the start. */
+.avix-cst .avix-cst__px {
+	flex: none;
+	width: 6px;
+	height: 6px;
+	margin-top: calc(0.65em - 3px);
+	background: var(--cst-accent);
+}
+
+.avix-cst .avix-cst__num {
+	color: var(--cst-ink);
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-cst .avix-cst__dot {
+	margin: 0 -2px;
+	opacity: 0.6;
+}
+
+.avix-cst .avix-cst__title {
+	max-width: 12ch;
+	margin: clamp(16px, 1.8cqi, 22px) 0 0;
+	padding: 0;
+	color: var(--cst-ink);
+	font-family: var(--cst-font-display);
+	font-size: clamp(28px, 3.1cqi, 44px);
+	font-weight: 600;
+	line-height: 1.06;
+	letter-spacing: -0.035em;
+	text-transform: none;
+	text-wrap: balance;
+	overflow-wrap: break-word;
+}
+
+.avix-cst .avix-cst__title .avix-cst__accent {
+	color: var(--cst-accent-title);
+}
+
+/* ---------- Facts ---------- */
+
+.avix-cst .avix-cst__facts {
+	margin: 0;
+	padding: 0;
+	border-bottom: 1px solid var(--cst-line);
+}
+
+.avix-cst__fact {
+	display: grid;
+	grid-template-columns: minmax(110px, 0.26fr) minmax(0, 1fr);
+	gap: 12px 24px;
+	align-items: baseline;
+	padding: clamp(18px, 1.8cqi, 24px) 0;
+	border-top: 1px solid var(--cst-line);
+}
+
+.avix-cst .avix-cst__fact dt {
+	margin: 0;
+	padding: 0;
+	color: var(--cst-muted);
+	font-family: var(--cst-font-body);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.avix-cst .avix-cst__fact dd {
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.avix-cst .avix-cst__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: -4px 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-cst .avix-cst__chips li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-cst .avix-cst__chips li::before,
+.avix-cst .avix-cst__chips li::marker,
+.avix-cst .avix-cst__list li::before,
+.avix-cst .avix-cst__list li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-cst .avix-cst__chip,
+.avix-cst .avix-cst__chip:visited,
+.avix-cst .avix-cst__chip:focus {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 34px;
+	margin: 0;
+	padding: 7px 14px;
+	border: 1px solid var(--cst-chip-line);
+	border-radius: 999px;
+	color: var(--cst-ink);
+	background: var(--cst-chip-bg);
+	font-family: var(--cst-font-body);
+	font-size: 13.5px;
+	font-weight: 500;
+	line-height: 1.25;
+	text-decoration: none;
+	box-shadow: none;
+	transition: border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+}
+
+.avix-cst .avix-cst__chip svg {
+	width: 13px;
+	height: 13px;
+	margin-right: -3px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.3;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	opacity: 0.5;
+	transition: transform 0.35s var(--cst-ease), opacity 0.25s ease;
+}
+
+@media (hover: hover) {
+	.avix-cst .avix-cst__chip--link:hover {
+		border-color: color-mix(in srgb, var(--cst-accent) 40%, transparent);
+		color: var(--cst-accent-text);
+		background: color-mix(in srgb, var(--cst-accent) 8%, var(--cst-chip-bg));
+	}
+
+	.avix-cst .avix-cst__chip--link:hover svg {
+		opacity: 1;
+		transform: translate(2px, -2px);
+	}
+}
+
+.avix-cst .avix-cst__chip--link:focus-visible {
+	outline: 2px solid var(--cst-focus) !important;
+	outline-offset: 3px !important;
+}
+
+.avix-cst :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
+.avix-cst__industry {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 6px 18px;
+}
+
+.avix-cst .avix-cst__industry-name {
+	color: var(--cst-ink);
+	font-family: var(--cst-font-display);
+	font-size: clamp(17px, 1.5cqi, 19px);
+	font-weight: 500;
+	line-height: 1.35;
+	letter-spacing: -0.01em;
+}
+
+.avix-cst .avix-cst__market {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--cst-muted);
+	font-size: 14.5px;
+	line-height: 1.4;
+}
+
+.avix-cst .avix-cst__market svg {
+	flex: none;
+	width: 15px;
+	height: 15px;
+	fill: none;
+	stroke: var(--cst-accent);
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transform: translateY(1px);
+}
+
+/* ---------- Technology ---------- */
+
+.avix-cst__tech {
+	margin-top: clamp(40px, 4.4cqi, 60px);
+}
+
+/* The heading and its count side by side; the count is not part of the H3 text. */
+.avix-cst .avix-cst__tech-head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 6px;
+	padding: 0;
+}
+
+.avix-cst .avix-cst__tech-title {
+	display: block;
+	margin: 0;
+	padding: 0;
+	color: var(--cst-muted);
+	font-family: var(--cst-font-body);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.avix-cst .avix-cst__count {
+	display: inline-grid;
+	place-items: center;
+	min-width: 26px;
+	height: 20px;
+	padding: 0 6px;
+	border-radius: 999px;
+	color: var(--cst-accent-text);
+	background: color-mix(in srgb, var(--cst-accent) 9%, transparent);
+	font-family: var(--cst-font-display);
+	font-size: 11.5px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.02em;
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-cst .avix-cst__list {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: clamp(28px, 3.4cqi, 48px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-cst .avix-cst__item {
+	display: grid;
+	grid-template-columns: 36px minmax(0, 1fr);
+	gap: 16px;
+	align-items: start;
+	margin: 0;
+	padding: 20px 0;
+	border-top: 1px solid var(--cst-line);
+	list-style: none;
+}
+
+.avix-cst__icon {
+	display: grid;
+	place-items: center;
+	width: 36px;
+	height: 36px;
+	border: 1px solid var(--cst-tile-line);
+	border-radius: 10px;
+	color: #1a1a1a;
+	background: var(--cst-tile);
+}
+
+.avix-cst .avix-cst__icon svg {
+	display: block;
+	width: 18px;
+	height: 18px;
+	max-width: none;
+}
+
+/* Official logo files. A glyph sits in its own box (set per logo in
+   Case_Study_Stack::LOGOS); theme rules like img { height: auto } must not
+   resize it. */
+.avix-cst .avix-cst__icon img.avix-cst__logo {
+	display: block;
+	width: var(--cst-logo-w, 20px);
+	height: var(--cst-logo-h, 20px);
+	max-width: none;
+	max-height: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	object-fit: contain;
+}
+
+/* An app icon is its own tile: it fills the 36px square under the same
+   radius, with no second border around it. A knock-out in the icon (the
+   Judge.me check) shows white, as in the brand's app icon, on every theme. */
+.avix-cst .avix-cst__icon--tile {
+	overflow: hidden;
+	border: 0;
+	background: transparent;
+}
+
+.avix-cst .avix-cst__icon--tile img.avix-cst__logo,
+.avix-cst .avix-cst__mark--tile img.avix-cst__logo {
+	background: #fff;
+}
+
+.avix-cst .avix-cst__icon--tile img.avix-cst__logo {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Two marks share the tile: the first at the top left, the second on a
+   badge over the bottom-right corner (3px past the tile, into the column
+   gap), cut out of the tile by a ring in the section background. */
+.avix-cst .avix-cst__icon--pair {
+	position: relative;
+}
+
+.avix-cst .avix-cst__mark {
+	position: absolute;
+	display: grid;
+	place-items: center;
+}
+
+.avix-cst .avix-cst__mark--a {
+	top: 2px;
+	left: 2px;
+	width: 19px;
+	height: 19px;
+}
+
+.avix-cst .avix-cst__mark--b {
+	right: -4px;
+	bottom: -4px;
+	width: 22px;
+	height: 22px;
+	overflow: hidden;
+	border: 1px solid var(--cst-tile-line);
+	border-radius: 7px;
+	background: var(--cst-tile);
+	box-shadow: 0 0 0 2px var(--cst-bg);
+}
+
+.avix-cst .avix-cst__mark--a svg {
+	width: 16px;
+	height: 16px;
+}
+
+.avix-cst .avix-cst__mark--b svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* Scaled down in a pair, never past the mark's own box (Liquid's tall
+   drop would reach the tile edge or the badge's border). */
+.avix-cst .avix-cst__mark--a img.avix-cst__logo {
+	width: min(calc(var(--cst-logo-w, 20px) * 0.84), 19px);
+	height: min(calc(var(--cst-logo-h, 20px) * 0.84), 19px);
+}
+
+.avix-cst .avix-cst__mark--b img.avix-cst__logo {
+	width: min(calc(var(--cst-logo-w, 20px) * 0.74), 18px);
+	height: min(calc(var(--cst-logo-h, 20px) * 0.74), 18px);
+}
+
+/* An app icon in a pair: a small rounded square of its own, or the
+   whole badge. */
+.avix-cst .avix-cst__mark.avix-cst__mark--tile img.avix-cst__logo {
+	width: 100%;
+	height: 100%;
+	border-radius: 4px;
+	object-fit: cover;
+}
+
+.avix-cst .avix-cst__mark--b.avix-cst__mark--tile {
+	border: 0;
+	background: transparent;
+}
+
+.avix-cst .avix-cst__mark--b.avix-cst__mark--tile img.avix-cst__logo {
+	border-radius: 0;
+}
+
+/* A pill (Google Pay) brings its own outline: no badge behind it, the
+   ring follows the pill. Google's rules for the mark: never smaller than
+   the brand next to it, and clear space of half the capital G's height
+   (3.3px at 16px) on every side. So the pill keeps its full 30 x 16, the
+   ring is 3.5px, and the first mark is 16px tall, 4px above the pill. */
+.avix-cst .avix-cst__mark--a.avix-cst__mark--pill {
+	top: 5px;
+	left: 4px;
+	width: auto;
+	height: auto;
+}
+
+.avix-cst .avix-cst__mark--b.avix-cst__mark--pill {
+	right: -4px;
+	bottom: -4px;
+	width: auto;
+	height: auto;
+	overflow: visible;
+	border: 0;
+	border-radius: 999px;
+	background: none;
+	box-shadow: 0 0 0 3.5px var(--cst-bg);
+}
+
+.avix-cst .avix-cst__mark--b.avix-cst__mark--pill img.avix-cst__logo {
+	width: var(--cst-logo-w, 30px);
+	height: var(--cst-logo-h, 16px);
+}
+
+.avix-cst .avix-cst__icon--pill .avix-cst__mark--a {
+	width: 16px;
+	height: 16px;
+}
+
+.avix-cst .avix-cst__icon--pill .avix-cst__mark--a svg,
+.avix-cst .avix-cst__icon--pill .avix-cst__mark--a img.avix-cst__logo {
+	width: 16px;
+	height: 16px;
+}
+
+/* A typeface: "Aa" set in it. */
+.avix-cst .avix-cst__type {
+	display: block;
+	color: #1a1a1a;
+	font-family: var(--cst-font-display);
+	font-size: 15px;
+	font-weight: 500;
+	font-style: normal;
+	line-height: 1;
+	letter-spacing: -0.02em;
+}
+
+/* Tools without a brand mark get the pixel. */
+.avix-cst .avix-cst__icon i {
+	display: block;
+	width: 8px;
+	height: 8px;
+	background: var(--cst-accent);
+}
+
+.avix-cst__copy {
+	display: block;
+	min-width: 0;
+	padding-top: 1px;
+}
+
+.avix-cst .avix-cst__name {
+	display: block;
+	color: var(--cst-ink);
+	font-family: var(--cst-font-display);
+	font-size: 18px;
+	font-weight: 500;
+	line-height: 1.3;
+	letter-spacing: -0.01em;
+	overflow-wrap: break-word;
+}
+
+/* "Seen on the live site": always on its own line under the text, so
+   every observed tool reads the same way. */
+.avix-cst .avix-cst__tag {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	width: max-content;
+	max-width: 100%;
+	margin-top: 10px;
+	color: var(--cst-muted);
+	font-family: var(--cst-font-body);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.3;
+	letter-spacing: 0.01em;
+}
+
+/* A hollow pixel: seen, not built. */
+.avix-cst .avix-cst__tag::before {
+	flex: none;
+	width: 6px;
+	height: 6px;
+	border: 1.5px solid var(--cst-accent);
+	content: "";
+}
+
+.avix-cst .avix-cst__text::first-letter {
+	text-transform: uppercase;
+}
+
+.avix-cst .avix-cst__text {
+	display: block;
+	margin-top: 4px;
+	color: var(--cst-muted);
+	font-family: var(--cst-font-body);
+	font-size: 15px;
+	line-height: 1.55;
+	text-wrap: pretty;
+}
+
+/* ---------- Motion ---------- */
+
+.avix-cst.is-armed .avix-cst__rise {
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 0.7s ease, transform 0.8s var(--cst-ease);
+	transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+.avix-cst.is-armed.is-in .avix-cst__rise {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-cst.is-armed .avix-cst__item {
+	opacity: 0;
+	transform: translateY(16px);
+	transition: opacity 0.6s ease, transform 0.7s var(--cst-ease);
+	transition-delay: calc(var(--i, 0) * 50ms);
+}
+
+.avix-cst.is-armed .avix-cst__list.is-in .avix-cst__item {
+	opacity: 1;
+	transform: none;
+}
+
+/* Sticky things fall back to normal flow while editing. */
+.elementor-editor-active .avix-cst .avix-cst__aside {
+	position: relative !important;
+	top: auto !important;
+}
+
+/* ---------- Container queries ---------- */
+
+@container avix-cst (min-width: 1025px) {
+	.avix-cst--sticky .avix-cst__aside {
+		position: sticky;
+		top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--avix-header-h, 0px) + 32px);
+	}
+}
+
+@container avix-cst (max-width: 860px) {
+	.avix-cst__grid {
+		display: block;
+	}
+
+	.avix-cst__aside {
+		margin-bottom: clamp(28px, 5cqi, 40px);
+	}
+
+	.avix-cst .avix-cst__title {
+		max-width: 18ch;
+	}
+
+	.avix-cst .avix-cst__list {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@container avix-cst (max-width: 600px) {
+	.avix-cst__fact {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 12px;
+	}
+
+	.avix-cst .avix-cst__title {
+		font-size: clamp(30px, 8.6cqi, 38px);
+	}
+
+	.avix-cst .avix-cst__item {
+		gap: 14px;
+		padding: 18px 0;
+	}
+
+	.avix-cst .avix-cst__name {
+		font-size: 17px;
+	}
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-cst *,
+	.avix-cst *::before,
+	.avix-cst *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-cst.is-armed .avix-cst__rise,
+	.avix-cst.is-armed .avix-cst__item {
+		opacity: 1;
+		transform: none;
+	}
+}

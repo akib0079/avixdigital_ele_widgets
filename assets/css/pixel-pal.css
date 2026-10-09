@@ -1,0 +1,254 @@
+/*!
+ * Avix Digital · Pixel character (shared)
+ *
+ * One orange pixel figure in a 10×12 grid. Size it with --pal-w (height is
+ * 1.2× the width), colour it with --pal-color, and colour props (book, laptop,
+ * flag) with --pal-prop. States are classes on .avix-pal:
+ *   is-look-l / is-look-r   glance left or right
+ *   is-wave                 right arm waves
+ *   is-hi                   hop, wave and a pixel "hi" above the head
+ *   is-jump                 squash-and-stretch jump
+ *   is-cheer                both arms up
+ *   is-walk (+ is-face-l)   walking legs and a bob; is-face-l mirrors it
+ *   is-type                 arms tapping (pairs well with the laptop prop)
+ *   is-read                 head tilted down (pairs well with the book prop)
+ *   is-still                no idle glancing
+ * A paused ancestor (.is-off on the widget root) should set
+ * animation-play-state: paused on .avix-pal * itself.
+ */
+
+.avix-pal {
+	--pal-w: 40px;
+	--pal-color: #fb6007;
+	--pal-prop: #1a1a1a;
+	--pal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	position: relative;
+	display: inline-block;
+	width: var(--pal-w);
+	height: calc(var(--pal-w) * 1.2);
+	flex: none;
+	line-height: 0;
+	pointer-events: none;
+	vertical-align: bottom;
+}
+
+.avix-pal__sprite {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform-origin: 50% 100%;
+}
+
+.avix-pal svg {
+	display: block;
+	overflow: visible;
+	fill: var(--pal-color);
+	shape-rendering: crispEdges;
+}
+
+.avix-pal__sprite svg {
+	width: 100%;
+	height: 100%;
+}
+
+.avix-pal rect {
+	transform-box: view-box;
+}
+
+.avix-pal .avix-pal__prop {
+	fill: var(--pal-prop);
+}
+
+.avix-pal .avix-pal__prop--cloth {
+	fill: var(--pal-color);
+	animation: avix-pal-flutter 0.9s steps(1) infinite;
+}
+
+/* Idle: a glance around now and then. */
+.avix-pal__head {
+	animation: avix-pal-look 7s steps(1) infinite;
+}
+
+.avix-pal.is-still .avix-pal__head {
+	animation: none;
+}
+
+.avix-pal.is-look-l .avix-pal__head {
+	animation: none;
+	transform: translate(-1px, 0);
+}
+
+.avix-pal.is-look-r .avix-pal__head {
+	animation: none;
+	transform: translate(1px, 0);
+}
+
+.avix-pal.is-read .avix-pal__head {
+	animation: none;
+	transform: translate(0, 0.5px);
+}
+
+/* Waving. */
+.avix-pal.is-wave .avix-pal__arm--r {
+	animation: avix-pal-wave 0.4s steps(1) 4;
+}
+
+/* Saying hi: a hop, a wave and "hi" in pixel letters. No bubble. */
+.avix-pal__hi {
+	position: absolute;
+	bottom: calc(100% + var(--pal-w) * 0.15);
+	left: 50%;
+	width: calc(var(--pal-w) * 0.5);
+	height: calc(var(--pal-w) * 0.5);
+	transform: translateX(-50%);
+}
+
+.avix-pal__hi g {
+	opacity: 0;
+	transform-box: fill-box;
+	transform-origin: 50% 100%;
+}
+
+.avix-pal.is-hi .avix-pal__hi-h {
+	animation: avix-pal-pop 1.9s var(--pal-ease) both;
+}
+
+.avix-pal.is-hi .avix-pal__hi-i {
+	animation: avix-pal-pop 1.9s var(--pal-ease) 0.12s both;
+}
+
+.avix-pal.is-hi .avix-pal__sprite {
+	animation: avix-pal-hop 0.5s steps(1);
+}
+
+.avix-pal.is-hi .avix-pal__arm--r {
+	animation: avix-pal-wave 0.36s steps(1) 4;
+}
+
+.avix-pal.is-hi .avix-pal__head {
+	animation: none;
+	transform: translate(1px, 0);
+}
+
+.avix-pal.is-look-l.is-hi .avix-pal__head {
+	transform: translate(-1px, 0);
+}
+
+/* Jumping. */
+.avix-pal.is-jump .avix-pal__sprite {
+	animation: avix-pal-jump 0.6s var(--pal-ease);
+}
+
+.avix-pal.is-jump .avix-pal__arm,
+.avix-pal.is-jump .avix-pal__leg {
+	transform: translate(0, -2px);
+}
+
+/* Cheering. */
+.avix-pal.is-cheer .avix-pal__arm {
+	transform: translate(0, -3px);
+}
+
+.avix-pal.is-cheer .avix-pal__sprite {
+	animation: avix-pal-hop 0.5s steps(1) 2;
+}
+
+/* Walking. */
+.avix-pal.is-face-l .avix-pal__sprite {
+	transform: scaleX(-1);
+}
+
+.avix-pal.is-walk .avix-pal__leg--l {
+	animation: avix-pal-step 0.32s steps(1) infinite;
+}
+
+.avix-pal.is-walk .avix-pal__leg--r {
+	animation: avix-pal-step 0.32s steps(1) -0.16s infinite;
+}
+
+.avix-pal.is-walk .avix-pal__arm--l {
+	animation: avix-pal-swing 0.32s steps(1) infinite;
+}
+
+.avix-pal.is-walk .avix-pal__arm--r {
+	animation: avix-pal-swing 0.32s steps(1) -0.16s infinite;
+}
+
+.avix-pal.is-walk .avix-pal__head {
+	animation: none;
+	transform: translate(1px, 0);
+}
+
+/* Typing. */
+.avix-pal.is-type .avix-pal__arm--l {
+	animation: avix-pal-tap 0.24s steps(1) infinite;
+}
+
+.avix-pal.is-type .avix-pal__arm--r {
+	animation: avix-pal-tap 0.24s steps(1) -0.12s infinite;
+}
+
+@keyframes avix-pal-look {
+	0% { transform: translate(0, 0); }
+	62% { transform: translate(-1px, 0); }
+	74% { transform: translate(1px, 0); }
+	86% { transform: translate(0, 0); }
+}
+
+@keyframes avix-pal-wave {
+	0% { transform: translate(0, -3px); }
+	50% { transform: translate(0, -2px); }
+}
+
+@keyframes avix-pal-hop {
+	0% { transform: translateY(0); }
+	20% { transform: translateY(-8%); }
+	60% { transform: translateY(0); }
+}
+
+@keyframes avix-pal-jump {
+	0% { transform: translateY(0) scale(1, 1); }
+	18% { transform: translateY(0) scale(1.12, 0.86); }
+	50% { transform: translateY(-34%) scale(0.94, 1.08); }
+	82% { transform: translateY(0) scale(1.1, 0.9); }
+	100% { transform: translateY(0) scale(1, 1); }
+}
+
+@keyframes avix-pal-pop {
+	0% { opacity: 0; transform: translateY(1px) scale(0.3); }
+	12% { opacity: 1; transform: translateY(-0.5px) scale(1.3); }
+	22% { opacity: 1; transform: none; }
+	80% { opacity: 1; transform: none; }
+	100% { opacity: 0; transform: translateY(-1.5px); }
+}
+
+@keyframes avix-pal-step {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-pal-swing {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -1px); }
+}
+
+@keyframes avix-pal-tap {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, -0.5px); }
+}
+
+@keyframes avix-pal-flutter {
+	0% { transform: translate(0, 0); }
+	50% { transform: translate(0, 0.5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-pal,
+	.avix-pal * {
+		animation: none !important;
+	}
+
+	.avix-pal.is-hi .avix-pal__hi g {
+		opacity: 1;
+	}
+}

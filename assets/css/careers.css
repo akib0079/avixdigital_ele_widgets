@@ -1,0 +1,1164 @@
+/*!
+ * Avix Digital · Careers
+ * A big rounded card: invitation and button on the left, perks and optional
+ * open roles on the right. The pixel character pops up on the card's top edge
+ * with a flag beside a "We're hiring" sign. Layout follows the widget width
+ * (container queries).
+ */
+
+.avix-cr {
+	--cr-bg: #ffffff;
+	--cr-card: #f5f2ee;
+	--cr-card-line: rgba(26, 26, 26, 0.06);
+	--cr-ink: #1a1a1a;
+	--cr-muted: #5c5f66;
+	--cr-line: rgba(26, 26, 26, 0.1);
+	--cr-accent: #fb6007;
+	--cr-accent-text: #c54804;
+	--cr-btn-hover: #1a1a1a;
+	--cr-btn-ink: #ffffff;
+	--cr-tile: #ffffff;
+	--cr-tile-line: rgba(26, 26, 26, 0.07);
+	--cr-px-ink: #1a1a1a;
+	--cr-sign-bg: #1a1a1a;
+	--cr-sign-ink: #ffffff;
+	/* The character follows the accent unless its own colour is set. */
+	--cr-pal: var(--cr-accent);
+	--cr-glow: 13%;
+	--cr-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--cr-font-body: "Inter", Arial, sans-serif;
+	--cr-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--cr-max: 1240px;
+	--cr-gutter: 24px;
+	/* A multiple of 10 so one character pixel is a whole screen pixel. */
+	--cr-pal-w: 50px;
+
+	container: avix-cr / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(72px, 9vw, 140px) 0;
+	overflow-x: clip;
+	color: var(--cr-ink);
+	background: var(--cr-bg);
+	font-family: var(--cr-font-body);
+	/* Pinned: some themes set a light body weight that would thin the copy. */
+	font-weight: 400;
+	-webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Highlighted words follow the accent: a darker shade on light cards (about
+ * #c44b05 for the brand orange, the same tone as before), a lighter one on
+ * dark cards. The "Highlighted words" colour control still overrides both.
+ */
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+	.avix-cr {
+		--cr-accent-text: color-mix(in srgb, var(--cr-accent) 78%, #000000);
+	}
+
+	.avix-cr.avix-cr--dark {
+		--cr-accent-text: color-mix(in srgb, var(--cr-accent) 75%, #ffffff);
+	}
+}
+
+/* The scene brings its own headroom (for the flag and the pixel "hi"), so less padding above it. */
+.avix-cr.has-scene {
+	padding-top: clamp(40px, 5vw, 80px);
+}
+
+.avix-cr .avix-cr__sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+	white-space: nowrap;
+}
+
+.avix-cr *,
+.avix-cr *::before,
+.avix-cr *::after {
+	box-sizing: border-box;
+}
+
+/* Dark card: near-black like the other dark Avix sections, soft orange text. */
+.avix-cr--dark {
+	--cr-card: #111111;
+	--cr-card-line: rgba(255, 255, 255, 0.06);
+	--cr-ink: #ffffff;
+	--cr-muted: rgba(255, 255, 255, 0.62);
+	--cr-line: rgba(255, 255, 255, 0.1);
+	--cr-accent-text: #ff8a3d;
+	--cr-btn-hover: #ffffff;
+	--cr-tile: rgba(255, 255, 255, 0.06);
+	--cr-tile-line: rgba(255, 255, 255, 0.08);
+	--cr-px-ink: #ffffff;
+	--cr-glow: 18%;
+}
+
+/*
+ * Dark section: the character and the sign stand on the section, not on the
+ * card, so the sign, its posts and the flag pole turn white to stay visible.
+ */
+.avix-cr--on-dark {
+	--cr-bg: #0b0b0c;
+	--cr-sign-bg: #ffffff;
+	--cr-sign-ink: #111111;
+}
+
+.avix-cr--dark.avix-cr--on-dark {
+	--cr-card: #141414;
+	--cr-card-line: rgba(255, 255, 255, 0.08);
+}
+
+/* Container queries style descendants only: width-based tokens live on the frame. */
+.avix-cr__frame {
+	--cr-pad: clamp(28px, 5.6cqi, 80px);
+	--cr-radius-auto: 32px;
+	/* Character width: capped on narrow widgets so the scene always fits. */
+	--cr-pw: min(var(--cr-pal-w), 15cqi);
+	--cr-u: calc(var(--cr-pw) / 10);
+
+	width: min(calc(100% - var(--cr-gutter) * 2), var(--cr-max));
+	margin-inline: auto;
+}
+
+/* Snap the capped width to 10px steps where supported: whole-pixel units, crisp pixel art. */
+@supports (width: round(down, 15px, 10px)) {
+	.avix-cr__frame {
+		--cr-pw: max(30px, round(down, min(var(--cr-pal-w), 15cqi), 10px));
+	}
+}
+
+/* ---------- Card ---------- */
+
+.avix-cr__card {
+	position: relative;
+	padding: var(--cr-pad);
+	border: 1px solid var(--cr-card-line);
+	/* The control's value (when set) always wins; otherwise 32px, 24px on phones. */
+	border-radius: var(--cr-radius, var(--cr-radius-auto));
+	color: var(--cr-ink);
+	background: var(--cr-card);
+}
+
+/* Glow and a faint pixel grid in the top-right corner, clipped to the card. */
+.avix-cr__deco {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	border-radius: inherit;
+	pointer-events: none;
+}
+
+.avix-cr__deco::before {
+	position: absolute;
+	top: -320px;
+	right: -260px;
+	width: 760px;
+	height: 760px;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--cr-accent) var(--cr-glow), transparent), transparent);
+	content: "";
+}
+
+.avix-cr__deco::after {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: min(560px, 60%);
+	height: 280px;
+	background-image:
+		linear-gradient(to right, color-mix(in srgb, var(--cr-ink) 5%, transparent) 1px, transparent 1px),
+		linear-gradient(to bottom, color-mix(in srgb, var(--cr-ink) 5%, transparent) 1px, transparent 1px);
+	background-position: 100% 0;
+	background-size: 24px 24px;
+	/* An explicit radius: closest-side from a corner point would be zero. */
+	-webkit-mask-image: radial-gradient(circle at 100% 0, #000 0, transparent 340px);
+	mask-image: radial-gradient(circle at 100% 0, #000 0, transparent 340px);
+	content: "";
+}
+
+.avix-cr__grid {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	grid-template-columns: minmax(0, 5fr) minmax(0, 6.4fr);
+	gap: 48px clamp(40px, 7cqi, 112px);
+}
+
+.avix-cr--solo .avix-cr__grid {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.avix-cr__main {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+}
+
+/* ---------- Header ---------- */
+
+.avix-cr .avix-cr__eyebrow {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0 0 22px;
+	padding: 0;
+	color: var(--cr-ink);
+	font-family: var(--cr-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	line-height: 1.3;
+	text-transform: uppercase;
+	/* "anywhere" (not break-word) also lowers the min-content width of the flex text, so a long word wraps. */
+	overflow-wrap: anywhere;
+}
+
+/* A single orange "pixel" ties the eyebrow to the character. */
+.avix-cr .avix-cr__eyebrow::before {
+	width: 8px;
+	height: 8px;
+	flex: none;
+	/* Centred on the first line when a long eyebrow wraps. */
+	margin-top: calc((1.3em - 8px) / 2);
+	background: var(--cr-accent);
+	content: "";
+}
+
+.avix-cr .avix-cr__title {
+	max-width: 14ch;
+	margin: 0;
+	padding: 0;
+	color: var(--cr-ink);
+	font-family: var(--cr-font-display);
+	/* Same H2 scale as Values and Journey, so the About page keeps one rhythm. */
+	font-size: clamp(36px, 4.6cqi, 60px);
+	font-weight: 600;
+	letter-spacing: -0.035em;
+	line-height: 1.06;
+	text-transform: none;
+	text-wrap: balance;
+	overflow-wrap: break-word;
+	/* Only very long words (compounds, URLs) get hyphenated. */
+	-webkit-hyphens: manual;
+	hyphens: manual;
+	hyphenate-limit-chars: 14 6 6;
+}
+
+.avix-cr__accent {
+	color: var(--cr-accent-text);
+}
+
+.avix-cr .avix-cr__text {
+	max-width: 40ch;
+	margin: 24px 0 0;
+	padding: 0;
+	color: var(--cr-muted);
+	font-family: var(--cr-font-body);
+	font-size: clamp(15px, 1.4cqi, 17px);
+	font-weight: 400;
+	line-height: 1.7;
+	text-wrap: pretty;
+	overflow-wrap: break-word;
+}
+
+/* ---------- Button + contact ---------- */
+
+/* The actions follow the text, so pitch, button and character read as one block. */
+.avix-cr__actions {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 20px;
+	margin-top: 0;
+	padding-top: clamp(32px, 4cqi, 48px);
+}
+
+/* Theme-resistant pill: theme and Elementor-kit link and button styles must not leak in. */
+.avix-cr .avix-cr__btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: 16px;
+	min-height: 56px;
+	margin: 0;
+	padding: 8px 8px 8px 26px;
+	overflow: hidden;
+	isolation: isolate;
+	border: 0;
+	border-radius: 999px;
+	color: var(--cr-btn-ink);
+	background: var(--cr-accent);
+	box-shadow: 0 12px 30px -10px color-mix(in srgb, var(--cr-accent) 70%, transparent);
+	font-family: var(--cr-font-body);
+	/* 19px bold: white on orange passes AA for large text (as in the Footer). */
+	font-size: 19px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	text-decoration: none;
+	text-transform: none;
+	transition: transform 0.45s var(--cr-ease), box-shadow 0.45s var(--cr-ease), color 0.3s ease;
+}
+
+.avix-cr .avix-cr__btn:hover,
+.avix-cr .avix-cr__btn:focus,
+.avix-cr .avix-cr__btn:active {
+	color: var(--cr-btn-ink);
+	text-decoration: none;
+}
+
+/* A longer label wraps into two even lines, never a one-word widow. */
+.avix-cr .avix-cr__btn-label {
+	min-width: 0;
+	line-height: 1.15;
+	text-wrap: balance;
+}
+
+/* Ink fill slides in from the left on hover. */
+.avix-cr .avix-cr__btn::before {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	background: var(--cr-btn-hover);
+	transform: translateX(-101%);
+	transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+	content: "";
+}
+
+.avix-cr__btn-icon {
+	display: grid;
+	width: 40px;
+	height: 40px;
+	flex: none;
+	place-items: center;
+	border-radius: 50%;
+	color: var(--cr-accent);
+	background: var(--cr-btn-ink);
+	transition: transform 0.45s var(--cr-ease);
+}
+
+.avix-cr__btn-icon svg {
+	display: block;
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.45s var(--cr-ease);
+}
+
+.avix-cr .avix-cr__contact {
+	margin: 0;
+	padding: 0;
+	color: var(--cr-muted);
+	font-family: var(--cr-font-body);
+	font-size: 14.5px;
+	font-weight: 400;
+	line-height: 1.6;
+}
+
+.avix-cr .avix-cr__mail {
+	position: relative;
+	display: inline;
+	margin: 0;
+	padding: 0;
+	border-radius: 4px;
+	color: var(--cr-ink);
+	font-weight: 600;
+	text-decoration: underline;
+	text-decoration-color: var(--cr-accent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 4px;
+	overflow-wrap: anywhere;
+	transition: color 0.25s ease, text-decoration-thickness 0.25s ease;
+}
+
+/* A 44px tall hit area on a pseudo-element, so the focus ring can hug the text. */
+.avix-cr .avix-cr__mail::after {
+	position: absolute;
+	inset: -13px -4px;
+	content: "";
+}
+
+.avix-cr .avix-cr__mail:hover,
+.avix-cr .avix-cr__mail:focus {
+	color: var(--cr-ink);
+	text-decoration: underline;
+	text-decoration-color: var(--cr-accent);
+}
+
+/* Editor-only hint (a button without a link), styled to sit quietly in the card. */
+.avix-cr .elementor-alert {
+	margin: clamp(32px, 4cqi, 48px) 0 0;
+	padding: 12px 16px;
+	border: 1px dashed color-mix(in srgb, var(--cr-ink) 30%, transparent);
+	border-radius: 12px;
+	color: var(--cr-muted);
+	background: transparent;
+	font-family: var(--cr-font-body);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.avix-cr .elementor-alert + .avix-cr__actions {
+	padding-top: 20px;
+}
+
+/* ---------- Perks ---------- */
+
+.avix-cr__aside {
+	min-width: 0;
+}
+
+.avix-cr .avix-cr__perks,
+.avix-cr .avix-cr__role-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-cr .avix-cr__perk,
+.avix-cr .avix-cr__role-item {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-cr .avix-cr__perk::before,
+.avix-cr .avix-cr__perk::marker,
+.avix-cr .avix-cr__role-item::before,
+.avix-cr .avix-cr__role-item::marker {
+	display: none;
+	content: none;
+}
+
+.avix-cr .avix-cr__perk {
+	display: grid;
+	grid-template-columns: 56px minmax(0, 1fr);
+	gap: 24px;
+	padding: clamp(24px, 2.6cqi, 32px) 0;
+	border-top: 1px solid var(--cr-line);
+}
+
+.avix-cr .avix-cr__perk:first-child {
+	padding-top: 0;
+	border-top: 0;
+}
+
+.avix-cr .avix-cr__perk:last-child {
+	padding-bottom: 0;
+}
+
+.avix-cr__perk-body {
+	min-width: 0;
+	padding-top: 3px;
+}
+
+/* A perk without an icon keeps the text on the same column line. */
+.avix-cr__perk-body:first-child {
+	grid-column: 2;
+}
+
+.avix-cr__tile {
+	display: grid;
+	width: 56px;
+	height: 56px;
+	place-items: center;
+	border: 1px solid var(--cr-tile-line);
+	border-radius: 16px;
+	color: var(--cr-accent);
+	background: var(--cr-tile);
+	box-shadow: 0 1px 2px rgba(26, 26, 26, 0.04), 0 8px 20px -14px rgba(26, 26, 26, 0.25);
+	transition: transform 0.45s var(--cr-ease), border-color 0.3s ease;
+}
+
+.avix-cr__px {
+	display: block;
+	/* 24px on an 8-pixel grid: 3 screen pixels per icon pixel. */
+	width: 24px;
+	height: 24px;
+	overflow: visible;
+	shape-rendering: crispEdges;
+}
+
+.avix-cr__px rect {
+	transform-box: fill-box;
+	transform-origin: 50% 50%;
+}
+
+.avix-cr__px .i {
+	fill: var(--cr-px-ink);
+}
+
+.avix-cr__px .a {
+	fill: var(--cr-accent);
+}
+
+.avix-cr__tile--custom svg,
+.avix-cr__tile--custom i {
+	width: 24px;
+	height: 24px;
+	color: var(--cr-accent);
+	fill: currentColor;
+	font-size: 24px;
+}
+
+.avix-cr .avix-cr__perk-title {
+	margin: 0 0 10px;
+	padding: 0;
+	color: var(--cr-ink);
+	font-family: var(--cr-font-display);
+	font-size: clamp(19px, 1.75cqi, 23px);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.25;
+	text-transform: none;
+	text-wrap: balance;
+	overflow-wrap: break-word;
+	-webkit-hyphens: manual;
+	hyphens: manual;
+	hyphenate-limit-chars: 14 6 6;
+}
+
+.avix-cr .avix-cr__perk-text {
+	max-width: 60ch;
+	margin: 0;
+	padding: 0;
+	color: var(--cr-muted);
+	font-family: var(--cr-font-body);
+	font-size: clamp(15px, 1.3cqi, 16px);
+	font-weight: 400;
+	line-height: 1.7;
+	text-wrap: pretty;
+	overflow-wrap: break-word;
+}
+
+/* ---------- Open roles ---------- */
+
+.avix-cr__roles {
+	margin-top: clamp(32px, 4cqi, 48px);
+	padding-top: clamp(28px, 3.4cqi, 40px);
+	border-top: 1px solid var(--cr-line);
+}
+
+.avix-cr__perks:empty + .avix-cr__roles,
+.avix-cr__aside > .avix-cr__roles:first-child {
+	margin-top: 0;
+	padding-top: 0;
+	border-top: 0;
+}
+
+.avix-cr .avix-cr__roles-title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 16px;
+	padding: 0;
+	color: var(--cr-ink);
+	font-family: var(--cr-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	line-height: 1.3;
+	text-transform: uppercase;
+	overflow-wrap: anywhere;
+}
+
+.avix-cr__count {
+	display: inline-grid;
+	min-width: 22px;
+	height: 22px;
+	padding: 0 6px;
+	place-items: center;
+	border-radius: 999px;
+	/* An ink chip: small white-on-orange text would fall below AA. */
+	color: var(--cr-card);
+	background: var(--cr-ink);
+	font-size: 11.5px;
+	font-weight: 700;
+	letter-spacing: 0;
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-cr .avix-cr__role-list {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 10px;
+}
+
+.avix-cr .avix-cr__role {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	min-height: 68px;
+	padding: 14px 14px 14px 22px;
+	border: 1px solid var(--cr-tile-line);
+	border-radius: 18px;
+	color: var(--cr-ink);
+	background: var(--cr-tile);
+	text-decoration: none;
+	transition: transform 0.45s var(--cr-ease), border-color 0.3s ease, box-shadow 0.45s var(--cr-ease);
+}
+
+.avix-cr a.avix-cr__role:hover,
+.avix-cr a.avix-cr__role:focus {
+	color: var(--cr-ink);
+	text-decoration: none;
+}
+
+.avix-cr__role-main {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.avix-cr .avix-cr__role-name {
+	color: var(--cr-ink);
+	font-family: var(--cr-font-display);
+	font-size: 17px;
+	font-weight: 600;
+	letter-spacing: -0.015em;
+	line-height: 1.3;
+	overflow-wrap: anywhere;
+}
+
+.avix-cr .avix-cr__role-type {
+	color: var(--cr-muted);
+	font-size: 13.5px;
+	font-weight: 400;
+	line-height: 1.45;
+	/* Details without spaces ("Remote/Full-time/EU") wrap instead of widening the row. */
+	overflow-wrap: anywhere;
+}
+
+.avix-cr__role-go {
+	display: grid;
+	width: 40px;
+	height: 40px;
+	flex: none;
+	place-items: center;
+	border: 1px solid var(--cr-line);
+	border-radius: 50%;
+	color: var(--cr-ink);
+	transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.avix-cr__role-go svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.4s var(--cr-ease);
+}
+
+/* ---------- Scene: character + "We're hiring" sign on the card's top edge ---------- */
+
+/*
+ * The scene sits in normal flow right above the card, so a bigger character
+ * or a longer sign pushes the card down instead of rising over the section
+ * above. Its top padding holds the flag, the hop and the pixel "hi". The
+ * clip-path hides everything below the card's edge only, so the character
+ * can pop up out of the card on reveal.
+ */
+.avix-cr__scene {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	width: fit-content;
+	max-width: calc(100% - var(--cr-pad) * 2);
+	align-items: flex-end;
+	gap: calc(var(--cr-u) * 7);
+	margin-inline-start: var(--cr-pad);
+	padding-top: calc(var(--cr-pw) * 0.8);
+	-webkit-clip-path: inset(-100% -60% 0 -60%);
+	clip-path: inset(-100% -60% 0 -60%);
+}
+
+.avix-cr__scene > * {
+	transition: transform 0.75s var(--cr-ease);
+}
+
+.avix-cr .avix-cr__pal {
+	--pal-w: var(--cr-pw);
+	--pal-color: var(--cr-pal);
+	--pal-prop: var(--cr-sign-bg);
+}
+
+/* With a flag the cloth reaches past the box, so keep it clear of the sign. */
+.avix-cr__pal.has-prop-flag {
+	margin-right: calc(var(--cr-u) * 2);
+}
+
+/* The flag goes up and down with the hand that holds it: same timing as the arm in pixel-pal.css. */
+.avix-cr__pal.is-wave .avix-pal__prop {
+	animation: avix-cr-flag-wave 0.4s steps(1) 4;
+}
+
+.avix-cr__pal.is-hi .avix-pal__prop {
+	animation: avix-cr-flag-wave 0.36s steps(1) 4;
+}
+
+/* Saying hi with the flag up: the head stays centred so head, arm and pole don't merge. */
+.avix-cr .avix-cr__pal.has-prop-flag.is-hi .avix-pal__head {
+	animation: none;
+	transform: none;
+}
+
+.avix-cr__pal.is-jump .avix-pal__prop {
+	animation: none;
+	transform: translate(0, -2px);
+}
+
+.avix-cr__pal.is-cheer .avix-pal__prop {
+	animation: none;
+	transform: translate(0, -3px);
+}
+
+.avix-cr__sign {
+	display: flex;
+	min-width: 0;
+	min-height: calc(var(--cr-pw) * 1.2);
+	flex-direction: column;
+	align-items: center;
+	transform-origin: 50% 100%;
+}
+
+/* A long sign wraps onto two lines instead of running off a narrow card. */
+.avix-cr__board {
+	display: flex;
+	max-width: 100%;
+	align-items: center;
+	gap: calc(var(--cr-u) * 2);
+	min-height: calc(var(--cr-u) * 8);
+	padding: calc(var(--cr-u) * 1.4) calc(var(--cr-u) * 3.4) calc(var(--cr-u) * 1.4) calc(var(--cr-u) * 3);
+	color: var(--cr-sign-ink);
+	background: var(--cr-sign-bg);
+	/* A one-pixel ring keeps the board's silhouette on any section background. */
+	box-shadow: inset 0 0 0 var(--cr-u) color-mix(in srgb, var(--cr-sign-ink) 18%, transparent);
+	/* Stepped corners, one character pixel per step. */
+	-webkit-clip-path: polygon(var(--cr-u) 0, calc(100% - var(--cr-u)) 0, calc(100% - var(--cr-u)) var(--cr-u), 100% var(--cr-u), 100% calc(100% - var(--cr-u)), calc(100% - var(--cr-u)) calc(100% - var(--cr-u)), calc(100% - var(--cr-u)) 100%, var(--cr-u) 100%, var(--cr-u) calc(100% - var(--cr-u)), 0 calc(100% - var(--cr-u)), 0 var(--cr-u), var(--cr-u) var(--cr-u));
+	clip-path: polygon(var(--cr-u) 0, calc(100% - var(--cr-u)) 0, calc(100% - var(--cr-u)) var(--cr-u), 100% var(--cr-u), 100% calc(100% - var(--cr-u)), calc(100% - var(--cr-u)) calc(100% - var(--cr-u)), calc(100% - var(--cr-u)) 100%, var(--cr-u) 100%, var(--cr-u) calc(100% - var(--cr-u)), 0 calc(100% - var(--cr-u)), 0 var(--cr-u), var(--cr-u) var(--cr-u));
+}
+
+.avix-cr__blink {
+	width: calc(var(--cr-u) * 1.4);
+	height: calc(var(--cr-u) * 1.4);
+	flex: none;
+	background: var(--cr-accent);
+	animation: avix-cr-blink 1.6s steps(1) infinite;
+}
+
+.avix-cr .avix-cr__sign-text {
+	font-family: var(--cr-font-display);
+	min-width: 0;
+	font-size: clamp(11px, calc(var(--cr-pw) * 0.28), 18px);
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	line-height: 1.2;
+	text-transform: uppercase;
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+}
+
+/* Two pixel posts plant the sign on the card. */
+.avix-cr__posts {
+	position: relative;
+	width: 56%;
+	min-height: calc(var(--cr-u) * 3);
+	flex: 1 1 auto;
+}
+
+.avix-cr__posts::before,
+.avix-cr__posts::after {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: var(--cr-u);
+	background: var(--cr-sign-bg);
+	content: "";
+}
+
+.avix-cr__posts::before {
+	left: 0;
+}
+
+.avix-cr__posts::after {
+	right: 0;
+}
+
+.avix-cr__scene.is-bump .avix-cr__sign {
+	animation: avix-cr-sign-bump 0.6s steps(1, end);
+}
+
+/* ---------- Interaction ---------- */
+
+@media (hover: hover) {
+	.avix-cr a.avix-cr__btn:hover {
+		box-shadow: 0 18px 38px -12px color-mix(in srgb, var(--cr-accent) 80%, transparent);
+		transform: translateY(-3px);
+	}
+
+	.avix-cr a.avix-cr__btn:hover::before {
+		transform: translateX(0);
+	}
+
+	.avix-cr--dark a.avix-cr__btn:hover,
+	.avix-cr--dark a.avix-cr__btn:hover:focus {
+		color: #111111;
+	}
+
+	.avix-cr a.avix-cr__btn:hover .avix-cr__btn-icon {
+		background: var(--cr-accent);
+		color: var(--cr-btn-ink);
+		transform: scale(1.05);
+	}
+
+	.avix-cr a.avix-cr__btn:hover .avix-cr__btn-icon svg {
+		transform: translate(2px, -2px);
+	}
+
+	.avix-cr .avix-cr__mail:hover {
+		color: var(--cr-accent-text);
+		text-decoration-thickness: 2px;
+	}
+
+	/* A straight lift: rotating would blur the pixel icon. */
+	.avix-cr .avix-cr__perk:hover .avix-cr__tile {
+		border-color: color-mix(in srgb, var(--cr-accent) 40%, transparent);
+		transform: translateY(-3px);
+	}
+
+	.avix-cr a.avix-cr__role:hover {
+		border-color: color-mix(in srgb, var(--cr-accent) 40%, transparent);
+		box-shadow: 0 18px 36px -24px rgba(26, 26, 26, 0.35);
+		transform: translateY(-2px);
+	}
+
+	.avix-cr a.avix-cr__role:hover .avix-cr__role-go {
+		border-color: var(--cr-accent);
+		color: var(--cr-btn-ink);
+		background: var(--cr-accent);
+	}
+
+	.avix-cr a.avix-cr__role:hover .avix-cr__role-go svg {
+		transform: translateX(3px);
+	}
+}
+
+.avix-cr .avix-cr__btn:focus-visible,
+.avix-cr .avix-cr__mail:focus-visible,
+.avix-cr a.avix-cr__role:focus-visible {
+	outline: 2px solid var(--cr-accent);
+	outline-offset: 4px;
+}
+
+.avix-cr .avix-cr__mail:focus-visible {
+	outline-offset: 2px;
+}
+
+/* A little room before the email, so its focus ring clears the prefix. */
+.avix-cr .avix-cr__contact-pre {
+	margin-right: 0.15em;
+}
+
+.avix-cr a.avix-cr__role:focus-visible .avix-cr__role-go {
+	border-color: var(--cr-accent);
+	color: var(--cr-btn-ink);
+	background: var(--cr-accent);
+}
+
+/* ---------- Reveal (only when JS arms it) ---------- */
+
+.avix-cr.is-armed .avix-cr__rise {
+	opacity: 0;
+	transform: translateY(26px);
+	transition: opacity 0.7s ease, transform 0.8s var(--cr-ease);
+	transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+.avix-cr.is-armed.is-in .avix-cr__rise {
+	opacity: 1;
+	transform: none;
+}
+
+/* The character and the sign pop up out of the card's edge. */
+.avix-cr.is-armed .avix-cr__scene > * {
+	transform: translateY(115%);
+}
+
+/* The flag reaches half a character above its box: hide it too, so no pole peeks out early. */
+.avix-cr.is-armed .avix-cr__scene > .avix-cr__pal {
+	transform: translateY(calc(115% + var(--cr-pw) * 0.6));
+}
+
+.avix-cr.is-armed .avix-cr__scene > .avix-cr__sign {
+	transition-delay: 120ms;
+}
+
+.avix-cr.is-armed.is-in .avix-cr__scene > * {
+	transform: none;
+	transition-delay: 450ms;
+}
+
+.avix-cr.is-armed.is-in .avix-cr__scene > .avix-cr__sign {
+	transition-delay: 330ms;
+}
+
+/* Pixel icons build themselves from the bottom row up. */
+.avix-cr.is-armed .avix-cr__px rect {
+	opacity: 0;
+	transform: scale(0.2);
+	transition: opacity 0.2s steps(2, end), transform 0.3s steps(3, end);
+	transition-delay: calc(var(--i, 0) * 90ms + 350ms + var(--d, 0) * 28ms);
+}
+
+.avix-cr.is-armed.is-in .avix-cr__px rect {
+	opacity: 1;
+	transform: none;
+}
+
+/* Nothing loops while the card is off screen or the tab is hidden. */
+.avix-cr.is-off .avix-pal,
+.avix-cr.is-off .avix-pal *,
+.avix-cr.is-off .avix-cr__blink {
+	animation-play-state: paused !important;
+}
+
+/* No entrance replays while editing in Elementor, and no sticky column. */
+.elementor-editor-active .avix-cr__scene > *,
+.avix-cr.is-editor .avix-cr__scene > * {
+	transform: none;
+	transition: none;
+}
+
+.elementor-editor-active .avix-cr .avix-cr__main {
+	position: relative;
+	top: auto;
+}
+
+@keyframes avix-cr-blink {
+	0% { opacity: 1; }
+	50% { opacity: 0.15; }
+}
+
+@keyframes avix-cr-flag-wave {
+	0% { transform: translate(0, -3px); }
+	50% { transform: translate(0, -2px); }
+}
+
+/* One-pixel hops, no rotation: the stepped board stays crisp. */
+@keyframes avix-cr-sign-bump {
+	0% { transform: translateY(calc(var(--cr-u) * -1)); }
+	34% { transform: translateY(0); }
+	67% { transform: translateY(calc(var(--cr-u) * -1)); }
+	100% { transform: translateY(0); }
+}
+
+/* ---------- Layout by widget width ---------- */
+
+/*
+ * Two columns: the pitch stays beside long perk and role lists. Only on
+ * screens tall enough to show the whole column (the root clips with
+ * overflow-x: clip, which keeps sticky working).
+ */
+@container avix-cr (min-width: 901px) {
+	@media (min-height: 760px) {
+		.avix-cr .avix-cr__main {
+			position: sticky;
+			top: calc(var(--avix-header-h, 96px) + 32px);
+			align-self: start;
+		}
+	}
+}
+
+@container avix-cr (max-width: 1100px) {
+	.avix-cr__grid {
+		grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+	}
+}
+
+@container avix-cr (max-width: 900px) {
+	.avix-cr__grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: clamp(44px, 7cqi, 56px);
+	}
+
+	.avix-cr .avix-cr__title {
+		max-width: 16ch;
+	}
+
+	.avix-cr .avix-cr__text {
+		max-width: 52ch;
+	}
+
+	.avix-cr__actions {
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 16px 28px;
+		margin-top: 0;
+		padding-top: 32px;
+	}
+
+	.avix-cr__aside {
+		padding-top: clamp(36px, 6cqi, 48px);
+		border-top: 1px solid var(--cr-line);
+	}
+
+	/* Perks and roles alone: no divider above them. */
+	.avix-cr--solo .avix-cr__aside {
+		padding-top: 0;
+		border-top: 0;
+	}
+}
+
+@container avix-cr (max-width: 640px) {
+	.avix-cr__frame {
+		--cr-gutter: 16px;
+		--cr-pad: 24px;
+		--cr-radius-auto: 24px;
+	}
+
+	.avix-cr__deco::before {
+		top: -240px;
+		right: -220px;
+		width: 460px;
+		height: 460px;
+	}
+
+	.avix-cr .avix-cr__eyebrow {
+		margin-bottom: 18px;
+	}
+
+	.avix-cr .avix-cr__title {
+		font-size: clamp(30px, 9.4cqi, 36px);
+	}
+
+	.avix-cr .avix-cr__text {
+		margin-top: 18px;
+	}
+
+	.avix-cr__actions {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 18px;
+		padding-top: 28px;
+	}
+
+	.avix-cr .avix-cr__perk {
+		grid-template-columns: 48px minmax(0, 1fr);
+		gap: 18px;
+	}
+
+	.avix-cr__tile {
+		width: 48px;
+		height: 48px;
+		border-radius: 14px;
+	}
+
+	.avix-cr__perk-body {
+		padding-top: 0;
+	}
+
+	.avix-cr .avix-cr__perk-title {
+		margin-bottom: 8px;
+	}
+}
+
+@container avix-cr (max-width: 420px) {
+	.avix-cr__frame {
+		--cr-pad: 20px;
+	}
+
+	/* Icon beside the title, text across the full width: a compact list, not stacked blocks. */
+	.avix-cr .avix-cr__perk {
+		grid-template-columns: 40px minmax(0, 1fr);
+		align-items: center;
+		gap: 0 14px;
+	}
+
+	.avix-cr .avix-cr__perk.is-plain {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-cr__perk-body,
+	.avix-cr__perk-body:first-child {
+		display: contents;
+	}
+
+	.avix-cr__tile {
+		width: 40px;
+		height: 40px;
+		border-radius: 12px;
+	}
+
+	.avix-cr .avix-cr__perk-title {
+		margin: 0;
+	}
+
+	.avix-cr .avix-cr__perk-text {
+		grid-column: 1 / -1;
+		margin-top: 12px;
+	}
+
+	/* Text without a title sits beside the icon (or alone in a plain perk). */
+	.avix-cr .avix-cr__perk-text:first-child {
+		grid-column: auto;
+		margin-top: 0;
+	}
+
+	.avix-cr__actions,
+	.avix-cr .avix-cr__btn {
+		align-self: stretch;
+	}
+
+	.avix-cr .avix-cr__btn {
+		justify-content: space-between;
+	}
+
+	.avix-cr .avix-cr__role {
+		padding-left: 18px;
+	}
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-cr *,
+	.avix-cr *::before,
+	.avix-cr *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-cr.is-armed .avix-cr__rise,
+	.avix-cr.is-armed .avix-cr__px rect {
+		opacity: 1;
+		transform: none;
+	}
+
+	.avix-cr.is-armed .avix-cr__scene > *,
+	.avix-cr.is-armed .avix-cr__scene > .avix-cr__pal {
+		transform: none;
+	}
+
+	.avix-cr__blink {
+		opacity: 1;
+	}
+}

@@ -555,6 +555,38 @@
 	margin: 0;
 }
 
+/* Optional "Read on Fiverr" link to where the review is published. */
+.avix-rv .avix-rv-card__read {
+	margin: 16px 0 0;
+	padding: 0;
+	font-family: var(--rv-font-body);
+	font-size: 13.5px;
+	line-height: 1.4;
+}
+
+.avix-rv .avix-rv-card__read-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	color: var(--rv-muted);
+	font-weight: 600;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--rv-muted) 35%, transparent);
+	text-underline-offset: 3px;
+	transition: color 220ms ease, text-decoration-color 220ms ease;
+}
+
+.avix-rv .avix-rv-card__read-link:hover {
+	color: var(--rv-accent-text);
+	text-decoration-color: currentColor;
+}
+
+.avix-rv .avix-rv-card__read-link:focus-visible {
+	border-radius: 4px;
+	outline: 2px solid var(--rv-accent);
+	outline-offset: 3px;
+}
+
 .avix-rv-card__foot {
 	display: flex;
 	flex-wrap: wrap;
@@ -902,6 +934,7 @@
 			"visual top"
 			"rule rule"
 			"quote quote"
+			"read read"
 			"foot foot";
 		gap: 0 16px;
 		padding: 20px 20px 22px;
@@ -970,6 +1003,12 @@
 
 	.avix-rv .avix-rv-card__quote {
 		grid-area: quote;
+	}
+
+	/* An empty "read" row has no height, so cards without the link are unchanged. */
+	.avix-rv .avix-rv-card__read {
+		grid-area: read;
+		margin-top: 14px;
 	}
 
 	.avix-rv-card__foot {

@@ -1,0 +1,417 @@
+{
+	"slug": "products-for-home",
+	"spec": "SPEC-CASE-STUDIES §7 + addendum A2/A5; written 8 Oct 2026 from the products-for-home capture pack (capture/research-*.json)",
+	"post": {
+		"title": "Products for Home: A One-of-a-Kind Store and a WooCommerce Checkout Funnel Built to Sell",
+		"excerpt": "A one-of-a-kind Bricks store for a Dutch shop selling Greek honey, olive oil and Gia Giamas drinks, built around a WooCommerce checkout funnel with a side cart and order bumps.",
+		"menu_order": 5,
+		"featured": [
+			"@media:avix-cs-products-for-home-render-hero.webp",
+			"@media:avix-cs-products-for-home-hero-desktop.webp"
+		]
+	},
+	"terms": {
+		"service": [
+			"wordpress",
+			"uiux-brand-design",
+			"web-development"
+		],
+		"industry": [
+			"Food & natural products"
+		]
+	},
+	"yoast": {
+		"focuskw": "WooCommerce checkout funnel",
+		"title": "WooCommerce Checkout Funnel Case Study | AvixDigital",
+		"metadesc": "WooCommerce checkout funnel case study: a one-of-a-kind Bricks store for Products for Home, with a side cart, order bumps and free-delivery thresholds.",
+		"bctitle": "Products for Home",
+		"og_image": "@media:avix-cs-products-for-home-og.jpg"
+	},
+	"meta": {
+		"client": "Products for Home",
+		"display_title": "Products for Home: A WooCommerce Store With a [Checkout Funnel]",
+		"summary": "A one-of-a-kind Bricks store for Greek honey, olive oil and drinks, with a checkout funnel designed to grow every basket.",
+		"logo": "@media:avix-cs-products-for-home-logo-white.png",
+		"hero_desktop": "@media:avix-cs-products-for-home-hero-desktop.webp",
+		"hero_mobile": "@media:avix-cs-products-for-home-hero-mobile.webp",
+		"hero_render": "@media:avix-cs-products-for-home-render-hero.webp",
+		"accent": "#6F8566",
+		"year": "2026",
+		"services": "UI/UX & Brand Design, WordPress, WooCommerce, Web Development, Checkout Funnels",
+		"platform": "WooCommerce",
+		"role": "Design & build",
+		"market": "Netherlands & Belgium",
+		"live_url": "https://productsforhome.nl/",
+		"live_label": "productsforhome.nl",
+		"card_tags": "WooCommerce, Bricks, Checkout funnel",
+		"card_label": "Designed for",
+		"card_value": "Bigger baskets",
+		"challenge_heading": "The challenge: turn single jars into full baskets",
+		"challenge_statement": "A single jar of honey rarely pays for its own delivery. The store had to [turn single items into full baskets], and look as special as the products it sells.",
+		"challenge_body": [
+			"Products for Home is a Dutch web shop for Mediterranean specialities. It sells raw Greek honey from Samos, extra virgin olive oil and Gia Giamas traditional fruit refreshments. Beeswax candles and natural care complete the range. Orders placed before 15:00 leave the same working day, for customers across the Netherlands and Belgium.",
+			"The numbers behind it are those of every delicatessen online. Jars and bottles cost from a few euros each. Free delivery, however, begins at €60 in the Netherlands and €70 in Belgium. So a store like this lives on order value. Every visit has to end in a fuller basket rather than a single jar. At the same time, every extra click between wanting something and paying for it puts a sale at risk.",
+			"The store also had to look the part. These are sun-ripened, hand-picked products with a story on every label. Yet too many WordPress shops dress products like these in the same stock theme as everyone else. Products for Home needed the polish of a bespoke brand site. Behind the scenes, it had to run on WooCommerce, so the team could keep full control of products, prices and orders."
+		],
+		"constraints": "One-of-a-kind design, Low-ticket products, Two free-shipping thresholds, Local payment methods, Full control in WooCommerce",
+		"approach_intro": "We skipped the off-the-shelf theme and built the storefront from our own library of custom Bricks elements. Then we designed the journey as one funnel, from the first product card to the last tick box before payment.",
+		"approach_body": [
+			"Every section a shopper sees is a custom Bricks element we wrote for this store. That covers the header and hero, the product cards and product template, the reviews and the footer. One <a href=\"/service/uiux-and-brand-design/\">brand and UI system</a> runs through all of them. Headlines use Playfair Display with one word in italics, while Outfit sets the interface. The palette sticks to sage, teal and deep petrol. We also built the elements to stay light. Each one ships its own small stylesheet and script, and LiteSpeed and FlyingPress serve the pages from cache.",
+			"Next, we mapped the funnel one step at a time and gave each step a job. Product cards sell straight from the grid. The product page answers price, payment and delivery questions at the button. The side cart shows how close the order is to free delivery and what goes well with it. And the FunnelKit checkout keeps one last, well-chosen offer between the shopper and the place-order button."
+		],
+		"implementations": [
+			"Bespoke Bricks element library: Designed and coded the storefront as our own Bricks elements, not a bought theme. It covers the header with its image mega menu and the hero slider with its scrolling text band. Category cards, bento sections, product cards, the product template, reviews and the footer complete the set. All of them share one brand system.",
+			"Conversion-led product experience: Built product cards with quick add, a wishlist and volume-discount badges. Our product template then puts tiered pricing right beside the add-to-cart button. Payment methods, same-day dispatch, the free-shipping thresholds and loyalty points sit there too.",
+			"Re-skinned side cart: Restyled FunnelKit's slide-out cart to match the store and added our own free-shipping progress bar. It tracks the Dutch and Belgian thresholds separately. Beside the basket, an often-bought-together column offers one-click add-ons.",
+			"WooCommerce checkout funnel with order bumps: Set up a branded one-page FunnelKit checkout with three delivery options and five local payment methods, including bol.checkout. An order bump waits at the payment step, and one-click add-ons sit beside the basket. A live review slider sits next to the total."
+		],
+		"solution_body": [
+			"The result is a bespoke <a href=\"/service/wordpress-development/\">WooCommerce store on WordPress</a>, built around the basket rather than the single jar. Today, the live homepage opens on a three-slide hero for Gia Giamas, Greek honey and Greek olive oil. Floating product photography sits above a teal band of copy that never stops moving. Hovering Honing or Olijfolie opens a panel of image tiles, one per product family. Product cards then show their volume discount, a wishlist heart and a second lifestyle photo on hover. Their basket button adds the product without leaving the page.",
+			"From there, the WooCommerce checkout funnel keeps building the basket. On a product page, a staffelkorting table takes an olive oil bottle from €16.62 to €14.96 at three or more. It sits right above the add-to-cart button, with payment methods, same-day dispatch and the order's loyalty points underneath. Next, the side cart counts towards free delivery and suggests what shoppers often buy together. At the one-page checkout, shoppers choose home delivery, a DHL ServicePoint or collection in Alphen aan den Rijn. They can then pay in five ways. Just before the terms, a \"Speciale aanbieding\" offers a 750 ml olive oil for €15.75 instead of €17.50. One tick adds it. After the order, WPLoyalty points give shoppers a reason to return: one per euro, ten more per product review."
+		],
+		"outcome_statement": "A storefront nobody mistakes for a WordPress theme, with a funnel that [sells at every step].",
+		"outcome_body": [
+			"Every step of the journey now has a selling job. It starts with the badge on a product card and ends with the tick box before payment. At each stage, shoppers see the saving for buying more, the distance to free delivery and a well-matched extra. In the end, the shop made 40%+ more sales from its <a href=\"/service/wordpress-development/\">WooCommerce</a> checkout funnel (AvixDigital project data, reported by the agency, 2026).",
+			"The storefront keeps moving too. It runs on our own element library rather than a bought theme. As a result, new sections, products and offers go live on the same foundation. Meanwhile, we keep shipping improvements as an ongoing project with the Products for Home team."
+		],
+		"outcome_pillars": [
+			"A one-of-a-kind brand storefront",
+			"A bigger basket at every step",
+			"A foundation that keeps shipping"
+		],
+		"proof": [
+			"Open the honey mega menu | https://productsforhome.nl/",
+			"See tiered pricing on the 750 ml olive oil | https://productsforhome.nl/griekse-extra-vierge-olijfolie-750-ml/",
+			"Shop the Gia Giamas range with quick add | https://productsforhome.nl/gia-giamas-lemonade/"
+		],
+		"metric_1_value": "42",
+		"metric_1_label": "Custom Bricks elements we built for the store",
+		"metric_1_source": "AvixDigital project record (pfh-bricks-widgets plugin source), 8 Oct 2026",
+		"metric_2_value": "4",
+		"metric_2_label": "Add-on offers inside the checkout: one order bump and three one-click extras",
+		"metric_2_source": "observed on productsforhome.nl/checkouts/checkout/, 8 Oct 2026",
+		"metric_3_value": "5",
+		"metric_3_label": "Payment methods at checkout, from iDEAL to bol.checkout",
+		"metric_3_source": "observed on productsforhome.nl/checkouts/checkout/ (iDEAL/Wero, PayPal, Bancontact, Klarna, bol.checkout), 8 Oct 2026",
+		"metric_4_value": "40%+",
+		"metric_4_label": "More sales from the WooCommerce checkout funnel",
+		"metric_4_source": "AvixDigital project data, reported by the agency, 2026",
+		"stack": [
+			"WordPress & WooCommerce: catalogue, orders and payments",
+			"Bricks Builder: the visual foundation for every template",
+			"Custom Bricks elements (pfh-bricks-widgets): the whole storefront, side-cart skin, free-shipping bar and checkout reviews",
+			"FunnelKit Funnel Builder Pro: one-page checkout and order bumps | observed",
+			"FunnelKit Cart: slide-out side cart and add-ons | observed",
+			"Woo Discount Rules: volume and tiered pricing | observed",
+			"WPLoyalty: loyalty points and rewards | observed",
+			"bol.checkout gateway: checkout through bol | observed",
+			"WebwinkelKeur: reviews and trust score | observed",
+			"LiteSpeed & FlyingPress: page caching | observed"
+		],
+		"header": "dark"
+	},
+	"layout": {
+		"hero": {
+			"eyebrow": "Case study · WooCommerce"
+		},
+		"features": {
+			"title": "Six details of a checkout funnel that [sells every day]"
+		},
+		"spotlights": [
+			{
+				"tag": "Design",
+				"title": "A storefront that looks [nothing like] a WordPress theme",
+				"problem": "Shoppers buy Greek honey, olive oil and sun-ripened fruit drinks with their eyes first. In a stock theme, those products look like everything else on WordPress.",
+				"built": "We built the storefront from our own Bricks elements, not a theme. The hero rotates through Gia Giamas, Greek honey and Greek olive oil. Each slide brings its own floating product photography, with lemon and olive-branch cut-outs and progress dots around it. Beneath it all, a teal band keeps scrolling: \"HEERLIJK VERFRISSEND • GEÏNSPIREERD DOOR GRIEKENLAND\".",
+				"attribution": "built",
+				"source_link": "https://productsforhome.nl/",
+				"image": "@media:avix-cs-products-for-home-feature-hero-band.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 28.5,
+						"y": 52.3,
+						"label": "Playfair headline with italic accent"
+					},
+					{
+						"x": 69.6,
+						"y": 54.1,
+						"label": "Floating product renders per slide"
+					},
+					{
+						"x": 30,
+						"y": 97.4,
+						"label": "Scrolling text band"
+					},
+					{
+						"x": 96,
+						"y": 56.2,
+						"label": "Auto-play slides with progress dots"
+					},
+					{
+						"x": 19.5,
+						"y": 71.6,
+						"label": "Two clear calls to action"
+					}
+				]
+			},
+			{
+				"tag": "Product cards",
+				"title": "Buy from the grid with [one tap]",
+				"problem": "Every page between interest and the cart costs sales. Worse still, a volume discount that nobody sees until checkout never changes what goes in the basket.",
+				"built": "Our product cards carry a STAPELKORTING badge wherever a volume discount applies. Each card also shows a wishlist heart, the star rating and the was and now price including VAT. On hover, a lifestyle photo swaps in and a round basket button appears. That button adds the product to the cart without leaving the page.",
+				"attribution": "built",
+				"source_link": "https://productsforhome.nl/",
+				"image": "@media:avix-cs-products-for-home-feature-product-cards.webp",
+				"device": "browser",
+				"mat": "paper",
+				"hotspots": [
+					{
+						"x": 33.7,
+						"y": 36,
+						"label": "STAPELKORTING badge"
+					},
+					{
+						"x": 46.8,
+						"y": 36,
+						"label": "Wishlist heart"
+					},
+					{
+						"x": 46,
+						"y": 69,
+						"label": "Quick add on hover"
+					},
+					{
+						"x": 33.9,
+						"y": 53.2,
+						"label": "Lifestyle photo swaps in on hover"
+					},
+					{
+						"x": 39.8,
+						"y": 91.4,
+						"label": "Was and now price incl. VAT"
+					}
+				]
+			},
+			{
+				"tag": "Product page",
+				"title": "A buy box that [answers every doubt]",
+				"problem": "At the button, shoppers still have the same questions. Is it good? Is two cheaper than one? How do I pay, and when will it arrive?",
+				"built": "Our product template answers them in one column. The WebwinkelKeur score sits under the title. Next, a staffelkorting table takes a bottle from €16.62 to €14.96 at three or more. Then come the stepper and the add-to-cart button. Below them sit the payment methods, same-day dispatch before 15:00 and free delivery from €60 (NL) or €70 (BE). Finally, the column closes with the loyalty points this order earns.",
+				"attribution": "built",
+				"source_link": "https://productsforhome.nl/griekse-extra-vierge-olijfolie-750-ml/",
+				"image": "@media:avix-cs-products-for-home-feature-product-page.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 73.8,
+						"y": 53.4,
+						"label": "Tiered volume discount"
+					},
+					{
+						"x": 56.1,
+						"y": 16.8,
+						"label": "WebwinkelKeur score under the title"
+					},
+					{
+						"x": 80,
+						"y": 66.3,
+						"label": "Add to cart with quantity"
+					},
+					{
+						"x": 73.8,
+						"y": 79.6,
+						"label": "Payment and delivery promises"
+					},
+					{
+						"x": 56.6,
+						"y": 90.8,
+						"label": "Loyalty points per purchase"
+					}
+				]
+			},
+			{
+				"tag": "Side cart",
+				"title": "A side cart that [grows the basket]",
+				"problem": "A plain cart page is a dead end. It lists what's there but hides how close the order is to free delivery. It also offers nothing to go with it.",
+				"built": "We re-skinned FunnelKit's slide-out cart to the brand. Then we added our own free-shipping progress bar, which knows the separate Dutch (€60) and Belgian (€70) thresholds. Beside the basket, a \"Vaak samen gekocht\" (often bought together) column offers matching products with one-click Toevoegen buttons. Meanwhile, the coupon field stays folded away.",
+				"attribution": "built",
+				"source_link": "https://productsforhome.nl/",
+				"image": "@media:avix-cs-products-for-home-feature-cart-drawer.webp",
+				"device": "plain",
+				"mat": "paper",
+				"visual_max": 460,
+				"hotspots": [
+					{
+						"x": 67.7,
+						"y": 13.5,
+						"label": "Free-shipping progress bar"
+					},
+					{
+						"x": 20.2,
+						"y": 34.3,
+						"label": "\"Vaak samen gekocht\" upsells"
+					},
+					{
+						"x": 56.9,
+						"y": 74.5,
+						"label": "Coupon field tucked away"
+					},
+					{
+						"x": 68.2,
+						"y": 89.2,
+						"label": "Straight to checkout"
+					}
+				]
+			},
+			{
+				"tag": "Checkout funnel",
+				"title": "A checkout with a [last-second offer]",
+				"problem": "WooCommerce's default checkout is long and generic. It also closes the door on selling more at the very moment a shopper is most ready to buy.",
+				"built": "We set up a branded one-page FunnelKit checkout with no menu to wander off to. It offers five ways to pay, from iDEAL | Wero to Klarna and bol.checkout. Below the payment options waits a \"Speciale aanbieding\" order bump. One tick adds a 750 ml olive oil for €15.75 instead of €17.50. Three more one-click add-ons sit beside the basket. Next to the total sit a trust column and a live review slider.",
+				"attribution": "built",
+				"source_link": "https://productsforhome.nl/",
+				"image": "@media:avix-cs-products-for-home-feature-order-bump.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 16.7,
+						"y": 27.2,
+						"label": "Five local payment methods"
+					},
+					{
+						"x": 20.9,
+						"y": 38.7,
+						"label": "Pay through bol.checkout"
+					},
+					{
+						"x": 6.4,
+						"y": 50.6,
+						"label": "One-tick order bump"
+					},
+					{
+						"x": 70.5,
+						"y": 34.9,
+						"label": "Trust block next to the total"
+					},
+					{
+						"x": 25.6,
+						"y": 90.5,
+						"label": "Single place-order button"
+					}
+				],
+				"image_alt": "Products for Home WooCommerce checkout funnel: five payment methods, an olive oil order bump and a trust block beside the total"
+			},
+			{
+				"tag": "Mobile",
+				"title": "Built for the [thumb] first",
+				"problem": "On a phone, image mega menus and wide product pages fall apart. A long list of honey types also turns into a guessing game.",
+				"built": "On phones, the menu slides in from the left with each product family as an accordion. Opening Honing shows \"Alle honing\" and a thumbnail for every type, so shoppers see the jar before they tap. The hero, buy box and side cart each get their own phone layout, with full-width buttons sized for a thumb.",
+				"attribution": "built",
+				"source_link": "https://productsforhome.nl/",
+				"image": "@media:avix-cs-products-for-home-feature-mobile-menu.webp",
+				"device": "phone",
+				"mat": "paper",
+				"hotspots": [
+					{
+						"x": 28,
+						"y": 20.6,
+						"label": "Accordion product families"
+					},
+					{
+						"x": 12.3,
+						"y": 31.6,
+						"label": "Thumbnail per sub-category"
+					},
+					{
+						"x": 78,
+						"y": 4.7,
+						"label": "Large close target"
+					}
+				]
+			}
+		],
+		"gallery": {
+			"layout": "mosaic",
+			"mat": "paper",
+			"items": [
+				{
+					"image": "@media:avix-cs-products-for-home-render-feature.webp",
+					"device": "render",
+					"caption": "Homepage story grid on a laptop"
+				},
+				{
+					"image": "@media:avix-cs-products-for-home-render-mobile.webp",
+					"device": "render",
+					"caption": "Mobile shopping journey"
+				},
+				{
+					"image": "@media:avix-cs-products-for-home-hero-mobile.webp",
+					"device": "phone",
+					"caption": "Homepage hero on mobile"
+				},
+				{
+					"image": "@media:avix-cs-products-for-home-gallery-mobile-product.webp",
+					"device": "phone",
+					"caption": "Product page on mobile"
+				},
+				{
+					"image": "@media:avix-cs-products-for-home-feature-mobile-product.webp",
+					"device": "phone",
+					"caption": "Tiered prices on mobile"
+				},
+				{
+					"image": "@media:avix-cs-products-for-home-feature-mobile-cart.webp",
+					"device": "phone",
+					"caption": "Side cart on mobile"
+				},
+				{
+					"image": "@media:avix-cs-products-for-home-feature-checkout.webp",
+					"device": "browser",
+					"caption": "The full one-page checkout"
+				},
+				{
+					"image": "@media:avix-cs-products-for-home-gallery-cta-footer.webp",
+					"device": "browser",
+					"caption": "Closing banner and footer"
+				},
+				{
+					"image": "@media:avix-cs-products-for-home-feature-mega-menu.webp",
+					"device": "browser",
+					"caption": "Honey mega menu with image tiles"
+				},
+				{
+					"image": "@media:avix-cs-products-for-home-gallery-categories.webp",
+					"device": "browser",
+					"caption": "Category cards"
+				}
+			]
+		}
+	},
+	"alt": {
+		"avix-cs-products-for-home-hero-desktop.webp": "Products for Home homepage on desktop with the Gia Giamas hero slide and the product family navigation",
+		"avix-cs-products-for-home-hero-mobile.webp": "Products for Home homepage on a phone",
+		"avix-cs-products-for-home-feature-hero-band.webp": "Products for Home honey hero slide with a Playfair headline, floating honey jars and a scrolling teal text band",
+		"avix-cs-products-for-home-feature-product-cards.webp": "Products for Home olive oil cards with STAPELKORTING badges, wishlist hearts and a quick-add basket button",
+		"avix-cs-products-for-home-feature-product-page.webp": "Products for Home olive oil product page with a tiered discount table, add-to-cart button and delivery promises",
+		"avix-cs-products-for-home-feature-cart-drawer.webp": "Products for Home slide-out cart with a free-shipping bar and a Vaak samen gekocht column of add-ons",
+		"avix-cs-products-for-home-feature-order-bump.webp": "Products for Home WooCommerce checkout funnel: five payment methods, an olive oil order bump and a trust block beside the total",
+		"avix-cs-products-for-home-feature-mobile-menu.webp": "Products for Home mobile menu with the honey family open and a thumbnail for each honey type",
+		"avix-cs-products-for-home-feature-mega-menu.webp": "Products for Home Honing mega menu with an image tile for each honey type and a bundle",
+		"avix-cs-products-for-home-feature-mobile-product.webp": "Products for Home product page on a phone with tiered prices and a full-width add-to-cart button",
+		"avix-cs-products-for-home-feature-mobile-cart.webp": "Products for Home side cart on a phone with the free-shipping bar and the checkout button",
+		"avix-cs-products-for-home-feature-checkout.webp": "Products for Home one-page checkout with delivery options, payment methods, an order bump and the order summary",
+		"avix-cs-products-for-home-gallery-mobile-product.webp": "Products for Home olive oil product page on a phone",
+		"avix-cs-products-for-home-gallery-bento.webp": "Products for Home bento section with brand story cards and product photography",
+		"avix-cs-products-for-home-gallery-categories.webp": "Products for Home category cards for Gia Giamas, olive oil, honey and natural care",
+		"avix-cs-products-for-home-gallery-cta-footer.webp": "Products for Home closing banner above a green footer with category links and a newsletter sign-up",
+		"avix-cs-products-for-home-logo-white.png": "Products for Home logo",
+		"avix-cs-products-for-home-og.jpg": "Products for Home case study by AvixDigital, with the productsforhome.nl homepage on a laptop and a phone",
+		"avix-cs-products-for-home-render-hero.webp": "Products for Home store on a laptop and a phone",
+		"avix-cs-products-for-home-render-feature.webp": "Products for Home homepage story grid of brand statements and product photos on a laptop",
+		"avix-cs-products-for-home-render-mobile.webp": "Products for Home mobile menu, product buy box and slide-out cart on three phones"
+	}
+}

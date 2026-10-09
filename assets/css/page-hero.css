@@ -1,0 +1,2218 @@
+/*!
+ * Avix Digital · Page Hero
+ * The top of an inner page: a rounded stage (warm white with a faint pixel
+ * grid, or dark) holding the headline, buttons and proof on the left and an
+ * orbit of platform chips around the Avix hub on the right, where the pixel
+ * character stands. Layout follows the widget width (container queries).
+ */
+
+/* Metric-matched stand-ins while Inter and Space Grotesk load (font-display: swap):
+   Arial (Liberation Sans, Arimo and Helvetica share its widths) and Roboto
+   (Android), scaled to the web fonts' widths and line metrics, so the swap
+   does not re-wrap the headline or the lead and move the buttons (CLS).
+   Never used once the fonts have loaded. */
+@font-face {
+	font-family: "Avix PH Text Fallback";
+	src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("LiberationSans"), local("Arimo"), local("Helvetica");
+	font-weight: 100 349;
+	size-adjust: 105.1%;
+	ascent-override: 92.2%;
+	descent-override: 22.9%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Text Fallback";
+	src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("LiberationSans"), local("Arimo"), local("Helvetica");
+	font-weight: 350 500;
+	size-adjust: 107%;
+	ascent-override: 90.6%;
+	descent-override: 22.5%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Text Fallback";
+	src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("LiberationSans-Bold"), local("Arimo Bold"), local("Arimo-Bold"), local("Helvetica Bold"), local("Helvetica-Bold");
+	font-weight: 501 900;
+	size-adjust: 101%;
+	ascent-override: 95.9%;
+	descent-override: 23.9%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Text Fallback R";
+	src: local("Roboto"), local("Roboto-Regular"), local("Roboto Regular");
+	font-weight: 100 349;
+	size-adjust: 105.3%;
+	ascent-override: 92%;
+	descent-override: 22.9%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Text Fallback R";
+	src: local("Roboto"), local("Roboto-Regular"), local("Roboto Regular");
+	font-weight: 350 500;
+	size-adjust: 107.2%;
+	ascent-override: 90.4%;
+	descent-override: 22.5%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Text Fallback R";
+	src: local("Roboto Bold"), local("Roboto-Bold");
+	font-weight: 501 900;
+	size-adjust: 107.9%;
+	ascent-override: 89.8%;
+	descent-override: 22.3%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Display Fallback";
+	src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("LiberationSans"), local("Arimo"), local("Helvetica");
+	font-weight: 100 500;
+	size-adjust: 107.5%;
+	ascent-override: 91.5%;
+	descent-override: 27.2%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Display Fallback";
+	src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("LiberationSans-Bold"), local("Arimo Bold"), local("Arimo-Bold"), local("Helvetica Bold"), local("Helvetica-Bold");
+	font-weight: 501 900;
+	size-adjust: 100.5%;
+	ascent-override: 97.9%;
+	descent-override: 29.1%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Display Fallback R";
+	src: local("Roboto"), local("Roboto-Regular"), local("Roboto Regular");
+	font-weight: 100 500;
+	size-adjust: 108.3%;
+	ascent-override: 90.9%;
+	descent-override: 27%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Display Fallback R";
+	src: local("Roboto Bold"), local("Roboto-Bold");
+	font-weight: 501 900;
+	size-adjust: 106.7%;
+	ascent-override: 92.2%;
+	descent-override: 27.4%;
+	line-gap-override: 0%;
+}
+
+.avix-ph {
+	--ph-bg: #ffffff;
+	--ph-stage: #faf8f5;
+	--ph-stage-line: rgba(26, 26, 26, 0.06);
+	--ph-ink: #1a1a1a;
+	--ph-muted: #5c5f66;
+	--ph-line: rgba(26, 26, 26, 0.1);
+	--ph-grid-color: rgba(26, 26, 26, 0.045);
+	--ph-accent: #fb6007;
+	--ph-accent-text: #c54804;
+	/* The headline highlight on the warm stage: a touch deeper than the
+	   button orange so large text keeps 3:1 contrast. */
+	--ph-accent-title: color-mix(in srgb, var(--ph-accent) 90%, #000000);
+	--ph-glow: color-mix(in srgb, var(--ph-accent) 15%, transparent);
+	--ph-btn-bg: var(--ph-accent);
+	--ph-btn-ink: #ffffff;
+	--ph-btn-hover: #e25504;
+	--ph-btn2-ink: var(--ph-ink);
+	--ph-btn2-line: rgba(26, 26, 26, 0.18);
+	--ph-btn2-hover-bg: #ffffff;
+	--ph-chip-bg: #ffffff;
+	--ph-chip-line: rgba(26, 26, 26, 0.08);
+	--ph-chip-shadow: 0 14px 28px -16px rgba(26, 26, 26, 0.28), 0 2px 6px rgba(26, 26, 26, 0.04);
+	--ph-ring: rgba(26, 26, 26, 0.2);
+	--ph-hub-bg: #ffffff;
+	--ph-tip-bg: #1a1a1a;
+	--ph-tip-ink: #ffffff;
+	/* The stat chip on the image stays a white card on both themes. */
+	--ph-stat-bg: #ffffff;
+	--ph-stat-ink: #1a1a1a;
+	--ph-stat-muted: #5c5f66;
+	--ph-stat-seal: color-mix(in srgb, var(--ph-accent) 16%, #ffffff);
+	--ph-stat-check: var(--ph-accent);
+	--ph-font-display: "Space Grotesk", "Inter", "Avix PH Display Fallback", "Avix PH Display Fallback R", Arial, sans-serif;
+	--ph-font-body: "Inter", "Avix PH Text Fallback", "Avix PH Text Fallback R", Arial, sans-serif;
+	--ph-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--ph-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--ph-max: 1280px;
+	--ph-grid: 8px;
+	--ph-speed: 90s;
+	--ph-header-gap-auto: 24px;
+
+	container: avix-ph / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: 0;
+	color: var(--ph-ink);
+	background: var(--ph-bg);
+	font-family: var(--ph-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-ph *,
+.avix-ph *::before,
+.avix-ph *::after {
+	box-sizing: border-box;
+}
+
+.avix-ph--dark {
+	--ph-stage: #0b0b0c;
+	--ph-stage-line: rgba(255, 255, 255, 0.06);
+	--ph-ink: #ffffff;
+	--ph-muted: rgba(255, 255, 255, 0.64);
+	--ph-line: rgba(255, 255, 255, 0.1);
+	--ph-grid-color: rgba(255, 255, 255, 0.04);
+	--ph-accent-text: #ff8a3d;
+	--ph-accent-title: var(--ph-accent);
+	--ph-glow: color-mix(in srgb, var(--ph-accent) 22%, transparent);
+	--ph-btn2-line: rgba(255, 255, 255, 0.22);
+	--ph-btn2-hover-bg: rgba(255, 255, 255, 0.08);
+	--ph-chip-bg: #161719;
+	--ph-chip-line: rgba(255, 255, 255, 0.09);
+	--ph-chip-shadow: 0 16px 30px -16px rgba(0, 0, 0, 0.7);
+	--ph-ring: rgba(255, 255, 255, 0.16);
+	--ph-hub-bg: #141416;
+	--ph-tip-bg: #ffffff;
+	--ph-tip-ink: #111111;
+}
+
+/* At the top of a page with the Smart Header: start below the fixed header,
+   with a gap so the stage reads as a framed card, not tucked under the menu. */
+.avix-ph--clear {
+	padding-top: calc(var(--avix-header-h, 0px) + var(--ph-header-gap, var(--ph-header-gap-auto)));
+}
+
+/* In the Elementor editor the Smart Header sits in the page flow, so only
+   the gap is added there. */
+.elementor-editor-active .avix-ph--clear {
+	padding-top: var(--ph-header-gap, var(--ph-header-gap-auto));
+}
+
+.elementor-editor-active .avix-ph--bleed.avix-ph--clear {
+	padding-top: 0;
+}
+
+.elementor-editor-active .avix-ph--bleed.avix-ph--clear .avix-ph__stage {
+	padding-top: var(--ph-pad-top, var(--ph-pad-auto));
+}
+
+/* The fixed header is sized by the viewport, so its gap is too. */
+@media (max-width: 600px) {
+	.avix-ph {
+		--ph-header-gap-auto: 12px;
+	}
+}
+
+/* A dark full-width stage pairs with the Dark Smart Header: no white band. */
+.avix-ph--dark.avix-ph--bleed {
+	--ph-bg: #0b0b0c;
+}
+
+/* ---------- Stage ---------- */
+
+/* Container queries style descendants only: width-based tokens (inset, radius,
+   gutter) are set on the stage, and the Elementor controls win through the
+   var() fallbacks. */
+.avix-ph__stage {
+	--ph-inset-auto: 16px;
+	--ph-radius-auto: 32px;
+	--ph-gutter: clamp(24px, 4.4cqi, 64px);
+	--ph-pad-auto: clamp(40px, 3.4cqi, 56px);
+
+	position: relative;
+	z-index: 0;
+	display: flex;
+	align-items: center;
+	min-height: var(--ph-min-h, 0px);
+	margin: var(--ph-inset, var(--ph-inset-auto));
+	padding: var(--ph-pad-top, var(--ph-pad-auto)) 0 var(--ph-pad-bottom, var(--ph-pad-auto));
+	border: 1px solid var(--ph-stage-line);
+	border-radius: var(--ph-radius, var(--ph-radius-auto));
+	background-color: var(--ph-stage);
+	overflow: hidden;
+	overflow: clip;
+	isolation: isolate;
+}
+
+.avix-ph--clear .avix-ph__stage {
+	margin-top: 0;
+}
+
+/* Faint pixel grid: fine 8px pixels with a slightly stronger line every
+   fourth square, fading out towards the text so it never sits under words. */
+.avix-ph__stage::before {
+	--ph-grid-minor: color-mix(in srgb, var(--ph-grid-color) 55%, transparent);
+
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	background-image:
+		linear-gradient(var(--ph-grid-color) 1px, transparent 1px),
+		linear-gradient(90deg, var(--ph-grid-color) 1px, transparent 1px),
+		linear-gradient(var(--ph-grid-minor) 1px, transparent 1px),
+		linear-gradient(90deg, var(--ph-grid-minor) 1px, transparent 1px);
+	background-position: center center;
+	background-size:
+		calc(var(--ph-grid) * 4) calc(var(--ph-grid) * 4),
+		calc(var(--ph-grid) * 4) calc(var(--ph-grid) * 4),
+		var(--ph-grid) var(--ph-grid),
+		var(--ph-grid) var(--ph-grid);
+	-webkit-mask-image: radial-gradient(ellipse 62% 78% at 74% 50%, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 82%);
+	mask-image: radial-gradient(ellipse 62% 78% at 74% 50%, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 82%);
+	pointer-events: none;
+}
+
+/* Soft orange glow behind the visual. */
+.avix-ph__stage::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	right: -8%;
+	z-index: -1;
+	width: min(980px, 72%);
+	aspect-ratio: 1;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, var(--ph-glow), transparent);
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+.avix-ph--no-grid .avix-ph__stage::before,
+.avix-ph--no-glow .avix-ph__stage::after {
+	display: none;
+}
+
+.avix-ph--visual-none .avix-ph__stage::before {
+	-webkit-mask-image: radial-gradient(ellipse 70% 90% at 90% 40%, #000 0%, transparent 75%);
+	mask-image: radial-gradient(ellipse 70% 90% at 90% 40%, #000 0%, transparent 75%);
+}
+
+.avix-ph--bleed .avix-ph__stage {
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+}
+
+.avix-ph--bleed.avix-ph--clear {
+	padding-top: 0;
+}
+
+.avix-ph--bleed.avix-ph--clear .avix-ph__stage {
+	padding-top: calc(var(--avix-header-h, 0px) + var(--ph-pad-top, var(--ph-pad-auto)));
+}
+
+.avix-ph__inner {
+	display: grid;
+	grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+	align-items: center;
+	gap: 48px clamp(32px, 4.4cqi, 72px);
+	width: min(calc(100% - var(--ph-gutter) * 2), var(--ph-max));
+	margin-inline: auto;
+}
+
+.avix-ph--visual-none .avix-ph__inner {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.avix-ph--visual-none .avix-ph__copy {
+	max-width: 880px;
+}
+
+/* Text only: the headline takes the full display size, and the proof row
+   keeps to the lead's measure instead of spreading across the stage. */
+.avix-ph.avix-ph--visual-none .avix-ph__title {
+	max-width: 18ch;
+	font-size: clamp(44px, 6.2cqi, 92px);
+}
+
+.avix-ph.avix-ph--visual-none .avix-ph__proof {
+	max-width: min(100%, 640px);
+}
+
+.avix-ph--center .avix-ph__proof {
+	margin-inline: auto;
+}
+
+/* Image: the frame's bottom sits on the proof row's line; the headroom for
+   the character goes up into the stage instead of pushing the frame down. */
+.avix-ph--visual-image .avix-ph__visual {
+	align-self: end;
+}
+
+/* Text only: a quieter glow, and optional centred alignment. */
+.avix-ph--visual-none .avix-ph__stage::after {
+	top: -30%;
+	right: -14%;
+	width: min(720px, 60%);
+	opacity: 0.7;
+	transform: none;
+}
+
+.avix-ph--center .avix-ph__copy {
+	margin-inline: auto;
+	text-align: center;
+}
+
+.avix-ph--center .avix-ph__title,
+.avix-ph--center .avix-ph__lead {
+	margin-inline: auto;
+}
+
+.avix-ph--center .avix-ph__crumb-list,
+.avix-ph--center .avix-ph__eyebrow,
+.avix-ph--center .avix-ph__actions {
+	justify-content: center;
+}
+
+.avix-ph--center .avix-ph__proof-item {
+	align-items: center;
+}
+
+/* Nothing to say on the left: the visual takes the stage on its own, with
+   the glow and grid centred behind it. */
+.avix-ph--no-copy .avix-ph__inner {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.avix-ph--no-copy .avix-ph__stage::after {
+	right: 50%;
+	transform: translate(50%, -50%);
+}
+
+.avix-ph--no-copy .avix-ph__stage::before {
+	-webkit-mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 82%);
+	mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, #000 0%, rgba(0, 0, 0, 0.55) 45%, transparent 82%);
+}
+
+.avix-ph__copy {
+	min-width: 0;
+}
+
+/* ---------- Breadcrumb & eyebrow ---------- */
+
+.avix-ph .avix-ph__crumbs {
+	margin: 0 0 clamp(14px, 1.4cqi, 20px);
+	padding: 0;
+	color: var(--ph-muted);
+	font-size: 13.5px;
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+.avix-ph .avix-ph__crumb-list {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 4px 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-ph .avix-ph__crumb {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+}
+
+.avix-ph .avix-ph__crumb::before,
+.avix-ph .avix-ph__crumb::marker {
+	display: none;
+	content: none;
+}
+
+.avix-ph .avix-ph__crumb {
+	flex: none;
+}
+
+/* The trail stays on one line: a long page title is cut with an ellipsis
+   (the full title is in its tooltip, and read in full by screen readers). */
+.avix-ph .avix-ph__crumb[aria-current="page"] {
+	flex: 0 1 auto;
+	min-width: 0;
+	color: var(--ph-ink);
+}
+
+.avix-ph .avix-ph__crumb-text {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Three-level trail: the current page's name (it repeats the H1 just
+   below) gives way first, and the middle step is capped at about 40% of
+   the line, so a long parent is cut too but never down to a letter. The
+   ellipsis sits on the inner text, so the link's 44px tap area is never
+   clipped. */
+.avix-ph .avix-ph__crumb--parent {
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: 42%;
+}
+
+.avix-ph .avix-ph__crumb--parent .avix-ph__crumb-link {
+	flex: 0 1 auto;
+	min-width: 0;
+}
+
+.avix-ph .avix-ph__crumb--parent ~ .avix-ph__crumb[aria-current="page"] {
+	flex-shrink: 1000;
+}
+
+.avix-ph .avix-ph__crumb-link {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	min-height: 24px;
+	color: inherit;
+	background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+	text-decoration: none;
+	box-shadow: none;
+	transition: color 0.2s ease, background-size 0.3s var(--ph-ease);
+}
+
+/* A 44px tap target around the short "Home" link. */
+.avix-ph .avix-ph__crumb-link::before {
+	content: "";
+	position: absolute;
+	inset: -10px -8px;
+}
+
+.avix-ph .avix-ph__crumb-sep {
+	flex: none;
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	opacity: 0.55;
+	color: var(--ph-muted);
+}
+
+.avix-ph .avix-ph__eyebrow {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0 0 clamp(14px, 1.2cqi, 18px);
+	padding: 0;
+	color: var(--ph-ink);
+	font-family: var(--ph-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+/* The eyebrow's pixel: ties every label to the pixel character. */
+.avix-ph .avix-ph__px {
+	flex: none;
+	width: 8px;
+	height: 8px;
+	margin-top: calc(0.65em - 4px);
+	background: var(--ph-accent);
+}
+
+/* ---------- Headline & lead ---------- */
+
+.avix-ph .avix-ph__title {
+	max-width: 15ch;
+	margin: 0;
+	padding: 0;
+	color: var(--ph-ink);
+	font-family: var(--ph-font-display);
+	/* Sized so the default headline keeps three balanced lines in the copy
+	   column while staying ≥1.1× the page's H2s (64px at 1280–1440). */
+	font-size: clamp(44px, 5.5cqi, 80px);
+	font-weight: 600;
+	line-height: 1.04;
+	letter-spacing: -0.035em;
+	text-transform: none;
+	text-wrap: balance;
+	/* A long single word (a German compound, a product name) breaks inside
+	   the column instead of running under the orbit or off the stage; only
+	   very long words are hyphenated, in the page's language. */
+	overflow-wrap: break-word;
+	-webkit-hyphens: manual;
+	hyphens: manual;
+	hyphenate-limit-chars: 14 6 6;
+}
+
+.avix-ph .avix-ph__accent {
+	color: var(--ph-accent);
+}
+
+.avix-ph .avix-ph__title .avix-ph__accent {
+	color: var(--ph-accent-title);
+}
+
+.avix-ph .avix-ph__lead {
+	max-width: 33em;
+	margin: clamp(18px, 1.6cqi, 24px) 0 0;
+	padding: 0;
+	color: var(--ph-muted);
+	font-size: clamp(16px, 1.25cqi, 18px);
+	font-weight: 400;
+	line-height: 1.6;
+	text-wrap: pretty;
+	overflow-wrap: break-word;
+	-webkit-hyphens: manual;
+	hyphens: manual;
+	hyphenate-limit-chars: 14 6 6;
+}
+
+.avix-ph .avix-ph__lead .avix-ph__accent {
+	color: var(--ph-accent-text);
+	font-weight: 500;
+}
+
+/* ---------- Buttons ---------- */
+
+.avix-ph__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px 14px;
+	margin-top: clamp(24px, 1.9cqi, 30px);
+}
+
+.avix-ph .avix-ph__btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	max-width: 100%;
+	min-height: 56px;
+	margin: 0;
+	border: 0;
+	border-radius: 999px;
+	font-family: var(--ph-font-body);
+	font-size: 15.5px;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: -0.005em;
+	text-align: left;
+	text-decoration: none;
+	text-transform: none;
+	/* One line wherever it fits; a long label wraps inside the pill
+	   instead of pushing the arrow out of it. */
+	white-space: normal;
+	overflow-wrap: break-word;
+	box-shadow: none;
+	transition: transform 0.35s var(--ph-ease), background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.35s var(--ph-ease);
+}
+
+.avix-ph .avix-ph__btn-text {
+	min-width: 0;
+}
+
+.avix-ph .avix-ph__btn-arrow {
+	flex: none;
+}
+
+.avix-ph .avix-ph__btn svg {
+	display: block;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.3;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.35s var(--ph-ease);
+}
+
+.avix-ph .avix-ph__btn--primary,
+.avix-ph .avix-ph__btn--primary:visited,
+.avix-ph .avix-ph__btn--primary:focus {
+	padding: 6px 6px 6px 26px;
+	color: var(--ph-btn-ink);
+	background: var(--ph-btn-bg);
+	box-shadow: 0 16px 30px -16px color-mix(in srgb, var(--ph-btn-bg) 85%, transparent);
+}
+
+.avix-ph .avix-ph__btn-icon {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	color: var(--ph-btn-bg);
+	background: #ffffff;
+}
+
+.avix-ph .avix-ph__btn-icon svg {
+	width: 18px;
+	height: 18px;
+}
+
+.avix-ph .avix-ph__btn--ghost,
+.avix-ph .avix-ph__btn--ghost:visited,
+.avix-ph .avix-ph__btn--ghost:focus {
+	padding: 0 24px 0 26px;
+	border: 1px solid var(--ph-btn2-line);
+	color: var(--ph-btn2-ink);
+	background: transparent;
+}
+
+.avix-ph .avix-ph__btn-arrow svg {
+	width: 17px;
+	height: 17px;
+}
+
+@media (hover: hover) {
+	.avix-ph .avix-ph__btn--primary:hover {
+		color: var(--ph-btn-ink);
+		background: var(--ph-btn-hover);
+		box-shadow: 0 20px 36px -16px color-mix(in srgb, var(--ph-btn-bg) 90%, transparent);
+		transform: translateY(-2px);
+	}
+
+	.avix-ph .avix-ph__btn--primary:hover .avix-ph__btn-icon svg {
+		transform: translate(2px, -2px);
+	}
+
+	.avix-ph .avix-ph__btn--ghost:hover {
+		border-color: var(--ph-ink);
+		color: var(--ph-btn2-ink);
+		background: var(--ph-btn2-hover-bg);
+		transform: translateY(-2px);
+	}
+
+	.avix-ph .avix-ph__btn--ghost:hover .avix-ph__btn-arrow svg {
+		transform: translateY(2px);
+	}
+
+	.avix-ph .avix-ph__btn--ghost[href]:not([href^="#"]):hover .avix-ph__btn-arrow svg {
+		transform: translateX(3px);
+	}
+
+	.avix-ph .avix-ph__crumb-link:hover {
+		color: var(--ph-ink);
+		background-size: 100% 1px;
+	}
+}
+
+/* Keyboard focus: a 2px accent ring. The theme swaps every focus ring for a
+   1px dotted grey one (`body.show_outline :focus { … !important }`) once a
+   key is pressed, so the ring is restated with !important here; a click
+   keeps no ring. */
+.avix-ph .avix-ph__btn:focus-visible,
+.avix-ph .avix-ph__crumb-link:focus-visible,
+.avix-ph .avix-ph__chip:focus-visible,
+.avix-ph .avix-ph__pause:focus-visible {
+	outline: 2px solid var(--ph-accent) !important;
+	outline-offset: 4px !important;
+}
+
+.avix-ph :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
+/* ---------- Proof row ---------- */
+
+.avix-ph .avix-ph__proof {
+	display: grid;
+	/* Columns sized by their content, sharing the spare room, so a long
+	   value ("Since 2020") or label keeps to one line where it fits. */
+	grid-auto-columns: auto;
+	grid-auto-flow: column;
+	column-gap: 0;
+	margin: clamp(22px, 1.8cqi, 28px) 0 0;
+	padding: 16px 0 0;
+	border-top: 1px solid var(--ph-line);
+	list-style: none;
+}
+
+.avix-ph .avix-ph__proof-item {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	/* Never narrower than its longest word, so values can't run into the
+	   next column. */
+	min-width: min-content;
+	margin: 0;
+	padding: 0 clamp(14px, 1.8cqi, 26px);
+	border-left: 1px solid var(--ph-line);
+}
+
+.avix-ph .avix-ph__proof-item:first-child {
+	padding-left: 0;
+	border-left: 0;
+}
+
+.avix-ph .avix-ph__proof-item::before,
+.avix-ph .avix-ph__proof-item::marker {
+	display: none;
+	content: none;
+}
+
+.avix-ph .avix-ph__proof-value {
+	color: var(--ph-ink);
+	font-family: var(--ph-font-display);
+	font-size: clamp(20px, 1.9cqi, 29px);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+	font-variant-numeric: tabular-nums;
+	text-wrap: balance;
+	overflow-wrap: break-word;
+}
+
+.avix-ph .avix-ph__proof-label {
+	color: var(--ph-muted);
+	font-size: 13px;
+	line-height: 1.45;
+	text-wrap: balance;
+}
+
+/* ---------- Orbit ---------- */
+
+.avix-ph__visual {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	min-width: 0;
+}
+
+/* Editor hint when the orbit has no chips. */
+.avix-ph .avix-ph__alert {
+	flex: 0 0 100%;
+	margin: 0 0 16px;
+	padding: 12px 16px;
+	border: 1px solid var(--ph-line);
+	border-radius: 14px;
+	color: var(--ph-ink);
+	background: var(--ph-chip-bg);
+	font-family: var(--ph-font-body);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+/* Capped by the screen height too, so the whole hero fits the first screen
+   of a laptop and the next section peeks in. */
+.avix-ph__orbit {
+	container: avix-ph-orbit / inline-size;
+	position: relative;
+	width: min(100%, var(--ph-orbit-max, min(520px, max(400px, 100svh - 300px))));
+	aspect-ratio: 1;
+}
+
+/* Name pills need the room: no screen-height cap. */
+.avix-ph--labels .avix-ph__orbit {
+	width: min(100%, var(--ph-orbit-max, 520px));
+}
+
+/* Sizes come from the orbit's own width (cqi), declared on its children. */
+.avix-ph__orbit > * {
+	--o-chip: var(--ph-chip, clamp(40px, 10.6cqi, 60px));
+	--o-outer: calc(50cqi - var(--o-chip) / 2 - 1px);
+	--o-inner: calc(var(--o-outer) - var(--o-chip) - 3cqi);
+	--o-core: calc(var(--o-inner) - var(--o-chip) / 2 - 4cqi);
+	--o-hub: clamp(52px, 17cqi, 100px);
+	--o-pal: var(--ph-pal-w, clamp(26px, 8cqi, 48px));
+}
+
+/* Crisp pixel art: the character's width snaps to whole sprite pixels
+   (10 columns → 3, 4 or 5 screen px each) and the hub to even pixels, so
+   no sprite row renders thicker than another. */
+@supports (width: round(nearest, 10px, 10px)) {
+	.avix-ph__orbit > * {
+		--o-hub: clamp(52px, round(nearest, 17cqi, 2px), 100px);
+		--o-pal: var(--ph-pal-w, clamp(30px, round(nearest, 8cqi, 10px), 50px));
+	}
+}
+
+.avix-ph__halo {
+	position: absolute;
+	inset: 14%;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--ph-accent) 10%, transparent), transparent);
+	pointer-events: none;
+}
+
+/* The dashed rings are drawing only; the chips ride on their own layer. */
+.avix-ph .avix-ph__ring {
+	--r: var(--o-outer);
+	--ring-speed: var(--ph-speed);
+
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: calc(var(--r) * 2);
+	height: calc(var(--r) * 2);
+	margin: calc(var(--r) * -1) 0 0 calc(var(--r) * -1);
+	padding: 0;
+	border: 1.5px dashed var(--ph-ring);
+	border-radius: 50%;
+	pointer-events: none;
+}
+
+.avix-ph .avix-ph__ring--inner {
+	--r: var(--o-inner);
+}
+
+.avix-ph .avix-ph__ring--core {
+	--r: var(--o-core);
+	--ring-speed: calc(var(--ph-speed) * 0.4);
+
+	border-style: dotted;
+	border-width: 2px;
+	opacity: 0.8;
+}
+
+/* A single orange pixel travels the core ring. Its track turns with the
+   ring while the pixel turns back, so it stays a crisp, square pixel. */
+.avix-ph__comet-track {
+	position: absolute;
+	top: -4px;
+	left: 50%;
+	width: 6px;
+	height: 6px;
+	margin-left: -3px;
+}
+
+.avix-ph__comet {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background: var(--ph-accent);
+	box-shadow: 0 0 10px color-mix(in srgb, var(--ph-accent) 70%, transparent);
+}
+
+/* Every chip sits on one layer that turns as a whole, so the spacing set
+   in PHP never changes and chips never drift into each other. */
+.avix-ph .avix-ph__chips {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-ph .avix-ph__slot {
+	--a: var(--a2, 0deg);
+	--r: var(--o-outer);
+
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	height: 0;
+	margin: 0;
+	padding: 0;
+	transform: rotate(var(--a)) translateX(var(--r)) rotate(calc(var(--a) * -1));
+}
+
+.avix-ph .avix-ph__slot--inner {
+	--r: var(--o-inner);
+}
+
+.avix-ph .avix-ph__slot::before,
+.avix-ph .avix-ph__slot::marker {
+	display: none;
+	content: none;
+}
+
+/* The counter-rotation that keeps each chip upright while the layer turns. */
+.avix-ph__spin {
+	position: absolute;
+	top: calc(var(--o-chip) / -2);
+	left: calc(var(--o-chip) / -2);
+	display: block;
+	width: var(--o-chip);
+	height: var(--o-chip);
+}
+
+.avix-ph--rotate .avix-ph__ring,
+.avix-ph--rotate .avix-ph__chips {
+	animation: avix-ph-spin var(--ring-speed, var(--ph-speed)) linear infinite;
+}
+
+.avix-ph--rotate .avix-ph__spin,
+.avix-ph--rotate .avix-ph__comet {
+	animation: avix-ph-spin var(--ring-speed, var(--ph-speed)) linear infinite reverse;
+}
+
+/* Paused: a chip in use (is-hold: hovered, focused, tapped or touched;
+   set by JS, so a tapped chip that keeps focus doesn't hold it forever),
+   the pause button, off screen, editor. Mouse hover is below. A state
+   override that must beat the animation shorthands above. */
+.avix-ph.is-hold .avix-ph__ring,
+.avix-ph.is-hold .avix-ph__chips,
+.avix-ph.is-hold .avix-ph__spin,
+.avix-ph.is-hold .avix-ph__comet,
+.avix-ph.is-paused .avix-ph__ring,
+.avix-ph.is-paused .avix-ph__chips,
+.avix-ph.is-paused .avix-ph__spin,
+.avix-ph.is-paused .avix-ph__comet,
+.avix-ph.is-off .avix-ph__ring,
+.avix-ph.is-off .avix-ph__chips,
+.avix-ph.is-off .avix-ph__spin,
+.avix-ph.is-off .avix-ph__comet,
+.avix-ph.is-editor .avix-ph__ring,
+.avix-ph.is-editor .avix-ph__chips,
+.avix-ph.is-editor .avix-ph__spin,
+.avix-ph.is-editor .avix-ph__comet {
+	animation-play-state: paused !important;
+}
+
+@media (hover: hover) {
+	.avix-ph__orbit:hover .avix-ph__ring,
+	.avix-ph__orbit:hover .avix-ph__chips,
+	.avix-ph__orbit:hover .avix-ph__spin,
+	.avix-ph__orbit:hover .avix-ph__comet {
+		animation-play-state: paused !important;
+	}
+}
+
+.avix-ph.is-off .avix-ph__pal,
+.avix-ph.is-off .avix-ph__pal *,
+.avix-ph.is-paused .avix-ph__pal,
+.avix-ph.is-paused .avix-ph__pal * {
+	animation-play-state: paused !important;
+}
+
+/* Chips are links, buttons (no link) or plain spans (no name); the theme's
+   button styles are reset here. */
+.avix-ph .avix-ph__chip,
+.avix-ph .avix-ph__chip:visited,
+.avix-ph .avix-ph__chip:focus,
+.avix-ph .avix-ph__chip:active {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	min-width: 0;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 1px solid var(--ph-chip-line);
+	border-radius: 30%;
+	color: var(--ph-ink);
+	background: var(--ph-chip-bg);
+	box-shadow: var(--ph-chip-shadow);
+	font-family: var(--ph-font-body);
+	font-size: inherit;
+	line-height: 1;
+	letter-spacing: 0;
+	text-decoration: none;
+	text-transform: none;
+	cursor: default;
+	-webkit-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+	transition: transform 0.4s var(--ph-pop), border-color 0.25s ease, box-shadow 0.35s var(--ph-ease), opacity 0.6s ease, scale 0.7s var(--ph-pop);
+}
+
+.avix-ph a.avix-ph__chip,
+.avix-ph button.avix-ph__chip {
+	cursor: pointer;
+}
+
+/* A 46px+ touch target around the 40px chips on phones. */
+.avix-ph .avix-ph__chip::before {
+	content: "";
+	position: absolute;
+	inset: -4px;
+	border-radius: inherit;
+}
+
+.avix-ph .avix-ph__chip-logo {
+	display: grid;
+	place-items: center;
+	width: 46%;
+	height: 46%;
+	line-height: 0;
+}
+
+.avix-ph .avix-ph__chip-logo svg,
+.avix-ph .avix-ph__chip-logo img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: contain;
+	box-shadow: none;
+}
+
+/* Next.js is black: keep it visible on dark chips. */
+.avix-ph--dark .avix-ph__chip-logo path[fill="#000000"] {
+	fill: #ffffff;
+}
+
+/* The name tag under a chip (hover / focus / tap). Still read by screen readers. */
+.avix-ph .avix-ph__tip {
+	position: absolute;
+	top: calc(100% + 9px);
+	left: 50%;
+	z-index: 2;
+	width: max-content;
+	max-width: 220px;
+	padding: 6px 11px;
+	border-radius: 999px;
+	color: var(--ph-tip-ink);
+	background: var(--ph-tip-bg);
+	font-family: var(--ph-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: 0;
+	text-align: center;
+	white-space: normal;
+	opacity: 0;
+	/* --tip-dx (set by JS) keeps the tag inside the stage near its edges. */
+	transform: translate(calc(-50% + var(--tip-dx, 0px)), -4px);
+	transition: opacity 0.2s ease, transform 0.3s var(--ph-ease);
+	pointer-events: none;
+}
+
+.avix-ph .avix-ph__tip:empty {
+	display: none;
+}
+
+/* Chips in the orbit's upper half show their tag above, pointing away from
+   the hub and the inner ring. */
+.avix-ph .avix-ph__chip.is-tip-up .avix-ph__tip {
+	top: auto;
+	bottom: calc(100% + 9px);
+	transform: translate(calc(-50% + var(--tip-dx, 0px)), 4px);
+}
+
+/* While a chip is in use, its whole layer rises above the hub and the
+   character, so the name tag is never hidden. */
+.avix-ph .avix-ph__slot:focus-within,
+.avix-ph .avix-ph__slot.is-active {
+	z-index: 3;
+}
+
+.avix-ph .avix-ph__chips.is-active,
+.avix-ph .avix-ph__chips:has(.avix-ph__chip:focus-visible) {
+	z-index: 3;
+}
+
+.avix-ph .avix-ph__chip:focus-visible,
+.avix-ph .avix-ph__chip.is-active {
+	border-color: color-mix(in srgb, var(--ph-accent) 45%, transparent);
+	box-shadow: 0 20px 34px -16px color-mix(in srgb, var(--ph-accent) 45%, transparent), 0 2px 6px rgba(26, 26, 26, 0.05);
+	transform: translateY(-5px) scale(1.06);
+}
+
+.avix-ph .avix-ph__chip:focus-visible .avix-ph__tip,
+.avix-ph .avix-ph__chip.is-active .avix-ph__tip {
+	opacity: 1;
+	transform: translate(calc(-50% + var(--tip-dx, 0px)), 0);
+}
+
+@media (hover: hover) {
+	.avix-ph .avix-ph__slot:hover {
+		z-index: 3;
+	}
+
+	.avix-ph .avix-ph__chips:has(.avix-ph__slot:hover) {
+		z-index: 3;
+	}
+
+	.avix-ph .avix-ph__chip:hover {
+		border-color: color-mix(in srgb, var(--ph-accent) 45%, transparent);
+		color: var(--ph-ink);
+		background: var(--ph-chip-bg);
+		box-shadow: 0 20px 34px -16px color-mix(in srgb, var(--ph-accent) 45%, transparent), 0 2px 6px rgba(26, 26, 26, 0.05);
+		transform: translateY(-5px) scale(1.06);
+	}
+
+	.avix-ph .avix-ph__chip:hover .avix-ph__tip {
+		opacity: 1;
+		transform: translate(calc(-50% + var(--tip-dx, 0px)), 0);
+	}
+}
+
+/* "Always visible" names: chips become pills, all spread evenly on the
+   outer ring (the inner ring stays as drawing), so names never overlap. */
+@container avix-ph-orbit (min-width: 400px) {
+	.avix-ph--labels .avix-ph__slot {
+		--a: var(--a1, 0deg);
+		--r: var(--o-outer);
+	}
+
+	.avix-ph--labels .avix-ph__chip,
+	.avix-ph--labels .avix-ph__chip:visited,
+	.avix-ph--labels .avix-ph__chip:focus,
+	.avix-ph--labels .avix-ph__chip:active {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		gap: 9px;
+		width: max-content;
+		height: calc(var(--o-chip) * 0.8);
+		padding: 0 15px 0 calc(var(--o-chip) * 0.12);
+		border-radius: 999px;
+		translate: -50% -50%;
+	}
+
+	.avix-ph--labels .avix-ph__chip-logo {
+		width: calc(var(--o-chip) * 0.42);
+		height: calc(var(--o-chip) * 0.42);
+	}
+
+	.avix-ph--labels .avix-ph__tip {
+		position: static;
+		width: auto;
+		max-width: none;
+		padding: 0;
+		color: var(--ph-ink);
+		background: none;
+		font-size: 12.5px;
+		white-space: nowrap;
+		opacity: 1;
+		transform: none;
+	}
+
+	.avix-ph--labels .avix-ph__chip:focus-visible .avix-ph__tip,
+	.avix-ph--labels .avix-ph__chip.is-active .avix-ph__tip {
+		transform: none;
+	}
+}
+
+@media (hover: hover) {
+	@container avix-ph-orbit (min-width: 400px) {
+		.avix-ph--labels .avix-ph__chip:hover .avix-ph__tip {
+			transform: none;
+		}
+	}
+}
+
+@container avix-ph-orbit (min-width: 470px) {
+	.avix-ph--labels .avix-ph__tip {
+		font-size: 13.5px;
+	}
+}
+
+/* ---------- Hub & character ---------- */
+
+/* Shifted down by half the character's height, so hub + character sit
+   centred in the rings together. */
+.avix-ph .avix-ph__hub {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 2;
+	width: var(--o-hub);
+	height: var(--o-hub);
+	margin: calc(var(--o-hub) / -2) 0 0 calc(var(--o-hub) / -2);
+	translate: 0 calc(var(--o-pal) * 0.6);
+}
+
+/* No character: the hub sits in the exact centre of the rings. */
+.avix-ph--no-pal .avix-ph__hub {
+	translate: none;
+}
+
+.avix-ph__hub-tile {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	height: 100%;
+	border: 1px solid var(--ph-chip-line);
+	border-radius: 30%;
+	background: var(--ph-hub-bg);
+	box-shadow: 0 22px 40px -24px color-mix(in srgb, var(--ph-accent) 50%, transparent), 0 2px 8px rgba(26, 26, 26, 0.05);
+	transition: scale 0.7s var(--ph-pop), opacity 0.5s ease;
+}
+
+.avix-ph .avix-ph__mark {
+	display: block;
+	width: 44%;
+	height: 44%;
+	fill: var(--ph-accent);
+}
+
+.avix-ph .avix-ph__hub-img {
+	display: block;
+	width: 62%;
+	max-width: none;
+	height: 62%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: contain;
+}
+
+/* The character stands on the hub's top edge. */
+.avix-ph .avix-ph__perch {
+	position: absolute;
+	bottom: calc(100% - 1px);
+	left: 50%;
+	display: block;
+	width: var(--o-pal);
+	margin-left: calc(var(--o-pal) / -2);
+	line-height: 0;
+}
+
+.avix-ph .avix-ph__pal {
+	--pal-w: var(--o-pal);
+	--pal-color: var(--ph-accent);
+
+	display: block;
+	filter: drop-shadow(0 4px 10px color-mix(in srgb, var(--ph-accent) 35%, transparent));
+}
+
+/* Pause button (WCAG 2.2.2): a small labelled pill in the stage's bottom
+   corner, inside the padding and clear of the rings. */
+.avix-ph .avix-ph__pause,
+.avix-ph .avix-ph__pause:focus,
+.avix-ph .avix-ph__pause:active {
+	position: absolute;
+	right: clamp(12px, 1.6cqi, 22px);
+	bottom: clamp(12px, 1.6cqi, 22px);
+	z-index: 4;
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	height: 36px;
+	min-width: 0;
+	min-height: 0;
+	margin: 0;
+	padding: 0 14px 0 11px;
+	border: 1px solid var(--ph-chip-line);
+	border-radius: 999px;
+	color: var(--ph-muted);
+	background: var(--ph-chip-bg);
+	box-shadow: none;
+	font-family: var(--ph-font-body);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: 0;
+	text-transform: none;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+	transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Image visual: the button sits on the frame's bottom corner. */
+.avix-ph .avix-ph__media > .avix-ph__pause,
+.avix-ph .avix-ph__media > .avix-ph__pause:focus,
+.avix-ph .avix-ph__media > .avix-ph__pause:active {
+	right: 14px;
+	bottom: 14px;
+}
+
+/* 44px touch target around the 36px pill. */
+.avix-ph .avix-ph__pause::before {
+	content: "";
+	position: absolute;
+	inset: -4px;
+}
+
+@media (hover: hover) {
+	.avix-ph .avix-ph__pause:hover {
+		border-color: var(--ph-btn2-line);
+		color: var(--ph-ink);
+		background: var(--ph-chip-bg);
+	}
+}
+
+.avix-ph .avix-ph__pause svg {
+	display: block;
+	flex: none;
+	width: 14px;
+	height: 14px;
+	fill: currentColor;
+}
+
+.avix-ph .avix-ph__pause .avix-ph__play-i,
+.avix-ph.is-paused .avix-ph__pause .avix-ph__pause-i {
+	display: none;
+}
+
+.avix-ph.is-paused .avix-ph__pause .avix-ph__play-i {
+	display: block;
+}
+
+/* ---------- Image visual ---------- */
+
+.avix-ph .avix-ph__media {
+	--o-pal: var(--ph-pal-w, clamp(30px, 4cqi, 50px));
+
+	position: relative;
+	width: 100%;
+	max-width: var(--ph-orbit-max, 540px);
+	margin: 0;
+	padding: 0;
+	/* The chip hangs off the frame and the character stands above it: the
+	   theme's `figure { overflow: hidden }` must not clip them. The frame
+	   inside still clips the picture to its rounded corners. */
+	overflow: visible;
+}
+
+/* Headroom for the character standing on the frame: its body (1.2×) plus
+   the pixel "hi" above its head (0.65×), so the greeting is never clipped
+   by the stage edge. Specific enough to beat Elementor's
+   `.elementor .elementor-widget:not():not() figure { margin: 0 }`. */
+.avix-ph.avix-ph--visual-image .avix-ph__visual .avix-ph__media.has-pal {
+	margin-top: calc(var(--o-pal) * 1.9 + 8px);
+}
+
+@supports (width: round(nearest, 10px, 10px)) {
+	.avix-ph .avix-ph__media {
+		--o-pal: var(--ph-pal-w, clamp(30px, round(nearest, 4cqi, 10px), 50px));
+	}
+}
+
+/* Centred in its column; specific enough to beat Elementor's figure margin
+   reset (0,4,1). */
+.avix-ph.avix-ph--visual-image .avix-ph__visual .avix-ph__media.avix-ph__media {
+	margin-inline: auto;
+}
+
+/* "Original" shape (auto) shows the whole image at its own proportions. */
+.avix-ph__media-frame {
+	display: block;
+	width: 100%;
+	aspect-ratio: var(--ph-ratio, auto);
+	border-radius: 28px;
+	background: linear-gradient(160deg, #ffe7d4, #f6efe8);
+	box-shadow: 0 40px 70px -40px rgba(26, 26, 26, 0.4);
+	overflow: hidden;
+}
+
+.avix-ph--dark .avix-ph__media-frame {
+	background: linear-gradient(160deg, #1d1612, #111112);
+	box-shadow: 0 40px 70px -40px rgba(0, 0, 0, 0.8);
+}
+
+/* "Product render" frame (opt-in): a warm, two-layer shadow lifts a white
+   device render off the warm stage without a grey halo, and a hairline
+   keeps the edge crisp where the render's white meets the stage. */
+.avix-ph .avix-ph__media--render .avix-ph__media-frame {
+	position: relative;
+	box-shadow:
+		0 46px 80px -50px color-mix(in srgb, var(--ph-accent) 60%, transparent),
+		0 30px 60px -36px rgba(26, 26, 26, 0.3);
+}
+
+.avix-ph .avix-ph__media--render .avix-ph__media-frame::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	box-shadow: inset 0 0 0 1px rgba(26, 26, 26, 0.07);
+	pointer-events: none;
+}
+
+.avix-ph--dark .avix-ph__media--render .avix-ph__media-frame {
+	box-shadow: 0 40px 70px -40px rgba(0, 0, 0, 0.8);
+}
+
+.avix-ph--dark .avix-ph__media--render .avix-ph__media-frame::after {
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* On a render the pause control is a quiet 40px round icon button (its
+   name stays in aria-label), so no text pill sits on the product. */
+.avix-ph .avix-ph__media--render > .avix-ph__pause,
+.avix-ph .avix-ph__media--render > .avix-ph__pause:focus,
+.avix-ph .avix-ph__media--render > .avix-ph__pause:active {
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+}
+
+.avix-ph .avix-ph__media--render .avix-ph__pause-text {
+	display: none;
+}
+
+/* "Product render, dark" frame (opt-in, adds --glow to --render): for dark
+   device renders on the dark stage, where a black shadow disappears. A
+   warm near-black fill, an orange glow under and around the frame and a
+   faint top-lit hairline set the render off the stage. Same selectors as
+   the dark render rules plus one class, so these win. */
+.avix-ph .avix-ph__media--glow .avix-ph__media-frame {
+	background: #0e0c0b;
+	box-shadow:
+		0 0 0 1px rgba(255, 255, 255, 0.06),
+		0 50px 90px -50px color-mix(in srgb, var(--ph-accent) 55%, transparent),
+		0 0 120px -40px color-mix(in srgb, var(--ph-accent) 30%, transparent);
+}
+
+.avix-ph .avix-ph__media--glow .avix-ph__media-frame::after {
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* The quiet dark pause circle would vanish on a dark render: a glass
+   button with a white icon and a lighter rim keeps it findable. */
+.avix-ph .avix-ph__media--glow > .avix-ph__pause,
+.avix-ph .avix-ph__media--glow > .avix-ph__pause:focus,
+.avix-ph .avix-ph__media--glow > .avix-ph__pause:active {
+	border-color: rgba(255, 255, 255, 0.2);
+	color: #ffffff;
+	background: rgba(11, 11, 12, 0.55);
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
+}
+
+@media (hover: hover) {
+	.avix-ph .avix-ph__media--glow > .avix-ph__pause:hover {
+		border-color: rgba(255, 255, 255, 0.32);
+		color: #ffffff;
+		background: rgba(11, 11, 12, 0.75);
+	}
+}
+
+.avix-ph .avix-ph__img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: cover;
+	object-position: var(--ph-img-pos, 50% 50%);
+}
+
+/* No image yet: keep a placeholder frame for the character to stand on. */
+.avix-ph__media.is-empty .avix-ph__media-frame {
+	min-height: clamp(240px, 30cqi, 400px);
+}
+
+.avix-ph__media > .avix-ph__perch {
+	right: 14%;
+	left: auto;
+	margin-left: 0;
+}
+
+/* ---------- Stat chip on the image ---------- */
+
+/* The chip hangs this far below the image; the figure keeps a little more
+   room than that under it, so the chip never crowds the stage's bottom edge
+   and the visual stays balanced against the character's headroom above.
+   Specific enough to beat Elementor's figure margin reset. */
+.avix-ph .avix-ph__media.has-stat {
+	--ph-stat-drop: clamp(14px, 1.9cqi, 26px);
+}
+
+.avix-ph.avix-ph--visual-image .avix-ph__visual .avix-ph__media.has-stat {
+	margin-bottom: calc(var(--ph-stat-drop) * 1.75);
+}
+
+/* A white card on the image's bottom-left corner, hanging over both edges
+   (into the column gap and the stage padding) so it covers as little of the
+   render as possible; the character stands at the top right, so the two
+   never meet. No backdrop blur: it is a solid card. */
+.avix-ph .avix-ph__stat {
+	position: absolute;
+	bottom: calc(-1 * var(--ph-stat-drop));
+	left: calc(-1 * clamp(12px, 2.4cqi, 32px));
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	width: max-content;
+	max-width: min(80%, 340px);
+	margin: 0;
+	padding: 14px 22px 14px 14px;
+	border: 1px solid rgba(26, 26, 26, 0.06);
+	border-radius: 20px;
+	color: var(--ph-stat-ink);
+	background: var(--ph-stat-bg);
+	box-shadow: 0 28px 50px -26px rgba(26, 26, 26, 0.38), 0 4px 12px rgba(26, 26, 26, 0.05);
+	font-family: var(--ph-font-body);
+	line-height: 1.2;
+	text-align: left;
+	text-transform: none;
+}
+
+.avix-ph .avix-ph__stat:not(.has-seal) {
+	padding-left: 22px;
+}
+
+.avix-ph--dark .avix-ph__stat {
+	border-color: transparent;
+	box-shadow: 0 28px 50px -24px rgba(0, 0, 0, 0.75);
+}
+
+.avix-ph .avix-ph__stat-seal {
+	display: block;
+	flex: none;
+	width: 46px;
+	height: 46px;
+}
+
+.avix-ph .avix-ph__seal {
+	--pf-icon-color: var(--ph-stat-seal);
+
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* The orange check fills the seal's cut-out exactly (same 2-unit stroke). */
+.avix-ph .avix-ph__seal-check {
+	fill: none;
+	stroke: var(--ph-stat-check);
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.avix-ph .avix-ph__stat-copy {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	min-width: 0;
+}
+
+.avix-ph .avix-ph__stat-value {
+	color: var(--ph-stat-ink);
+	font-family: var(--ph-font-display);
+	font-size: clamp(21px, 2.1cqi, 28px);
+	font-weight: 600;
+	line-height: 1.05;
+	letter-spacing: -0.03em;
+	font-variant-numeric: tabular-nums;
+	overflow-wrap: break-word;
+}
+
+.avix-ph .avix-ph__stat-label {
+	color: var(--ph-stat-muted);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.45;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	text-wrap: balance;
+	overflow-wrap: break-word;
+}
+
+/* "A · B" labels set as two lines: the separator is a zero-height block
+   (still read aloud), so the dot never hangs at the end of a line. */
+.avix-ph .avix-ph__stat-sep {
+	display: block;
+	height: 0;
+	overflow: hidden;
+}
+
+/* A label without a value reads as a short statement, not a caption. */
+.avix-ph .avix-ph__stat-label:only-child {
+	color: var(--ph-stat-ink);
+	font-size: 14px;
+	line-height: 1.35;
+	letter-spacing: -0.005em;
+	text-transform: none;
+}
+
+/* With the chip on the bottom-left corner, the pause button moves to the
+   image's top-right corner (under the character's feet), so the two never
+   meet however long the chip's text is. */
+.avix-ph .avix-ph__media.has-stat > .avix-ph__pause,
+.avix-ph .avix-ph__media.has-stat > .avix-ph__pause:focus,
+.avix-ph .avix-ph__media.has-stat > .avix-ph__pause:active {
+	top: 14px;
+	right: 14px;
+	bottom: auto;
+}
+
+/* ---------- Reveal ---------- */
+
+.avix-ph.is-armed .avix-ph__rise {
+	opacity: 0;
+	transform: translateY(22px);
+	transition: opacity 0.7s ease, transform 0.8s var(--ph-ease);
+	transition-delay: calc(var(--i, 0) * 80ms + 60ms);
+}
+
+.avix-ph.is-armed.is-in .avix-ph__rise {
+	opacity: 1;
+	transform: none;
+}
+
+/* The headline and lead are the page's largest paint (LCP): they only
+   slide, never start invisible. */
+.avix-ph.is-armed .avix-ph__title,
+.avix-ph.is-armed .avix-ph__lead {
+	opacity: 1;
+	transform: translateY(14px);
+}
+
+/* The visual's entrance waits for the visual itself (JS adds is-in to it),
+   so on phones it plays when the orbit scrolls into view, not below the
+   fold at load. */
+.avix-ph.is-armed .avix-ph__ring,
+.avix-ph.is-armed .avix-ph__halo,
+.avix-ph.is-armed .avix-ph__pause {
+	opacity: 0;
+	scale: 0.86;
+	transition: opacity 0.9s ease, scale 1.1s var(--ph-ease);
+}
+
+.avix-ph.is-armed .avix-ph__ring--core {
+	transition-delay: 0.15s;
+}
+
+.avix-ph.is-armed .avix-ph__ring--inner {
+	transition-delay: 0.25s;
+}
+
+.avix-ph.is-armed .avix-ph__ring--outer {
+	transition-delay: 0.35s;
+}
+
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__ring,
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__halo,
+.avix-ph.is-armed.is-in .avix-ph__pause {
+	opacity: 1;
+	scale: 1;
+}
+
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__ring--core {
+	opacity: 0.8;
+}
+
+.avix-ph.is-armed .avix-ph__chip {
+	opacity: 0;
+	scale: 0.4;
+}
+
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__chip {
+	opacity: 1;
+	scale: 1;
+	transition-delay: 0s, 0s, 0s, calc(var(--i, 0) * 70ms + 0.5s), calc(var(--i, 0) * 70ms + 0.5s);
+}
+
+.avix-ph.is-armed .avix-ph__hub-tile {
+	opacity: 0;
+	scale: 0.6;
+}
+
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__hub-tile {
+	opacity: 1;
+	scale: 1;
+	transition-delay: 0.3s;
+}
+
+.avix-ph.is-armed .avix-ph__media-frame {
+	opacity: 0;
+	transform: translateY(28px) scale(0.97);
+	transition: opacity 0.8s ease 0.2s, transform 1s var(--ph-ease) 0.2s;
+}
+
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__media-frame {
+	opacity: 1;
+	transform: none;
+}
+
+/* The chip slides in after the image, and its seal lands like a stamp. */
+.avix-ph.is-armed .avix-ph__stat {
+	opacity: 0;
+	transform: translateY(18px);
+	transition: opacity 0.6s ease 0.7s, transform 0.9s var(--ph-ease) 0.7s;
+}
+
+.avix-ph.is-armed .avix-ph__stat-seal {
+	transform: scale(0.4) rotate(-50deg);
+	transition: transform 0.7s var(--ph-pop) 1s;
+}
+
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__stat,
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__stat-seal {
+	opacity: 1;
+	transform: none;
+}
+
+/* The character drops onto the hub once the rings have arrived. */
+.avix-ph.is-armed .avix-ph__perch {
+	opacity: 0;
+}
+
+.avix-ph.is-armed .avix-ph__visual.is-in .avix-ph__perch {
+	animation: avix-ph-land 0.9s cubic-bezier(0.3, 0.9, 0.4, 1) 0.85s both;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-ph-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes avix-ph-land {
+	0% {
+		opacity: 0;
+		transform: translateY(-180%);
+	}
+
+	55% {
+		opacity: 1;
+		transform: translateY(6%) scale(1.12, 0.86);
+	}
+
+	72% {
+		transform: translateY(-14%) scale(0.96, 1.05);
+	}
+
+	86% {
+		transform: translateY(2%) scale(1.03, 0.97);
+	}
+
+	100% {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* ---------- Layout by widget width ---------- */
+
+/* Four or more stats: a tidy two-up grid until the copy column is wide. */
+@container avix-ph (max-width: 1180px) {
+	.avix-ph .avix-ph__proof--many {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-auto-flow: row;
+		row-gap: 18px;
+	}
+
+	.avix-ph .avix-ph__proof--many .avix-ph__proof-item {
+		min-width: 0;
+		padding: 0;
+		border-left: 0;
+	}
+
+	.avix-ph .avix-ph__proof--many .avix-ph__proof-item:nth-child(even) {
+		padding-left: clamp(16px, 1.8cqi, 26px);
+		border-left: 1px solid var(--ph-line);
+	}
+
+	.avix-ph .avix-ph__proof--many .avix-ph__proof-item:last-child:nth-child(odd) {
+		grid-column: 1 / -1;
+	}
+}
+
+@container avix-ph (max-width: 1100px) {
+	.avix-ph__stage {
+		/* The card's edge sits on the page's content line (24px), like the
+		   sections below it. */
+		--ph-inset-auto: 24px;
+		--ph-gutter: clamp(24px, 3.2cqi, 40px);
+	}
+
+	.avix-ph .avix-ph__title {
+		font-size: clamp(40px, 5.7cqi, 64px);
+	}
+
+	.avix-ph__inner {
+		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+	}
+
+	.avix-ph .avix-ph__btn {
+		gap: 12px;
+		font-size: 15px;
+	}
+
+	.avix-ph .avix-ph__btn--primary {
+		padding-left: 22px;
+	}
+
+	.avix-ph .avix-ph__btn--ghost {
+		padding: 0 20px 0 22px;
+	}
+
+}
+
+/* Side by side at its narrowest, the image column is small: a tighter chip
+   covers as little of the render as on wide screens. Stacked layouts have
+   a large image again and keep the full chip. */
+@container avix-ph (900px < width <= 1100px) {
+	/* More of the chip hangs below the image than over it. */
+	.avix-ph .avix-ph__media.has-stat {
+		--ph-stat-drop: 28px;
+	}
+
+	.avix-ph .avix-ph__stat {
+		gap: 12px;
+		max-width: min(68%, 280px);
+		padding: 11px 16px 11px 11px;
+		border-radius: 18px;
+	}
+
+	.avix-ph .avix-ph__stat:not(.has-seal) {
+		padding-left: 16px;
+	}
+
+	.avix-ph .avix-ph__stat-seal {
+		width: 38px;
+		height: 38px;
+	}
+
+	.avix-ph .avix-ph__stat-copy {
+		gap: 4px;
+	}
+
+	.avix-ph .avix-ph__stat-value {
+		font-size: clamp(19px, 2cqi, 23px);
+	}
+
+	.avix-ph .avix-ph__stat-label {
+		font-size: 10.5px;
+	}
+}
+
+/* Stacked: text first, the visual below. */
+@container avix-ph (max-width: 900px) {
+	.avix-ph__stage {
+		--ph-radius-auto: 28px;
+		--ph-pad-auto: clamp(48px, 8cqi, 80px);
+	}
+
+	.avix-ph__inner {
+		grid-template-columns: minmax(0, 1fr);
+		gap: clamp(40px, 7cqi, 64px);
+	}
+
+	.avix-ph__copy {
+		max-width: 680px;
+	}
+
+	.avix-ph .avix-ph__title,
+	.avix-ph.avix-ph--visual-none .avix-ph__title {
+		max-width: 16ch;
+		font-size: clamp(44px, 7.4cqi, 64px);
+	}
+
+	/* The visual is centred under the copy, where the glow and the grid
+	   are, and large enough to carry the lower half of the card. */
+	.avix-ph__visual {
+		justify-content: center;
+	}
+
+	.avix-ph--visual-image .avix-ph__visual {
+		align-self: auto;
+	}
+
+	.avix-ph__orbit,
+	.avix-ph--labels .avix-ph__orbit {
+		width: min(100%, var(--ph-orbit-max, 480px));
+	}
+
+	.avix-ph .avix-ph__media {
+		max-width: var(--ph-orbit-max, 540px);
+	}
+
+	.avix-ph__stage::before {
+		-webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 78%, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 85%);
+		mask-image: radial-gradient(ellipse 90% 60% at 50% 78%, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 85%);
+	}
+
+	.avix-ph__stage::after {
+		top: auto;
+		right: 50%;
+		bottom: -12%;
+		width: min(760px, 120%);
+		opacity: 0.7;
+		transform: translateX(50%);
+	}
+}
+
+/* Stacked tablets: an image starts on the copy's edge, so the hero keeps one
+   left axis; the chip hangs a little past it, never into the stage edge. */
+@container avix-ph (600px < width <= 900px) {
+	.avix-ph.avix-ph--visual-image .avix-ph__visual {
+		justify-content: flex-start;
+	}
+
+	.avix-ph.avix-ph--visual-image .avix-ph__visual .avix-ph__media.avix-ph__media {
+		margin-inline: 0;
+	}
+
+	.avix-ph.avix-ph--visual-image .avix-ph__stat {
+		left: calc(-1 * clamp(0px, var(--ph-gutter) - 12px, 12px));
+	}
+}
+
+@container avix-ph (max-width: 600px) {
+	.avix-ph__stage {
+		--ph-inset-auto: 8px;
+		--ph-radius-auto: 24px;
+		--ph-gutter: 18px;
+		--ph-pad-auto: 44px;
+	}
+
+	.avix-ph .avix-ph__crumbs {
+		margin-bottom: 24px;
+		font-size: 13px;
+	}
+
+	.avix-ph .avix-ph__eyebrow {
+		font-size: 12px;
+	}
+
+	.avix-ph .avix-ph__title,
+	.avix-ph.avix-ph--visual-none .avix-ph__title {
+		max-width: 100%;
+		/* Follows the column width (stage minus 54px), so the default
+		   headline sets in four even lines from 320 to 430px wide. */
+		font-size: clamp(34px, calc(12.7cqi - 7px), 52px);
+		line-height: 1.06;
+		letter-spacing: -0.032em;
+	}
+
+	.avix-ph .avix-ph__lead {
+		font-size: 16px;
+		line-height: 1.6;
+	}
+
+	.avix-ph .avix-ph__break {
+		display: none;
+	}
+
+	.avix-ph__actions {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 10px;
+	}
+
+	/* Both full-width buttons: label on the left, arrow on the right. */
+	.avix-ph .avix-ph__btn {
+		justify-content: space-between;
+		width: 100%;
+		min-height: 56px;
+	}
+
+	.avix-ph .avix-ph__btn-text {
+		flex: 1 1 auto;
+	}
+
+	.avix-ph .avix-ph__btn--ghost,
+	.avix-ph .avix-ph__btn--ghost:visited,
+	.avix-ph .avix-ph__btn--ghost:focus {
+		padding: 8px 20px 8px 22px;
+	}
+
+	.avix-ph .avix-ph__btn-icon {
+		width: 42px;
+		height: 42px;
+	}
+
+	/* Proof: a tidy two-up grid; an odd last item takes the full row. */
+	.avix-ph .avix-ph__proof {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-auto-flow: row;
+		gap: 20px 16px;
+	}
+
+	.avix-ph .avix-ph__proof-item {
+		min-width: 0;
+		padding: 0;
+		border-left: 0;
+	}
+
+	.avix-ph .avix-ph__proof-item:nth-child(even) {
+		padding-left: 16px;
+		border-left: 1px solid var(--ph-line);
+	}
+
+	.avix-ph .avix-ph__proof-item:last-child:nth-child(odd):not(:first-child) {
+		grid-column: 1 / -1;
+		padding-top: 18px;
+		border-top: 1px solid var(--ph-line);
+	}
+
+	.avix-ph .avix-ph__proof-value {
+		font-size: 26px;
+	}
+
+	.avix-ph__visual {
+		justify-content: center;
+	}
+
+	.avix-ph__orbit,
+	.avix-ph--labels .avix-ph__orbit {
+		width: min(100%, var(--ph-orbit-max, 400px));
+	}
+
+	.avix-ph__media-frame {
+		border-radius: 22px;
+	}
+
+	/* Phones: the chip sits under the image, full width, so it never
+	   covers the render (and needs no room reserved below the figure). */
+	.avix-ph.avix-ph--visual-image .avix-ph__visual .avix-ph__media.has-stat {
+		margin-bottom: 0;
+	}
+
+	.avix-ph .avix-ph__stat {
+		position: relative;
+		bottom: auto;
+		left: auto;
+		width: auto;
+		max-width: none;
+		margin-top: 12px;
+		padding: 12px 18px 12px 12px;
+		border-color: var(--ph-chip-line);
+		border-radius: 18px;
+		box-shadow: 0 18px 36px -26px rgba(26, 26, 26, 0.3);
+	}
+
+	.avix-ph .avix-ph__stat:not(.has-seal) {
+		padding-left: 18px;
+	}
+
+	.avix-ph .avix-ph__stat-seal {
+		width: 42px;
+		height: 42px;
+	}
+
+	.avix-ph .avix-ph__stat-value {
+		font-size: 22px;
+	}
+
+	/* Icon only on phones: a 40px round button in the corner. */
+	.avix-ph .avix-ph__pause,
+	.avix-ph .avix-ph__pause:focus,
+	.avix-ph .avix-ph__pause:active {
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		padding: 0;
+	}
+
+	.avix-ph .avix-ph__pause-text {
+		display: none;
+	}
+}
+
+/* ---------- Side margins: line up with the header (opt-in) ---------- */
+
+/* The copy starts on the Smart Header's logo line (5% of the width, as the
+   header and the FAQ), so the hero shares one content edge with the
+   sections below it that use the same setting. The stage keeps a 16px
+   inset (8px on phones) and the copy padding is what is left of the 5%. */
+.avix-ph--edge-header .avix-ph__stage {
+	--ph-inset-auto: 16px;
+	--ph-edge: clamp(16px, 5cqi, 72px);
+	--ph-gutter-min: 20px;
+	--ph-gutter: max(var(--ph-gutter-min), calc(var(--ph-edge) - var(--ph-inset, var(--ph-inset-auto)) - 1px));
+}
+
+/* Full width stage: no inset and no border, the copy sits on the line itself. */
+.avix-ph--edge-header.avix-ph--bleed .avix-ph__stage {
+	--ph-gutter: max(var(--ph-gutter-min), var(--ph-edge));
+}
+
+@container avix-ph (max-width: 600px) {
+	.avix-ph--edge-header .avix-ph__stage {
+		--ph-inset-auto: 8px;
+		--ph-gutter-min: 18px;
+	}
+}
+
+/* ---------- Header clearance before the header script runs ---------- */
+
+/* The Smart Header's CSS estimate of its height (91px from 481 to 900px,
+   84px on phones) is shorter than the header with its notch (106 / 91px),
+   so the stage moved down once the script measured it. With the notch the
+   real height is the floor; the measured value still wins when larger. */
+@media (min-width: 481px) and (max-width: 900px) {
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--clear {
+		padding-top: calc(max(var(--avix-header-h, 0px), 106px) + var(--ph-header-gap, var(--ph-header-gap-auto)));
+	}
+
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--bleed.avix-ph--clear {
+		padding-top: 0;
+	}
+
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--bleed.avix-ph--clear .avix-ph__stage {
+		padding-top: calc(max(var(--avix-header-h, 0px), 106px) + var(--ph-pad-top, var(--ph-pad-auto)));
+	}
+}
+
+@media (max-width: 480px) {
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--clear {
+		padding-top: calc(max(var(--avix-header-h, 0px), 91px) + var(--ph-header-gap, var(--ph-header-gap-auto)));
+	}
+
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--bleed.avix-ph--clear {
+		padding-top: 0;
+	}
+
+	body:not(.elementor-editor-active):has(.avix-sh__notch) .avix-ph--bleed.avix-ph--clear .avix-ph__stage {
+		padding-top: calc(max(var(--avix-header-h, 0px), 91px) + var(--ph-pad-top, var(--ph-pad-auto)));
+	}
+}
+
+/* ---------- Editor ---------- */
+
+/* No entrance replays while editing in Elementor. */
+.elementor-editor-active .avix-ph .avix-ph__perch {
+	animation: none;
+	opacity: 1;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-ph *,
+	.avix-ph *::before,
+	.avix-ph *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-ph.is-armed .avix-ph__rise,
+	.avix-ph.is-armed .avix-ph__pause,
+	.avix-ph.is-armed .avix-ph__ring,
+	.avix-ph.is-armed .avix-ph__halo,
+	.avix-ph.is-armed .avix-ph__chip,
+	.avix-ph.is-armed .avix-ph__hub-tile,
+	.avix-ph.is-armed .avix-ph__media-frame,
+	.avix-ph.is-armed .avix-ph__stat,
+	.avix-ph.is-armed .avix-ph__stat-seal,
+	.avix-ph.is-armed .avix-ph__perch {
+		opacity: 1;
+		transform: none;
+		scale: 1;
+	}
+
+	.avix-ph .avix-ph__chip:hover,
+	.avix-ph .avix-ph__chip:focus-visible,
+	.avix-ph .avix-ph__chip.is-active {
+		transform: none;
+	}
+
+	/* Nothing moves, so there is nothing to pause. */
+	.avix-ph .avix-ph__pause {
+		display: none;
+	}
+}

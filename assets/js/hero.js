@@ -165,14 +165,15 @@
 		if (document.fonts && document.fonts.ready) {
 			document.fonts.ready.then(function () {
 				if (self.alive) {
-					self.seat();
-					self.placeTags();
+					self.layoutText();
 				}
 			});
 		}
 
-		this.initBuddy();
+		// Measured before initBuddy() adds its classes, so the first
+		// measurement does not have to recalculate styles it just changed.
 		this.resize();
+		this.initBuddy();
 		this.update();
 	};
 
@@ -430,12 +431,17 @@
 		return any;
 	};
 
+	// Reads first (sizes, the seat, the tag positions), writes after: one
+	// layout per resize instead of one per step.
 	Hero.prototype.resize = function () {
 		if (!this.alive) {
 			return;
 		}
 		var w = this.root.clientWidth;
 		var h = this.root.clientHeight;
+		var color = this.ctx ? window.getComputedStyle(this.root).getPropertyValue('--hero-trail').trim() || '#fb6007' : '';
+		var seat = this.measureSeat();
+		var tags = this.measureTags();
 
 		if (this.ctx && w && h && (w !== this.w || h !== this.h)) {
 			this.w = w;
@@ -450,10 +456,18 @@
 			this.local = null;
 		}
 		if (this.ctx) {
-			this.color = window.getComputedStyle(this.root).getPropertyValue('--hero-trail').trim() || '#fb6007';
+			this.color = color;
 		}
-		this.seat();
-		this.placeTags();
+		this.applySeat(seat);
+		this.applyTags(tags);
+	};
+
+	/** The seat and the tags again (the web fonts arrived): reads, then writes. */
+	Hero.prototype.layoutText = function () {
+		var seat = this.measureSeat();
+		var tags = this.measureTags();
+		this.applySeat(seat);
+		this.applyTags(tags);
 	};
 
 	/* ------------------------------------------------------------------ */
@@ -461,8 +475,13 @@
 	/* ------------------------------------------------------------------ */
 
 	Hero.prototype.seat = function () {
+		this.applySeat(this.measureSeat());
+	};
+
+	/** Reads only: how far the avatar drops (over a lowercase letter) and its head height. */
+	Hero.prototype.measureSeat = function () {
 		if (!this.buddy) {
-			return;
+			return null;
 		}
 		var perch = this.buddy.parentNode;
 		var box = this.buddy.getBoundingClientRect();
@@ -496,14 +515,24 @@
 				drop = ruler.measureText('H').actualBoundingBoxAscent - ruler.measureText('x').actualBoundingBoxAscent;
 			}
 		}
-		if (drop > 0.5) {
-			this.buddy.style.setProperty('--hero-seat-drop', drop.toFixed(1) + 'px');
-		} else {
+		if (!(drop > 0.5)) {
 			drop = 0;
-			this.buddy.style.removeProperty('--hero-seat-drop');
 		}
 		// Head centre (row 1.5 of 11) measured up from the bubble's bottom edge.
-		this.buddy.style.setProperty('--hero-say-tail', (box.height * 0.364 - drop).toFixed(1) + 'px');
+		return { drop: drop, tail: box.height * 0.364 - drop };
+	};
+
+	/** Writes only: the measured seat. */
+	Hero.prototype.applySeat = function (seat) {
+		if (!seat || !this.buddy) {
+			return;
+		}
+		if (seat.drop > 0.5) {
+			this.buddy.style.setProperty('--hero-seat-drop', seat.drop.toFixed(1) + 'px');
+		} else {
+			this.buddy.style.removeProperty('--hero-seat-drop');
+		}
+		this.buddy.style.setProperty('--hero-say-tail', seat.tail.toFixed(1) + 'px');
 	};
 
 	/* ------------------------------------------------------------------ */
@@ -511,25 +540,40 @@
 	/* ------------------------------------------------------------------ */
 
 	Hero.prototype.placeTags = function () {
+		this.applyTags(this.measureTags());
+	};
+
+	/** Reads only: where each tag goes (every width is read before any tag moves). */
+	Hero.prototype.measureTags = function () {
 		if (!this.tags.length || !this.title || window.getComputedStyle(this.tags[0]).display === 'none') {
-			return;
+			return null;
 		}
 		var lines = this.lineBoxes();
 		if (!lines.length) {
-			return;
+			return null;
 		}
 		var head = this.title.parentNode.getBoundingClientRect();
 		var bounds = this.root.getBoundingClientRect();
 		var gap = 28;
 
-		this.tags.forEach(function (tag) {
+		return this.tags.map(function (tag) {
 			var first = tag.classList.contains('avix-hero__tag--1');
 			var width = tag.offsetWidth;
 			var x = first ? lines[0].left - gap - width : lines[lines.length - 1].right + gap;
 			var fits = first ? x >= bounds.left + EDGE : x + width <= bounds.right - EDGE;
-			tag.style.setProperty('--hero-tag-x', (x - head.left).toFixed(1) + 'px');
-			tag.classList.add('is-placed');
-			tag.classList.toggle('is-cramped', !fits);
+			return { tag: tag, x: x - head.left, fits: fits };
+		});
+	};
+
+	/** Writes only: the measured tag positions. */
+	Hero.prototype.applyTags = function (places) {
+		if (!places) {
+			return;
+		}
+		places.forEach(function (place) {
+			place.tag.style.setProperty('--hero-tag-x', place.x.toFixed(1) + 'px');
+			place.tag.classList.add('is-placed');
+			place.tag.classList.toggle('is-cramped', !place.fits);
 		});
 	};
 

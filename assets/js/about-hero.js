@@ -33,9 +33,15 @@
     function measure() {
       frame = 0;
       if (destroyed || !root.isConnected || root.classList.contains('is-still')) return;
+      // Every read first, then the writes: one layout per measure.
       const period = groups[0].getBoundingClientRect().width;
       if (!period) return;
       const copies = Math.ceil(marquee.clientWidth / period) + 2;
+      // Larger editor typography or longer labels may need additional vertical room.
+      const tileHeight = rail.querySelector('.avix-about__hub').getBoundingClientRect().height;
+      const groupHeight = Math.max(...groups.map(group => group.getBoundingClientRect().height));
+      const height = Math.max(tileHeight, groupHeight) + 28;
+      const current = marquee.getBoundingClientRect().height;
       rail.style.setProperty('--aa-period', period + 'px');
       tracks.forEach((track, index) => {
         while (track.children.length > copies) track.lastElementChild.remove();
@@ -45,10 +51,8 @@
           track.append(copy);
         }
       });
-      // Larger editor typography or longer labels may need additional vertical room.
-      const tileHeight = rail.querySelector('.avix-about__hub').getBoundingClientRect().height;
-      const groupHeight = Math.max(...groups.map(group => group.getBoundingClientRect().height));
-      marquee.style.height = Math.max(tileHeight, groupHeight) + 28 + 'px';
+      // The CSS already reserves the usual height: only a real difference is written (no shift).
+      if (Math.abs(height - current) > 2) marquee.style.height = height + 'px';
     }
     function schedule() { if (!frame && !destroyed) frame = requestAnimationFrame(measure); }
     function motionChanged() {

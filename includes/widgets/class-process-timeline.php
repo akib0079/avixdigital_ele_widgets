@@ -815,13 +815,42 @@ class Process_Timeline extends Widget_Base {
 			}
 			$html = wp_get_attachment_image( $m['id'], 'medium', false, $attrs );
 			if ( $html ) {
-				return $html;
+				return $this->lazy_img( $html );
 			}
 		}
 		if ( '' !== $m['url'] ) {
 			return sprintf( '<img class="avix-pt__photo" src="%s" alt="%s" width="160" height="160" loading="lazy" decoding="async">', esc_url( $m['url'] ), esc_attr( $label ) );
 		}
 		return sprintf( '<span class="avix-pt__monogram" role="img" aria-label="%s">%s</span>', esc_attr( $label ), esc_html( $this->initials( $m['name'] ) ) );
+	}
+
+	/**
+	 * Keeps a team photo lazy. Some sites filter attachment images to
+	 * loading="eager" (avixdigital.com does), which made these below-the-fold
+	 * photos compete with the hero image on first load. Lazy also keeps the
+	 * sizes="auto, ..." WordPress adds valid (auto is only allowed on lazy images).
+	 *
+	 * @param string $html Image markup.
+	 */
+	private function lazy_img( $html ) {
+		$html = (string) $html;
+		if ( '' === $html ) {
+			return $html;
+		}
+		if ( class_exists( '\WP_HTML_Tag_Processor' ) ) {
+			$tags = new \WP_HTML_Tag_Processor( $html );
+			if ( ! $tags->next_tag( 'img' ) ) {
+				return $html;
+			}
+			$tags->set_attribute( 'loading', 'lazy' );
+			$tags->set_attribute( 'decoding', 'async' );
+			$tags->remove_attribute( 'fetchpriority' );
+			return $tags->get_updated_html();
+		}
+		if ( preg_match( '/\sloading=(["\'])[^"\']*\1/i', $html ) ) {
+			return (string) preg_replace( '/\sloading=(["\'])[^"\']*\1/i', ' loading="lazy"', $html, 1 );
+		}
+		return (string) preg_replace( '/^<img\b/i', '<img loading="lazy"', $html, 1 );
 	}
 
 	/**
@@ -853,65 +882,28 @@ class Process_Timeline extends Widget_Base {
 	}
 
 	/**
-	 * schema.org Person for each named member, linked to the site as employer.
+	 * schema.org Person for each named member, employed by the site's
+	 * Organization (worksFor → #organization). The founder is the site's one
+	 * founder Person (Tools > Avix SEO: entity), printed once per page and
+	 * never redefined here; with Yoast SEO it is already in the head, so the
+	 * founder's card adds nothing. Everyone else gets their own @id
+	 * (#person-<name>), printed once per page (includes/seo/class-person.php).
 	 */
 	private function team_schema( array $members ) {
-		$home   = home_url( '/' );
-		$host   = wp_parse_url( $home, PHP_URL_HOST );
-		$org    = array(
-			'@type' => 'Organization',
-			'name'  => wp_strip_all_tags( get_bloginfo( 'name' ) ),
-			'url'   => $home,
-		);
-		$people = array();
-		foreach ( $members as $m ) {
-			$name = wp_strip_all_tags( $m['name'] );
-			if ( '' === $name ) {
-				continue;
-			}
-			$person = array(
-				'@type' => 'Person',
-				'name'  => $name,
-			);
-			// Same @id as the Compare & CEO Quote widget, so one person = one entity.
-			if ( '' !== sanitize_title( $name ) ) {
-				$person['@id'] = home_url( '/#person-' . sanitize_title( $name ) );
-			}
-			if ( '' !== $m['role'] ) {
-				$person['jobTitle'] = wp_strip_all_tags( $m['role'] );
-			}
-			$image = $m['id'] ? wp_get_attachment_image_url( $m['id'], 'medium' ) : $m['url'];
-			if ( $image ) {
-				$person['image'] = esc_url_raw( $image );
-			}
-			$link = trim( (string) ( $m['link']['url'] ?? '' ) );
-			if ( '' !== $link && '/' === $link[0] && ( ! isset( $link[1] ) || '/' !== $link[1] ) ) {
-				$link = home_url( $link );
-			}
-			$link = esc_url_raw( $link, array( 'http', 'https' ) );
-			if ( '' !== $link ) {
-				if ( wp_parse_url( $link, PHP_URL_HOST ) === $host ) {
-					$person['url'] = $link;
-				} else {
-					$person['sameAs'] = array( $link );
-				}
-			}
-			$person['worksFor'] = $org;
-			$people[]           = $person;
-		}
-		if ( ! $people ) {
+		if ( ! class_exists( '\AvixWidgets\SEO\Person' ) ) {
 			return;
 		}
-		$json = wp_json_encode(
-			array(
-				'@context' => 'https://schema.org',
-				'@graph'   => $people,
-			),
-			JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP
-		);
-		if ( $json ) {
-			echo '<script type="application/ld+json">' . $json . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON with < > & hex-escaped.
+		$people = array();
+		foreach ( $members as $m ) {
+			$image    = $m['id'] ? wp_get_attachment_image_url( $m['id'], 'medium' ) : $m['url'];
+			$people[] = array(
+				'name'     => $m['name'],
+				'jobTitle' => $m['role'],
+				'image'    => $image ? (string) $image : '',
+				'link'     => (string) ( $m['link']['url'] ?? '' ),
+			);
 		}
+		\AvixWidgets\SEO\Person::print_nodes( \AvixWidgets\SEO\Person::widget_nodes( $people ) );
 	}
 
 	private function default_steps() {
