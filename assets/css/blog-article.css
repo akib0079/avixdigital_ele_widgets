@@ -107,13 +107,16 @@
 	--art-display: "Avix Art Display", "Space Grotesk", "Avix Art Display Fallback", Arial, sans-serif;
 	--art-body: "Avix Art Inter", "Inter", "Avix Art Text Fallback", Arial, sans-serif;
 	--art-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
-	--art-max: 1240px;
+	--art-max: 1440px;
 	--art-gutter: 65px;
 	/* 1200px and up: contents | article | contact and share. The five columns
 	   add up to --art-max, the same width as the hero above them. */
-	--art-rail: clamp(200px, 16.5vw, 236px);
-	--art-side: clamp(212px, 17vw, 248px);
-	--art-gap: clamp(36px, 3.2vw, 52px);
+	--art-rail: clamp(208px, 15.5vw, 264px);
+	--art-side: clamp(216px, 16.5vw, 280px);
+	--art-gap: clamp(36px, 3.4vw, 64px);
+	/* Running text stays at a comfortable line length (about 70-75
+	   characters) while figures, tables and cards use the full column. */
+	--art-text: 720px;
 	--art-measure: 680px;
 	--art-wide: 0px;
 	--art-admin: var(--wp-admin--admin-bar--height, 0px);
@@ -1218,6 +1221,17 @@ html body .avix-art .avix-art-prose[tabindex="-1"]:focus {
 .avix-art .avix-art-prose p {
 	margin-bottom: 0;
 	text-wrap: pretty;
+}
+
+.avix-art .avix-art-prose > :is(p, ul, ol, h2, h3, h4, blockquote:not([class])) {
+	max-width: var(--art-text);
+}
+
+/* Wide screens: a touch larger text for the longer line. */
+@media (min-width: 1440px) {
+	.avix-art {
+		--art-fs: 20px;
+	}
 }
 
 .avix-art .avix-art-prose strong,

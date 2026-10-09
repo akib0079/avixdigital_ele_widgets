@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.17.3**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.17.4**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.17.3.zip](dist/avix-elementor-widgets-1.17.3.zip).
+1. Download [avix-elementor-widgets-1.17.4.zip](dist/avix-elementor-widgets-1.17.4.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,10 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.17.4
+
+- Blog article: a wider page. The hero, the three columns, the closing band and the related posts now share a 1440px width (was 1240px), with a roomier table of contents and side card. Running text keeps a comfortable line length (about 72 characters, 720px) while figures, tables, key takeaways and other cards use the full article column; body text steps up to 20px from 1440px wide.
 
 ### 1.17.3
 
