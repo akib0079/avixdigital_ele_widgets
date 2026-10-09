@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.16.0**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.17.0**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.16.0.zip](dist/avix-elementor-widgets-1.16.0.zip).
+1. Download [avix-elementor-widgets-1.17.0.zip](dist/avix-elementor-widgets-1.17.0.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,14 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.17.0
+
+- Blog article template: every blog post gets a purpose-built article page (Settings › Avix blog, on by default): a dark hero with breadcrumb, category, headline, dek, author, published/updated dates, reading time and the featured image in a light frame; a sticky table of contents with scroll-spy (collapsible on phones); a calm reading column; styled key takeaways, callouts, tables, checklists, figures with a lightbox, FAQ and case-study proof cards; a side card and end band that point to the matching service (per post or by category); author box; related posts; share links without third-party scripts; reading progress. The theme's header and footer stay exactly as on other pages, and Yoast keeps the Article and breadcrumb schema.
+- SEO module: Organization schema with description, contact, founder, founding year, area served and expertise (Tools › Avix SEO: entity); one founder Person for the whole site and the blog author; Service schema inside the Yoast graph on service pages; Home › Blog › Post breadcrumbs; case studies link to the services they prove; 404-only redirects for retired URLs; and an SEO data importer (Tools › Avix SEO: data) that writes titles, descriptions, focus keyphrases and social images per page with a dry-run diff, backups and restore.
+- Case studies: re-importing unchanged data no longer touches the modified date; optional challenge headings; case-study SEO titles, descriptions and internal links updated; the approved Products for Home result added with its source.
+- Performance: the case-study shader steps down to a still frame on slow or software-rendered devices and pauses when idle; About and Services hero layout shifts removed; widget scripts deferred; lighter default logo mark; media player scripts only where needed.
+- Smaller: optional "View all services" link in the Smart Header and a legal links row in the Site Footer; Testimonial Stack source links; simple links allowed in the Services, About Hero and Post Grid intros.
 
 ### 1.16.0
 

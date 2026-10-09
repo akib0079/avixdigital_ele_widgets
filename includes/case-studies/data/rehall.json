@@ -24,7 +24,7 @@
 	"yoast": {
 		"focuskw": "Rehall Shopify case study",
 		"title": "Rehall Shopify Case Study: Custom Theme & Apps | AvixDigital",
-		"metadesc": "Rehall Shopify case study: how we turned a high-fidelity skiwear design into a fast, scalable store with smart navigation, spec filters and integrated apps.",
+		"metadesc": "Rehall Shopify case study: a Dutch skiwear brand's design built as a fast three-language store with smart navigation, spec filters and nine apps.",
 		"bctitle": "Rehall",
 		"og_image": "@media:avix-cs-rehall-og.jpg"
 	},
@@ -47,6 +47,7 @@
 		"card_tags": "Shopify, Theme engineering",
 		"card_label": "Designed for",
 		"card_value": "Faster discovery",
+		"challenge_heading": "The challenge: a premium skiwear design on a fast Shopify store",
 		"challenge_statement": "The primary hurdle in modern e-commerce is bridging the gap between [premium aesthetic design] and elite technical performance.",
 		"challenge_body": [
 			"Rehall designs technical ski and snowboard outerwear for men, women and kids, and sells it directly across the Netherlands, Belgium and Germany. The brief was not another pretty catalogue: the storefront had to behave like a high-performance sales engine, turning a static, high-fidelity design into a dynamic, scalable Shopify ecosystem built to maximise revenue.",
@@ -70,7 +71,7 @@
 		"outcome_statement": "The architectural overhaul directly translated into [proven, measurable sales growth].",
 		"outcome_body": [
 			"By delivering a lightning-fast, visually compelling, and frictionless shopping experience, the Rehall.com platform successfully maximised its conversion rate. The resulting infrastructure now provides a robust, future-proof foundation for scaling their operations and driving sustained revenue.",
-			"That foundation is visible today: the store trades its Winter 26 collection in English, Dutch and German on Shopify, with new campaigns and categories added season after season."
+			"That foundation is visible today: the store trades its Winter 26 collection in English, Dutch and German on Shopify, with new campaigns and categories added season after season. See another <a href=\"/case-studies/kampeerwinkel-roermond/\">multi-language Shopify store</a> we built for Kampeerwinkel Roermond."
 		],
 		"outcome_pillars": [
 			"Faster, frictionless buying journey",

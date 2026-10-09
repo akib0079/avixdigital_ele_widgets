@@ -205,6 +205,25 @@
 	text-wrap: pretty;
 }
 
+/* Simple links in the intro text (it allows <a>, <strong>, <em>). */
+.avix-pg .avix-pg__text a {
+	color: var(--pg-ink);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+	transition: color 0.2s ease;
+}
+
+.avix-pg .avix-pg__text a:hover,
+.avix-pg .avix-pg__text a:focus-visible {
+	color: var(--pg-accent-text);
+}
+
+.avix-pg .avix-pg__text strong {
+	color: var(--pg-ink);
+	font-weight: 600;
+}
+
 /* ---------- Search + reading character ---------- */
 
 .avix-pg__perch {

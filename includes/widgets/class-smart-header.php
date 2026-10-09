@@ -378,6 +378,28 @@ class Smart_Header extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'all_services_link',
+			array(
+				'label'       => esc_html__( '"View all" link (optional)', 'avix-widgets' ),
+				'description' => esc_html__( 'Adds a text link to a services overview page at the end of the dropdown and of the mobile services list. Empty = no link.', 'avix-widgets' ),
+				'type'        => Controls_Manager::URL,
+				'placeholder' => self::SITE . 'service/',
+				'separator'   => 'before',
+			)
+		);
+
+		$this->add_control(
+			'all_services_label',
+			array(
+				'label'       => esc_html__( '"View all" link text', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => esc_html__( 'View all services', 'avix-widgets' ),
+				'label_block' => true,
+				'condition'   => array( 'all_services_link[url]!' => '' ),
+			)
+		);
+
 		$this->end_controls_section();
 	}
 
@@ -551,6 +573,7 @@ class Smart_Header extends Widget_Base {
 		);
 		$every    = isset( $s['hi_every']['size'] ) && '' !== $s['hi_every']['size'] ? (float) $s['hi_every']['size'] : 9;
 		$tone     = 'yes' === ( $s['light_mode'] ?? '' ) ? 'light' : 'dark';
+		$all      = $this->all_services( $s );
 
 		$this->add_render_attribute(
 			'root',
@@ -574,7 +597,7 @@ class Smart_Header extends Widget_Base {
 				<nav class="avix-sh__nav" aria-label="<?php esc_attr_e( 'Main', 'avix-widgets' ); ?>">
 					<ul class="avix-sh__menu">
 						<?php foreach ( (array) $s['menu'] as $i => $item ) : ?>
-							<?php $this->render_menu_item( $item, $i, $services, $id ); ?>
+							<?php $this->render_menu_item( $item, $i, $services, $id, $all ); ?>
 						<?php endforeach; ?>
 					</ul>
 				</nav>
@@ -598,7 +621,49 @@ class Smart_Header extends Widget_Base {
 			</div>
 		</header>
 		<?php
-		$this->render_mobile_menu( $s, $services, $id, $tone );
+		$this->render_mobile_menu( $s, $services, $id, $tone, $all );
+	}
+
+	/**
+	 * The optional "View all services" link: text and link settings, or null
+	 * when either is empty (the default), so nothing is printed.
+	 *
+	 * @param array $s Widget settings.
+	 * @return array{label:string, link:array}|null
+	 */
+	private function all_services( array $s ) {
+		$link  = (array) ( $s['all_services_link'] ?? array() );
+		$label = trim( (string) ( $s['all_services_label'] ?? '' ) );
+		if ( empty( $link['url'] ) || '' === $label ) {
+			return null;
+		}
+		return array(
+			'label' => $label,
+			'link'  => $link,
+		);
+	}
+
+	/**
+	 * "View all services" at the end of the desktop panel or the mobile list.
+	 * Prints nothing when the option is off.
+	 *
+	 * @param array|null $all    Result of all_services().
+	 * @param string     $key    Render attribute key, unique per link.
+	 * @param bool       $mobile True for the mobile menu list.
+	 */
+	private function render_all_services( $all, $key, $mobile ) {
+		if ( ! $all ) {
+			return;
+		}
+		$this->add_link_attributes( $key, $all['link'] );
+		$this->add_render_attribute( $key, 'class', $mobile ? 'avix-sh-menu__sublink avix-sh-menu__sublink--all' : 'avix-sh__item avix-sh__item--all' );
+		$arrow = $mobile ? 'avix-sh-menu__all-arrow' : 'avix-sh__item-arrow';
+		?>
+		<a <?php $this->print_render_attribute_string( $key ); ?>>
+			<span class="avix-sh__item-title"><?php echo esc_html( $all['label'] ); ?></span>
+			<span class="<?php echo esc_attr( $arrow ); ?>" aria-hidden="true"><?php echo $this->arrow_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup. ?></span>
+		</a>
+		<?php
 	}
 
 	private function render_notch( array $s ) {
@@ -678,7 +743,7 @@ class Smart_Header extends Widget_Base {
 		return $src ? $src : (string) ( $media['url'] ?? '' );
 	}
 
-	private function render_menu_item( array $item, $index, array $services, $id ) {
+	private function render_menu_item( array $item, $index, array $services, $id, $all = null ) {
 		$label = trim( (string) ( $item['label'] ?? '' ) );
 		if ( '' === $label ) {
 			return;
@@ -702,7 +767,7 @@ class Smart_Header extends Widget_Base {
 				<div class="avix-sh__panel" id="<?php echo esc_attr( $panel ); ?>">
 					<?php foreach ( $services as $i => $service ) : ?>
 						<?php $this->render_service( $service, 'svc-' . $i, 'avix-sh__item' ); ?>
-					<?php endforeach; ?>
+					<?php endforeach; ?><?php $this->render_all_services( $all, 'all-svc-' . $index, false ); ?>
 				</div>
 			</li>
 			<?php
@@ -759,7 +824,7 @@ class Smart_Header extends Widget_Base {
 		echo '</span>';
 	}
 
-	private function render_mobile_menu( array $s, array $services, $id, $style ) {
+	private function render_mobile_menu( array $s, array $services, $id, $style, $all = null ) {
 		$index = 0;
 		?>
 		<div class="avix-sh-menu avix-sh-menu--<?php echo esc_attr( $style ); ?>" id="avix-sh-menu-<?php echo esc_attr( $id ); ?>" data-sh-menu aria-hidden="true">
@@ -781,7 +846,7 @@ class Smart_Header extends Widget_Base {
 									<div class="avix-sh-menu__sub-inner">
 										<?php foreach ( $services as $j => $service ) : ?>
 											<?php $this->render_service( $service, 'msvc-' . $j, 'avix-sh-menu__sublink' ); ?>
-										<?php endforeach; ?>
+										<?php endforeach; ?><?php $this->render_all_services( $all, 'mall-svc-' . $i, true ); ?>
 									</div>
 								</div>
 							<?php else : ?>

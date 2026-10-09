@@ -6,6 +6,111 @@
  * character stands. Layout follows the widget width (container queries).
  */
 
+/* Metric-matched stand-ins while Inter and Space Grotesk load (font-display: swap):
+   Arial (Liberation Sans, Arimo and Helvetica share its widths) and Roboto
+   (Android), scaled to the web fonts' widths and line metrics, so the swap
+   does not re-wrap the headline or the lead and move the buttons (CLS).
+   Never used once the fonts have loaded. */
+@font-face {
+	font-family: "Avix PH Text Fallback";
+	src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("LiberationSans"), local("Arimo"), local("Helvetica");
+	font-weight: 100 349;
+	size-adjust: 105.1%;
+	ascent-override: 92.2%;
+	descent-override: 22.9%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Text Fallback";
+	src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("LiberationSans"), local("Arimo"), local("Helvetica");
+	font-weight: 350 500;
+	size-adjust: 107%;
+	ascent-override: 90.6%;
+	descent-override: 22.5%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Text Fallback";
+	src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("LiberationSans-Bold"), local("Arimo Bold"), local("Arimo-Bold"), local("Helvetica Bold"), local("Helvetica-Bold");
+	font-weight: 501 900;
+	size-adjust: 101%;
+	ascent-override: 95.9%;
+	descent-override: 23.9%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Text Fallback R";
+	src: local("Roboto"), local("Roboto-Regular"), local("Roboto Regular");
+	font-weight: 100 349;
+	size-adjust: 105.3%;
+	ascent-override: 92%;
+	descent-override: 22.9%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Text Fallback R";
+	src: local("Roboto"), local("Roboto-Regular"), local("Roboto Regular");
+	font-weight: 350 500;
+	size-adjust: 107.2%;
+	ascent-override: 90.4%;
+	descent-override: 22.5%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Text Fallback R";
+	src: local("Roboto Bold"), local("Roboto-Bold");
+	font-weight: 501 900;
+	size-adjust: 107.9%;
+	ascent-override: 89.8%;
+	descent-override: 22.3%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Display Fallback";
+	src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("LiberationSans"), local("Arimo"), local("Helvetica");
+	font-weight: 100 500;
+	size-adjust: 107.5%;
+	ascent-override: 91.5%;
+	descent-override: 27.2%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Display Fallback";
+	src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("LiberationSans-Bold"), local("Arimo Bold"), local("Arimo-Bold"), local("Helvetica Bold"), local("Helvetica-Bold");
+	font-weight: 501 900;
+	size-adjust: 100.5%;
+	ascent-override: 97.9%;
+	descent-override: 29.1%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Display Fallback R";
+	src: local("Roboto"), local("Roboto-Regular"), local("Roboto Regular");
+	font-weight: 100 500;
+	size-adjust: 108.3%;
+	ascent-override: 90.9%;
+	descent-override: 27%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Avix PH Display Fallback R";
+	src: local("Roboto Bold"), local("Roboto-Bold");
+	font-weight: 501 900;
+	size-adjust: 106.7%;
+	ascent-override: 92.2%;
+	descent-override: 27.4%;
+	line-gap-override: 0%;
+}
+
 .avix-ph {
 	--ph-bg: #ffffff;
 	--ph-stage: #faf8f5;
@@ -39,8 +144,8 @@
 	--ph-stat-muted: #5c5f66;
 	--ph-stat-seal: color-mix(in srgb, var(--ph-accent) 16%, #ffffff);
 	--ph-stat-check: var(--ph-accent);
-	--ph-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
-	--ph-font-body: "Inter", Arial, sans-serif;
+	--ph-font-display: "Space Grotesk", "Inter", "Avix PH Display Fallback", "Avix PH Display Fallback R", Arial, sans-serif;
+	--ph-font-body: "Inter", "Avix PH Text Fallback", "Avix PH Text Fallback R", Arial, sans-serif;
 	--ph-ease: cubic-bezier(0.22, 1, 0.36, 1);
 	--ph-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 	--ph-max: 1280px;

@@ -330,7 +330,20 @@
 	   Both pause off screen and in hidden tabs and draw one still frame with
 	   reduced motion. Text stays readable: inside the "calm" rectangles the
 	   field is capped at a dark tone (dark themes) or a faint tint (light
-	   themes), and the squares dissolve cell by cell. */
+	   themes), and the squares dissolve cell by cell.
+
+	   Performance guard (a GPU-backed browser animates exactly as designed):
+	   - software WebGL (no GPU: headless test machines, blocklisted GPUs,
+	     remote desktops) gets no shader at all, so the caller's CSS glow
+	     stays; every software frame would be a long main-thread task;
+	   - Save-Data and very weak devices get one still frame, like reduced
+	     motion;
+	   - the first frames are timed: below ~25 fps the loop draws a finished
+	     frame and stops there; a device that cannot hold 60 fps is held to
+	     an even 30;
+	   - after a while without any input (pointer, touch, keys, wheel,
+	     scroll) the flow slows to a standstill and waits; the next input
+	     picks it up where it stopped. */
 
 	var SHADER_VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
 	var GLSL_HEAD = [
@@ -474,6 +487,50 @@
 	var finePointer = mq('(hover: hover) and (pointer: fine)');
 	var caf = window.cancelAnimationFrame || window.clearTimeout;
 
+	// The guard (see above). Frame times in ms, from the browser's own frames.
+	var PROBE_SKIP = 4; // frames ignored after each start: first uploads, the page settling
+	var PROBE_FRAMES = 24; // frames timed (the median is used, so a stray long task does not count)
+	var SLOW_GAP = 40; // median frame interval above this (under 25 fps): stop on a finished frame
+	var SLOW_WORK = 16; // median time inside draw() above this: GL commands are blocking (software)
+	var CAP_GAP = 24; // median frame interval above this (it cannot hold 60 fps): hold an even 30 fps
+	var CAP_MIN = 30; // ms between drawn frames while held to 30 fps (vsync jitter tolerated)
+	var IDLE_AFTER = 10000; // ms without input before the flow settles
+	var SETTLE = 1600; // ms the flow takes to slow down to a standstill
+	var WAKE = 500; // ms it takes to pick up again
+	var INPUTS = ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'];
+	var clock = now; // frame() receives the frame's own timestamp as `now`
+
+	/** Save-Data, or a device too weak for a running shader (one still frame instead). */
+	function lowPower() {
+		var nav = window.navigator || {};
+		var conn = nav.connection || nav.mozConnection || nav.webkitConnection;
+		if ((conn && conn.saveData) || mq('(prefers-reduced-data: reduce)').matches) {
+			return true;
+		}
+		var cores = +nav.hardwareConcurrency || 0;
+		var memory = +nav.deviceMemory || 0; // GB, Chromium only
+		return (cores > 0 && cores <= 2) || (memory > 0 && memory < 2) || (memory > 0 && memory <= 2 && cores > 0 && cores <= 4);
+	}
+
+	/** WebGL drawn by the CPU (SwiftShader, llvmpipe…), when the browser did not refuse it itself. */
+	function softwareGL(gl) {
+		var name = '';
+		try {
+			var ext = gl.getExtension('WEBGL_debug_renderer_info');
+			name = String((ext && gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) || gl.getParameter(gl.RENDERER) || '');
+		} catch (error) {
+			name = '';
+		}
+		return /swiftshader|llvmpipe|softpipe|software|basic render/i.test(name);
+	}
+
+	function median(list) {
+		var sorted = list.slice().sort(function (a, b) {
+			return a - b;
+		});
+		return sorted.length ? sorted[Math.floor(sorted.length / 2)] : 0;
+	}
+
 	function parseColor(el, value, fallback) {
 		var raw = (value || '').trim();
 		if (!raw) {
@@ -545,8 +602,16 @@
 		this.rippleAt = -1;
 		this.rippleNext = 0;
 		this.speed = 0;
-		this.animate = !reduceMotion.matches && (this.opts.speed > 0 || this.opts.pointer !== false);
+		// Save-Data and very weak devices: one still frame, as with reduced motion.
+		this.animate = !reduceMotion.matches && (this.opts.speed > 0 || this.opts.pointer !== false) && !lowPower();
 		this.build_t = this.animate && this.opts.assemble !== false ? 0 : 99;
+		// The guard's state: the frame probe, the 30 fps hold, the idle settle.
+		this.probe = { seen: 0, gaps: [], works: [], done: false };
+		this.capped = false;
+		this.stopped = false;
+		this.idle = false;
+		this.flow = 1; // 1 = full pace; eases to 0 when idle and back on input
+		this.inputAt = now();
 		this.frame = this.frame.bind(this);
 		this.refresh = this.refresh.bind(this);
 		this.onVisibility = this.onVisibility.bind(this);
@@ -554,6 +619,7 @@
 		this.onLeave = this.onLeave.bind(this);
 		this.onLost = this.onLost.bind(this);
 		this.onRestored = this.onRestored.bind(this);
+		this.onInput = this.onInput.bind(this);
 		for (var i = 0; i < RIPPLES; i++) {
 			this.ripples[i * 4] = -1e5;
 			this.ripples[i * 4 + 2] = -100;
@@ -568,13 +634,23 @@
 		canvas.setAttribute('aria-hidden', 'true');
 		this.canvas = canvas;
 		var gl = null;
-		var attrs = { alpha: false, antialias: false, depth: false, stencil: false, premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'low-power' };
+		// failIfMajorPerformanceCaveat: the browser refuses a software-rendered
+		// context (no GPU), so the CSS glow stays instead of a CPU-bound loop.
+		var attrs = { alpha: false, antialias: false, depth: false, stencil: false, premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'low-power', failIfMajorPerformanceCaveat: true };
 		try {
 			gl = canvas.getContext('webgl', attrs) || canvas.getContext('experimental-webgl', attrs);
 		} catch (error) {
 			gl = null;
 		}
 		if (!gl) {
+			return false;
+		}
+		if (softwareGL(gl)) {
+			// Accepted anyway (an older browser): give the context back.
+			var lose = gl.getExtension('WEBGL_lose_context');
+			if (lose) {
+				lose.loseContext();
+			}
 			return false;
 		}
 		this.gl = gl;
@@ -605,6 +681,11 @@
 			window.addEventListener('resize', this.onResize, { passive: true });
 		}
 		document.addEventListener('visibilitychange', this.onVisibility);
+		if (this.animate) {
+			INPUTS.forEach(function (name) {
+				window.addEventListener(name, self.onInput, { passive: true });
+			});
+		}
 		this.pointer = this.animate && this.opts.pointer !== false && finePointer.matches;
 		if (this.pointer) {
 			this.target = this.opts.root || this.host;
@@ -923,7 +1004,7 @@
 	};
 
 	Shader.prototype.running = function () {
-		return this.alive && this.animate && this.visible && !this.lost && !document.hidden;
+		return this.alive && this.animate && this.visible && !this.lost && !document.hidden && !this.stopped && !this.idle;
 	};
 
 	Shader.prototype.loop = function () {
@@ -932,6 +1013,57 @@
 		}
 		this.last = 0;
 		this.raf = raf(this.frame);
+	};
+
+	/** Any input: wakes a settled flow (it picks up again over WAKE ms). */
+	Shader.prototype.onInput = function () {
+		this.inputAt = now();
+		if (this.idle && this.alive) {
+			this.idle = false;
+			this.loop();
+		}
+	};
+
+	/**
+	 * Times the first frames after the shader starts (see the guard above).
+	 * gap: ms since the previous frame (0 right after a start); work: ms in draw().
+	 */
+	Shader.prototype.measure = function (gap, work) {
+		var probe = this.probe;
+		if (probe.done || !gap || ++probe.seen <= PROBE_SKIP) {
+			return;
+		}
+		probe.gaps.push(gap);
+		probe.works.push(work);
+		if (probe.gaps.length < PROBE_FRAMES) {
+			return;
+		}
+		probe.done = true;
+		var g = median(probe.gaps);
+		var w = median(probe.works);
+		probe.gaps = probe.works = null;
+		if (g > SLOW_GAP || w > SLOW_WORK) {
+			this.still();
+		} else if (g > CAP_GAP) {
+			this.capped = true;
+		}
+	};
+
+	/** Too slow to animate: draw the finished picture once and keep it. */
+	Shader.prototype.still = function () {
+		var p = this.ptr;
+		this.stopped = true;
+		caf(this.raf);
+		this.raf = 0;
+		this.build_t = 99;
+		if (!p.inside) {
+			p.tx = this.focus[0] - this.focus[2] * 0.25;
+			p.ty = this.focus[1] + this.focus[2] * 0.15;
+		}
+		p.x = p.tx;
+		p.y = p.ty;
+		p.s = 0.5;
+		this.draw();
 	};
 
 	Shader.prototype.frame = function (now) {
@@ -944,8 +1076,22 @@
 			return;
 		}
 		now = now || Date.now();
-		var dt = this.last ? Math.min(0.1, (now - this.last) / 1000) : 1 / 60;
+		var gap = this.last ? now - this.last : 0;
+		if (this.capped && gap && gap < CAP_MIN) {
+			// Held to 30 fps: skip this display frame.
+			this.raf = raf(this.frame);
+			return;
+		}
+		var dt = this.last ? Math.min(0.1, gap / 1000) : 1 / 60;
 		this.last = now;
+
+		// No input for a while: the flow slows to a standstill, then waits
+		// (onInput picks it up again, easing back in).
+		var quiet = clock() - this.inputAt > IDLE_AFTER;
+		this.flow = quiet ? Math.max(0, this.flow - (dt * 1000) / SETTLE) : Math.min(1, this.flow + (dt * 1000) / WAKE);
+		var ease = this.flow * this.flow * (3 - 2 * this.flow);
+		dt *= ease;
+
 		this.time += dt * (this.opts.speed >= 0 ? this.opts.speed : 1);
 		// Wrapped, so the sparkle hashes keep their precision on long visits.
 		this.wall = (this.wall + dt) % 3600;
@@ -968,14 +1114,26 @@
 		this.speed *= Math.pow(0.9, dt * 60);
 
 		// A slow GPU: drop the resolution once or twice (never below 0.5).
-		this.avg = this.avg ? this.avg * 0.95 + dt * 0.05 : dt;
+		// Measured on the real frame interval, not the eased one.
+		var real = gap ? Math.min(0.1, gap / 1000) : 1 / 60;
+		this.avg = this.avg ? this.avg * 0.95 + real * 0.05 : real;
 		if (++this.slow > 90 && this.avg > 0.03 && this.quality > 0.5) {
 			this.quality = Math.max(0.5, this.quality * 0.7);
 			this.slow = 0;
 			this.refresh();
 		}
 
+		var t0 = clock();
 		this.draw();
+		this.measure(gap, clock() - t0);
+		if (this.stopped) {
+			return;
+		}
+		if (quiet && this.flow <= 0) {
+			// Settled: the last frame stays until the next input.
+			this.idle = true;
+			return;
+		}
 		this.raf = raf(this.frame);
 	};
 
@@ -1018,6 +1176,10 @@
 	};
 
 	Shader.prototype.onVisibility = function () {
+		if (!document.hidden) {
+			// Coming back to the tab counts as activity.
+			this.onInput();
+		}
 		this.loop();
 	};
 
@@ -1067,6 +1229,10 @@
 			window.removeEventListener('resize', this.onResize, { passive: true });
 		}
 		document.removeEventListener('visibilitychange', this.onVisibility);
+		var self = this;
+		INPUTS.forEach(function (name) {
+			window.removeEventListener(name, self.onInput, { passive: true });
+		});
 		if (this.target) {
 			this.target.removeEventListener('pointermove', this.onMove, { passive: true });
 			this.target.removeEventListener('pointerleave', this.onLeave, { passive: true });

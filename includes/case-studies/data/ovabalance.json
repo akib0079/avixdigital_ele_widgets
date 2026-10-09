@@ -22,9 +22,9 @@
 		]
 	},
 	"yoast": {
-		"focuskw": "Ovabalance Shopify case study",
+		"focuskw": "Shopify subscription store",
 		"title": "Ovabalance Shopify Case Study: Subscriptions | AvixDigital",
-		"metadesc": "Ovabalance Shopify case study: how we built a bespoke theme with a custom subscription selector, real-time pricing and sections the team edits without code.",
+		"metadesc": "Ovabalance Shopify case study: a bespoke theme for a Dutch women's health brand, with a custom subscription selector and real-time pricing.",
 		"bctitle": "Ovabalance",
 		"og_image": "@media:avix-cs-ovabalance-og.jpg"
 	},
@@ -47,6 +47,7 @@
 		"card_tags": "Shopify, Liquid, Subscription",
 		"card_label": "Designed for",
 		"card_value": "Repeat purchase",
+		"challenge_heading": "The challenge: a brand refresh and a simpler subscription product page",
 		"challenge_statement": "Ovabalance needed a [brand refresh] to better reflect its evolving business values, and a complex PDP design that is more UX-friendly.",
 		"challenge_body": [
 			"Ovabalance is a Dutch women's health brand built around hormonal balance: cycle, fertility and pregnancy, energy, skin and hair. Supplements only work when they're taken every day, so subscription sits at the heart of the offer.",
@@ -56,7 +57,7 @@
 		"approach_intro": "Akib led the end-to-end design and development of the platform, crafting a bespoke Shopify theme. By leveraging advanced Liquid coding, we built a scalable infrastructure that beautifully balances technical complexity with a highly intuitive user experience.",
 		"approach_body": [
 			"The <a href=\"/service/uiux-and-brand-design/\">UX and brand design</a> work starts with the customer, not the catalogue. Shoppers can begin with \"Jouw doel\" (your goal), such as hormones and cycle, fertility and pregnancy, or skin and hair, before they ever see a product list.",
-			"Subscription was treated as a core product decision, not a plugin. The recurring plans sit inside the PDP under Ovabalance's own OvaRepeat identity, with their savings and terms written in plain Dutch. Every section of the <a href=\"/service/shopify-plus/\">custom Shopify theme</a> was built to be modular, so the in-house team can reshape pages, launch products and grow the site without touching code."
+			"Subscription was treated as a core product decision, not a plugin. The recurring plans sit inside the PDP under Ovabalance's own OvaRepeat identity, with their savings and terms written in plain Dutch. Every section of the <a href=\"/service/shopify-plus/\">custom Shopify theme</a>, coded in <a href=\"/custom-liquid-vs-premium-shopify-theme/\">custom Liquid</a>, was built to be modular, so the in-house team can reshape pages, launch products and grow the site without touching code."
 		],
 		"implementations": [
 			"Custom PDP Subscription Engine: Developed a bespoke subscription UI directly on the product pages, allowing users to effortlessly toggle between one-time purchases and recurring orders.",

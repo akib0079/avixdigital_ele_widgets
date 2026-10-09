@@ -50,8 +50,9 @@
 		}
 
 		this.onScroll = this.wake.bind(this);
-		this.onResize = this.measure.bind(this);
+		this.onResize = this.requestMeasure.bind(this);
 		this.tick = this.tick.bind(this);
+		this.measureFrame = 0;
 		this.init();
 	}
 
@@ -66,11 +67,23 @@
 		window.addEventListener('resize', this.onResize, { passive: true });
 		if (window.ResizeObserver) {
 			this.resizeObserver = new window.ResizeObserver(function () {
-				self.measure();
+				self.requestMeasure();
 			});
 			this.resizeObserver.observe(this.timeline);
 		}
 		this.measure();
+	};
+
+	// Resize bursts (a window drag, a font swap, late images) measure once, on the next frame.
+	Timeline.prototype.requestMeasure = function () {
+		var self = this;
+		if (!this.alive || this.measureFrame) {
+			return;
+		}
+		this.measureFrame = window.requestAnimationFrame(function () {
+			self.measureFrame = 0;
+			self.measure();
+		});
 	};
 
 	// Word-by-word title reveal. The text stays in the HTML for SEO / no-JS.
@@ -173,13 +186,18 @@
 		this.mode = styles.getPropertyValue('aspect-ratio') === 'auto' || !this.path || this.path.getBoundingClientRect().width === 0 ? 'rail' : 'path';
 
 		if (this.mode === 'path') {
-			this.length = this.path.getTotalLength();
-			this.path.style.strokeDasharray = this.length + ' ' + this.length;
-			// Length at which the line reaches each step's band.
-			var self = this;
-			this.stepLengths = this.bandTops.map(function (top) {
-				return self.lengthAtY(top);
-			});
+			var length = this.path.getTotalLength();
+			// The path lives in the SVG's own units, so its length and the step
+			// lengths only change with the path itself, not with the layout.
+			if (length !== this.length || !this.stepLengths) {
+				this.length = length;
+				this.path.style.strokeDasharray = this.length + ' ' + this.length;
+				// Length at which the line reaches each step's band.
+				var self = this;
+				this.stepLengths = this.bandTops.map(function (top) {
+					return self.lengthAtY(top);
+				});
+			}
 		} else if (this.rail) {
 			this.railHeight = this.rail.offsetHeight;
 			this.stepOffsets = this.steps.map(function (step) {
@@ -189,16 +207,31 @@
 		this.wake();
 	};
 
-	// First length whose point reaches y (coarse search is plenty here).
+	// First length (on a 400-step grid) whose point reaches y. The serpentine
+	// only ever runs across or down (y never decreases along it), so a binary
+	// search finds the same grid step as walking all 400: about 9 point
+	// lookups per step instead of up to 400.
 	Timeline.prototype.lengthAtY = function (y) {
 		var steps = 400;
-		for (var i = 0; i <= steps; i++) {
-			var length = this.length * i / steps;
-			if (this.path.getPointAtLength(length).y >= y - 1) {
-				return length;
+		var path = this.path;
+		var total = this.length;
+		var reaches = function (i) {
+			return path.getPointAtLength(total * i / steps).y >= y - 1;
+		};
+		if (!reaches(steps)) {
+			return total;
+		}
+		var lo = 0;
+		var hi = steps;
+		while (lo < hi) {
+			var mid = (lo + hi) >> 1;
+			if (reaches(mid)) {
+				hi = mid;
+			} else {
+				lo = mid + 1;
 			}
 		}
-		return this.length;
+		return total * lo / steps;
 	};
 
 	Timeline.prototype.wake = function () {
@@ -350,6 +383,10 @@
 		}
 		if (this.frame) {
 			window.cancelAnimationFrame(this.frame);
+		}
+		if (this.measureFrame) {
+			window.cancelAnimationFrame(this.measureFrame);
+			this.measureFrame = 0;
 		}
 	};
 

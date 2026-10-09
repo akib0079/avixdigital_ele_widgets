@@ -228,7 +228,7 @@
 		}
 
 		var here = normalise(window.location.href);
-		Array.prototype.forEach.call(root.querySelectorAll('.avix-ft__col a.avix-ft__link'), function (link) {
+		Array.prototype.forEach.call(root.querySelectorAll('.avix-ft__col a.avix-ft__link, a.avix-ft__legal-link'), function (link) {
 			if (here && normalise(link.href) === here) {
 				link.setAttribute('aria-current', 'page');
 			}

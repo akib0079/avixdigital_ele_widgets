@@ -10,6 +10,11 @@
  * Files that are not uploaded yet (for example the studio renders) are skipped and
  * listed in the report; the widgets then fall back to their defaults.
  *
+ * A study whose data did not change is not written at all, so its post_modified
+ * (the sitemap lastmod) stays put: the post remembers a hash of what it was imported
+ * from (data file, starter layout, resolved media), and a post without that hash is
+ * compared field by field with what the import would write.
+ *
  * @package AvixWidgets
  */
 
@@ -26,6 +31,12 @@ final class Importer {
 	/** Hidden post meta: the data-file slug a post was imported from. */
 	const IMPORT_META = '_avix_cs_import';
 
+	/** Hidden post meta: fingerprint() of the data a post was last imported from. */
+	const HASH_META = '_avix_cs_import_hash';
+
+	/** Part of the fingerprint: bump it when import_one() or compose() writes differently, so every study is written once more. */
+	const HASH_VERSION = 1;
+
 	/** Service terms the data files use: slug => array( name, service page ID on avixdigital.com ). */
 	const SERVICE_TERMS = array(
 		'shopify'           => array( 'Shopify', 8108 ),
@@ -38,7 +49,7 @@ final class Importer {
 	/** Rich (paragraph) fields: a JSON array is joined with blank lines; other lists with newlines. */
 	const PARAGRAPH_FIELDS = array( 'challenge_body', 'approach_body', 'solution_body', 'outcome_body' );
 
-	/** The /case-studies/ index page (§4; SEO wording from the Oct 2026 audit: keyphrase "ecommerce case studies"). */
+	/** The /case-studies/ index page (§4; SEO wording from the SEO plan of Oct 2026, keyword map row /case-studies/). */
 	const INDEX = array(
 		'title'    => 'Case Studies',
 		'slug'     => 'case-studies',
@@ -46,7 +57,7 @@ final class Importer {
 		'heading'  => 'Ecommerce & Website [Case Studies]',
 		'text'     => 'Ecommerce case studies from live stores and websites we designed and built: Shopify and WooCommerce webshops for skiwear, camping gear and Greek natural products, a subscription-first supplement brand and a Webflow site that turns local searches into enquiries. Every screenshot comes from the live site, with the features that solved each problem marked.',
 		'seo'      => 'Ecommerce Case Studies & Website Projects | AvixDigital',
-		'desc'     => 'Ecommerce case studies from AvixDigital: live stores and websites we built for growing brands, with annotated screenshots of the features that win customers.',
+		'desc'     => 'Five case studies for Dutch brands: Shopify, WooCommerce and Webflow builds, with annotated screenshots from the live sites and sourced, dated numbers.',
 		'focuskw'  => 'ecommerce case studies',
 		'og'       => 'avix-cs-index-og.jpg',
 		'home_id'  => 431,
@@ -66,8 +77,16 @@ final class Importer {
 		'desc'    => 'Explore AvixDigital case studies: live Shopify and Webflow projects for brands in the Netherlands, with annotated screenshots of the features we built.',
 	);
 
-	/** Case Study Hero settings a data file may set under layout.hero. */
-	const HERO_KEYS = array( 'eyebrow' );
+	/** Meta descriptions bundled by v1.15.1 to v1.16.0: like INDEX_PREVIOUS['desc'], still equal = never edited, so an import may replace it. */
+	const INDEX_PREVIOUS_DESC = array(
+		'Ecommerce case studies from AvixDigital: live stores and websites we built for growing brands, with annotated screenshots of the features that win customers.',
+	);
+
+	/**
+	 * Case Study Hero settings a data file may set under layout.hero. fact_* keys are the
+	 * facts-strip switches: "yes" shows that fact (credits stay hidden unless a file says so).
+	 */
+	const HERO_KEYS = array( 'eyebrow', 'fact_credits' );
 
 	/** Resolved media for this request: name => array( id, url ) (empty array = not found). */
 	private static $media = array();
@@ -130,11 +149,13 @@ final class Importer {
 	 * @param array $args {
 	 *     @type bool     $publish Publish the posts (default false: new posts are drafts, existing posts keep their status).
 	 *     @type string[] $slugs   Data files to import (default all, see slugs()).
+	 *     @type bool     $force   Write every study even when its data did not change (default false).
 	 * }
-	 * @return array slug => array( 'post_id' => int, 'created' => bool, 'missing_media' => string[], 'status' => string, 'notes' => string[], 'error' => string )
+	 * @return array slug => array( 'post_id' => int, 'created' => bool, 'unchanged' => bool, 'missing_media' => string[], 'status' => string, 'notes' => string[], 'error' => string )
 	 */
 	public static function run( array $args = array() ): array {
 		$publish = ! empty( $args['publish'] );
+		$force   = ! empty( $args['force'] );
 		$all     = self::slugs();
 		$slugs   = isset( $args['slugs'] ) && is_array( $args['slugs'] ) && $args['slugs'] ? array_values( array_intersect( $all, array_map( 'strval', $args['slugs'] ) ) ) : $all;
 		$report  = array();
@@ -148,7 +169,7 @@ final class Importer {
 
 		foreach ( $slugs as $slug ) {
 			try {
-				$report[ $slug ] = self::import_one( $slug, $publish );
+				$report[ $slug ] = self::import_one( $slug, $publish, $force );
 			} catch ( \Throwable $e ) {
 				$report[ $slug ] = self::row( 0, false, array(), '', array(), $e->getMessage() );
 			}
@@ -297,10 +318,10 @@ final class Importer {
 		self::$alts = array( self::INDEX['og'] => 'AvixDigital case studies: live Shopify and Webflow projects' );
 		// The owner's own Yoast wording wins; the bundled wording of an earlier version is replaced.
 		foreach ( array(
-			'_yoast_wpseo_title'    => 'seo',
-			'_yoast_wpseo_metadesc' => 'desc',
-		) as $key => $field ) {
-			if ( (string) get_post_meta( $id, $key, true ) === self::INDEX_PREVIOUS[ $field ] ) {
+			'_yoast_wpseo_title'    => array( self::INDEX_PREVIOUS['seo'] ),
+			'_yoast_wpseo_metadesc' => array_merge( array( self::INDEX_PREVIOUS['desc'] ), self::INDEX_PREVIOUS_DESC ),
+		) as $key => $previous ) {
+			if ( in_array( (string) get_post_meta( $id, $key, true ), $previous, true ) ) {
 				delete_post_meta( $id, $key );
 			}
 		}
@@ -333,8 +354,9 @@ final class Importer {
 	 *
 	 * @param string $slug    Data file slug.
 	 * @param bool   $publish Publish it.
+	 * @param bool   $force   Write it even when nothing changed.
 	 */
-	private static function import_one( string $slug, bool $publish ): array {
+	private static function import_one( string $slug, bool $publish, bool $force = false ): array {
 		$data = self::data( $slug );
 		if ( empty( $data['post']['title'] ) ) {
 			return self::row( 0, false, array(), '', array(), 'Missing or invalid data file ' . $slug . '.json.' );
@@ -343,10 +365,24 @@ final class Importer {
 		self::$alts    = isset( $data['alt'] ) && is_array( $data['alt'] ) ? $data['alt'] : array();
 		$notes         = array();
 
-		/* ---- Post (always written as a draft first, so publish hooks see complete meta) ---- */
+		/* ---- Unchanged since the last import: write nothing, so post_modified (lastmod) stays ---- */
 		$existing = self::find( $slug );
-		$created  = ! $existing;
-		$postarr  = array(
+		$print    = self::fingerprint( $data );
+		if ( $existing && ! $force && 'trash' !== $existing->post_status && ! ( $publish && 'publish' !== $existing->post_status ) ) {
+			$stored = (string) get_post_meta( $existing->ID, self::HASH_META, true );
+			if ( ( '' !== $stored && hash_equals( $stored, $print['hash'] ) ) || self::matches_post( $existing, $slug, $data ) ) {
+				if ( $stored !== $print['hash'] ) {
+					update_post_meta( $existing->ID, self::HASH_META, $print['hash'] );
+				}
+				$row              = self::row( (int) $existing->ID, false, $print['missing'], (string) $existing->post_status, array( 'Unchanged since the last import: nothing was written.' ), '' );
+				$row['unchanged'] = true;
+				return $row;
+			}
+		}
+
+		/* ---- Post (always written as a draft first, so publish hooks see complete meta) ---- */
+		$created = ! $existing;
+		$postarr = array(
 			'post_type'    => self::POST_TYPE,
 			'post_title'   => (string) $data['post']['title'],
 			'post_name'    => $slug,
@@ -432,8 +468,243 @@ final class Importer {
 			Case_Study::flush( $post_id );
 		}
 		Starter::clear_cache( $post_id );
+		update_post_meta( $post_id, self::HASH_META, $print['hash'] );
 
 		return self::row( $post_id, $created, array_values( array_unique( self::$missing ) ), (string) $status, $notes, '' );
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* Change detection                                                   */
+	/* ------------------------------------------------------------------ */
+
+	/**
+	 * What a study is imported from: the data file, the starter layout and the attachment
+	 * every "@media:" name resolves to now (an upload added later is a change), plus
+	 * HASH_VERSION. Also the names that do not resolve, for the report.
+	 *
+	 * @param array $data Data file.
+	 * @return array array( 'hash' => string, 'missing' => string[] )
+	 */
+	private static function fingerprint( array $data ): array {
+		$media = array();
+		foreach ( self::media_names( $data ) as $name ) {
+			$found          = self::resolve( $name );
+			$media[ $name ] = $found ? (int) $found['id'] : 0;
+		}
+
+		// Missing media as the import reports it: the featured list only when none of it exists.
+		$chain = isset( $data['post']['featured'] ) ? array_map( 'strval', (array) $data['post']['featured'] ) : array();
+		$rest  = $data;
+		unset( $rest['post']['featured'] );
+		$missing = array();
+		foreach ( self::media_names( $rest ) as $name ) {
+			if ( empty( $media[ $name ] ) ) {
+				$missing[] = preg_replace( '/^@media:/', '', $name );
+			}
+		}
+		if ( $chain ) {
+			$thumb = false;
+			foreach ( $chain as $name ) {
+				if ( ! empty( $media[ $name ] ) && wp_attachment_is_image( $media[ $name ] ) ) {
+					$thumb = true;
+					break;
+				}
+			}
+			if ( ! $thumb ) {
+				$missing[] = implode(
+					' / ',
+					array_map(
+						static function ( $n ) {
+							return preg_replace( '/^@media:/', '', $n );
+						},
+						$chain
+					)
+				);
+			}
+		}
+
+		return array(
+			'hash'    => md5( (string) wp_json_encode( array( self::HASH_VERSION, $data, Starter::bundled(), $media ) ) ),
+			'missing' => array_values( array_unique( $missing ) ),
+		);
+	}
+
+	/**
+	 * Every "@media:" string in a data file, in order of appearance.
+	 *
+	 * @param mixed $value Data (walked recursively).
+	 * @return string[]
+	 */
+	private static function media_names( $value ): array {
+		$out = array();
+		if ( is_string( $value ) ) {
+			if ( 0 === strpos( $value, '@media:' ) ) {
+				$out[] = $value;
+			}
+		} elseif ( is_array( $value ) ) {
+			foreach ( $value as $item ) {
+				foreach ( self::media_names( $item ) as $name ) {
+					$out[ $name ] = $name;
+				}
+			}
+			$out = array_values( $out );
+		}
+		return $out;
+	}
+
+	/**
+	 * True when importing $data would leave the post as it is: post fields, meta, terms,
+	 * featured image, Yoast fields, theme options and the Elementor layout (element and
+	 * repeater IDs aside, which every import renews). Read-only; anything it cannot be
+	 * sure of counts as a change, so the worst case is the old behaviour (a full write).
+	 *
+	 * @param \WP_Post $post Existing post.
+	 * @param string   $slug Data file slug.
+	 * @param array    $data Data file.
+	 */
+	private static function matches_post( \WP_Post $post, string $slug, array $data ): bool {
+		$id = (int) $post->ID;
+
+		/* ---- Post fields and the import marker ---- */
+		$want = array(
+			(string) $data['post']['title'],
+			$slug,
+			isset( $data['post']['excerpt'] ) ? (string) $data['post']['excerpt'] : '',
+			isset( $data['post']['menu_order'] ) ? (int) $data['post']['menu_order'] : 0,
+			$slug,
+		);
+		$have = array(
+			(string) $post->post_title,
+			(string) $post->post_name,
+			(string) $post->post_excerpt,
+			(int) $post->menu_order,
+			(string) get_post_meta( $id, self::IMPORT_META, true ),
+		);
+		if ( $want !== $have ) {
+			return false;
+		}
+
+		/* ---- Meta ---- */
+		$meta = isset( $data['meta'] ) && is_array( $data['meta'] ) ? $data['meta'] : array();
+		foreach ( $meta as $key => $value ) {
+			$plan = self::meta_plan( (string) $key, $value );
+			$mkey = 'avix_cs_' . $key;
+			if ( 'update' === $plan['action'] && (string) get_post_meta( $id, $mkey, true ) !== (string) $plan['value'] ) {
+				return false;
+			}
+			if ( 'delete' === $plan['action'] && metadata_exists( 'post', $id, $mkey ) ) {
+				return false;
+			}
+		}
+
+		/* ---- Terms ---- */
+		$terms = isset( $data['terms'] ) ? (array) $data['terms'] : array();
+		foreach ( array(
+			self::TAX_SERVICE  => isset( $terms['service'] ) ? (array) $terms['service'] : array(),
+			self::TAX_INDUSTRY => isset( $terms['industry'] ) ? (array) $terms['industry'] : array(),
+		) as $tax => $items ) {
+			if ( ! $items || ! taxonomy_exists( $tax ) ) {
+				continue;
+			}
+			$want = array();
+			foreach ( $items as $item ) {
+				$slug_t = sanitize_title( (string) $item );
+				$term   = get_term_by( 'slug', $slug_t, $tax );
+				if ( ! $term ) {
+					return false;
+				}
+				if ( self::TAX_SERVICE === $tax && isset( self::SERVICE_TERMS[ $slug_t ] ) && ! get_term_meta( $term->term_id, 'avix_service_page', true ) && 'page' === get_post_type( (int) self::SERVICE_TERMS[ $slug_t ][1] ) ) {
+					return false;
+				}
+				$want[] = (int) $term->term_id;
+			}
+			$have = wp_get_object_terms( $id, $tax, array( 'fields' => 'ids' ) );
+			if ( is_wp_error( $have ) ) {
+				return false;
+			}
+			$want = array_values( array_unique( $want ) );
+			$have = array_values( array_unique( array_map( 'intval', $have ) ) );
+			sort( $want );
+			sort( $have );
+			if ( $want !== $have ) {
+				return false;
+			}
+		}
+
+		/* ---- Featured image ---- */
+		$chain = isset( $data['post']['featured'] ) ? (array) $data['post']['featured'] : array();
+		foreach ( $chain as $name ) {
+			$found = self::resolve( (string) $name );
+			if ( $found && wp_attachment_is_image( $found['id'] ) ) {
+				if ( (int) get_post_thumbnail_id( $id ) !== (int) $found['id'] ) {
+					return false;
+				}
+				break;
+			}
+		}
+
+		/* ---- Yoast (written with overwrite) ---- */
+		if ( ! empty( $data['yoast'] ) && is_array( $data['yoast'] ) ) {
+			$y    = $data['yoast'];
+			$want = array(
+				'_yoast_wpseo_title'    => isset( $y['title'] ) ? (string) $y['title'] : '',
+				'_yoast_wpseo_metadesc' => isset( $y['metadesc'] ) ? (string) $y['metadesc'] : '',
+				'_yoast_wpseo_focuskw'  => ! empty( $y['focuskw'] ) ? sanitize_text_field( (string) $y['focuskw'] ) : '',
+				'_yoast_wpseo_bctitle'  => ! empty( $y['bctitle'] ) ? sanitize_text_field( (string) $y['bctitle'] ) : '',
+			);
+			if ( ! empty( $y['og_image'] ) ) {
+				$img = self::resolve( (string) $y['og_image'] );
+				if ( $img ) {
+					$want['_yoast_wpseo_opengraph-image']    = $img['url'];
+					$want['_yoast_wpseo_opengraph-image-id'] = (string) $img['id'];
+				}
+			}
+			foreach ( $want as $key => $value ) {
+				if ( '' !== $value && (string) get_post_meta( $id, $key, true ) !== $value ) {
+					return false;
+				}
+			}
+		}
+
+		/* ---- Theme options ---- */
+		$opts = get_post_meta( $id, 'algenix_options', true );
+		if ( ! is_array( $opts ) || ! $opts || array_merge( $opts, Starter::theme_defaults( isset( $meta['header'] ) ? (string) $meta['header'] : '', $id ) ) !== $opts ) {
+			return false;
+		}
+
+		/* ---- Elementor layout ---- */
+		$layout = self::compose( isset( $data['layout'] ) && is_array( $data['layout'] ) ? $data['layout'] : array() );
+		if ( $layout ) {
+			$raw  = get_post_meta( $id, '_elementor_data', true );
+			$have = is_array( $raw ) ? $raw : json_decode( is_string( $raw ) ? $raw : '', true );
+			$want = json_decode( (string) wp_json_encode( $layout ), true );
+			if ( ! is_array( $have ) || ! is_array( $want ) || self::canonical( $want ) !== self::canonical( $have ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * An Elementor tree in comparable form: element IDs and repeater row IDs removed,
+	 * keys sorted.
+	 *
+	 * @param mixed $value Tree or value.
+	 * @return mixed
+	 */
+	private static function canonical( $value ) {
+		if ( ! is_array( $value ) ) {
+			return $value;
+		}
+		if ( isset( $value['elType'] ) ) {
+			unset( $value['id'] );
+		}
+		unset( $value['_id'] );
+		foreach ( $value as $key => $item ) {
+			$value[ $key ] = self::canonical( $item );
+		}
+		ksort( $value );
+		return $value;
 	}
 
 	/**
@@ -443,36 +714,65 @@ final class Importer {
 	 * @return string A note when the value was dropped or shortened, else ''.
 	 */
 	private static function write_meta( int $post_id, string $key, $value ): string {
-		$cs = __NAMESPACE__ . '\Case_Study';
+		$plan = self::meta_plan( $key, $value );
+		$mkey = 'avix_cs_' . $key;
+		if ( '' !== $plan['missing'] ) {
+			self::$missing[] = $plan['missing'];
+		}
+		if ( 'delete' === $plan['action'] ) {
+			delete_post_meta( $post_id, $mkey );
+		} elseif ( 'update' === $plan['action'] ) {
+			update_post_meta( $post_id, $mkey, wp_slash( $plan['value'] ) );
+		}
+		return $plan['note'];
+	}
+
+	/**
+	 * What write_meta() does with one data-file field, without writing it.
+	 *
+	 * @param string $key   FIELDS key.
+	 * @param mixed  $value Data-file value.
+	 * @return array array( 'action' => skip|delete|update, 'value' => sanitised value, 'note' => string, 'missing' => media name or '' )
+	 */
+	private static function meta_plan( string $key, $value ): array {
+		$plan = array(
+			'action'  => 'skip',
+			'value'   => '',
+			'note'    => '',
+			'missing' => '',
+		);
+		$cs   = __NAMESPACE__ . '\Case_Study';
 		if ( class_exists( $cs ) && ! isset( Case_Study::FIELDS[ $key ] ) ) {
-			return 'Unknown field "' . $key . '" skipped.';
+			$plan['note'] = 'Unknown field "' . $key . '" skipped.';
+			return $plan;
 		}
 		if ( is_array( $value ) ) {
 			$value = implode( in_array( $key, self::PARAGRAPH_FIELDS, true ) ? "\n\n" : "\n", array_map( 'strval', $value ) );
 		}
 		$value = (string) $value;
-		$mkey  = 'avix_cs_' . $key;
 
 		if ( 0 === strpos( $value, '@media:' ) ) {
 			$found = self::resolve( $value );
 			if ( ! $found ) {
-				self::$missing[] = substr( $value, 7 );
-				return ''; // Keep whatever is there (an owner may have picked an image by hand).
+				$plan['missing'] = substr( $value, 7 );
+				return $plan; // Keep whatever is there (an owner may have picked an image by hand).
 			}
 			$value = (string) $found['id'];
 		}
 
 		$clean = class_exists( $cs ) ? Case_Study::sanitize( $key, $value ) : sanitize_textarea_field( $value );
 		if ( '' === $clean || 0 === $clean ) {
-			delete_post_meta( $post_id, $mkey );
-			return '' === trim( $value ) ? '' : 'Field "' . $key . '" was rejected by its sanitiser and left empty.';
+			$plan['action'] = 'delete';
+			$plan['note']   = '' === trim( $value ) ? '' : 'Field "' . $key . '" was rejected by its sanitiser and left empty.';
+			return $plan;
 		}
-		update_post_meta( $post_id, $mkey, wp_slash( $clean ) );
+		$plan['action'] = 'update';
+		$plan['value']  = $clean;
 
 		if ( is_string( $clean ) && self::length( $clean ) < self::length( wp_strip_all_tags( $value ) ) - 2 ) {
-			return 'Field "' . $key . '" was shortened to ' . self::length( $clean ) . ' characters by its cap (source has ' . self::length( $value ) . ').';
+			$plan['note'] = 'Field "' . $key . '" was shortened to ' . self::length( $clean ) . ' characters by its cap (source has ' . self::length( $value ) . ').';
 		}
-		return '';
+		return $plan;
 	}
 
 	/**
@@ -607,8 +907,15 @@ final class Importer {
 			$settings = isset( $section['elements'][0]['settings'] ) && is_array( $section['elements'][0]['settings'] ) ? $section['elements'][0]['settings'] : array();
 			if ( 'avix-case-study-hero' === $type && ! empty( $layout['hero'] ) && is_array( $layout['hero'] ) ) {
 				foreach ( self::HERO_KEYS as $key ) {
-					if ( isset( $layout['hero'][ $key ] ) && '' !== trim( (string) $layout['hero'][ $key ] ) ) {
-						$settings[ $key ] = sanitize_text_field( (string) $layout['hero'][ $key ] );
+					if ( ! isset( $layout['hero'][ $key ] ) || ! is_scalar( $layout['hero'][ $key ] ) ) {
+						continue;
+					}
+					$value = $layout['hero'][ $key ];
+					if ( 0 === strpos( $key, 'fact_' ) ) {
+						// A facts-strip switch: "yes" shows the fact, anything else keeps it hidden.
+						$settings[ $key ] = ( true === $value || in_array( strtolower( trim( (string) $value ) ), array( 'yes', '1', 'true', 'on' ), true ) ) ? 'yes' : '';
+					} elseif ( '' !== trim( (string) $value ) ) {
+						$settings[ $key ] = sanitize_text_field( (string) $value );
 					}
 				}
 			}
@@ -1077,6 +1384,7 @@ final class Importer {
 		return array(
 			'post_id'       => $post_id,
 			'created'       => $created,
+			'unchanged'     => false,
 			'missing_media' => $missing,
 			'status'        => $status,
 			'notes'         => $notes,

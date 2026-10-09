@@ -23,7 +23,7 @@
 	"yoast": {
 		"focuskw": "Shopify camping store",
 		"title": "Shopify Camping Store: Kampeerwinkel Roermond | AvixDigital",
-		"metadesc": "Kampeerwinkel Roermond case study: how we built a Shopify camping store that makes 9,400+ products easy to find, buy and collect, in three languages.",
+		"metadesc": "Kampeerwinkel Roermond case study: a Shopify camping store that makes 9,400+ products easy to find, buy and collect in Dutch, English and German.",
 		"bctitle": "Kampeerwinkel Roermond",
 		"og_image": "@media:avix-cs-kampeerwinkel-roermond-og.jpg"
 	},
@@ -46,6 +46,7 @@
 		"card_tags": "Shopify, Large catalogue, Click & collect",
 		"card_label": "Designed for",
 		"card_value": "Webshop + store",
+		"challenge_heading": "The challenge: 9,400+ products, three languages and a showroom",
 		"challenge_statement": "A range this deep only sells online when shoppers can [find the right product in a few taps].",
 		"challenge_body": [
 			"Kampeerwinkel Roermond is a camping, outdoor and winter sports specialist. Its showroom in Retailpark Roermond is open seven days a week, a few kilometres from the German border. The range is enormous: tents and caravan awnings, cool boxes, camp kitchens and hiking boots. On top of that, there is outdoor clothing for the whole family, plus barbecues and ski wear. Brands include Dometic, Thule, Meindl, Lowa, Kampa and Weber.",
@@ -56,7 +57,7 @@
 		"approach_intro": "We designed the whole Shopify store around one idea: it should work like a good camping store. There, every aisle has a sign, staff answer hard questions on the spot, and the till is never far away.",
 		"approach_body": [
 			"First, we looked at how people actually shop for camping gear. They start with a department, such as tents, awnings or clothing. Then they narrow it down by type, and finally by brand and price. That structure became the backbone of a <a href=\"/service/shopify-plus/\">custom Shopify theme</a> on Shopify's Horizon foundation. We added our own sections for the homepage, the All Categories menu, search, product pages and footer. Each one carries the store's olive-and-orange identity.",
-			"Then we worked through the buying journey screen by screen. Product pages answer what a shop assistant would. They show today's price and the saving, the sizes that are left, the specs and when it ships. Next, the cart and checkout remove the last reasons to wait. They offer a free-shipping progress bar, express wallets and the payment methods Dutch and Belgian shoppers use. There is free pickup at the Roermond store, too. Everything runs in Dutch, English and German. Finally, we <a href=\"/service/uiux-and-brand-design/\">designed every screen for the phone</a> as carefully as for the desktop."
+			"Then we worked through the buying journey screen by screen. Product pages answer what a shop assistant would. They show today's price and the saving, the sizes that are left, the specs and when it ships. Next, the cart and checkout remove the last reasons to wait. They offer a free-shipping progress bar, express wallets and the payment methods Dutch and Belgian shoppers use. There is free pickup at the Roermond store, too. Everything runs in Dutch, English and German through <a href=\"/service/shopify-plus/\">Shopify Markets</a>. Finally, we <a href=\"/service/uiux-and-brand-design/\">designed every screen for the phone</a> as carefully as for the desktop."
 		],
 		"implementations": [
 			"Navigation for a 9,400-product range: A custom All Categories menu shows all 14 departments as icon cards with their product counts. Hovering a card opens its sub-categories. A full-height mobile menu mirrors it, and predictive search sits in the header on every device.",

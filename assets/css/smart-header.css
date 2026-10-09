@@ -446,6 +446,38 @@ body.admin-bar .avix-sh {
 	transform: translateY(-2px) rotate(-5deg);
 }
 
+/* Optional "View all services" text link under a hairline at the end of the panel. */
+.avix-sh .avix-sh__item--all {
+	position: relative;
+	grid-template-columns: minmax(0, 1fr) auto;
+	margin-top: 9px;
+	padding: 13px 12px;
+}
+
+.avix-sh .avix-sh__item--all::before {
+	position: absolute;
+	top: -6px;
+	right: 12px;
+	left: 12px;
+	height: 1px;
+	background: var(--sh-panel-line);
+	content: "";
+}
+
+.avix-sh__item--all .avix-sh__item-title {
+	font-size: 14px;
+}
+
+.avix-sh__item--all .avix-sh__item-arrow {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-sh__item--all:hover .avix-sh__item-arrow,
+.avix-sh__item--all:focus-visible .avix-sh__item-arrow {
+	transform: translateX(3px);
+}
+
 /* ---------- Button + toggle ---------- */
 
 .avix-sh__actions {
@@ -964,6 +996,34 @@ body.admin-bar .avix-sh-menu {
 .avix-sh-menu .avix-sh-menu__sublink:focus-visible,
 .avix-sh-menu .avix-sh-menu__sublink.is-current {
 	color: var(--m-ink);
+}
+
+/* Optional "View all services" link at the end of the list. */
+.avix-sh-menu .avix-sh-menu__sublink--all {
+	min-height: 36px;
+	gap: 8px;
+	color: var(--m-ink);
+}
+
+.avix-sh-menu__all-arrow {
+	display: flex;
+	color: var(--sh-accent);
+	transition: transform 0.3s var(--sh-ease);
+}
+
+.avix-sh-menu__all-arrow svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 2.4;
+}
+
+.avix-sh-menu__sublink--all:hover .avix-sh-menu__all-arrow,
+.avix-sh-menu__sublink--all:focus-visible .avix-sh-menu__all-arrow {
+	transform: translateX(3px);
 }
 
 .avix-sh-menu .avix-sh__tile {

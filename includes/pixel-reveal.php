@@ -6,7 +6,7 @@
  * the section it sits on, which clear in a random order once the image is
  * scrolled to (assets/js/pixel-reveal.js). Front end only: never in wp-admin,
  * the Elementor editor or its preview. Images are never hidden by CSS, so
- * without JS (or with reduced motion) they simply show. One deferred script
+ * without JS (or with reduced motion) they simply show. One async script
  * and no stylesheet: the two CSS rules it needs are added by the script.
  *
  * Settings > Avix pixel reveal. Filters:
@@ -253,6 +253,15 @@ final class Pixel_Reveal {
 			return;
 		}
 
+		// Async: the script depends on nothing and waits for the page itself
+		// (its first look runs after load, when the browser is idle). With
+		// "defer" it still loaded as a blocking footer script on
+		// avixdigital.com: the word "defer" is removed from the tag after
+		// WordPress prints it (the live tag reads data-wp-strategy="" with a
+		// double space where the attribute was; LiteSpeed's JS optimisation or
+		// the theme's script handling). The Site Kit tag on the same pages keeps
+		// its bare `async`. Even if this one loses it too, the script now does
+		// no work until the page has loaded.
 		wp_enqueue_script(
 			self::HANDLE,
 			AVIX_EW_URL . self::JS,
@@ -260,7 +269,7 @@ final class Pixel_Reveal {
 			self::version( self::JS ),
 			array(
 				'in_footer' => true,
-				'strategy'  => 'defer',
+				'strategy'  => 'async',
 			)
 		);
 		wp_add_inline_script(

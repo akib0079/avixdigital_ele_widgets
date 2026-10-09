@@ -704,6 +704,38 @@
 	line-height: 1.5;
 }
 
+/* Optional legal links after the copyright (e.g. Privacy policy). */
+.avix-ft .avix-ft__legal--links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 6px 22px;
+}
+
+.avix-ft__legal-links {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 6px 18px;
+}
+
+.avix-ft .avix-ft__legal-link {
+	color: var(--ft-soft);
+	font-weight: 500;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--ft-soft) 28%, transparent);
+	text-underline-offset: 4px;
+	transition: color 220ms ease, text-decoration-color 220ms ease;
+}
+
+.avix-ft .avix-ft__legal-link:hover {
+	color: var(--ft-ink);
+	text-decoration-color: currentColor;
+}
+
+.avix-ft .avix-ft__legal-link[aria-current="page"] {
+	color: var(--ft-accent-soft);
+}
+
 .avix-ft .avix-ft__top {
 	display: inline-flex;
 	align-items: center;
@@ -826,6 +858,7 @@
 .avix-ft .avix-ft__pill:focus-visible,
 .avix-ft .avix-ft__alt a:focus-visible,
 .avix-ft .avix-ft__link:focus-visible,
+.avix-ft .avix-ft__legal-link:focus-visible,
 .avix-ft .avix-ft__social a:focus-visible,
 .avix-ft .avix-ft__copy:focus-visible,
 .avix-ft .avix-ft__top:focus-visible {

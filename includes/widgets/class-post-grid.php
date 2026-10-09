@@ -144,12 +144,13 @@ class Post_Grid extends Widget_Base {
 		$this->add_control(
 			'text',
 			array(
-				'label'     => esc_html__( 'Text', 'avix-widgets' ),
-				'type'      => Controls_Manager::TEXTAREA,
-				'rows'      => 4,
-				'default'   => 'Practical guidance on custom websites, ecommerce and web applications, from choosing a platform to defining a project your business can maintain.',
-				'dynamic'   => array( 'active' => true ),
-				'condition' => array( 'show_header' => 'yes' ),
+				'label'       => esc_html__( 'Text', 'avix-widgets' ),
+				'description' => esc_html__( 'Plain text. Simple links are allowed: <a href="/service/">our services</a>, plus <strong> and <em>.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXTAREA,
+				'rows'        => 4,
+				'default'     => 'Practical guidance on custom websites, ecommerce and web applications, from choosing a platform to defining a project your business can maintain.',
+				'dynamic'     => array( 'active' => true ),
+				'condition'   => array( 'show_header' => 'yes' ),
 			)
 		);
 
@@ -1194,7 +1195,7 @@ class Post_Grid extends Widget_Base {
 			<?php if ( '' !== $text || $search || $show_pal ) : ?>
 				<div class="avix-pg__aside" data-pg-rv>
 					<?php if ( '' !== $text ) : ?>
-						<p class="avix-pg__text"><?php echo esc_html( $text ); ?></p>
+						<p class="avix-pg__text"><?php echo $this->inline_html( $text ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in inline_html(). ?></p>
 					<?php endif; ?>
 					<?php if ( $search || $show_pal ) : ?>
 						<div class="avix-pg__perch<?php echo $search ? '' : ' avix-pg__perch--ledge'; ?>">
@@ -1667,6 +1668,32 @@ class Post_Grid extends Widget_Base {
 	/* ------------------------------------------------------------------ */
 	/* Helpers                                                             */
 	/* ------------------------------------------------------------------ */
+
+	/**
+	 * Inline text that may hold simple links: <a href>, <strong> and <em> are kept
+	 * (wp_kses), anything else is removed. Text without markup is escaped exactly as
+	 * before (esc_html), so existing content prints byte for byte the same.
+	 *
+	 * @param string $text Raw text.
+	 */
+	private function inline_html( $text ) {
+		$text = (string) $text;
+		if ( false === strpos( $text, '<' ) ) {
+			return esc_html( $text );
+		}
+		return wp_kses(
+			$text,
+			array(
+				'a'      => array(
+					'href'   => true,
+					'target' => true,
+					'rel'    => true,
+				),
+				'strong' => array(),
+				'em'     => array(),
+			)
+		);
+	}
 
 	/**
 	 * Escaped text; [words] become the accent span, new lines become <br>.

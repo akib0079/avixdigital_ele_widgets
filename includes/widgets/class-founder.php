@@ -392,7 +392,7 @@ class Founder extends Widget_Base {
 			'schema',
 			array(
 				'label'       => esc_html__( 'Person structured data', 'avix-widgets' ),
-				'description' => esc_html__( 'Adds JSON-LD for the founder (name, role, photo, profile, employer). Search engines see one person across the site when the ID below matches the home page.', 'avix-widgets' ),
+				'description' => esc_html__( 'Adds JSON-LD for this person (name, role, photo, profile, employer). For the founder set in Tools > Avix SEO: entity, the site\'s one founder Person is used instead, so search engines see one person across the site.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
 				'separator'   => 'before',
@@ -1106,53 +1106,35 @@ class Founder extends Widget_Base {
 	}
 
 	/**
-	 * schema.org Person for the founder, sharing its @id with the home page
-	 * (Compare & CEO Quote, Process Timeline), so it stays one entity.
+	 * schema.org Person for this card. When the name or Person ID is the
+	 * founder's (Tools > Avix SEO: entity) it is the site's one founder Person:
+	 * printed once per page from the entity data, never redefined with this
+	 * card's role or photo, and with Yoast SEO already in the head, so nothing
+	 * is added here. Anyone else gets #person-{ID} and worksFor → #organization
+	 * (includes/seo/class-person.php).
+	 *
+	 * @param array  $s    Settings.
+	 * @param string $name Display name.
 	 */
 	private function print_schema( array $s, $name ) {
-		static $printed = array();
-		$name = $this->plain( $name );
-		$slug = sanitize_title( (string) ( $s['person_id'] ?? '' ) );
-		if ( '' === $slug ) {
-			$slug = sanitize_title( $name );
-		}
-		// One entity per page: a second Founder card for the same person adds nothing.
-		if ( '' === $slug || isset( $printed[ $slug ] ) ) {
+		if ( ! class_exists( '\AvixWidgets\SEO\Person' ) ) {
 			return;
-		}
-		$printed[ $slug ] = true;
-		$person = array(
-			'@context' => 'https://schema.org',
-			'@type'    => 'Person',
-			'@id'      => home_url( '/#person-' . $slug ),
-			'name'     => $name,
-			'worksFor' => array(
-				'@type' => 'Organization',
-				'name'  => $this->plain( get_bloginfo( 'name' ) ),
-				'url'   => home_url( '/' ),
-			),
-		);
-		$role = $this->plain( (string) ( $s['role'] ?? '' ) );
-		if ( '' !== $role ) {
-			$person['jobTitle'] = $role;
 		}
 		$photo = (array) ( $s['photo'] ?? array() );
 		$id    = $this->media_id( $photo );
 		$image = $id ? wp_get_attachment_image_url( $id, 'large' ) : (string) ( $photo['url'] ?? '' );
-		if ( $image ) {
-			$person['image'] = esc_url_raw( $image );
-		}
-		$link = trim( (string) ( $s['profile']['url'] ?? '' ) );
-		if ( '' !== $link && '/' === $link[0] && ( ! isset( $link[1] ) || '/' !== $link[1] ) ) {
-			$link = home_url( $link );
-		}
-		$link = esc_url_raw( $link, array( 'http', 'https' ) );
-		if ( '' !== $link ) {
-			$person[ wp_parse_url( $link, PHP_URL_HOST ) === wp_parse_url( home_url( '/' ), PHP_URL_HOST ) ? 'url' : 'sameAs' ] = $link;
-		}
-		$json = wp_json_encode( $person, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP );
-		if ( $json ) {
-			echo '<script type="application/ld+json">' . $json . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON with < > & hex-escaped.
-		}
+		\AvixWidgets\SEO\Person::print_nodes(
+			\AvixWidgets\SEO\Person::widget_nodes(
+				array(
+					array(
+						'name'     => $this->plain( $name ),
+						'slug'     => (string) ( $s['person_id'] ?? '' ),
+						'jobTitle' => $this->plain( (string) ( $s['role'] ?? '' ) ),
+						'image'    => $image ? (string) $image : '',
+						'link'     => (string) ( $s['profile']['url'] ?? '' ),
+					),
+				)
+			)
+		);
 	}
 }

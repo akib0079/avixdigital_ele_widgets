@@ -255,14 +255,26 @@ final class SEO {
 			$work['publisher'] = array( '@id' => $org );
 		}
 
+		$about = array();
 		if ( '' !== $cs['client'] ) {
-			$about = array(
+			$client = array(
 				'@type' => 'Organization',
 				'name'  => $cs['client'],
 			);
 			if ( '' !== $cs['live_url'] ) {
-				$about['url'] = $cs['live_url'];
+				$client['url'] = $cs['live_url'];
 			}
+			$about[] = $client;
+		}
+		// The services the study proves, as references to each service page's Service (@id <page>#service).
+		$slugs = array();
+		foreach ( $cs['terms']['service'] as $term ) {
+			$slugs[] = isset( $term[1] ) ? (string) $term[1] : '';
+		}
+		$about = array_merge( $about, self::service_refs( $slugs, self::service_ids() ) );
+		if ( 1 === count( $about ) ) {
+			$work['about'] = $about[0];
+		} elseif ( $about ) {
 			$work['about'] = $about;
 		}
 		if ( '' !== $cs['live_url'] ) {
@@ -284,6 +296,50 @@ final class SEO {
 		}
 
 		return $work;
+	}
+
+	/**
+	 * Service term slug => the @id of the Service its service page describes (the Page Hero's
+	 * Service schema, @id <page URL>#service). Webflow work is shown on the web development page
+	 * until a Webflow page exists.
+	 */
+	public static function service_ids(): array {
+		$paths = array(
+			'shopify'           => '/service/shopify-plus/',
+			'wordpress'         => '/service/wordpress-development/',
+			'webflow'           => '/service/web-development/',
+			'web-development'   => '/service/web-development/',
+			'uiux-brand-design' => '/service/uiux-and-brand-design/',
+		);
+		$ids   = array();
+		foreach ( $paths as $slug => $path ) {
+			$ids[ $slug ] = home_url( $path ) . '#service';
+		}
+		/**
+		 * Filters which Service @id a case study's service term points to (e.g. for a new service page).
+		 *
+		 * @param array<string, string> $ids Term slug => Service @id ('' = none).
+		 */
+		$ids = apply_filters( 'avix_cs_service_schema_ids', $ids );
+		return is_array( $ids ) ? $ids : array();
+	}
+
+	/**
+	 * Pure helper (unit-testable): @id references for the given service term slugs, in order,
+	 * without duplicates; unknown slugs are skipped.
+	 *
+	 * @param string[]              $slugs Service term slugs.
+	 * @param array<string, string> $ids   Term slug => Service @id.
+	 */
+	public static function service_refs( array $slugs, array $ids ): array {
+		$refs = array();
+		foreach ( $slugs as $slug ) {
+			$id = isset( $ids[ $slug ] ) && is_string( $ids[ $slug ] ) ? trim( $ids[ $slug ] ) : '';
+			if ( '' !== $id && ! isset( $refs[ $id ] ) ) {
+				$refs[ $id ] = array( '@id' => $id );
+			}
+		}
+		return array_values( $refs );
 	}
 
 	/**

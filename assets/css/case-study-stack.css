@@ -304,11 +304,18 @@
 	margin-top: clamp(40px, 4.4cqi, 60px);
 }
 
-.avix-cst .avix-cst__tech-title {
+/* The heading and its count side by side; the count is not part of the H3 text. */
+.avix-cst .avix-cst__tech-head {
 	display: flex;
 	align-items: center;
 	gap: 10px;
 	margin: 0 0 6px;
+	padding: 0;
+}
+
+.avix-cst .avix-cst__tech-title {
+	display: block;
+	margin: 0;
 	padding: 0;
 	color: var(--cst-muted);
 	font-family: var(--cst-font-body);
@@ -330,6 +337,8 @@
 	background: color-mix(in srgb, var(--cst-accent) 9%, transparent);
 	font-family: var(--cst-font-display);
 	font-size: 11.5px;
+	font-weight: 600;
+	line-height: 1.3;
 	letter-spacing: 0.02em;
 	font-variant-numeric: tabular-nums;
 }

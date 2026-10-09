@@ -194,6 +194,25 @@
 	line-height: 1.65;
 }
 
+/* Simple links in the intro (the intro allows <a>, <strong>, <em>). */
+.avix-sv .avix-sv__intro a {
+	color: var(--sv-ink);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+	transition: color 0.2s ease;
+}
+
+.avix-sv .avix-sv__intro a:hover,
+.avix-sv .avix-sv__intro a:focus-visible {
+	color: var(--sv-accent);
+}
+
+.avix-sv .avix-sv__intro strong {
+	color: var(--sv-ink);
+	font-weight: 600;
+}
+
 /* ---------- Layout ---------- */
 
 .avix-sv__inner {

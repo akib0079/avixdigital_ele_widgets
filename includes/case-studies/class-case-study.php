@@ -211,6 +211,14 @@ final class Case_Study {
 		),
 
 		/* ---- Story ---- */
+		'challenge_heading'   => array(
+			'type'        => 'text',
+			'max'         => 120,
+			'label'       => 'Challenge heading',
+			'group'       => 'story',
+			'help'        => 'A short heading for the challenge chapter (its H2). The challenge statement then shows below it as the lead. Empty = the statement is the heading.',
+			'placeholder' => 'The challenge: a premium design on a fast Shopify store',
+		),
 		'challenge_statement' => array(
 			'type'   => 'textarea',
 			'max'    => 300,

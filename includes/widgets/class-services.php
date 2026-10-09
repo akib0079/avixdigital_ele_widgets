@@ -109,10 +109,11 @@ class Services extends Widget_Base {
 		$this->add_control(
 			'intro',
 			array(
-				'label'   => esc_html__( 'Intro text (optional)', 'avix-widgets' ),
-				'type'    => Controls_Manager::TEXTAREA,
-				'rows'    => 3,
-				'dynamic' => array( 'active' => true ),
+				'label'       => esc_html__( 'Intro text (optional)', 'avix-widgets' ),
+				'description' => esc_html__( 'Plain text. Simple links are allowed: <a href="/service/">our services</a>, plus <strong> and <em>.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXTAREA,
+				'rows'        => 3,
+				'dynamic'     => array( 'active' => true ),
 			)
 		);
 
@@ -636,7 +637,7 @@ class Services extends Widget_Base {
 							<<?php echo esc_attr( $tag ); ?> class="avix-sv__headline" id="<?php echo esc_attr( $title_id ); ?>"><?php echo $title; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></<?php echo esc_attr( $tag ); ?>>
 						<?php endif; ?>
 						<?php if ( '' !== trim( (string) $s['intro'] ) ) : ?>
-							<p class="avix-sv__intro"><?php echo esc_html( $s['intro'] ); ?></p>
+							<p class="avix-sv__intro"><?php echo $this->inline_html( $s['intro'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in inline_html(). ?></p>
 						<?php endif; ?>
 					</header>
 				<?php endif; ?>
@@ -885,7 +886,7 @@ class Services extends Widget_Base {
 				)
 			);
 			if ( $html ) {
-				return $html;
+				return $this->lazy_img( $html );
 			}
 		}
 		if ( '' !== $item['image_url'] ) {
@@ -961,5 +962,65 @@ class Services extends Widget_Base {
 				'image'       => array( 'url' => 'https://avixdigital.com/wp-content/uploads/2025/12/FullSizeRender-3-scaled.jpg' ),
 			),
 		);
+	}
+
+	/**
+	 * Inline text that may hold simple links: <a href>, <strong> and <em> are kept
+	 * (wp_kses), anything else is removed. Text without markup is escaped exactly as
+	 * before (esc_html), so existing content prints byte for byte the same.
+	 *
+	 * @param string $text Raw text.
+	 */
+	private function inline_html( $text ) {
+		$text = (string) $text;
+		if ( false === strpos( $text, '<' ) ) {
+			return esc_html( $text );
+		}
+		return wp_kses(
+			$text,
+			array(
+				'a'      => array(
+					'href'   => true,
+					'target' => true,
+					'rel'    => true,
+				),
+				'strong' => array(),
+				'em'     => array(),
+			)
+		);
+	}
+
+	/**
+	 * Keeps a below-the-fold image lazy. Some sites filter attachment images
+	 * to loading="eager" (avixdigital.com does), which made these images (each
+	 * printed twice: the phone and the desktop copy) load with the hero. A
+	 * `sizes` list that starts with "auto" is only valid on a lazy image: on an
+	 * eager one the browser picks a full-width candidate, so "auto," is
+	 * dropped whenever the final tag is not lazy.
+	 *
+	 * @param string $html An <img> tag from wp_get_attachment_image().
+	 */
+	private function lazy_img( $html ) {
+		$html = (string) $html;
+		if ( '' === $html ) {
+			return $html;
+		}
+		if ( class_exists( '\WP_HTML_Tag_Processor' ) ) {
+			$tags = new \WP_HTML_Tag_Processor( $html );
+			if ( $tags->next_tag( 'img' ) ) {
+				$tags->set_attribute( 'loading', 'lazy' );
+				$tags->set_attribute( 'decoding', 'async' );
+				$tags->remove_attribute( 'fetchpriority' );
+				return $tags->get_updated_html();
+			}
+			return $html;
+		}
+		$html = preg_match( '/\sloading=/i', $html )
+			? (string) preg_replace( '/\sloading=(["\'])[^"\']*\1/i', ' loading="lazy"', $html )
+			: (string) preg_replace( '/^<img\b/i', '<img loading="lazy"', $html, 1 );
+		if ( ! preg_match( '/\sloading=(["\'])lazy\1/i', $html ) ) {
+			$html = (string) preg_replace( '/(\ssizes=(["\']))\s*auto\s*,\s*/i', '$1', $html );
+		}
+		return $html;
 	}
 }

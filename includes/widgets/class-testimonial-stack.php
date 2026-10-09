@@ -213,6 +213,17 @@ class Testimonial_Stack extends Widget_Base {
 		);
 
 		$repeater->add_control(
+			'source_name',
+			array(
+				'label'       => esc_html__( 'Review link label (optional)', 'avix-widgets' ),
+				'description' => esc_html__( 'Where the review is published, e.g. Fiverr. With a review link above, the card shows a small "Read on Fiverr" link under the review. Empty = no link.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'placeholder' => 'Fiverr',
+				'dynamic'     => array( 'active' => true ),
+			)
+		);
+
+		$repeater->add_control(
 			'rating',
 			array(
 				'label'   => esc_html__( 'Stars', 'avix-widgets' ),
@@ -709,7 +720,10 @@ class Testimonial_Stack extends Widget_Base {
 						<p>&ldquo;<?php echo esc_html( trim( (string) $review['quote'], " \t\n\r\"“”" ) ); ?>&rdquo;</p>
 					</blockquote>
 
-					<?php if ( 'yes' === $settings['show_card_footer'] ) : ?>
+					<?php
+					$this->render_read_link( $review, $index );
+					if ( 'yes' === $settings['show_card_footer'] ) :
+						?>
 					<div class="avix-rv-card__foot">
 						<span class="avix-rv-card__rating">
 							<?php $this->stars( $rating ); ?>
@@ -726,6 +740,33 @@ class Testimonial_Stack extends Widget_Base {
 				</div>
 			</div>
 		</article>
+		<?php
+	}
+
+	/**
+	 * Small "Read on <label>" link under the review. Only printed when the card
+	 * has both its own review link and a link label (both empty by default).
+	 *
+	 * @param array $review One review row.
+	 * @param int   $index  Card index, keeps render attribute keys unique.
+	 */
+	private function render_read_link( array $review, $index ) {
+		$name = trim( (string) ( $review['source_name'] ?? '' ) );
+		$link = (array) ( $review['source_url'] ?? array() );
+		if ( '' === $name || empty( $link['url'] ) ) {
+			return;
+		}
+		$key = 'read-' . $index;
+		$this->add_link_attributes( $key, $link );
+		$this->add_render_attribute( $key, 'class', 'avix-rv-card__read-link' );
+		?>
+		<p class="avix-rv-card__read">
+			<a <?php $this->print_render_attribute_string( $key ); ?>>
+				<?php /* translators: %s: where the review is published, e.g. Fiverr. */ ?>
+				<?php echo esc_html( sprintf( __( 'Read on %s', 'avix-widgets' ), $name ) ); ?>
+				<svg class="avix-rv-card__source-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
+			</a>
+		</p>
 		<?php
 	}
 

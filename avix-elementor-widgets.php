@@ -3,7 +3,7 @@
  * Plugin Name:       Avix Digital Elementor Widgets
  * Plugin URI:        https://avixdigital.com
  * Description:       Custom Elementor widgets for avixdigital.com: Service Benefits, About Hero, Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline, FAQ & Quote, Compare & CEO Quote, Client Logos, Intro Text, Smart Header, Team, Page Hero, Service Index, Story, Founder, Values, Journey, Careers, Post Grid, Service Tabs, Ticker, plus the Case Studies post type with Case Study Hero, Chapter, Feature Spotlight, Results, Gallery, Stack, Next and Grid.
- * Version:           1.16.0
+ * Version:           1.17.0
  * Author:            Avix Digital
  * Author URI:        https://avixdigital.com
  * Text Domain:       avix-widgets
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AVIX_EW_VERSION', '1.16.0' );
+define( 'AVIX_EW_VERSION', '1.17.0' );
 define( 'AVIX_EW_FILE', __FILE__ );
 define( 'AVIX_EW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AVIX_EW_URL', plugin_dir_url( __FILE__ ) );
@@ -97,6 +97,17 @@ final class Avix_Elementor_Widgets {
 				\AvixWidgets\Pixel_Reveal::init();
 			}
 		}
+		// Blog article template: the single post design (see includes/blog/class-blog.php).
+		if ( file_exists( AVIX_EW_PATH . 'includes/blog/class-blog.php' ) ) {
+			require_once AVIX_EW_PATH . 'includes/blog/class-blog.php';
+			if ( class_exists( '\\AvixWidgets\\Blog\\Blog' ) ) {
+				\AvixWidgets\Blog\Blog::init();
+			}
+		}
+		// SEO module: entity schema, founder Person, Service graph piece, redirects, SEO data importer (see includes/seo/load.php).
+		if ( file_exists( AVIX_EW_PATH . 'includes/seo/load.php' ) ) {
+			require_once AVIX_EW_PATH . 'includes/seo/load.php';
+		}
 		add_action( 'plugins_loaded', array( __CLASS__, 'boot' ) );
 	}
 
@@ -129,6 +140,13 @@ final class Avix_Elementor_Widgets {
 		}
 		if ( file_exists( AVIX_EW_PATH . 'includes/case-studies/cards.php' ) ) {
 			require_once AVIX_EW_PATH . 'includes/case-studies/cards.php';
+		}
+		// Front-end weight the pages do not need (the WordPress media player where nothing plays; see includes/perf.php).
+		if ( file_exists( AVIX_EW_PATH . 'includes/perf.php' ) ) {
+			require_once AVIX_EW_PATH . 'includes/perf.php';
+			if ( class_exists( '\\AvixWidgets\\Perf' ) ) {
+				\AvixWidgets\Perf::init();
+			}
 		}
 
 		add_action( 'elementor/elements/categories_registered', array( __CLASS__, 'register_category' ) );
@@ -240,9 +258,24 @@ final class Avix_Elementor_Widgets {
 		return $handles;
 	}
 
+	/**
+	 * Footer scripts, deferred: they mount on DOMContentLoaded (or right away
+	 * once the document is parsed) and hook Elementor through the native
+	 * "elementor/frontend/init" event, so running after parsing changes
+	 * nothing for them, and they no longer hold up the parser.
+	 */
 	private static function register_script( $handle, $relative, array $deps = array() ) {
 		self::$assets[ $handle ] = $relative;
-		wp_register_script( $handle, AVIX_EW_URL . $relative, $deps, self::asset_version( $relative ), true );
+		wp_register_script(
+			$handle,
+			AVIX_EW_URL . $relative,
+			$deps,
+			self::asset_version( $relative ),
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
 	}
 
 	private static function register_style( $handle, $relative, array $deps = array() ) {

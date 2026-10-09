@@ -166,6 +166,19 @@ class Case_Study_Chapter extends Widget_Base {
 		);
 
 		$this->add_control(
+			'heading',
+			array(
+				'label'       => esc_html__( 'Section heading', 'avix-widgets' ),
+				'description' => esc_html__( 'A short heading above the headline. When there is one, it is the section’s heading (Headline tag below) and the headline shows under it as the lead statement. Leave empty to use the case study’s challenge heading (challenge chapter); with no heading at all the headline is the heading, as before.', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => '',
+				'placeholder' => esc_html__( 'From case study: challenge heading', 'avix-widgets' ),
+				'label_block' => true,
+				'dynamic'     => array( 'active' => true ),
+			)
+		);
+
+		$this->add_control(
 			'title_tag',
 			array(
 				'label'   => esc_html__( 'Headline tag', 'avix-widgets' ),
@@ -446,6 +459,7 @@ class Case_Study_Chapter extends Widget_Base {
 		);
 
 		$groups = array(
+			'heading'    => array( esc_html__( 'Section heading', 'avix-widgets' ), '.avix-csc__heading' ),
 			'title'      => array( esc_html__( 'Headline', 'avix-widgets' ), '.avix-csc__title' ),
 			'lead'       => array( esc_html__( 'Lead', 'avix-widgets' ), '.avix-csc__lead' ),
 			'body'       => array( esc_html__( 'Text', 'avix-widgets' ), '.avix-csc__body p' ),
@@ -703,6 +717,17 @@ class Case_Study_Chapter extends Widget_Base {
 		}
 		$title = str_replace( '{count}', $this->spoken( count( $spots ) ), $title );
 
+		// Section heading: the override, else the case study's challenge heading. With
+		// one, it is the H2 and the headline (the challenge statement) reads as the lead;
+		// without one nothing changes.
+		$heading = trim( (string) ( $s['heading'] ?? '' ) );
+		if ( '' === $heading && 'challenge' === $mode ) {
+			$heading = trim( (string) ( $cs['challenge_heading'] ?? '' ) );
+		}
+		if ( '' !== $heading ) {
+			$title_is_ok = true;
+		}
+
 		$caption = trim( (string) ( $s['caption'] ?? '' ) );
 		if ( '' === $caption && 'challenge' === $mode && $data ) {
 			$caption = __( 'The problem we were hired to solve', 'avix-widgets' );
@@ -770,7 +795,7 @@ class Case_Study_Chapter extends Widget_Base {
 		}
 
 		$has_content = $title_is_ok || '' !== $lead || $body || $chips || $cards;
-		if ( 'custom' !== $mode && ! $data && '' === trim( (string) ( $s['title'] ?? '' ) ) && '' === $body_raw && '' === trim( (string) ( $s['lead'] ?? '' ) ) && ! $cards ) {
+		if ( 'custom' !== $mode && ! $data && '' === trim( (string) ( $s['title'] ?? '' ) ) && '' === trim( (string) ( $s['heading'] ?? '' ) ) && '' === $body_raw && '' === trim( (string) ( $s['lead'] ?? '' ) ) && ! $cards ) {
 			$has_content = false;
 		}
 		if ( ! $has_content ) {
@@ -836,7 +861,7 @@ class Case_Study_Chapter extends Widget_Base {
 		if ( '' !== $anchor ) {
 			$this->add_render_attribute( 'root', 'id', $anchor );
 		}
-		if ( '' !== $title ) {
+		if ( '' !== $title || '' !== $heading ) {
 			$this->add_render_attribute( 'root', 'aria-labelledby', $title_id );
 		} elseif ( '' !== $label ) {
 			$this->add_render_attribute( 'root', 'aria-label', $label );
@@ -857,7 +882,9 @@ class Case_Study_Chapter extends Widget_Base {
 							</div>
 						<?php endif; ?>
 						<div class="avix-csc__main">
-							<?php if ( '' !== $title ) : ?>
+							<?php if ( '' !== $heading ) : ?>
+								<?php $this->render_heading_pair( $tag, $title_id, $heading, $title, 'statement' ); ?>
+							<?php elseif ( '' !== $title ) : ?>
 								<<?php echo esc_html( $tag ); ?> id="<?php echo esc_attr( $title_id ); ?>" class="avix-csc__title avix-csc__title--statement avix-csc__rise" style="--i:1;"><?php echo $this->accent_html( $title ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></<?php echo esc_html( $tag ); ?>>
 							<?php endif; ?>
 							<?php if ( '' !== $lead ) : ?>
@@ -884,7 +911,9 @@ class Case_Study_Chapter extends Widget_Base {
 					<header class="avix-csc__head">
 						<?php echo $eyebrow; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in eyebrow_html(). ?>
 						<div class="<?php echo esc_attr( implode( ' ', $row_classes ) ); ?>">
-							<?php if ( '' !== $title ) : ?>
+							<?php if ( '' !== $heading ) : ?>
+								<?php $this->render_heading_pair( $tag, $title_id, $heading, $title, 'display' ); ?>
+							<?php elseif ( '' !== $title ) : ?>
 								<<?php echo esc_html( $tag ); ?> id="<?php echo esc_attr( $title_id ); ?>" class="avix-csc__title avix-csc__title--display avix-csc__rise" style="--i:1;"><?php echo $this->accent_html( $title ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html(). ?></<?php echo esc_html( $tag ); ?>>
 							<?php endif; ?>
 							<?php
@@ -915,6 +944,35 @@ class Case_Study_Chapter extends Widget_Base {
 			</div>
 		</section>
 		<?php
+	}
+
+	/**
+	 * A section heading with the headline under it: the heading carries the heading tag
+	 * (and the id the section is labelled by), the headline becomes the lead statement
+	 * paragraph with its usual look.
+	 *
+	 * @param string $tag      Heading tag (validated).
+	 * @param string $title_id Id for aria-labelledby.
+	 * @param string $heading  Short heading.
+	 * @param string $title    Headline ('' = none).
+	 * @param string $variant  statement (side-by-side) | display (stacked).
+	 */
+	private function render_heading_pair( $tag, $title_id, $heading, $title, $variant ) {
+		echo '<div class="avix-csc__title-group">';
+		printf(
+			'<%1$s id="%2$s" class="avix-csc__heading avix-csc__rise" style="--i:1;">%3$s</%1$s>',
+			esc_html( $tag ),
+			esc_attr( $title_id ),
+			$this->accent_html( $heading ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html().
+		);
+		if ( '' !== $title ) {
+			printf(
+				'<p class="avix-csc__title avix-csc__title--%1$s avix-csc__statement avix-csc__rise" style="--i:1;">%2$s</p>',
+				esc_attr( 'display' === $variant ? 'display' : 'statement' ),
+				$this->accent_html( $title ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in accent_html().
+			);
+		}
+		echo '</div>';
 	}
 
 	/**

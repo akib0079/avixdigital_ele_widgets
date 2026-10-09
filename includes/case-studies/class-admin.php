@@ -765,6 +765,7 @@ final class Admin {
 			$report = Importer::run(
 				array(
 					'publish' => ! empty( $_POST['publish'] ),
+					'force'   => ! empty( $_POST['force'] ),
 					'slugs'   => count( $slugs ) === count( $known ) ? array() : $slugs,
 				)
 			);
@@ -1086,7 +1087,7 @@ final class Admin {
 		$state  = isset( $_GET['avix_cs_import'] ) ? sanitize_key( wp_unslash( $_GET['avix_cs_import'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display only.
 
 		echo '<section class="avix-cs-card avix-cs-import" id="avix-cs-import"><header class="avix-cs-card__head"><h2>' . esc_html__( 'Import the case studies', 'avix-widgets' ) . '</h2>';
-		echo '<p>' . esc_html__( 'Creates or updates the bundled case studies as drafts: text, terms, images that are already in the media library, Yoast titles and the layout. Running it again updates the same posts. Nothing is published.', 'avix-widgets' ) . '</p></header>';
+		echo '<p>' . esc_html__( 'Creates or updates the bundled case studies as drafts: text, terms, images that are already in the media library, Yoast titles and the layout. Running it again updates the same posts; a study whose data did not change is left untouched. Nothing is published.', 'avix-widgets' ) . '</p></header>';
 		echo '<div class="avix-cs-card__body">';
 
 		$notes = array(
@@ -1141,7 +1142,11 @@ final class Admin {
 
 			echo '<td>';
 			if ( $row ) {
-				echo esc_html( ! empty( $row['created'] ) ? __( 'Created', 'avix-widgets' ) : __( 'Updated', 'avix-widgets' ) );
+				if ( ! empty( $row['unchanged'] ) ) {
+					echo esc_html__( 'Unchanged (nothing written)', 'avix-widgets' );
+				} else {
+					echo esc_html( ! empty( $row['created'] ) ? __( 'Created', 'avix-widgets' ) : __( 'Updated', 'avix-widgets' ) );
+				}
 			} else {
 				echo '<span class="avix-cs-muted">—</span>';
 			}
@@ -1166,7 +1171,8 @@ final class Admin {
 
 		echo '<p class="avix-cs-import__opts">';
 		echo '<label><input type="checkbox" name="publish" value="1"> ' . esc_html__( 'Publish the case studies (otherwise they are saved as drafts)', 'avix-widgets' ) . '</label><br>';
-		echo '<label><input type="checkbox" name="index_page" value="1"> ' . esc_html__( 'Create or update the /case-studies/ page (published)', 'avix-widgets' ) . '</label>';
+		echo '<label><input type="checkbox" name="index_page" value="1"> ' . esc_html__( 'Create or update the /case-studies/ page (published)', 'avix-widgets' ) . '</label><br>';
+		echo '<label><input type="checkbox" name="force" value="1"> ' . esc_html__( 'Write every study again, even when its data file did not change (puts back hand edits; updates the modified date)', 'avix-widgets' ) . '</label>';
 		echo '</p>';
 		echo '<div class="avix-cs-import__foot">';
 		echo '<button type="submit" class="button button-primary" data-import-run>' . esc_html__( 'Run import', 'avix-widgets' ) . '</button>';

@@ -21,9 +21,9 @@
 		]
 	},
 	"yoast": {
-		"focuskw": "Flow Storage Webflow case study",
-		"title": "Flow Storage Webflow Case Study: Website & CMS | AvixDigital",
-		"metadesc": "Flow Storage Webflow case study: how AvixDigital turned a detailed Figma design into a fast, fully responsive site with a custom CMS and lead-capture forms.",
+		"focuskw": "Figma to Webflow case study",
+		"title": "Flow Storage: Figma to Webflow Case Study | AvixDigital",
+		"metadesc": "Flow Storage case study: how we built a detailed Figma design as a fast, responsive Webflow site with CMS use-case pages and lead-capture forms.",
 		"bctitle": "Flow Storage",
 		"og_image": "@media:avix-cs-flow-storage-og.jpg"
 	},
@@ -46,6 +46,7 @@
 		"card_tags": "Webflow, CMS, Lead generation",
 		"card_label": "Designed for",
 		"card_value": "Qualified leads",
+		"challenge_heading": "The challenge: a detailed Figma design, built in Webflow without losing speed",
 		"challenge_statement": "The primary challenge in high-tier Webflow development is translating [intricate design files] into a live environment without sacrificing visual integrity, load speed, or responsiveness.",
 		"challenge_body": [
 			"Flow Storage rents secure container units, plus caravan and boat storage, just outside Roermond, and it sells on trust: clean, dry, alarmed and flexible. The new brand arrived as a detailed, high-fidelity Figma design with logo-shaped image masks, two-tone headlines and layered cards, and it had to go live without losing any of that polish.",
@@ -54,13 +55,13 @@
 		"constraints": "1:1 Figma fidelity, Fast on every breakpoint, Editable without code, Lead capture",
 		"approach_intro": "Akib led the end-to-end development of the website, using Webflow's advanced capabilities to engineer a seamless, dynamic and highly functional platform.",
 		"approach_body": [
-			"We treated the Figma file as the contract. Every type style, spacing value and interaction was rebuilt 1:1 in Webflow, then checked at every breakpoint, from ultra-wide monitors down to phones.",
+			"We treated the Figma file as the contract for our <a href=\"/service/web-development/\">Webflow development</a>. Every type style, spacing value and interaction was rebuilt 1:1 in Webflow, then checked at every breakpoint, from ultra-wide monitors down to phones.",
 			"Alongside the visual build, we mapped the content the team would actually change, such as use-case pages and customer reviews, into a CMS structure shaped around how they work. We also planned the lead journey end to end: clear calls to action, a direct line to a named person and a form that asks the right questions up front."
 		],
 		"implementations": [
 			"Pixel-Perfect Figma Conversion: Meticulously translated the approved Figma designs into a live Webflow environment. We ensured that every interaction, typography choice, and spacing metric was a flawless 1:1 match with the original creative vision.",
 			"Custom CMS Integration: Engineered a fully dynamic Content Management System (CMS). This custom architecture allows the Flow Storage team to intuitively manage updates, publish new pages, and scale their content strategy with zero developer friction.",
-			"Advanced Custom Form Integration: Developed and integrated bespoke forms designed to streamline user inquiries and data capture. This ensured a frictionless UX for potential clients while seamlessly routing leads to the client's internal systems.",
+			"Advanced Custom Form Integration: Developed and integrated bespoke forms designed to streamline user enquiries and data capture. This ensured a frictionless UX for potential clients while seamlessly routing leads to the client's internal systems.",
 			"Fully Responsive & Dynamic Architecture: Built the entire platform to be fluid and fully responsive across all breakpoints. The site adapts flawlessly from ultra-wide desktop monitors to mobile devices, maintaining dynamic content delivery and fast load speeds across the board."
 		],
 		"solution_body": [

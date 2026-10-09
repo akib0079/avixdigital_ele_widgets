@@ -626,7 +626,8 @@ class Case_Study_Stack extends Widget_Base {
 						<?php if ( $tools ) : ?>
 							<div class="avix-cst__tech">
 								<?php if ( '' !== trim( (string) ( $s['tech_label'] ?? '' ) ) ) : ?>
-									<h3 class="avix-cst__tech-title avix-cst__rise" style="--i:3;"><?php echo esc_html( trim( (string) $s['tech_label'] ) ); ?><span class="avix-cst__count"><?php echo esc_html( str_pad( (string) count( $tools ), 2, '0', STR_PAD_LEFT ) ); ?></span></h3>
+									<?php // The count sits beside the heading, not in it, so the H3 reads "Technology" (not "Technology09"). ?>
+								<div class="avix-cst__tech-head avix-cst__rise" style="--i:3;"><h3 class="avix-cst__tech-title"><?php echo esc_html( trim( (string) $s['tech_label'] ) ); ?></h3><span class="avix-cst__count" aria-hidden="true"><?php echo esc_html( str_pad( (string) count( $tools ), 2, '0', STR_PAD_LEFT ) ); ?></span></div>
 								<?php endif; ?>
 								<ul class="avix-cst__list">
 									<?php foreach ( $tools as $i => $tool ) : ?>

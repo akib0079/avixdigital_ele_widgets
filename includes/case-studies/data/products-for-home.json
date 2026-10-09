@@ -23,7 +23,7 @@
 	"yoast": {
 		"focuskw": "WooCommerce checkout funnel",
 		"title": "WooCommerce Checkout Funnel Case Study | AvixDigital",
-		"metadesc": "WooCommerce checkout funnel case study: a one-of-a-kind Bricks store for Products for Home, with a side cart and order bumps designed to fill the basket.",
+		"metadesc": "WooCommerce checkout funnel case study: a one-of-a-kind Bricks store for Products for Home, with a side cart, order bumps and free-delivery thresholds.",
 		"bctitle": "Products for Home",
 		"og_image": "@media:avix-cs-products-for-home-og.jpg"
 	},
@@ -46,6 +46,7 @@
 		"card_tags": "WooCommerce, Bricks, Checkout funnel",
 		"card_label": "Designed for",
 		"card_value": "Bigger baskets",
+		"challenge_heading": "The challenge: turn single jars into full baskets",
 		"challenge_statement": "A single jar of honey rarely pays for its own delivery. The store had to [turn single items into full baskets], and look as special as the products it sells.",
 		"challenge_body": [
 			"Products for Home is a Dutch web shop for Mediterranean specialities. It sells raw Greek honey from Samos, extra virgin olive oil and Gia Giamas traditional fruit refreshments. Beeswax candles and natural care complete the range. Orders placed before 15:00 leave the same working day, for customers across the Netherlands and Belgium.",
@@ -70,7 +71,7 @@
 		],
 		"outcome_statement": "A storefront nobody mistakes for a WordPress theme, with a funnel that [sells at every step].",
 		"outcome_body": [
-			"Every step of the journey now has a selling job. It starts with the badge on a product card and ends with the tick box before payment. At each stage, shoppers see the saving for buying more, the distance to free delivery and a well-matched extra. In the end, the WooCommerce checkout funnel is where the shop sees the effect in its sales.",
+			"Every step of the journey now has a selling job. It starts with the badge on a product card and ends with the tick box before payment. At each stage, shoppers see the saving for buying more, the distance to free delivery and a well-matched extra. In the end, the shop made 40%+ more sales from its <a href=\"/service/wordpress-development/\">WooCommerce</a> checkout funnel (AvixDigital project data, reported by the agency, 2026).",
 			"The storefront keeps moving too. It runs on our own element library rather than a bought theme. As a result, new sections, products and offers go live on the same foundation. Meanwhile, we keep shipping improvements as an ongoing project with the Products for Home team."
 		],
 		"outcome_pillars": [
@@ -92,9 +93,9 @@
 		"metric_3_value": "5",
 		"metric_3_label": "Payment methods at checkout, from iDEAL to bol.checkout",
 		"metric_3_source": "observed on productsforhome.nl/checkouts/checkout/ (iDEAL/Wero, PayPal, Bancontact, Klarna, bol.checkout), 8 Oct 2026",
-		"metric_4_value": "57",
-		"metric_4_label": "Products across 19 categories, all managed in WooCommerce",
-		"metric_4_source": "observed in the store's public WooCommerce Store API (productsforhome.nl/wp-json/wc/store/v1/), 8 Oct 2026",
+		"metric_4_value": "40%+",
+		"metric_4_label": "More sales from the WooCommerce checkout funnel",
+		"metric_4_source": "AvixDigital project data, reported by the agency, 2026",
 		"stack": [
 			"WordPress & WooCommerce: catalogue, orders and payments",
 			"Bricks Builder: the visual foundation for every template",

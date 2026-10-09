@@ -20,7 +20,10 @@
  * Never hides an image without JS, never touches images already on screen
  * when it runs, and does nothing with reduced motion or in the editor. The
  * two CSS rules it needs (hidden for reduced motion and print) are added by
- * the script itself, so the page loads no stylesheet for it.
+ * the script itself, so the page loads no stylesheet for it. Loaded async;
+ * the first look waits until the page has loaded and the browser is idle,
+ * and images that come near together are armed in one read pass and one
+ * write pass (no layout per image).
  * Config: window.avixPixelRevealConfig (printed by includes/pixel-reveal.php).
  * API: window.AvixPixelReveal.{ scan(root), reveal(img), destroy() }: call
  * scan(container) after swapping content in (AJAX filters, "Load more"): it
@@ -203,14 +206,25 @@
 	// background images inside are switched off, so the colour behind an image
 	// is provisional and is read again once the class is there. Only when that
 	// script is on the page (a global const, so typeof is the safe way to look).
-	var LAZY_BG = (function () {
-		try {
-			/* global lazyloadRunObserver */
-			return typeof lazyloadRunObserver === 'function' ? compile(['.e-con.e-parent:not(.e-lazyloaded):not(.e-no-lazyload)']) : '';
-		} catch (error) {
-			return '';
+	// Looked up at the first arming, not when this file runs: loaded async, it
+	// may run before Elementor's footer script has been parsed.
+	var LAZY_BG = null;
+
+	function lazyBg() {
+		if (null === LAZY_BG) {
+			try {
+				/* global lazyloadRunObserver */
+				if (typeof lazyloadRunObserver === 'function') {
+					LAZY_BG = compile(['.e-con.e-parent:not(.e-lazyloaded):not(.e-no-lazyload)']);
+				} else if (document.readyState === 'complete') {
+					LAZY_BG = ''; // the page has loaded without it: stop looking
+				}
+			} catch (error) {
+				LAZY_BG = '';
+			}
 		}
-	})();
+		return LAZY_BG || '';
+	}
 
 	/* ---------- Colour ---------- */
 
@@ -567,20 +581,28 @@
 
 	/** Called when the image comes within the arm margin of the viewport. */
 	Reveal.prototype.near = function () {
+		armAll([this]);
+	};
+
+	/**
+	 * Arming, step 1 (reads only): whether this image gets a cover, and the
+	 * geometry and styles the cover needs. Null when it is left alone.
+	 */
+	Reveal.prototype.prepare = function () {
 		var self = this;
 		var img = this.img;
 		if (this.state !== 'idle') {
-			return;
+			return null;
 		}
 		if (!connected(img) || mq.matches) {
 			this.done(mq.matches ? 'motion' : 'gone');
-			return;
+			return null;
 		}
 		var rect = img.getBoundingClientRect();
 		if (inViewport(rect)) {
 			// Already showing (at load, or reached in one jump): never cover it.
 			this.done('in-view');
-			return;
+			return null;
 		}
 		if (rect.width < MIN_W || rect.height < MIN_H) {
 			if (loaded(img)) {
@@ -600,18 +622,14 @@
 				img.addEventListener('load', this.waitSize);
 				img.addEventListener('error', this.waitSize);
 			}
-			return;
+			return null;
 		}
-		this.arm(rect);
-	};
 
-	Reveal.prototype.arm = function (rect) {
-		var img = this.img;
 		var host = this.host;
 		var parent = host.parentElement;
 		if (!parent) {
 			this.done('no-parent');
-			return;
+			return null;
 		}
 		var ics = window.getComputedStyle(img);
 		// Elementor's entrance animations hide the element until it is
@@ -620,7 +638,7 @@
 		if ((ics.visibility !== 'visible' && !entrance) || parseFloat(ics.opacity) < 0.5 || ics.display === 'none') {
 			// Hidden by its own widget (a crossfade, its own reveal): leave it.
 			this.done('hidden');
-			return;
+			return null;
 		}
 
 		// Clipping ancestors: an absolutely positioned canvas can escape the
@@ -641,12 +659,8 @@
 		if (box.width * box.height < 0.5 * rect.width * rect.height || box.width < MIN_W * 0.5 || box.height < MIN_H * 0.5) {
 			// Mostly clipped away (a scroller, a crop): not worth a reveal.
 			this.done('clipped');
-			return;
+			return null;
 		}
-
-		var canvas = document.createElement('canvas');
-		canvas.className = 'avix-pxr';
-		canvas.setAttribute('aria-hidden', 'true');
 
 		// Rounded corners: the image's own, or a clipping frame's when the
 		// visible box is that frame.
@@ -661,20 +675,30 @@
 			radius = radiusOf(ics);
 		}
 
-		var before = snapshot(host);
+		return {
+			parent: parent,
+			radius: radius,
+			z: ics.position !== 'static' && /^-?\d+$/.test(ics.zIndex) ? ics.zIndex : 'auto',
+			before: snapshot(host)
+		};
+	};
 
+	/** Arming, step 2 (writes only): the cover goes in, not placed yet. */
+	Reveal.prototype.insert = function (plan) {
+		var canvas = document.createElement('canvas');
+		canvas.className = 'avix-pxr';
+		canvas.setAttribute('aria-hidden', 'true');
 		Object.keys(BASE_STYLE).forEach(function (prop) {
 			css(canvas, prop, BASE_STYLE[prop]);
 		});
 		css(canvas, 'image-rendering', 'crisp-edges');
 		css(canvas, 'image-rendering', 'pixelated');
-		var z = ics.position !== 'static' && /^-?\d+$/.test(ics.zIndex) ? ics.zIndex : 'auto';
-		css(canvas, 'z-index', z);
-		if (radius) {
-			css(canvas, 'border-top-left-radius', radius[0]);
-			css(canvas, 'border-top-right-radius', radius[1]);
-			css(canvas, 'border-bottom-right-radius', radius[2]);
-			css(canvas, 'border-bottom-left-radius', radius[3]);
+		css(canvas, 'z-index', plan.z);
+		if (plan.radius) {
+			css(canvas, 'border-top-left-radius', plan.radius[0]);
+			css(canvas, 'border-top-right-radius', plan.radius[1]);
+			css(canvas, 'border-bottom-right-radius', plan.radius[2]);
+			css(canvas, 'border-bottom-left-radius', plan.radius[3]);
 		}
 		this.x = 0;
 		this.y = 0;
@@ -682,31 +706,39 @@
 		this.h = 100;
 		this.placed = false;
 		this.canvas = canvas;
-		parent.insertBefore(canvas, host.nextSibling);
-		this.place(this.measure());
+		plan.parent.insertBefore(canvas, this.host.nextSibling);
+	};
 
-		// Undone before the browser paints when the insertion moved something
-		// (a sibling selector, :last-child…) or nothing would blend in.
-		var moved = !same(before, snapshot(host)) || this.w < 1 || this.h < 1;
-		var color = moved ? null : coverColor(parent, canvas);
+	/**
+	 * Arming, step 5 (reads): the insertion must not have moved anything (a
+	 * sibling selector, :last-child…) and a colour must blend in. Returns the
+	 * cover colour, or null to undo it.
+	 */
+	Reveal.prototype.verify = function (plan) {
+		plan.moved = !same(plan.before, snapshot(this.host)) || this.w < 1 || this.h < 1;
+		return plan.moved ? null : coverColor(plan.parent, this.canvas);
+	};
+
+	/** Arming, step 6 (writes): the squares are drawn, or the cover is undone before it is painted. */
+	Reveal.prototype.commit = function (plan, color) {
 		if (!color) {
 			this.removeCanvas();
-			this.done(moved ? 'shift' : 'cover');
+			this.done(plan.moved ? 'shift' : 'cover');
 			return;
 		}
-
-		var ctx = canvas.getContext('2d');
+		var ctx = this.canvas.getContext('2d');
 		if (!ctx) {
 			this.removeCanvas();
 			this.done('no-ctx');
 			return;
 		}
+		var bg = lazyBg();
 		this.ctx = ctx;
 		this.color = color;
 		this.cols = 0;
 		this.rows = 0;
 		this.grid();
-		this.lazy = LAZY_BG ? img.closest(LAZY_BG) : null;
+		this.lazy = bg ? this.img.closest(bg) : null;
 		this.state = 'armed';
 		this.settled = false;
 		this.inView = false;
@@ -716,10 +748,44 @@
 		if (viewer) {
 			// Reports reaching the viewport and 25% of it however the image
 			// gets there: a scroll, or content above it collapsing.
-			viewer.observe(img);
+			viewer.observe(this.img);
+		}
+	};
+
+	/**
+	 * Arms every image that came near in one go, reads and writes in
+	 * separate passes, so a batch costs two layouts instead of two per image
+	 * (the first look after the page has loaded can cover a dozen at once).
+	 */
+	function armAll(list) {
+		var jobs = [];
+		var i;
+		for (i = 0; i < list.length; i++) {
+			var plan = list[i].prepare();
+			if (plan) {
+				jobs.push([list[i], plan]);
+			}
+		}
+		if (!jobs.length) {
+			return;
+		}
+		for (i = 0; i < jobs.length; i++) {
+			jobs[i][0].insert(jobs[i][1]);
+		}
+		var geos = jobs.map(function (job) {
+			return job[0].measure();
+		});
+		for (i = 0; i < jobs.length; i++) {
+			jobs[i][0].place(geos[i]);
+		}
+		var colors = jobs.map(function (job) {
+			return job[0].verify(job[1]);
+		});
+		for (i = 0; i < jobs.length; i++) {
+			jobs[i][0].commit(jobs[i][1], colors[i]);
 		}
 		requestCheck();
-	};
+	}
 
 	/**
 	 * One canvas pixel per square of the current size, each with its own
@@ -1121,6 +1187,7 @@
 
 	/** The arm margin: canvas on before the image is reached, off when it is far again. */
 	function onIntersect(entries) {
+		var near = [];
 		entries.forEach(function (entry) {
 			var inst = entry.target.__avixPxr;
 			if (!inst || inst === DONE || inst.state === 'done') {
@@ -1136,11 +1203,14 @@
 				return;
 			}
 			if (inst.state === 'idle') {
-				inst.near();
+				near.push(inst);
 			} else if (inst.state === 'armed') {
 				requestCheck();
 			}
 		});
+		if (near.length) {
+			armAll(near);
+		}
 	}
 
 	/**
@@ -1330,18 +1400,37 @@
 
 	var enabled = false;
 
+	/** Runs fn once the browser is idle (at the latest after `timeout` ms). */
+	function whenIdle(fn, timeout) {
+		if (window.requestIdleCallback) {
+			window.requestIdleCallback(fn, { timeout: timeout });
+		} else {
+			window.setTimeout(fn, 200);
+		}
+	}
+
 	function init() {
 		if (enabled || !canAnimate()) {
 			return;
 		}
 		enabled = true;
 		addStyle();
-		scan();
 
-		// Late content (lazy widgets) gets one more pass.
-		window.addEventListener('load', function () {
-			scan();
-		});
+		// The first look waits for the page to finish loading and the browser
+		// to be idle: measuring every image while the page is still settling
+		// forced layouts on the main thread right when it was busiest. Images
+		// are never hidden before that (they are only covered once found), and
+		// the ones on screen by then are left alone as before.
+		var first = function () {
+			whenIdle(function () {
+				scan();
+			}, 1500);
+		};
+		if (document.readyState === 'complete') {
+			first();
+		} else {
+			window.addEventListener('load', first);
+		}
 		window.addEventListener('beforeprint', settleAll);
 		window.addEventListener('pagehide', teardown);
 		window.addEventListener('pageshow', function (event) {

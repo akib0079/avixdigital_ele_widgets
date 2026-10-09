@@ -761,7 +761,7 @@ class Page_Hero extends Widget_Base {
 			'service_schema',
 			array(
 				'label'       => esc_html__( 'Service schema', 'avix-widgets' ),
-				'description' => esc_html__( 'Adds JSON-LD that describes this page as a service offered by your organisation (the site\'s #organization, as Yoast outputs it). Turn it on for service pages only; it prints once per page and not in the editor.', 'avix-widgets' ),
+				'description' => esc_html__( 'Describes this page as a service offered by your organisation (the site\'s #organization, as Yoast outputs it). With Yoast SEO it becomes part of Yoast\'s schema graph, as the page\'s main entity; without Yoast it prints as its own JSON-LD block. Turn it on for service pages only (once per page, not in the editor). Country names in "Areas served" are marked as countries.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => '',
 			)
@@ -1646,20 +1646,12 @@ class Page_Hero extends Widget_Base {
 	}
 
 	/**
-	 * Plain text for JSON-LD: no tags or [accent] brackets, entities decoded
-	 * (wp_json_encode escapes), line breaks folded into single spaces.
-	 *
-	 * @param string $text Raw text.
-	 */
-	private function plain( $text ) {
-		$text = html_entity_decode( wp_strip_all_tags( str_replace( array( '[', ']' ), '', (string) $text ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
-		return trim( (string) preg_replace( '/\s+/u', ' ', $text ) );
-	}
-
-	/**
 	 * schema.org Service for this page, provided by the site's Organization
 	 * (the @id Yoast gives it), so search engines tie the two together.
-	 * Once per page: a second hero with the switch on adds nothing.
+	 * With Yoast SEO the Service is a node of Yoast's graph, printed in the
+	 * head with WebPage.mainEntity → #service (includes/seo/class-service-piece.php),
+	 * and nothing is printed here. Otherwise the same Service prints as one
+	 * free-standing block. Once per page: a second hero adds nothing.
 	 *
 	 * @param array  $s     Settings.
 	 * @param string $title Headline.
@@ -1668,47 +1660,23 @@ class Page_Hero extends Widget_Base {
 		static $printed = false;
 		// A Service describes one page: on archives the queried object is a
 		// term or user, whose ID would give the wrong permalink.
-		if ( $printed || ! is_singular() ) {
+		if ( $printed || ! is_singular() || ! class_exists( '\AvixWidgets\SEO\Service_Piece' ) ) {
 			return;
 		}
-		$url     = get_permalink( get_queried_object_id() );
-		$name    = $this->plain( $s['service_name'] ?? '' );
-		$name    = '' !== $name ? $name : $this->plain( $title );
-		if ( ! $url || '' === $name ) {
+		if ( \AvixWidgets\SEO\Service_Piece::in_graph() ) {
+			$printed = true;
+			return;
+		}
+		$url = get_permalink( get_queried_object_id() );
+		if ( ! $url ) {
+			return;
+		}
+		$service = \AvixWidgets\SEO\Service_Piece::build( array_merge( $s, array( 'title' => $title ) ), (string) $url, false );
+		if ( ! $service ) {
 			return;
 		}
 		$printed = true;
-		$service = array(
-			'@context' => 'https://schema.org',
-			'@type'    => 'Service',
-			'@id'      => $url . '#service',
-			'name'     => $name,
-		);
-		$type = $this->plain( $s['service_type'] ?? '' );
-		if ( '' !== $type ) {
-			$service['serviceType'] = $type;
-		}
-		$text = $this->plain( $s['service_description'] ?? '' );
-		$text = '' !== $text ? $text : $this->plain( $s['text'] ?? '' );
-		if ( '' !== $text ) {
-			$service['description'] = $text;
-		}
-		$service['url'] = $url;
-		$areas          = array();
-		foreach ( preg_split( '/\r\n|\r|\n/', (string) ( $s['area_served'] ?? '' ) ) as $area ) {
-			$area = $this->plain( $area );
-			if ( '' !== $area ) {
-				$areas[] = array(
-					'@type' => 'Place',
-					'name'  => $area,
-				);
-			}
-		}
-		if ( $areas ) {
-			$service['areaServed'] = $areas;
-		}
-		$service['provider'] = array( '@id' => home_url( '/#organization' ) );
-		$json                = wp_json_encode( $service, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP );
+		$json    = wp_json_encode( array( '@context' => 'https://schema.org' ) + $service, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP );
 		if ( $json ) {
 			echo '<script type="application/ld+json">' . $json . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON with < > & hex-escaped.
 		}
