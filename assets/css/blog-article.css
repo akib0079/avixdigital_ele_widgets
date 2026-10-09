@@ -109,10 +109,13 @@
 	--art-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 	--art-max: 1240px;
 	--art-gutter: 65px;
-	--art-rail: 264px;
-	--art-gap: 72px;
-	--art-measure: 640px;
-	--art-wide: 200px;
+	/* 1200px and up: contents | article | contact and share. The five columns
+	   add up to --art-max, the same width as the hero above them. */
+	--art-rail: clamp(200px, 16.5vw, 236px);
+	--art-side: clamp(212px, 17vw, 248px);
+	--art-gap: clamp(36px, 3.2vw, 52px);
+	--art-measure: 680px;
+	--art-wide: 0px;
 	--art-admin: var(--wp-admin--admin-bar--height, 0px);
 	--art-sticky-top: calc(104px + var(--art-admin));
 	--art-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -590,7 +593,7 @@ body:has(.avix-sh) .avix-art-hero {
 
 .avix-art-grid {
 	display: grid;
-	grid-template-columns: var(--art-rail) var(--art-gap) minmax(0, var(--art-measure)) minmax(0, var(--art-wide));
+	grid-template-columns: var(--art-rail) var(--art-gap) minmax(0, 1fr) var(--art-gap) var(--art-side);
 	align-items: start;
 	max-width: var(--art-max);
 	margin: 0 auto;
@@ -628,6 +631,61 @@ body:has(.avix-sh) .avix-art-hero {
 .avix-art-content {
 	grid-column: 3;
 	min-width: 0;
+}
+
+/* Contact card and share links: a sticky column on the right (1200px and up). */
+.avix-art-side {
+	position: sticky;
+	top: var(--art-sticky-top);
+	grid-column: 5;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	min-width: 0;
+}
+
+.avix-art .avix-art-side .avix-art-share--rail {
+	display: flex;
+}
+
+.avix-art .avix-art-side .avix-art-cta-card .avix-art-btn {
+	white-space: nowrap;
+}
+
+/* A narrower side column (1200px to 1439px): a tighter card, and the share
+   label above its buttons so the four stay on one row. */
+@media (min-width: 1200px) and (max-width: 1439px) {
+	.avix-art-side .avix-art-cta-card {
+		padding: 18px 18px 16px;
+	}
+
+	.avix-art .avix-art-side .avix-art-cta-card .avix-art-btn {
+		gap: 8px;
+		padding-left: 16px;
+		font-size: 14px;
+	}
+
+	.avix-art .avix-art-side .avix-art-share__label {
+		flex-basis: 100%;
+		margin: 0 0 4px;
+	}
+}
+
+/* 1024px to 1199px: contents | article; the side column steps aside (the
+   inline and end-of-article calls to action remain). */
+@media (min-width: 1024px) and (max-width: 1199px) {
+	.avix-art-grid:not(.avix-art-grid--solo) {
+		grid-template-columns: var(--art-rail) var(--art-gap) minmax(0, 1fr);
+	}
+
+	.avix-art-content,
+	.avix-art-grid--end .avix-art-end {
+		max-width: 760px;
+	}
+
+	.avix-art-side {
+		display: none;
+	}
 }
 
 /* "Skip to the article": hidden until focused, then over the TOC title. */
@@ -1327,8 +1385,8 @@ html body .avix-art .avix-art-prose [tabindex="-1"]:focus {
 	border: 0;
 }
 
-/* Wide break-out (1200px and up): figures and tables may use the right
-   margin. The theme moves .alignwide/.alignfull with left and a vw width. */
+/* Wide figures stay in the article column (the right column holds the
+   contact card). The theme moves .alignwide/.alignfull with left and a vw width. */
 .avix-art .avix-art-prose > .alignwide.alignwide,
 .avix-art .avix-art-prose > .alignfull.alignfull {
 	position: relative;
@@ -1597,10 +1655,8 @@ html body .avix-art .avix-art-prose [tabindex="-1"]:focus {
 	overflow-wrap: normal;
 }
 
-@media (max-width: 1199px) {
-	.avix-art .avix-art-prose .alignwide table.has-fixed-layout {
-		table-layout: auto;
-	}
+.avix-art .avix-art-prose .alignwide table.has-fixed-layout {
+	table-layout: auto;
 }
 
 .avix-art .avix-art-prose thead tr {
@@ -2900,7 +2956,8 @@ html body.show_outline .avix-art :focus:not(:focus-visible) {
 		max-width: var(--art-measure);
 	}
 
-	.avix-art-rail {
+	.avix-art-rail,
+	.avix-art-side {
 		display: none;
 	}
 
@@ -3131,14 +3188,14 @@ html body.show_outline .avix-art :focus:not(:focus-visible) {
 	}
 }
 
-/* Short screens: the rail card gives way to the table of contents. */
+/* Short screens: the side card drops its proof line, then the card itself. */
 @media (max-height: 820px) and (min-width: 1024px) {
 	.avix-art .avix-art-cta-card__proof {
 		display: none;
 	}
 }
 
-@media (max-height: 700px) and (min-width: 1024px) {
+@media (max-height: 560px) and (min-width: 1200px) {
 	.avix-art .avix-art-cta-card {
 		display: none;
 	}
@@ -3159,6 +3216,7 @@ html body.show_outline .avix-art :focus:not(:focus-visible) {
 @media print {
 	.avix-art-progress,
 	.avix-art-rail,
+	.avix-art-side,
 	.avix-art-toc-m,
 	.avix-art-share,
 	.avix-art-band,

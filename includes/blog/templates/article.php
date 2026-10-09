@@ -146,9 +146,25 @@ $avix_share = static function ( array $share, string $label, array $icons, strin
 		<div class="avix-art-main">
 			<div class="avix-art-grid<?php echo $avix_has_rail ? '' : ' avix-art-grid--solo'; ?>">
 				<?php if ( $avix_has_rail ) : ?>
-					<aside class="avix-art-rail" aria-label="<?php esc_attr_e( 'Article navigation and contact', 'avix-widgets' ); ?>">
+					<aside class="avix-art-rail" aria-label="<?php esc_attr_e( 'Article navigation', 'avix-widgets' ); ?>">
 						<a class="avix-art-skip" href="#avix-art-body"><?php esc_html_e( 'Skip to the article', 'avix-widgets' ); ?></a>
 						<?php echo $avix_a['toc']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in Toc::desktop(). ?>
+					</aside>
+				<?php endif; ?>
+
+				<div class="avix-art-content">
+					<?php echo $avix_a['toc_m']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in Toc::mobile(). ?>
+
+					<div class="avix-art-prose" id="avix-art-body" tabindex="-1" data-art-content>
+						<?php echo $avix_a['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the_content. ?>
+					</div>
+					<?php echo $avix_a['pages']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_link_pages(). ?>
+					<p class="avix-art-sr" aria-live="polite" data-art-live data-art-copied="<?php esc_attr_e( 'Link copied', 'avix-widgets' ); ?>"></p>
+				</div>
+
+				<?php if ( $avix_has_rail ) : ?>
+					<?php // Wide screens: the contact card and share links get their own sticky column on the right, so the reading surface spans the hero's full width. ?>
+					<aside class="avix-art-side" aria-label="<?php esc_attr_e( 'Contact and share', 'avix-widgets' ); ?>">
 						<?php if ( ! empty( $avix_settings['rail_cta'] ) ) : ?>
 							<div class="avix-art-cta-card">
 								<span class="avix-art-cta-card__px" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
@@ -166,16 +182,6 @@ $avix_share = static function ( array $share, string $label, array $icons, strin
 						<?php $avix_share( $avix_a['share'], __( 'Share', 'avix-widgets' ), $avix_icons, 'avix-art-share--rail' ); ?>
 					</aside>
 				<?php endif; ?>
-
-				<div class="avix-art-content">
-					<?php echo $avix_a['toc_m']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in Toc::mobile(). ?>
-
-					<div class="avix-art-prose" id="avix-art-body" tabindex="-1" data-art-content>
-						<?php echo $avix_a['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the_content. ?>
-					</div>
-					<?php echo $avix_a['pages']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_link_pages(). ?>
-					<p class="avix-art-sr" aria-live="polite" data-art-live data-art-copied="<?php esc_attr_e( 'Link copied', 'avix-widgets' ); ?>"></p>
-				</div>
 			</div>
 
 			<?php // The end has its own grid (same columns): the sticky rail is bounded by its grid, so it scrolls away after the last section. ?>
