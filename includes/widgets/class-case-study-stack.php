@@ -22,17 +22,111 @@ class Case_Study_Stack extends Widget_Base {
 
 	use \AvixWidgets\Case_Studies\Source;
 
-	/** Brand marks matched in a tool's name (case-insensitive) => Brand_Icons key. */
+	/**
+	 * A tool's brand marks, matched in its name (case-insensitive), most
+	 * specific first. A rule claims the words it matched, so a broader rule
+	 * further down cannot match them again: "Shopify Checkout Blocks" is
+	 * Checkout Blocks, not Shopify. A name can carry two marks ("Judge.me &
+	 * Trustpilot"), shown in the order they appear in the name (a pill always
+	 * goes on the badge). Keys are a logo file (LOGOS) or a Brand_Icons mark,
+	 * drawn inline.
+	 */
 	const MARKS = array(
-		'shopify'   => '/shopify/i',
-		'webflow'   => '/webflow/i',
-		'wordpress' => '/wordpress/i',
-		'figma'     => '/figma/i',
-		'react'     => '/\breact\b/i',
-		'nextjs'    => '/\bnext(?:\.?js)?\b/i',
-		'nodejs'    => '/\bnode(?:\.?js)?\b/i',
-		'elementor' => '/elementor/i',
+		// Products named after their platform, before the platform itself.
+		// Shopify's app only: WooCommerce's Cart & Checkout Blocks are also "checkout blocks".
+		'checkout-blocks'    => '/\bshopify\s+checkout\s+blocks\b/i',
+		'woo-discount-rules' => '/\bwoo(?:commerce)?\s+discount\s+rules\b|\bdiscount\s+rules\s+for\s+woo(?:commerce)?\b|\bflycart\b/i',
+		'shoppay'            => '/\bshop\s?pay\b|\bshop\.app\b/i',
+		'googlepay'          => '/\bgoogle\s?pay\b|\bg\s?pay\b/i',
+		'globo-filters'      => '/\bglobo\b/i',
+		'judgeme'            => '/\bjudge\.?me\b/i',
+		'trustpilot'         => '/\btrust\s?pilot\b/i',
+		'rebuy'              => '/\brebuy\b/i',
+		'klaviyo'            => '/\bklaviyo\b/i',
+		'gorgias'            => '/\bgorgias\b/i',
+		'returnista'         => '/\breturnista\b/i',
+		'juo'                => '/\bjuo\b/i',
+		'smile'              => '/\bsmile\.io\b|\bsmile\s+(?:loyalty|rewards)\b|^\s*smile\s*$/i',
+		'cookieyes'          => '/\bcookie\s?yes\b/i',
+		'funnelkit'          => '/\bfunnel\s?kit\b|\bwoofunnels\b/i',
+		'wployalty'          => '/\bwp\s?loyalty\b/i',
+		'woocommerce'        => '/\bwoo\s?commerce\b|^\s*woo\s*$/i',
+		'bricks'             => '/\bbricks(?:\s?builder)?\b(?![\s-]+(?:and|&|n|\'n\')[\s-]+mortar\b)/i',
+		'webwinkelkeur'      => '/\bwebwinkel\s?keur\b/i',
+		'bol'                => '/\bbol(?:\.com)?\b/i',
+		'litespeed'          => '/\blite\s?speed\b/i',
+		'flyingpress'        => '/\bflying\s?press\b/i',
+		'elfsight'           => '/\belfsight\b/i',
+		'swiper'             => '/\bswiper(?:\.?js)?\b/i',
+		'gsap'               => '/\bgsap\b|\bgreen\s?sock\b|\bscrolltrigger\b/i',
+		'liquid'             => '/\bliquid\b(?!\s*web\b)/i',
+		'javascript'         => '/\bjava\s?script\b|\bvanilla\s+js\b/i',
+		// Brand_Icons marks.
+		'shopify'            => '/\bshopify/i',
+		'webflow'            => '/\bwebflow/i',
+		'wordpress'          => '/\bwordpress/i',
+		'figma'              => '/\bfigma\b/i',
+		'react'              => '/\breact\b/i',
+		'nextjs'             => '/\bnext\.?js\b|^\s*next(?=\s*(?:v?\d|$|[(\/&+,]))/i',
+		'nodejs'             => '/\bnode\.?js\b|^\s*node(?=\s*(?:v?\d|$|[(\/&+,]))/i',
+		'elementor'          => '/\belementor/i',
 	);
+
+	/**
+	 * "for WooCommerce", "on Shopify": the platform a product runs on, not a
+	 * second tool. Ignored while the rest of the name has a mark of its own.
+	 */
+	const PLATFORM_QUALIFIER = '/\b(?:for|on)\s+(?:woo(?:commerce)?|shopify(?:\s+plus)?|wordpress|webflow|elementor)\b/i';
+
+	/**
+	 * Official logos in assets/images/brands/ (sources in its README.md):
+	 * key => array( file, mode, width, height ). A "glyph" sits on the tile
+	 * like the inline marks, in a width x height box; a "pill" is a wide
+	 * mark with its own outline, a glyph on its own and its own badge in a
+	 * pair; a "tile" is a square app icon that fills the tile.
+	 */
+	const LOGOS = array(
+		'bol'                => array( 'bol.webp', 'tile', 36, 36 ),
+		'bricks'             => array( 'bricks.webp', 'tile', 36, 36 ),
+		'checkout-blocks'    => array( 'checkout-blocks.webp', 'tile', 36, 36 ),
+		'cookieyes'          => array( 'cookieyes.svg', 'glyph', 21, 21 ),
+		'elfsight'           => array( 'elfsight.svg', 'glyph', 20, 20 ),
+		'flyingpress'        => array( 'flyingpress.svg', 'glyph', 22, 22 ),
+		'funnelkit'          => array( 'funnelkit.svg', 'glyph', 23, 23 ),
+		'globo-filters'      => array( 'globo-filters.webp', 'tile', 36, 36 ),
+		'googlepay'          => array( 'googlepay.svg', 'pill', 30, 16 ),
+		'gorgias'            => array( 'gorgias.svg', 'glyph', 20, 20 ),
+		'gsap'               => array( 'gsap.webp', 'glyph', 20, 20 ),
+		'javascript'         => array( 'javascript.svg', 'tile', 36, 36 ),
+		'judgeme'            => array( 'judgeme.svg', 'tile', 36, 36 ),
+		'juo'                => array( 'juo.svg', 'glyph', 21, 21 ),
+		'klaviyo'            => array( 'klaviyo.svg', 'glyph', 19, 19 ),
+		// Liquid's only mark is a thin light-grey outline: a larger box so it reads.
+		'liquid'             => array( 'liquid.webp', 'glyph', 28, 28 ),
+		'litespeed'          => array( 'litespeed.svg', 'glyph', 22, 22 ),
+		'rebuy'              => array( 'rebuy.svg', 'glyph', 19, 19 ),
+		'returnista'         => array( 'returnista.webp', 'tile', 36, 36 ),
+		'shoppay'            => array( 'shoppay.svg', 'glyph', 20, 20 ),
+		'smile'              => array( 'smile.webp', 'tile', 36, 36 ),
+		'swiper'             => array( 'swiper.svg', 'glyph', 20, 20 ),
+		'trustpilot'         => array( 'trustpilot.svg', 'glyph', 21, 21 ),
+		'webwinkelkeur'      => array( 'webwinkelkeur.svg', 'glyph', 21, 21 ),
+		'woo-discount-rules' => array( 'woo-discount-rules.webp', 'glyph', 22, 22 ),
+		'woocommerce'        => array( 'woocommerce.webp', 'glyph', 21, 21 ),
+		'wployalty'          => array( 'wployalty.webp', 'glyph', 21, 21 ),
+	);
+
+	/** The mark for a typeface: "Aa" set in it, no logo. */
+	const TYPEFACE = 'typeface';
+
+	/** Typeface names, and words that say a tool is one. */
+	const TYPEFACE_NAME = '/\b(?:type\s?faces?|fonts?(?!\s*awesome)|typography|space\s+grotesk|inter(?!-)|roboto(?:\s+(?:flex|mono|slab|serif))?|open\s+sans|lato|montserrat|poppins|playfair(?:\s+display)?|source\s+(?:sans|serif|code)(?:\s+pro)?|ibm\s+plex(?:\s+\w+)?|dm\s+(?:sans|serif|mono)|manrope|nunito(?:\s+sans)?|raleway|work\s+sans|plus\s+jakarta\s+sans|satoshi|general\s+sans|clash\s+display|neue\s+montreal|helvetica(?:\s+neue)?|futura|garamond)\b/i';
+
+	/**
+	 * A description that says the tool is a typeface. Not "fonts": speed and
+	 * CDN tools "preload the brand fonts".
+	 */
+	const TYPEFACE_TEXT = '/\btype\s?face\b/i';
 
 	public function get_name(): string {
 		return 'avix-case-study-stack';
@@ -478,20 +572,134 @@ class Case_Study_Stack extends Widget_Base {
 	}
 
 	/**
-	 * The brand mark for a tool, or '' for the pixel-square fallback.
+	 * The marks for a tool: up to two MARKS keys in the order they appear in
+	 * the name, array( TYPEFACE ) for a typeface, or array() for the pixel
+	 * square. Pure: no WordPress needed (tests/case-study-stack-marks.php).
+	 *
+	 * @param string $name Tool name.
+	 * @param string $text What the tool does here (only read for typefaces).
+	 * @return string[]
+	 */
+	public static function marks_for( string $name, string $text = '' ): array {
+		// "Discount Rules for WooCommerce" is one tool; "Theme for Shopify" still gets Shopify.
+		$keys = self::match_marks( (string) preg_replace( self::PLATFORM_QUALIFIER, ' ', $name ) );
+		if ( ! $keys ) {
+			$keys = self::match_marks( $name );
+		}
+		if ( ! $keys && ( preg_match( self::TYPEFACE_NAME, $name ) || preg_match( self::TYPEFACE_TEXT, $text ) ) ) {
+			$keys = array( self::TYPEFACE );
+		}
+		return $keys;
+	}
+
+	/**
+	 * MARKS keys found in a name, first mention first, at most two.
+	 *
+	 * @param string $name Tool name.
+	 * @return string[]
+	 */
+	private static function match_marks( string $name ): array {
+		$found = array();
+		foreach ( self::MARKS as $key => $pattern ) {
+			if ( ! preg_match_all( $pattern, $name, $hits, PREG_OFFSET_CAPTURE ) ) {
+				continue;
+			}
+			foreach ( $hits[0] as $hit ) {
+				// Claim the words, so a broader rule further down cannot match them.
+				$name = substr_replace( $name, str_repeat( ' ', strlen( $hit[0] ) ), $hit[1], strlen( $hit[0] ) );
+			}
+			$found[ $key ] = $hits[0][0][1];
+		}
+		asort( $found );
+		return array_slice( array_keys( $found ), 0, 2 );
+	}
+
+	/**
+	 * The font family to set "Aa" in for a typeface tool, or '' when the
+	 * name is not a family name ("Google Fonts", "Brand typography").
 	 *
 	 * @param string $name Tool name.
 	 */
-	private function mark( $name ) {
-		if ( ! class_exists( __NAMESPACE__ . '\Brand_Icons' ) ) {
+	public static function typeface_family( string $name ): string {
+		$name = trim( (string) preg_replace( '/\(.*$/s', '', $name ) );
+		if ( preg_match( '/\b(?:fonts?|type\s?faces?|typography)\b/i', $name ) || ! preg_match( '/^[\p{L}\p{N}][\p{L}\p{N} \-]{0,47}$/u', $name ) ) {
 			return '';
 		}
-		foreach ( self::MARKS as $key => $pattern ) {
-			if ( preg_match( $pattern, $name ) ) {
-				return (string) Brand_Icons::svg( $key );
+		return $name;
+	}
+
+	/**
+	 * One mark as HTML: an official logo file as a decorative <img>, or an
+	 * inline Brand_Icons SVG. '' when neither is available.
+	 *
+	 * @param string $key MARKS key.
+	 */
+	private function mark_html( $key ) {
+		if ( isset( self::LOGOS[ $key ] ) ) {
+			if ( ! defined( 'AVIX_EW_URL' ) ) {
+				return '';
 			}
+			list( $file, $mode, $width, $height ) = self::LOGOS[ $key ];
+			// The box size is a custom property, so a pair can scale it down.
+			$size = 'tile' === $mode ? '' : sprintf( ' style="--cst-logo-w:%dpx;--cst-logo-h:%dpx;"', $width, $height );
+			return sprintf(
+				'<img class="avix-cst__logo no-pixel-reveal" src="%s" alt="" width="%d" height="%d" loading="lazy" decoding="async"%s>',
+				esc_url( AVIX_EW_URL . 'assets/images/brands/' . $file ),
+				$width,
+				$height,
+				$size
+			);
+		}
+		if ( class_exists( __NAMESPACE__ . '\Brand_Icons' ) ) {
+			return (string) Brand_Icons::svg( $key );
 		}
 		return '';
+	}
+
+	/**
+	 * A tool's icon tile: array( modifier classes, inner HTML ). One mark
+	 * sits on the tile (an app icon fills it); two share it, the first
+	 * larger at the top left and the second smaller at the bottom right (a
+	 * pill, like Google Pay, always goes second, the first at its height);
+	 * a typeface gets "Aa" set in it; anything else keeps the pixel square.
+	 *
+	 * @param string $name Tool name.
+	 * @param string $text What the tool does here.
+	 */
+	private function icon( $name, $text ) {
+		$keys = self::marks_for( (string) $name, (string) $text );
+
+		if ( array( self::TYPEFACE ) === $keys ) {
+			$family = self::typeface_family( (string) $name );
+			$style  = '' !== $family ? ' style="' . esc_attr( "font-family:'" . $family . "',var(--cst-font-display);" ) . '"' : '';
+			return array( ' avix-cst__icon--type', '<span class="avix-cst__type"' . $style . '>Aa</span>' );
+		}
+
+		$marks = array();
+		foreach ( $keys as $key ) {
+			$html = $this->mark_html( $key );
+			if ( '' !== $html ) {
+				$marks[] = array( $html, self::LOGOS[ $key ][1] ?? 'glyph' );
+			}
+		}
+		if ( ! $marks ) {
+			return array( ' avix-cst__icon--px', '<i></i>' );
+		}
+		if ( 1 === count( $marks ) ) {
+			return array( 'tile' === $marks[0][1] ? ' avix-cst__icon--tile' : '', $marks[0][0] );
+		}
+		// A pill only fits on the badge: "Google Pay & Shop Pay" draws like "Shop Pay & Google Pay".
+		if ( 'pill' === $marks[0][1] && 'pill' !== $marks[1][1] ) {
+			$marks = array_reverse( $marks );
+		}
+		$html = '';
+		foreach ( $marks as $i => $mark ) {
+			$mode  = in_array( $mark[1], array( 'tile', 'pill' ), true ) ? ' avix-cst__mark--' . $mark[1] : '';
+			$html .= '<span class="avix-cst__mark avix-cst__mark--' . ( 0 === $i ? 'a' : 'b' ) . $mode . '">' . $mark[0] . '</span>';
+		}
+		// Next to a pill the first mark matches its height and keeps its clear space.
+		$pill = 'pill' === $marks[1][1] && 'pill' !== $marks[0][1] ? ' avix-cst__icon--pill' : '';
+		return array( ' avix-cst__icon--pair' . $pill, $html );
 	}
 
 	private function is_editor() {
@@ -631,11 +839,11 @@ class Case_Study_Stack extends Widget_Base {
 								<?php endif; ?>
 								<ul class="avix-cst__list">
 									<?php foreach ( $tools as $i => $tool ) : ?>
-										<?php $mark = $this->mark( $tool[0] ); ?>
+										<?php $icon = $this->icon( $tool[0], $tool[1] ); ?>
 										<li class="avix-cst__item" style="--i:<?php echo (int) $i; ?>;">
-											<span class="avix-cst__icon<?php echo '' === $mark ? ' avix-cst__icon--px' : ''; ?>" aria-hidden="true"><?php
-											// Trusted inline SVG from Brand_Icons, or a pixel square.
-											echo '' !== $mark ? $mark : '<i></i>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static brand SVG.
+											<span class="avix-cst__icon<?php echo esc_attr( $icon[0] ); ?>" aria-hidden="true"><?php
+											// Static brand SVG or logo <img> (URL escaped in mark_html()), "Aa" or a pixel square.
+											echo $icon[1]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built in icon() from static markup and escaped values.
 											?></span>
 											<span class="avix-cst__copy">
 												<span class="avix-cst__name"><?php echo esc_html( $tool[0] ); ?></span>

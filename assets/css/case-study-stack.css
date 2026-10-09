@@ -381,6 +381,167 @@
 	max-width: none;
 }
 
+/* Official logo files. A glyph sits in its own box (set per logo in
+   Case_Study_Stack::LOGOS); theme rules like img { height: auto } must not
+   resize it. */
+.avix-cst .avix-cst__icon img.avix-cst__logo {
+	display: block;
+	width: var(--cst-logo-w, 20px);
+	height: var(--cst-logo-h, 20px);
+	max-width: none;
+	max-height: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	object-fit: contain;
+}
+
+/* An app icon is its own tile: it fills the 36px square under the same
+   radius, with no second border around it. A knock-out in the icon (the
+   Judge.me check) shows white, as in the brand's app icon, on every theme. */
+.avix-cst .avix-cst__icon--tile {
+	overflow: hidden;
+	border: 0;
+	background: transparent;
+}
+
+.avix-cst .avix-cst__icon--tile img.avix-cst__logo,
+.avix-cst .avix-cst__mark--tile img.avix-cst__logo {
+	background: #fff;
+}
+
+.avix-cst .avix-cst__icon--tile img.avix-cst__logo {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Two marks share the tile: the first at the top left, the second on a
+   badge over the bottom-right corner (3px past the tile, into the column
+   gap), cut out of the tile by a ring in the section background. */
+.avix-cst .avix-cst__icon--pair {
+	position: relative;
+}
+
+.avix-cst .avix-cst__mark {
+	position: absolute;
+	display: grid;
+	place-items: center;
+}
+
+.avix-cst .avix-cst__mark--a {
+	top: 2px;
+	left: 2px;
+	width: 19px;
+	height: 19px;
+}
+
+.avix-cst .avix-cst__mark--b {
+	right: -4px;
+	bottom: -4px;
+	width: 22px;
+	height: 22px;
+	overflow: hidden;
+	border: 1px solid var(--cst-tile-line);
+	border-radius: 7px;
+	background: var(--cst-tile);
+	box-shadow: 0 0 0 2px var(--cst-bg);
+}
+
+.avix-cst .avix-cst__mark--a svg {
+	width: 16px;
+	height: 16px;
+}
+
+.avix-cst .avix-cst__mark--b svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* Scaled down in a pair, never past the mark's own box (Liquid's tall
+   drop would reach the tile edge or the badge's border). */
+.avix-cst .avix-cst__mark--a img.avix-cst__logo {
+	width: min(calc(var(--cst-logo-w, 20px) * 0.84), 19px);
+	height: min(calc(var(--cst-logo-h, 20px) * 0.84), 19px);
+}
+
+.avix-cst .avix-cst__mark--b img.avix-cst__logo {
+	width: min(calc(var(--cst-logo-w, 20px) * 0.74), 18px);
+	height: min(calc(var(--cst-logo-h, 20px) * 0.74), 18px);
+}
+
+/* An app icon in a pair: a small rounded square of its own, or the
+   whole badge. */
+.avix-cst .avix-cst__mark.avix-cst__mark--tile img.avix-cst__logo {
+	width: 100%;
+	height: 100%;
+	border-radius: 4px;
+	object-fit: cover;
+}
+
+.avix-cst .avix-cst__mark--b.avix-cst__mark--tile {
+	border: 0;
+	background: transparent;
+}
+
+.avix-cst .avix-cst__mark--b.avix-cst__mark--tile img.avix-cst__logo {
+	border-radius: 0;
+}
+
+/* A pill (Google Pay) brings its own outline: no badge behind it, the
+   ring follows the pill. Google's rules for the mark: never smaller than
+   the brand next to it, and clear space of half the capital G's height
+   (3.3px at 16px) on every side. So the pill keeps its full 30 x 16, the
+   ring is 3.5px, and the first mark is 16px tall, 4px above the pill. */
+.avix-cst .avix-cst__mark--a.avix-cst__mark--pill {
+	top: 5px;
+	left: 4px;
+	width: auto;
+	height: auto;
+}
+
+.avix-cst .avix-cst__mark--b.avix-cst__mark--pill {
+	right: -4px;
+	bottom: -4px;
+	width: auto;
+	height: auto;
+	overflow: visible;
+	border: 0;
+	border-radius: 999px;
+	background: none;
+	box-shadow: 0 0 0 3.5px var(--cst-bg);
+}
+
+.avix-cst .avix-cst__mark--b.avix-cst__mark--pill img.avix-cst__logo {
+	width: var(--cst-logo-w, 30px);
+	height: var(--cst-logo-h, 16px);
+}
+
+.avix-cst .avix-cst__icon--pill .avix-cst__mark--a {
+	width: 16px;
+	height: 16px;
+}
+
+.avix-cst .avix-cst__icon--pill .avix-cst__mark--a svg,
+.avix-cst .avix-cst__icon--pill .avix-cst__mark--a img.avix-cst__logo {
+	width: 16px;
+	height: 16px;
+}
+
+/* A typeface: "Aa" set in it. */
+.avix-cst .avix-cst__type {
+	display: block;
+	color: #1a1a1a;
+	font-family: var(--cst-font-display);
+	font-size: 15px;
+	font-weight: 500;
+	font-style: normal;
+	line-height: 1;
+	letter-spacing: -0.02em;
+}
+
 /* Tools without a brand mark get the pixel. */
 .avix-cst .avix-cst__icon i {
 	display: block;

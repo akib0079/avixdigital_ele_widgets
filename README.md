@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.17.2**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.17.3**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.17.2.zip](dist/avix-elementor-widgets-1.17.2.zip).
+1. Download [avix-elementor-widgets-1.17.3.zip](dist/avix-elementor-widgets-1.17.3.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,10 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.17.3
+
+- Case Study Stack: real tool logos in the Technology list. 27 official marks ship with the plugin (assets/images/brands/, sources in its README): Liquid, Rebuy, Globo Smart Product Filters, Klaviyo, Gorgias, Judge.me, Trustpilot, Returnista, GSAP, JavaScript, Juo, Swiper, Shop Pay, Google Pay, Shopify Checkout Blocks, Smile.io, CookieYes, Elfsight, WooCommerce, Bricks, FunnelKit, Discount Rules for WooCommerce, WPLoyalty, bol, WebwinkelKeur, LiteSpeed and FlyingPress, next to the existing Shopify, WordPress, Webflow and Figma marks. Logos are matched from the tool name (two marks for names such as "Judge.me & Trustpilot"), a typeface gets an "Aa" tile in that font, and anything unknown keeps the pixel square. Legible in the light, tint and dark themes.
 
 ### 1.17.2
 
