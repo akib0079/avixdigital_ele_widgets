@@ -116,7 +116,7 @@
 	--art-gap: clamp(36px, 3.4vw, 64px);
 	/* Running text stays at a comfortable line length (about 70-75
 	   characters) while figures, tables and cards use the full column. */
-	--art-text: 720px;
+	--art-copy: 720px;
 	--art-measure: 680px;
 	--art-wide: 0px;
 	--art-admin: var(--wp-admin--admin-bar--height, 0px);
@@ -1224,7 +1224,7 @@ html body .avix-art .avix-art-prose[tabindex="-1"]:focus {
 }
 
 .avix-art .avix-art-prose > :is(p, ul, ol, h2, h3, h4, blockquote:not([class])) {
-	max-width: var(--art-text);
+	max-width: var(--art-copy);
 }
 
 /* Wide screens: a touch larger text for the longer line. */
