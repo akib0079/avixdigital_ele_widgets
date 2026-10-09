@@ -312,7 +312,8 @@ final class Importer {
 			)
 		);
 		if ( $want !== $opts ) {
-			update_post_meta( $id, 'algenix_options', $want );
+			// Slashed, because update_post_meta() unslashes and the other keys are kept byte for byte.
+			update_post_meta( $id, 'algenix_options', wp_slash( $want ) );
 		}
 
 		self::$alts = array( self::INDEX['og'] => 'AvixDigital case studies: live Shopify and Webflow projects' );

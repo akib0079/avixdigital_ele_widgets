@@ -206,10 +206,11 @@ final class Starter {
 		if ( defined( 'ELEMENTOR_VERSION' ) ) {
 			update_post_meta( $post_id, '_elementor_version', ELEMENTOR_VERSION );
 		}
-		update_post_meta( $post_id, '_elementor_data', wp_slash( $json ) );
+		// Before the layout: writing it lets Case_Studies copy the theme options into these settings.
 		if ( ! metadata_exists( 'post', $post_id, '_elementor_page_settings' ) ) {
 			update_post_meta( $post_id, '_elementor_page_settings', array() );
 		}
+		update_post_meta( $post_id, '_elementor_data', wp_slash( $json ) );
 		// New posts get the theme's default template (§2.11 routes it to page.php); a template the
 		// owner picked later survives a reset or a re-import.
 		if ( '' === (string) get_post_meta( $post_id, '_wp_page_template', true ) ) {
@@ -296,7 +297,8 @@ final class Starter {
 		}
 		$merged = array_merge( $base, $current, self::theme_defaults( $header, $post_id ) );
 		if ( $merged !== $current ) {
-			update_post_meta( $post_id, 'algenix_options', $merged );
+			// Slashed, because update_post_meta() unslashes and the other keys are kept byte for byte.
+			update_post_meta( $post_id, 'algenix_options', wp_slash( $merged ) );
 		}
 	}
 

@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.17.1**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.17.2**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.17.1.zip](dist/avix-elementor-widgets-1.17.1.zip).
+1. Download [avix-elementor-widgets-1.17.2.zip](dist/avix-elementor-widgets-1.17.2.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,11 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.17.2
+
+- Case studies keep their layout when saved in Elementor. The Algenix theme keeps a second copy of each page's Theme Options in Elementor's page settings and, on every Elementor save (autosaves included), drops any option whose switch is off there. Case studies were set up without that copy, so the first Elementor save reset them to the site defaults: boxed body, a 150px gap above the hero and the light header. Now the four options a case study needs (full-screen body, no margins, the custom header that matches the hero) are written to both places, refilled whenever a save leaves them on Inherit, and kept when an editor picks a different value on purpose. A one-time repair runs for every case study on the first wp-admin visit after the update.
+- Saving a case study from the classic edit screen keeps its Theme Options box values (they were dropped because the box's fields were only registered for case studies when the screen opened, not when it was saved).
 
 ### 1.17.1
 

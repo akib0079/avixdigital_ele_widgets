@@ -22,12 +22,22 @@ final class Case_Studies {
 	const OPTION_CHARACTERS = 'avix_cs_characters';
 	const OPTION_REWRITE    = 'avix_cs_rewrite_version';
 
+	/** Schema of the one-time theme options backfill; raise it to run the backfill again. */
+	const OPTION_THEME_SYNC = 'avix_cs_theme_options_sync';
+	const THEME_SYNC        = '1';
+
+	/** Runs of a backfill whose posts keep failing before it is given up. */
+	const THEME_SYNC_RUNS = 3;
+
 	const STYLE_HANDLE = 'avix-case-studies-global';
 	const STYLE_FILE   = 'assets/css/case-studies-global.css';
 
 	/** Theme header templates (live IDs): Header Home (dark) and "mani header" (light). */
 	const HEADER_DARK  = 'header-custom-266';
 	const HEADER_LIGHT = 'header-custom-275';
+
+	/** The theme options every case study needs (values: required_theme_options()). */
+	const THEME_KEYS = array( 'body_style', 'remove_margins', 'header_type', 'header_style' );
 
 	/** Siblings, loaded with file_exists guards so a half-written file never fatals the site. */
 	const SIBLINGS = array(
@@ -61,6 +71,7 @@ final class Case_Studies {
 		add_action( 'init', array( __CLASS__, 'register' ), 5 );
 		add_action( 'init', array( __CLASS__, 'add_elementor_support' ), 20 );
 		add_action( 'init', array( __CLASS__, 'maybe_flush_rewrites' ), 99 );
+		add_action( 'admin_init', array( __CLASS__, 'maybe_backfill_theme_options' ) );
 		add_filter( 'option_elementor_cpt_support', array( __CLASS__, 'filter_cpt_support' ) );
 		add_filter( 'default_option_elementor_cpt_support', array( __CLASS__, 'filter_cpt_support' ) );
 
@@ -77,6 +88,14 @@ final class Case_Studies {
 		add_filter( 'algenix_filter_allow_override_options', array( __CLASS__, 'theme_allow_override' ), 10, 2 );
 		add_action( 'load-post.php', array( __CLASS__, 'theme_override_modes' ) );
 		add_action( 'load-post-new.php', array( __CLASS__, 'theme_override_modes' ) );
+		// Priority 5: before the theme's own callback (10) copies the result into Elementor's page settings.
+		add_filter( 'algenix_filter_update_post_options', array( __CLASS__, 'theme_fill_options' ), 5, 3 );
+		// Last: the theme passes the result to update_post_meta(), which unslashes it.
+		add_filter( 'algenix_filter_elementor_update_page_settings', array( __CLASS__, 'theme_page_settings' ), PHP_INT_MAX, 2 );
+		// Priority 20: after the theme (10) rebuilt algenix_options from the posted page settings.
+		add_filter( 'elementor/documents/ajax_save/return_data', array( __CLASS__, 'on_elementor_save' ), 20, 2 );
+		add_filter( 'elementor/settings/page/success_response_data', array( __CLASS__, 'on_elementor_settings_save' ), 20, 3 );
+		add_filter( 'elementor/settings/post/success_response_data', array( __CLASS__, 'on_elementor_settings_save' ), 20, 3 );
 
 		// Block editor off: content is built in Elementor, meta lives in our box.
 		add_filter( 'use_block_editor_for_post_type', array( __CLASS__, 'disable_block_editor' ), 20, 2 );
@@ -176,6 +195,45 @@ final class Case_Studies {
 		}
 		flush_rewrite_rules( false );
 		update_option( self::OPTION_REWRITE, self::version(), true );
+	}
+
+	/**
+	 * Runs backfill_theme_options() once per THEME_SYNC schema; every other
+	 * request costs one autoloaded get_option(). On admin_init, which fires for
+	 * wp-admin pages and for admin-ajax.php and admin-post.php requests: after every
+	 * plugin has booted, before the Elementor editor loads or saves its page
+	 * settings. Logged-out requests (a visitor's front-end AJAX call) skip it, so
+	 * the writes and purges land on a logged-in user's request. The schema is
+	 * stored once every post went through; while posts fail, the option holds
+	 * "{schema}:{runs}" and the next logged-in request runs it again (it is
+	 * idempotent), up to THEME_SYNC_RUNS runs. An exception never reaches wp-admin.
+	 */
+	public static function maybe_backfill_theme_options(): void {
+		$state = get_option( self::OPTION_THEME_SYNC );
+		if ( self::THEME_SYNC === $state || ! is_user_logged_in() ) {
+			return;
+		}
+		$prefix = self::THEME_SYNC . ':';
+		$runs   = ( is_string( $state ) && 0 === strpos( $state, $prefix ) ? (int) substr( $state, strlen( $prefix ) ) : 0 ) + 1;
+		$failed = array();
+		try {
+			self::backfill_theme_options( $failed );
+		} catch ( \Throwable $error ) {
+			$failed[] = 0;
+			error_log( 'Avix case studies: theme options backfill failed: ' . $error->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		}
+		try {
+			if ( $failed && $runs < self::THEME_SYNC_RUNS ) {
+				update_option( self::OPTION_THEME_SYNC, $prefix . $runs, true );
+				return;
+			}
+			if ( $failed ) {
+				error_log( 'Avix case studies: theme options backfill given up after ' . $runs . ' runs, still failing: ' . implode( ', ', $failed ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			}
+			update_option( self::OPTION_THEME_SYNC, self::THEME_SYNC, true );
+		} catch ( \Throwable $error ) {
+			error_log( 'Avix case studies: theme options backfill state not stored: ' . $error->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		}
 	}
 
 	private static function version(): string {
@@ -528,6 +586,11 @@ final class Case_Studies {
 		if ( '' === $type && isset( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$type = (string) get_post_type( absint( $_GET['post'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
+		// Saving the edit screen posts to post.php without a query string: the theme
+		// only saves the box's fields when the modes list the post type then too.
+		if ( '' === $type && isset( $_POST['post_ID'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- screen detection only; the theme checks its own nonce.
+			$type = (string) get_post_type( absint( $_POST['post_ID'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		}
 		if ( Case_Study::POST_TYPE !== $type ) {
 			return;
 		}
@@ -535,7 +598,7 @@ final class Case_Studies {
 		if ( ! isset( $ALGENIX_STORAGE['options'] ) || ! is_array( $ALGENIX_STORAGE['options'] ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 			return;
 		}
-		foreach ( array( 'body_style', 'remove_margins', 'header_type', 'header_style' ) as $key ) {
+		foreach ( self::THEME_KEYS as $key ) {
 			if ( isset( $ALGENIX_STORAGE['options'][ $key ]['override']['mode'] ) && is_string( $ALGENIX_STORAGE['options'][ $key ]['override']['mode'] ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 				$mode = $ALGENIX_STORAGE['options'][ $key ]['override']['mode']; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase
 				if ( false === strpos( $mode, Case_Study::POST_TYPE ) ) {
@@ -551,17 +614,24 @@ final class Case_Studies {
 	 * light hero needs. Unrelated keys are never dropped. Used by the Starter.
 	 */
 	public static function default_theme_options( int $post_id ): array {
-		$index   = Case_Study::index_page_id();
-		$base    = $index ? get_post_meta( $index, 'algenix_options', true ) : array();
-		$own     = $post_id ? get_post_meta( $post_id, 'algenix_options', true ) : array();
-		$options = array_merge( is_array( $base ) ? $base : array(), is_array( $own ) ? $own : array() );
+		$index = Case_Study::index_page_id();
+		$base  = $index ? get_post_meta( $index, 'algenix_options', true ) : array();
+		$own   = $post_id ? get_post_meta( $post_id, 'algenix_options', true ) : array();
+		return array_merge( is_array( $base ) ? $base : array(), is_array( $own ) ? $own : array(), self::required_theme_options( $post_id ) );
+	}
 
-		$options['body_style']     = 'fullscreen';
-		$options['remove_margins'] = '1';
-		$options['header_type']    = 'custom';
-		$options['header_style']   = 'light' === self::header_tone( $post_id ) ? self::HEADER_LIGHT : self::HEADER_DARK;
-
-		return $options;
+	/**
+	 * The four theme options (THEME_KEYS) a case study needs: full-screen body, no
+	 * margins and the custom header that matches header_tone(). The one source for
+	 * default_theme_options(), the save filter and the backfill.
+	 */
+	public static function required_theme_options( int $post_id ): array {
+		return array(
+			'body_style'     => 'fullscreen',
+			'remove_margins' => '1',
+			'header_type'    => 'custom',
+			'header_style'   => 'light' === self::header_tone( $post_id ) ? self::HEADER_LIGHT : self::HEADER_DARK,
+		);
 	}
 
 	/**
@@ -584,24 +654,35 @@ final class Case_Studies {
 
 	/**
 	 * Brings only the header keys of the post's theme options in line with
-	 * header_tone(), leaving every other theme option as the editor set it.
-	 * Posts without theme options get the full set. Returns true when it changed.
+	 * header_tone(), leaving every other theme option as the editor set it. Only
+	 * a header that is still the plugin's own (owns_header()) follows: another
+	 * header the editor picked stays, whoever writes the layout (the Elementor
+	 * editor, a revision restore, an importer). Posts without theme options get
+	 * the full set; options wiped to an empty array get the required keys
+	 * (fill_theme_options()). Returns true when it changed.
 	 */
 	public static function sync_header( int $post_id ): bool {
 		if ( ! $post_id || Case_Study::POST_TYPE !== get_post_type( $post_id ) ) {
 			return false;
 		}
 		$current = get_post_meta( $post_id, 'algenix_options', true );
-		if ( ! is_array( $current ) || ! $current ) {
+		if ( ! is_array( $current ) ) {
 			return self::apply_theme_options( $post_id );
 		}
-		$style = 'light' === self::header_tone( $post_id ) ? self::HEADER_LIGHT : self::HEADER_DARK;
-		if ( isset( $current['header_type'], $current['header_style'] ) && 'custom' === $current['header_type'] && $style === $current['header_style'] ) {
+		if ( ! $current ) {
+			return self::fill_theme_options( $post_id );
+		}
+		if ( ! self::owns_header( $current ) ) {
 			return false;
 		}
-		$current['header_type']  = 'custom';
-		$current['header_style'] = $style;
-		return (bool) update_post_meta( $post_id, 'algenix_options', $current );
+		$want = self::required_theme_options( $post_id );
+		if ( isset( $current['header_type'], $current['header_style'] ) && $want['header_type'] === $current['header_type'] && $want['header_style'] === $current['header_style'] ) {
+			return false;
+		}
+		$current['header_type']  = $want['header_type'];
+		$current['header_style'] = $want['header_style'];
+		// Slashed, because update_post_meta() unslashes and the other keys are kept byte for byte.
+		return (bool) update_post_meta( $post_id, 'algenix_options', wp_slash( $current ) );
 	}
 
 	/**
@@ -616,7 +697,434 @@ final class Case_Studies {
 		if ( is_array( $current ) && $current == $next ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- order-insensitive array compare.
 			return false;
 		}
-		return (bool) update_post_meta( $post_id, 'algenix_options', $next );
+		return (bool) update_post_meta( $post_id, 'algenix_options', wp_slash( $next ) );
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* Theme options: save paths and the Elementor copy                   */
+	/* ------------------------------------------------------------------ */
+
+	/*
+	 * The theme keeps a second copy of the options in Elementor's page settings
+	 * (_elementor_page_settings): "algenix_options_override_{key}" ('1' = on) and
+	 * "algenix_options_field_{key}". On every Elementor save, autosaves included, it
+	 * rebuilds algenix_options from the posted copy and drops each key whose switch
+	 * is off (Inherit). Options written with update_post_meta() alone open in
+	 * Elementor on Inherit, so the first save used to drop all four keys: the page
+	 * fell back to the site-wide body style, top margin and header. The /case-studies/
+	 * index page (a normal page whose options the importer writes) had the same gap;
+	 * its options are copied into its page settings, never filled.
+	 */
+
+	/**
+	 * algenix_filter_update_post_options (priority 5), the theme's last step before
+	 * it saves a post's options from the meta box or from Elementor. For a case
+	 * study, every required key that is missing, empty or inherit gets its required
+	 * value back; an explicit choice (boxed, margins off, another header) and every
+	 * other key stay as they are. A revision counts as its case study: the meta box
+	 * handler runs again for the revision WordPress saves after the post, and
+	 * update_post_meta() writes the revision's options to the case study.
+	 *
+	 * @param mixed  $meta      Theme options about to be saved.
+	 * @param int    $post_id   Post (or revision) ID.
+	 * @param string $post_type Post type (meta box saves only; get_post_type() decides).
+	 * @return mixed
+	 */
+	public static function theme_fill_options( $meta, $post_id = 0, $post_type = '' ) {
+		$post_id = self::main_id( (int) $post_id );
+		if ( $post_id <= 0 || Case_Study::POST_TYPE !== get_post_type( $post_id ) ) {
+			return $meta;
+		}
+		return self::fill_required( $meta, self::required_theme_options( $post_id ) );
+	}
+
+	/**
+	 * algenix_filter_elementor_update_page_settings (last), the theme copying a meta
+	 * box save into Elementor's page settings, for a case study or the index page.
+	 * For the revision WordPress saves after the post, the theme read the revision's
+	 * own page settings, still empty then, and its write lands on the post: every
+	 * other setting (custom CSS, page style) was lost. The post's current settings
+	 * are kept instead, with the theme's algenix_options_* keys on top. Slashed,
+	 * because the theme hands the result to update_post_meta(), which unslashes.
+	 *
+	 * @param mixed $elm_meta Page settings the theme is about to save.
+	 * @param int   $post_id  Post (or revision) ID.
+	 * @return mixed
+	 */
+	public static function theme_page_settings( $elm_meta, $post_id = 0 ) {
+		$post_id = self::main_id( (int) $post_id );
+		if ( ! is_array( $elm_meta ) || ! self::is_theme_target( $post_id ) ) {
+			return $elm_meta;
+		}
+		$current = get_post_meta( $post_id, '_elementor_page_settings', true );
+		return wp_slash( self::merge_page_settings( is_array( $current ) ? $current : array(), $elm_meta ) );
+	}
+
+	/**
+	 * elementor/documents/ajax_save/return_data (priority 20), after the theme (10)
+	 * rebuilt the options from the posted page settings: after_elementor_save().
+	 * The response is not changed.
+	 *
+	 * @param mixed  $response_data Response for the editor.
+	 * @param object $document      Saved document (for an autosave, its revision).
+	 * @return mixed
+	 */
+	public static function on_elementor_save( $response_data, $document = null ) {
+		if ( is_object( $document ) && method_exists( $document, 'get_main_id' ) ) {
+			self::after_elementor_save( (int) $document->get_main_id() );
+		}
+		return $response_data;
+	}
+
+	/**
+	 * elementor/settings/page|post/success_response_data (priority 20): the same for
+	 * Elementor's page-settings-only save, after the theme (10). The response is not
+	 * changed.
+	 *
+	 * @param mixed $response_data Response for the editor.
+	 * @param int   $id            Post (or revision) ID.
+	 * @param mixed $data          Posted page settings.
+	 * @return mixed
+	 */
+	public static function on_elementor_settings_save( $response_data, $id = 0, $data = null ) {
+		self::after_elementor_save( self::main_id( (int) $id ) );
+		return $response_data;
+	}
+
+	/**
+	 * After the theme stored the options of an Elementor save. A case study gets
+	 * its missing keys filled; a header that is still the plugin's own (owns_header())
+	 * follows the hero again (sync_header()), because the open editor still posts the
+	 * header of the hero it loaded with, while any other header picked in the panel
+	 * stays. Then everything is mirrored into the page settings, created when
+	 * Elementor removed them (it does for empty settings), so the next editor load
+	 * shows the overrides on. The index page is only mirrored.
+	 */
+	private static function after_elementor_save( int $post_id ): void {
+		if ( $post_id <= 0 ) {
+			return;
+		}
+		if ( Case_Study::POST_TYPE !== get_post_type( $post_id ) ) {
+			if ( self::is_index( $post_id ) ) {
+				self::sync_elementor_settings( $post_id, true );
+			}
+			return;
+		}
+		self::fill_theme_options( $post_id );
+		self::sync_header( $post_id );
+		self::sync_elementor_settings( $post_id, true );
+	}
+
+	/**
+	 * Fills the required keys a case study's algenix_options are missing (or hold as
+	 * '' or inherit), keeping every other key and explicit choice. A key whose
+	 * Elementor switch is on with no value picked (unpicked_keys()) holds the theme's
+	 * fallback (wide body, margins 0, the default header), not a choice, and is
+	 * filled too. Options that are empty or missing get the required keys only, not
+	 * default_theme_options(): the index page's other keys it copies have no switch
+	 * in the case-study panel, so the theme's next Elementor save would drop them
+	 * again and the page would change twice. Returns true when it changed.
+	 */
+	public static function fill_theme_options( int $post_id ): bool {
+		if ( $post_id <= 0 || Case_Study::POST_TYPE !== get_post_type( $post_id ) ) {
+			return false;
+		}
+		$current  = get_post_meta( $post_id, 'algenix_options', true );
+		$settings = get_post_meta( $post_id, '_elementor_page_settings', true );
+		$unpicked = self::unpicked_keys( is_array( $settings ) ? $settings : array(), self::THEME_KEYS );
+		$next     = self::fill_required( $current, self::required_theme_options( $post_id ), $unpicked );
+		if ( $next === $current ) {
+			return false;
+		}
+		// Slashed, because update_post_meta() unslashes and the other keys are kept byte for byte.
+		return (bool) update_post_meta( $post_id, 'algenix_options', wp_slash( $next ) );
+	}
+
+	/**
+	 * Mirrors the THEME_KEYS options of a case study or the index page into
+	 * Elementor's page settings the way the theme stores them there, keeping every
+	 * other setting. Writes only when something changed; returns true when it wrote.
+	 * Page settings that do not exist yet are created only with $create (see
+	 * mirror_into()).
+	 *
+	 * @param int  $post_id Case study or index page ID.
+	 * @param bool $create  Create the page settings when the post has none.
+	 */
+	public static function sync_elementor_settings( int $post_id, bool $create = false ): bool {
+		if ( ! self::is_theme_target( $post_id ) ) {
+			return false;
+		}
+		$meta = get_post_meta( $post_id, 'algenix_options', true );
+		return is_array( $meta ) && $meta && self::mirror_into( $post_id, $meta, $create );
+	}
+
+	/**
+	 * The same copy for the post's Elementor autosaves (one per user): the editor
+	 * opens an autosave newer than the post with the autosave's own page settings.
+	 * Returns true when it wrote.
+	 *
+	 * @param int  $post_id Case study or index page ID.
+	 * @param bool $create  Create the page settings of an autosave that has none.
+	 */
+	public static function sync_autosaves( int $post_id, bool $create = false ): bool {
+		if ( ! self::is_theme_target( $post_id ) ) {
+			return false;
+		}
+		$meta = get_post_meta( $post_id, 'algenix_options', true );
+		if ( ! is_array( $meta ) || ! $meta ) {
+			return false;
+		}
+		$ids = get_posts(
+			array(
+				'post_type'        => 'revision',
+				'post_status'      => 'inherit',
+				'post_parent'      => $post_id,
+				'name'             => $post_id . '-autosave-v1',
+				'posts_per_page'   => -1,
+				'fields'           => 'ids',
+				'no_found_rows'    => true,
+				'suppress_filters' => true,
+			)
+		);
+
+		$changed = false;
+		foreach ( (array) $ids as $id ) {
+			$changed = self::mirror_into( (int) $id, $meta, $create ) || $changed;
+		}
+		return $changed;
+	}
+
+	/**
+	 * Writes mirror_settings() of $meta into the page settings of $target_id (a post
+	 * or an autosave) when they differ. Returns true when it wrote.
+	 *
+	 * Missing page settings are created only with $create (the backfill, after an
+	 * Elementor save). From a meta hook they are not: wp_insert_post() fires
+	 * save_post before an importer (WordPress Importer, Elementor kits, post
+	 * duplicators) add_post_meta()s the source's page settings, and a row created
+	 * first would hide that one from get_post_meta(). A value that exists but is not
+	 * an array (double-serialized, or broken by a search-replace) is logged and left
+	 * for a person to repair, never overwritten.
+	 *
+	 * @param int   $target_id Post or autosave ID.
+	 * @param array $meta      Theme options (algenix_options).
+	 * @param bool  $create    Create the page settings when there are none.
+	 */
+	private static function mirror_into( int $target_id, array $meta, bool $create = false ): bool {
+		$exists = metadata_exists( 'post', $target_id, '_elementor_page_settings' );
+		if ( ! $exists && ! $create ) {
+			return false;
+		}
+		$current = $exists ? get_post_meta( $target_id, '_elementor_page_settings', true ) : array();
+		if ( '' === $current ) {
+			$current = array();
+		} elseif ( ! is_array( $current ) ) {
+			error_log( 'Avix case studies: Elementor page settings of post ' . $target_id . ' are not an array; theme options not mirrored.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			return false;
+		}
+		$next = self::mirror_settings( $current, $meta, self::THEME_KEYS );
+		if ( $next === $current ) {
+			return false;
+		}
+		// update_metadata(): update_post_meta() would send an autosave's write to its post.
+		// Slashed, because it unslashes and other page settings (custom CSS) may hold backslashes.
+		return (bool) update_metadata( 'post', $target_id, '_elementor_page_settings', wp_slash( $next ) );
+	}
+
+	/**
+	 * Existing case studies (every status but trash and auto-draft): fills the
+	 * missing required theme options, mirrors them into Elementor's page settings
+	 * and autosaves, and clears the caches of the posts that changed. Then the index
+	 * page's options are mirrored into its page settings and autosaves (never
+	 * filled). A post that fails is logged, added to $failed and skipped, so
+	 * wp-admin never breaks on it. Idempotent. Returns the number of posts changed.
+	 *
+	 * @param int[]|null $failed Set to the IDs of the posts that failed.
+	 */
+	public static function backfill_theme_options( ?array &$failed = null ): int {
+		$failed = array();
+		$ids    = get_posts(
+			array(
+				'post_type'        => Case_Study::POST_TYPE,
+				'post_status'      => 'any', // Leaves out the exclude_from_search statuses: trash and auto-draft.
+				'posts_per_page'   => -1,
+				'orderby'          => 'ID',
+				'order'            => 'ASC',
+				'fields'           => 'ids',
+				'no_found_rows'    => true,
+				'suppress_filters' => true,
+			)
+		);
+
+		$changed = 0;
+		foreach ( (array) $ids as $id ) {
+			$id = (int) $id;
+			try {
+				$filled   = self::fill_theme_options( $id );
+				$mirrored = self::sync_elementor_settings( $id, true );
+				$autosave = self::sync_autosaves( $id, true );
+				if ( $filled || $mirrored ) {
+					Case_Study::flush( $id );
+					self::purge( $id );
+				}
+				if ( $filled || $mirrored || $autosave ) {
+					++$changed;
+				}
+			} catch ( \Throwable $error ) {
+				$failed[] = $id;
+				error_log( 'Avix case studies: theme options backfill failed for post ' . $id . ': ' . $error->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			}
+		}
+
+		$index = Case_Study::index_page_id();
+		if ( $index ) {
+			try {
+				// Both, no short circuit: the editor opens an autosave newer than the page with its own settings.
+				$mirrored = self::sync_elementor_settings( $index, true );
+				$autosave = self::sync_autosaves( $index, true );
+				if ( $mirrored || $autosave ) {
+					++$changed;
+				}
+			} catch ( \Throwable $error ) {
+				$failed[] = $index;
+				error_log( 'Avix case studies: theme options backfill failed for the index page: ' . $error->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			}
+		}
+		return $changed;
+	}
+
+	/**
+	 * The post a revision or autosave belongs to; any other ID as it is.
+	 */
+	public static function main_id( int $id ): int {
+		$parent = $id > 0 ? wp_is_post_revision( $id ) : false;
+		return $parent ? (int) $parent : $id;
+	}
+
+	/**
+	 * True for the /case-studies/ index page.
+	 */
+	public static function is_index( int $id ): bool {
+		return $id > 0 && Case_Study::index_page_id() === $id;
+	}
+
+	/**
+	 * True for the posts whose theme options are mirrored: case studies and the index page.
+	 */
+	public static function is_theme_target( int $id ): bool {
+		return $id > 0 && ( Case_Study::POST_TYPE === get_post_type( $id ) || self::is_index( $id ) );
+	}
+
+	/**
+	 * $meta with each $required key that is missing, empty or inherit set to its
+	 * required value, and so is each key listed in $force. Explicit values and every
+	 * other key are kept, in their order; a non-array $meta counts as empty.
+	 *
+	 * @param mixed    $meta     Theme options (algenix_options).
+	 * @param array    $required Key => required value.
+	 * @param string[] $force    Required keys to set whatever they hold.
+	 */
+	public static function fill_required( $meta, array $required, array $force = array() ): array {
+		$meta = is_array( $meta ) ? $meta : array();
+		foreach ( $required as $key => $value ) {
+			if ( in_array( $key, $force, true ) || ! array_key_exists( $key, $meta ) || self::is_unset_option( $meta[ $key ] ) ) {
+				$meta[ $key ] = $value;
+			}
+		}
+		return $meta;
+	}
+
+	/**
+	 * Elementor page settings with "algenix_options_override_{key}" = '1' and
+	 * "algenix_options_field_{key}" = the value for each of $keys that $meta sets.
+	 * Keys missing, empty or inherit in $meta are left as they are, and so is every
+	 * other setting. Unchanged input comes back identical (===).
+	 *
+	 * @param array    $settings Elementor page settings.
+	 * @param array    $meta     Theme options (algenix_options).
+	 * @param string[] $keys     Theme option keys to mirror.
+	 */
+	public static function mirror_settings( array $settings, array $meta, array $keys ): array {
+		foreach ( $keys as $key ) {
+			if ( ! array_key_exists( $key, $meta ) || self::is_unset_option( $meta[ $key ] ) ) {
+				continue;
+			}
+			$value = $meta[ $key ];
+			if ( is_bool( $value ) ) {
+				$value = $value ? '1' : '0';
+			}
+			// Elementor control values are strings ('1', not 1).
+			$settings[ "algenix_options_override_{$key}" ] = '1';
+			$settings[ "algenix_options_field_{$key}" ]    = (string) $value;
+		}
+		return $settings;
+	}
+
+	/**
+	 * $current page settings without the keys the theme owns (those containing
+	 * "algenix_options_", its own test), plus those keys from $theme.
+	 *
+	 * @param array $current Page settings stored on the post.
+	 * @param array $theme   Page settings the theme built.
+	 */
+	public static function merge_page_settings( array $current, array $theme ): array {
+		foreach ( array_keys( $current ) as $key ) {
+			if ( false !== strpos( (string) $key, 'algenix_options_' ) ) {
+				unset( $current[ $key ] );
+			}
+		}
+		foreach ( $theme as $key => $value ) {
+			if ( false !== strpos( (string) $key, 'algenix_options_' ) ) {
+				$current[ $key ] = $value;
+			}
+		}
+		return $current;
+	}
+
+	/**
+	 * The $keys whose Theme Options switch is on in Elementor's page settings with
+	 * no value picked. For those the theme stores the post's earlier value or its
+	 * own default (wide body, margins 0, the default header), never a pick.
+	 *
+	 * @param array    $settings Elementor page settings.
+	 * @param string[] $keys     Theme option keys.
+	 */
+	public static function unpicked_keys( array $settings, array $keys ): array {
+		$out = array();
+		foreach ( $keys as $key ) {
+			$field = "algenix_options_field_{$key}";
+			if ( ! empty( $settings[ "algenix_options_override_{$key}" ] ) && ( ! array_key_exists( $field, $settings ) || self::is_unset_option( $settings[ $field ] ) ) ) {
+				$out[] = $key;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * True when the header keys are still the plugin's own: header type unset or
+	 * custom, and header style unset or the dark or light custom header. Those follow
+	 * the hero; any other header was picked by the editor and stays.
+	 *
+	 * @param array $meta Theme options (algenix_options).
+	 */
+	public static function owns_header( array $meta ): bool {
+		$type  = array_key_exists( 'header_type', $meta ) ? $meta['header_type'] : null;
+		$style = array_key_exists( 'header_style', $meta ) ? $meta['header_style'] : null;
+		return ( self::is_unset_option( $type ) || 'custom' === $type )
+			&& ( self::is_unset_option( $style ) || in_array( $style, array( self::HEADER_DARK, self::HEADER_LIGHT ), true ) );
+	}
+
+	/**
+	 * True when a theme option value means "not set": null, '', a non-scalar or
+	 * 'inherit' (the theme's algenix_is_inherit()).
+	 *
+	 * @param mixed $value Option value.
+	 */
+	public static function is_unset_option( $value ): bool {
+		if ( null === $value || '' === $value || ! is_scalar( $value ) ) {
+			return true;
+		}
+		return is_string( $value ) && 'inherit' === strtolower( trim( $value ) );
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -856,11 +1364,15 @@ final class Case_Studies {
 			return;
 		}
 		$ours = '' !== Case_Study::field_key( $meta_key );
-		if ( ! $ours && ! in_array( $meta_key, array( '_thumbnail_id', '_elementor_data' ), true ) ) {
+		if ( ! $ours && ! in_array( $meta_key, array( '_thumbnail_id', '_elementor_data', 'algenix_options' ), true ) ) {
 			return;
 		}
 		$object_id = (int) $object_id;
 		if ( Case_Study::POST_TYPE !== get_post_type( $object_id ) ) {
+			// The index page: its page settings get the copy of the options the importer writes.
+			if ( 'algenix_options' === $meta_key && self::is_index( $object_id ) ) {
+				self::sync_elementor_settings( $object_id );
+			}
 			return;
 		}
 		Case_Study::flush( $object_id );
@@ -869,8 +1381,16 @@ final class Case_Studies {
 		if ( Case_Study::meta_key( 'header' ) === $meta_key ) {
 			self::apply_theme_options( $object_id );
 		} elseif ( '_elementor_data' === $meta_key ) {
-			// The layout (and with it the hero's theme) changed: the header follows.
-			self::sync_header( $object_id );
+			// The layout (and with it the hero's theme) changed: the plugin's own header follows
+			// (sync_header()). Unchanged options are still copied into page settings that exist,
+			// such as the empty ones Starter::write() creates before the layout of a new post.
+			if ( ! self::sync_header( $object_id ) ) {
+				self::sync_elementor_settings( $object_id );
+			}
+		} elseif ( 'algenix_options' === $meta_key ) {
+			// Whoever wrote them (this class, the Starter, the importer, the theme), Elementor's page
+			// settings get the copy when they exist (mirror_into()).
+			self::sync_elementor_settings( $object_id );
 		}
 	}
 
