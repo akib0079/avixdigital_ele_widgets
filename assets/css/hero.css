@@ -161,6 +161,39 @@
 	display: none;
 }
 
+/* Pixel rise (hero.js): the next section's colour climbs in as columns of
+   brand squares while the page scrolls. Built only by the script, so a page
+   without it (editor, reduced motion) shows nothing here. */
+.avix-hero__rise {
+	position: absolute;
+	inset: 0;
+	z-index: 6;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.avix-hero__rise i {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	display: block;
+	background: var(--hero-rise, #ffffff);
+	transform: translate3d(0, 100%, 0);
+	will-change: transform;
+}
+
+.avix-hero__rise b {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+	width: 50%;
+	aspect-ratio: 1;
+	background: var(--hero-accent);
+	opacity: 0;
+	transform: translateY(-100%);
+}
+
 /* ---------- Layout ---------- */
 
 .avix-hero__body {

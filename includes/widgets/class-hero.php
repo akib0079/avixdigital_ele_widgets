@@ -676,6 +676,38 @@ class Hero extends Widget_Base {
 		);
 
 		$this->add_control(
+			'scroll_rise',
+			array(
+				'label'       => esc_html__( 'Pixel rise on scroll', 'avix-widgets' ),
+				'description' => esc_html__( 'While the page scrolls, the colour of the next section climbs into the banner as a staircase of brand squares and covers it. Off in the editor and for visitors who prefer reduced motion.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+				'separator'   => 'before',
+			)
+		);
+
+		$this->add_control(
+			'rise_color',
+			array(
+				'label'       => esc_html__( 'Rise colour', 'avix-widgets' ),
+				'description' => esc_html__( 'Match the background of the section below the banner.', 'avix-widgets' ),
+				'type'        => Controls_Manager::COLOR,
+				'default'     => '#ffffff',
+				'condition'   => array( 'scroll_rise' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'rise_caps',
+			array(
+				'label'     => esc_html__( 'Orange pixels on the steps', 'avix-widgets' ),
+				'type'      => Controls_Manager::SWITCHER,
+				'default'   => 'yes',
+				'condition' => array( 'scroll_rise' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
 			'entrance',
 			array(
 				'label'       => esc_html__( 'Entrance animation', 'avix-widgets' ),
@@ -958,6 +990,10 @@ class Hero extends Widget_Base {
 				'size'     => (int) $this->slider( $s, 'trail_size', 40, 16, 96 ),
 				'radius'   => (int) $this->slider( $s, 'trail_radius', 2, 1, 5 ),
 				'strength' => round( $this->slider( $s, 'trail_strength', 30, 5, 80 ) / 100, 2 ),
+			) : false,
+			'rise'     => 'yes' === $s['scroll_rise'] ? array(
+				'color' => $this->css_color( (string) $s['rise_color'], '#ffffff' ),
+				'caps'  => 'yes' === $s['rise_caps'],
 			) : false,
 		);
 		if ( $bubble && '' !== $title ) {
@@ -1353,5 +1389,14 @@ class Hero extends Widget_Base {
 	private function slider( array $s, $key, $fallback, $min, $max ) {
 		$value = isset( $s[ $key ]['size'] ) && '' !== $s[ $key ]['size'] ? (float) $s[ $key ]['size'] : $fallback;
 		return max( $min, min( $max, $value ) );
+	}
+
+	/**
+	 * A hex or rgb(a) colour from a colour control, or the fallback (the value
+	 * goes into an inline style through the script).
+	 */
+	private function css_color( $value, $fallback ) {
+		$value = trim( $value );
+		return preg_match( '/^(#[0-9a-f]{3,8}|rgba?\(\s*[0-9.]+%?\s*,\s*[0-9.]+%?\s*,\s*[0-9.]+%?\s*(,\s*[0-9.]+%?\s*)?\))$/i', $value ) ? $value : $fallback;
 	}
 }

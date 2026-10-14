@@ -47,6 +47,7 @@
 
 		var greet = config.greet || {};
 		var trail = config.trail || null;
+		var rise = config.rise || null;
 
 		this.root = root;
 		this.alive = true;
@@ -57,6 +58,11 @@
 			size: clamp(parseInt(trail.size, 10) || 40, 16, 96),
 			radius: clamp(parseInt(trail.radius, 10) || 2, 1, 5),
 			strength: clamp(parseFloat(trail.strength) || 0.3, 0.05, 0.8)
+		} : null;
+
+		this.rise = rise && typeof rise === 'object' ? {
+			color: typeof rise.color === 'string' && rise.color ? rise.color : '#ffffff',
+			caps: !!rise.caps
 		} : null;
 
 		this.canvas = root.querySelector('[data-hero-trail]');
@@ -174,6 +180,7 @@
 		// measurement does not have to recalculate styles it just changed.
 		this.resize();
 		this.initBuddy();
+		this.initRise();
 		this.update();
 	};
 
@@ -460,6 +467,9 @@
 		}
 		this.applySeat(seat);
 		this.applyTags(tags);
+		if (this.riseLayer && (w !== this.riseW || h !== this.riseH)) {
+			this.buildRise();
+		}
 	};
 
 	/** The seat and the tags again (the web fonts arrived): reads, then writes. */
@@ -813,6 +823,133 @@
 	};
 
 	/* ------------------------------------------------------------------ */
+	/* Pixel rise: the next section climbs into the banner on scroll       */
+	/* ------------------------------------------------------------------ */
+
+	// A fixed pseudo-random value per index, so terraces never reshuffle.
+	function hash(i) {
+		var x = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+		return x - Math.floor(x);
+	}
+
+	Hero.prototype.initRise = function () {
+		if (!this.rise || this.editor || reduceMotion.matches) {
+			return;
+		}
+		var self = this;
+		this.riseLayer = document.createElement('div');
+		this.riseLayer.className = 'avix-hero__rise';
+		this.riseLayer.setAttribute('aria-hidden', 'true');
+		this.riseLayer.style.setProperty('--hero-rise', this.rise.color);
+		this.root.appendChild(this.riseLayer);
+		this.riseBody = this.root.querySelector('.avix-hero__body');
+		this.riseBg = this.root.querySelector('.avix-hero__bg');
+		this.riseQueued = false;
+		this.onRiseScroll = function () {
+			if (!self.riseQueued) {
+				self.riseQueued = true;
+				window.requestAnimationFrame(function () {
+					self.riseQueued = false;
+					self.updateRise();
+				});
+			}
+		};
+		window.addEventListener('scroll', this.onRiseScroll, { passive: true });
+		this.buildRise();
+	};
+
+	/**
+	 * One column per brand square. Neighbouring columns start together in runs
+	 * of 2 to 5 (the terraces); a wide summit a little right of centre (under
+	 * the button) leads, and the further a terrace is from it, the later it
+	 * starts. Every few terraces carry an orange pixel on their first step.
+	 */
+	Hero.prototype.buildRise = function () {
+		var w = this.root.clientWidth;
+		var h = this.root.clientHeight;
+		var narrow = w < 600;
+		var step = narrow ? 24 : 40;
+		var count = Math.ceil(w / step);
+		var center = 0.56;
+		var peak = narrow ? 4 : 6;
+		var peakAt = Math.round(center * count - peak / 2);
+		var runLeft = 0;
+		var delay = 0;
+		var capped = false;
+		var html = '';
+
+		this.riseW = w;
+		this.riseH = h;
+		this.riseStep = step;
+		this.riseCols = [];
+		for (var i = 0; i < count; i++) {
+			if (i === peakAt) {
+				runLeft = peak;
+				delay = 0;
+				capped = false;
+			} else if (runLeft <= 0) {
+				runLeft = 2 + Math.floor(hash(i * 3.1) * 4);
+				if (i < peakAt && i + runLeft > peakAt) {
+					runLeft = peakAt - i;
+				}
+				var distance = Math.min(1, Math.abs((i + runLeft / 2) / count - center) / 0.56);
+				delay = 0.08 + Math.pow(distance, 1.05) * 0.9 + hash(i * 7.7) * 0.07;
+				capped = this.rise.caps && hash(i * 13.3) < 0.55;
+			}
+			html += '<i style="left:' + i * step + 'px;width:' + (step + 1) + 'px">' + (capped ? '<b></b>' : '') + '</i>';
+			this.riseCols.push({ delay: delay, cap: capped });
+			capped = false;
+			runLeft--;
+		}
+		this.riseLayer.innerHTML = html;
+		var nodes = this.riseLayer.children;
+		for (var j = 0; j < nodes.length; j++) {
+			this.riseCols[j].el = nodes[j];
+			this.riseCols[j].capEl = nodes[j].firstChild;
+		}
+		// Phones: the terraces start sooner, so the rise stays a broad staircase.
+		this.riseDelay = Math.min(h * 0.55, w * 0.5);
+		this.riseLast = -1;
+		this.updateRise();
+	};
+
+	Hero.prototype.updateRise = function () {
+		if (!this.alive || !this.riseCols) {
+			return;
+		}
+		var h = this.riseH;
+		var step = this.riseStep;
+		var speed = 1.5; // squares climb half again as fast as the page scrolls
+		var full = this.riseDelay + h / speed + step; // past this, everything is covered
+		var scrolled = Math.min(full, Math.max(0, -this.root.getBoundingClientRect().top));
+		if (Math.abs(scrolled - this.riseLast) < 0.5) {
+			return;
+		}
+		this.riseLast = scrolled;
+		for (var i = 0; i < this.riseCols.length; i++) {
+			var col = this.riseCols[i];
+			var lift = Math.max(0, scrolled - col.delay * this.riseDelay) * speed;
+			var height = Math.min(h, Math.floor(lift / step) * step);
+			if (height !== col.height) {
+				col.height = height;
+				col.el.style.transform = 'translate3d(0,' + (h - height) + 'px,0)';
+				if (col.capEl) {
+					col.capEl.style.opacity = height > 0 && height < h ? '1' : '0';
+				}
+			}
+		}
+		// The content drifts up and fades as it is covered; the photo sinks a little.
+		var fade = Math.max(0, Math.min(1, (scrolled - 40) / (h * 0.5)));
+		if (this.riseBody) {
+			this.riseBody.style.translate = scrolled ? '0 ' + (-scrolled * 0.18).toFixed(1) + 'px' : '';
+			this.riseBody.style.opacity = fade ? (1 - fade * 0.85).toFixed(3) : '';
+		}
+		if (this.riseBg) {
+			this.riseBg.style.translate = scrolled ? '0 ' + (scrolled * 0.12).toFixed(1) + 'px' : '';
+		}
+	};
+
+	/* ------------------------------------------------------------------ */
 	/* Teardown                                                            */
 	/* ------------------------------------------------------------------ */
 
@@ -834,6 +971,12 @@
 		}
 		if (this.resizeObserver) {
 			this.resizeObserver.disconnect();
+		}
+		if (this.onRiseScroll) {
+			window.removeEventListener('scroll', this.onRiseScroll);
+		}
+		if (this.riseLayer && this.riseLayer.parentNode) {
+			this.riseLayer.parentNode.removeChild(this.riseLayer);
 		}
 		if (this.buddy) {
 			this.buddy.removeEventListener('pointerenter', this.onBuddyEnter);

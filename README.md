@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.17.4**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.18.0**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.17.4.zip](dist/avix-elementor-widgets-1.17.4.zip).
+1. Download [avix-elementor-widgets-1.18.0.zip](dist/avix-elementor-widgets-1.18.0.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,10 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.18.0
+
+- Hero Banner: "Pixel rise on scroll" (on by default, Background & Effects). As the page scrolls, the colour of the next section climbs into the banner as a staircase of 40px brand squares (24px on phones): a wide summit just right of centre leads, terraces of two to five squares follow outwards, and the steps rise half again as fast as the page scrolls until the banner is covered and flows into the section below. Orange pixels cap some of the steps, the content drifts up and fades as it is covered, and the photo sinks a little. Scroll-linked, never scroll-jacking; off in the Elementor editor and for visitors who prefer reduced motion. New controls: Rise colour (match the next section, white by default) and Orange pixels on the steps.
 
 ### 1.17.4
 
