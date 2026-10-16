@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.20.2**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.20.3**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.20.2.zip](dist/avix-elementor-widgets-1.20.2.zip).
+1. Download [avix-elementor-widgets-1.20.3.zip](dist/avix-elementor-widgets-1.20.3.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,10 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.20.3
+
+- Welcome loader fix: the page's root element and the loader shared the class "avix-boot", so the loader's full-screen centring also applied to the whole page while it showed. The page was laid out about 7,500px higher (the case studies showed through as the loader dissolved), and the Hero Banner's soft scroll effect measured that offset and left the headline shifted and faded. The root now uses "avix-booting" and only the root is locked during the loader; the soft scroll effect measures again when the loader ends and on resize.
 
 ### 1.20.2
 

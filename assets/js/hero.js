@@ -35,7 +35,7 @@
 
 	// The welcome loader (includes/loader.php) is still on screen.
 	function booting() {
-		return document.documentElement.classList.contains('avix-boot') && !window.__avixBooted;
+		return document.documentElement.classList.contains('avix-booting') && !window.__avixBooted;
 	}
 
 	function afterBoot(fn) {
@@ -1141,6 +1141,9 @@
 			}
 		};
 		window.addEventListener('scroll', this.onSoftScroll, { passive: true });
+		// Measure again once the welcome loader has gone and on resize: the page may have moved without a scroll event.
+		window.addEventListener('avix:booted', this.onSoftScroll);
+		window.addEventListener('resize', this.onSoftScroll);
 		apply();
 	};
 
@@ -1299,6 +1302,8 @@
 		}
 		if (this.onSoftScroll) {
 			window.removeEventListener('scroll', this.onSoftScroll);
+			window.removeEventListener('avix:booted', this.onSoftScroll);
+			window.removeEventListener('resize', this.onSoftScroll);
 		}
 		if (this.onPlanetMove) {
 			this.root.removeEventListener('pointermove', this.onPlanetMove);

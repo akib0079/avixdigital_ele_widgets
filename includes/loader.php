@@ -104,11 +104,11 @@ final class Loader {
 			. '</div></div>';
 		?>
 <style id="avix-boot-css">
-html.avix-boot,html.avix-boot body{overflow:hidden!important}
-html.avix-boot::before{content:"";position:fixed;inset:0;z-index:2147482990;background:#050404;animation:avix-boot-safe 0s 5s forwards}
-html.avix-boot-out::before{opacity:0;transition:opacity .2s}
-html.avix-boot .avix-hero,html.avix-boot .avix-hero *{animation-play-state:paused!important}
-.avix-boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;pointer-events:none;animation:avix-boot-safe 0s 5s forwards}
+html.avix-booting{overflow:hidden!important}
+html.avix-booting::before{content:"";position:fixed;inset:0;z-index:2147482990;background:#050404;animation:avix-boot-safe 0s 5s forwards}
+html.avix-booting-out::before{opacity:0;transition:opacity .2s}
+html.avix-booting .avix-hero,html.avix-booting .avix-hero *{animation-play-state:paused!important}
+div.avix-boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;pointer-events:none;animation:avix-boot-safe 0s 5s forwards}
 .avix-boot__tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:1fr}
 .avix-boot__tiles i{background:#050404;transition:opacity .2s linear;transition-delay:var(--d,0ms)}
 .avix-boot.is-out .avix-boot__tiles i{opacity:0}
@@ -129,11 +129,11 @@ html.avix-boot .avix-hero,html.avix-boot .avix-hero *{animation-play-state:pause
 </style>
 <script id="avix-boot-js">
 (function(d,w){var h=d.documentElement,ss=null;try{if(w.top!==w.self||(w.matchMedia&&w.matchMedia('(prefers-reduced-motion: reduce)').matches)||/bot|crawl|spider|slurp|lighthouse|pagespeed|headless|preview/i.test(navigator.userAgent))return;try{ss=w.sessionStorage;}catch(e){}if(ss&&ss.getItem('avix-boot'))return;if(ss)ss.setItem('avix-boot','1');}catch(e){return;}
-h.classList.add('avix-boot');var t0=Date.now(),MIN=<?php echo (int) self::MIN; ?>,MAX=<?php echo (int) self::MAX; ?>,el=null,lit=1,done=false,markup=<?php echo wp_json_encode( $markup ); ?>;
+h.classList.add('avix-booting');var t0=Date.now(),MIN=<?php echo (int) self::MIN; ?>,MAX=<?php echo (int) self::MAX; ?>,el=null,lit=1,done=false,markup=<?php echo wp_json_encode( $markup ); ?>;
 function light(n){lit=Math.max(lit,n);if(!el)return;var b=el.querySelectorAll('.avix-boot__bar i');for(var i=0;i<b.length;i++)if(i<lit)b[i].className='is-on';}
 function mount(){if(el)return true;if(!d.body)return false;d.body.insertAdjacentHTML('afterbegin',markup);el=d.getElementById('avix-boot');var s='';for(var i=0;i<96;i++)s+='<i style="--d:'+Math.round(Math.random()*240)+'ms"></i>';el.firstChild.innerHTML=s;light(lit);setTimeout(function(){if(el)el.classList.add('is-ready');},640);return true;}
 (function wait(){if(!mount())w.requestAnimationFrame(wait);})();
-function end(){if(done)return;done=true;light(5);setTimeout(function(){mount();h.classList.add('avix-boot-out');if(el)el.classList.add('is-out');setTimeout(function(){h.classList.remove('avix-boot','avix-boot-out');if(el&&el.parentNode)el.parentNode.removeChild(el);w.__avixBooted=true;try{w.dispatchEvent(new CustomEvent('avix:booted'));}catch(e){}},480);},Math.max(0,MIN-(Date.now()-t0)));}
+function end(){if(done)return;done=true;light(5);setTimeout(function(){mount();h.classList.add('avix-booting-out');if(el)el.classList.add('is-out');setTimeout(function(){h.classList.remove('avix-booting','avix-booting-out');if(el&&el.parentNode)el.parentNode.removeChild(el);w.__avixBooted=true;try{w.dispatchEvent(new CustomEvent('avix:booted'));}catch(e){}},480);},Math.max(0,MIN-(Date.now()-t0)));}
 setTimeout(function(){light(2);},300);d.addEventListener('DOMContentLoaded',function(){light(3);});w.addEventListener('load',function(){light(4);end();});setTimeout(end,MAX);
 })(document,window);
 </script>
