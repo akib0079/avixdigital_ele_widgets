@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.20.0**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.20.1**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.20.0.zip](dist/avix-elementor-widgets-1.20.0.zip).
+1. Download [avix-elementor-widgets-1.20.1.zip](dist/avix-elementor-widgets-1.20.1.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -52,9 +52,13 @@ See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for 
 
 ## Changelog
 
+### 1.20.1
+
+- Welcome loader: shorter on slow pages (at most 1.6 s on screen, then a half-second exit; at least 0.7 s), so a first visit never waits on the loader.
+
 ### 1.20.0
 
-- Welcome loader (Settings › Avix loader, on by default): on the first page of a visit the pixel buddy assembles itself square by square over five progress squares and the site name, waves, and leaps away while the screen dissolves into brand squares. It ends as soon as the page has loaded (at least 0.9 s, at most 2.2 s), shows once per browser session, and is skipped for search engines and audit tools, in the Elementor editor, in frames and for visitors who prefer reduced motion. Inline in the head (no extra request); the page renders underneath. The Hero Banner's buddy lands on the planet and the planet rises right after it.
+- Welcome loader (Settings › Avix loader, on by default): on the first page of a visit the pixel buddy assembles itself square by square over five progress squares and the site name, waves, and leaps away while the screen dissolves into brand squares. It ends as soon as the page has loaded (at least 0.7 s, at most 1.6 s, then a half-second exit), shows once per browser session, and is skipped for search engines and audit tools, in the Elementor editor, in frames and for visitors who prefer reduced motion. Inline in the head (no extra request); the page renders underneath. The Hero Banner's buddy lands on the planet and the planet rises right after it.
 - Hero Banner: "On scroll" replaces "Pixel rise on scroll". The default is now Soft: the copy drifts up and fades a little, the stars drift, and a fine scatter of the next section's colour dissolves the bottom edge of the banner into the section below. Pixel rise remains as an option; "Next section colour" sets the colour both use.
 
 ### 1.19.0

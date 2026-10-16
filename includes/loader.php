@@ -30,8 +30,8 @@ final class Loader {
 	const PAGE   = 'avix-loader';
 
 	/** Shortest and longest time on screen, in ms. */
-	const MIN = 900;
-	const MAX = 2200;
+	const MIN = 700;
+	const MAX = 1600;
 
 	public static function init(): void {
 		add_action( 'wp_head', array( __CLASS__, 'head' ), 1 );
@@ -110,7 +110,7 @@ html.avix-boot-out::before{opacity:0;transition:opacity .2s}
 html.avix-boot .avix-hero,html.avix-boot .avix-hero *{animation-play-state:paused!important}
 .avix-boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;pointer-events:none;animation:avix-boot-safe 0s 5s forwards}
 .avix-boot__tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:1fr}
-.avix-boot__tiles i{background:#050404;transition:opacity .24s linear;transition-delay:var(--d,0ms)}
+.avix-boot__tiles i{background:#050404;transition:opacity .2s linear;transition-delay:var(--d,0ms)}
 .avix-boot.is-out .avix-boot__tiles i{opacity:0}
 .avix-boot__stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:22px}
 .avix-boot__buddy{display:block;width:84px;height:auto;overflow:visible;fill:#fb6007;shape-rendering:crispEdges}
@@ -122,7 +122,7 @@ html.avix-boot .avix-hero,html.avix-boot .avix-hero *{animation-play-state:pause
 .avix-boot__bar i.is-on{background:#fb6007}
 .avix-boot__name{color:#8a8380;font:500 12px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.3em}
 .avix-boot.is-out .avix-boot__bar,.avix-boot.is-out .avix-boot__name{opacity:0;transition:opacity .18s}
-.avix-boot.is-out .avix-boot__buddy{opacity:0;transform:translateY(-38vh) scale(.8);transition:transform .55s cubic-bezier(.4,-.35,.7,.1),opacity .25s .3s}
+.avix-boot.is-out .avix-boot__buddy{opacity:0;transform:translateY(-38vh) scale(.8);transition:transform .45s cubic-bezier(.4,-.35,.7,.1),opacity .2s .25s}
 @keyframes avix-boot-drop{to{opacity:1;transform:none}}
 @keyframes avix-boot-wave{50%{transform:translateY(-3px)}}
 @keyframes avix-boot-safe{to{visibility:hidden}}
@@ -131,9 +131,9 @@ html.avix-boot .avix-hero,html.avix-boot .avix-hero *{animation-play-state:pause
 (function(d,w){var h=d.documentElement,ss=null;try{if(w.top!==w.self||(w.matchMedia&&w.matchMedia('(prefers-reduced-motion: reduce)').matches)||/bot|crawl|spider|slurp|lighthouse|pagespeed|headless|preview/i.test(navigator.userAgent))return;try{ss=w.sessionStorage;}catch(e){}if(ss&&ss.getItem('avix-boot'))return;if(ss)ss.setItem('avix-boot','1');}catch(e){return;}
 h.classList.add('avix-boot');var t0=Date.now(),MIN=<?php echo (int) self::MIN; ?>,MAX=<?php echo (int) self::MAX; ?>,el=null,lit=1,done=false,markup=<?php echo wp_json_encode( $markup ); ?>;
 function light(n){lit=Math.max(lit,n);if(!el)return;var b=el.querySelectorAll('.avix-boot__bar i');for(var i=0;i<b.length;i++)if(i<lit)b[i].className='is-on';}
-function mount(){if(el)return true;if(!d.body)return false;d.body.insertAdjacentHTML('afterbegin',markup);el=d.getElementById('avix-boot');var s='';for(var i=0;i<96;i++)s+='<i style="--d:'+Math.round(Math.random()*320)+'ms"></i>';el.firstChild.innerHTML=s;light(lit);setTimeout(function(){if(el)el.classList.add('is-ready');},640);return true;}
+function mount(){if(el)return true;if(!d.body)return false;d.body.insertAdjacentHTML('afterbegin',markup);el=d.getElementById('avix-boot');var s='';for(var i=0;i<96;i++)s+='<i style="--d:'+Math.round(Math.random()*240)+'ms"></i>';el.firstChild.innerHTML=s;light(lit);setTimeout(function(){if(el)el.classList.add('is-ready');},640);return true;}
 (function wait(){if(!mount())w.requestAnimationFrame(wait);})();
-function end(){if(done)return;done=true;light(5);setTimeout(function(){mount();h.classList.add('avix-boot-out');if(el)el.classList.add('is-out');setTimeout(function(){h.classList.remove('avix-boot','avix-boot-out');if(el&&el.parentNode)el.parentNode.removeChild(el);w.__avixBooted=true;try{w.dispatchEvent(new CustomEvent('avix:booted'));}catch(e){}},700);},Math.max(0,MIN-(Date.now()-t0)));}
+function end(){if(done)return;done=true;light(5);setTimeout(function(){mount();h.classList.add('avix-boot-out');if(el)el.classList.add('is-out');setTimeout(function(){h.classList.remove('avix-boot','avix-boot-out');if(el&&el.parentNode)el.parentNode.removeChild(el);w.__avixBooted=true;try{w.dispatchEvent(new CustomEvent('avix:booted'));}catch(e){}},480);},Math.max(0,MIN-(Date.now()-t0)));}
 setTimeout(function(){light(2);},300);d.addEventListener('DOMContentLoaded',function(){light(3);});w.addEventListener('load',function(){light(4);end();});setTimeout(end,MAX);
 })(document,window);
 </script>
@@ -174,7 +174,7 @@ setTimeout(function(){light(2);},300);d.addEventListener('DOMContentLoaded',func
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Avix loader', 'avix-widgets' ); ?></h1>
-			<p><?php esc_html_e( 'On the first page of a visit, the pixel buddy assembles itself, waves and leaps away while the screen dissolves into squares. It ends as soon as the page has loaded (at least 0.9 s, at most 2.2 s) and never shows again in the same browser session, to search engines, in the Elementor editor or to visitors who prefer reduced motion.', 'avix-widgets' ); ?></p>
+			<p><?php esc_html_e( 'On the first page of a visit, the pixel buddy assembles itself, waves and leaps away while the screen dissolves into squares. It ends as soon as the page has loaded (at least 0.7 s, at most 1.6 s) and never shows again in the same browser session, to search engines, in the Elementor editor or to visitors who prefer reduced motion.', 'avix-widgets' ); ?></p>
 			<form method="post" action="options.php">
 				<?php settings_fields( self::GROUP ); ?>
 				<table class="form-table" role="presentation">
