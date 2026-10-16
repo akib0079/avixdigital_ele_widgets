@@ -526,12 +526,16 @@ class Hero extends Widget_Base {
 				'title_field' => '{{{ text }}}',
 				'default'     => array(
 					array(
-						'icon' => 'star',
-						'text' => '5.0 on Fiverr',
+						'icon' => 'bag',
+						'text' => 'Shopify Plus Agency',
 					),
 					array(
-						'icon' => 'globe',
-						'text' => '22+ countries',
+						'icon' => 'shield',
+						'text' => 'Fiverr Verified',
+					),
+					array(
+						'icon' => 'trend',
+						'text' => 'Involved in Proven business',
 					),
 				),
 				'condition'   => array( 'show_dock' => 'yes' ),

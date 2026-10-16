@@ -1,13 +1,14 @@
 <?php
 /**
- * Avix loader: a short welcome on the first page of a visit.
+ * Avix loader: a short pixel welcome while each page loads.
  *
  * The pixel buddy assembles itself square by square, waves, and leaps up and
  * away while the screen dissolves into brand squares, revealing the page. It
  * waits for nothing: it ends as soon as the page has loaded (never sooner than
- * Avix_Loader::MIN ms, never later than Avix_Loader::MAX ms) and shows once per
- * browser session. Everything is inline in <head> (no extra request); the page
- * renders underneath, so the loader never delays it.
+ * Loader::MIN ms, never later than Loader::MAX ms) on every page load, or once
+ * per browser session (setting). Everything is inline in <head> (no extra
+ * request); the page renders underneath, so the loader never delays it, and the
+ * page's CSS animations are held until it has gone so they are seen.
  *
  * Never shown in wp-admin, the Elementor editor or its preview, inside frames,
  * to search engines and audit tools, or to visitors who prefer reduced motion.
@@ -43,8 +44,9 @@ final class Loader {
 
 	public static function defaults(): array {
 		return array(
-			'enabled' => 1,
-			'scope'   => 'all',
+			'enabled'   => 1,
+			'scope'     => 'all',
+			'frequency' => 'every',
 		);
 	}
 
@@ -60,8 +62,9 @@ final class Loader {
 		$value = is_array( $value ) ? $value : array();
 		$d     = self::defaults();
 		return array(
-			'enabled' => isset( $value['enabled'] ) && is_scalar( $value['enabled'] ) ? ( (int) $value['enabled'] ? 1 : 0 ) : $d['enabled'],
-			'scope'   => isset( $value['scope'] ) && in_array( $value['scope'], array( 'all', 'home' ), true ) ? $value['scope'] : $d['scope'],
+			'enabled'   => isset( $value['enabled'] ) && is_scalar( $value['enabled'] ) ? ( (int) $value['enabled'] ? 1 : 0 ) : $d['enabled'],
+			'scope'     => isset( $value['scope'] ) && in_array( $value['scope'], array( 'all', 'home' ), true ) ? $value['scope'] : $d['scope'],
+			'frequency' => isset( $value['frequency'] ) && in_array( $value['frequency'], array( 'every', 'session' ), true ) ? $value['frequency'] : $d['frequency'],
 		);
 	}
 
@@ -87,6 +90,7 @@ final class Loader {
 		if ( ! self::wanted() ) {
 			return;
 		}
+		$once = 'session' === self::options()['frequency'];
 		$markup = '<div id="avix-boot" class="avix-boot" aria-hidden="true">'
 			. '<div class="avix-boot__tiles"></div>'
 			. '<div class="avix-boot__stage">'
@@ -107,7 +111,7 @@ final class Loader {
 html.avix-booting{overflow:hidden!important}
 html.avix-booting::before{content:"";position:fixed;inset:0;z-index:2147482990;background:#050404;animation:avix-boot-safe 0s 5s forwards}
 html.avix-booting-out::before{opacity:0;transition:opacity .2s}
-html.avix-booting .avix-hero,html.avix-booting .avix-hero *{animation-play-state:paused!important}
+html.avix-booting body *:not(.avix-boot):not(.avix-boot *){animation-play-state:paused!important}
 div.avix-boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;pointer-events:none;animation:avix-boot-safe 0s 5s forwards}
 .avix-boot__tiles{position:absolute;inset:0;display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:1fr}
 .avix-boot__tiles i{background:#050404;transition:opacity .2s linear;transition-delay:var(--d,0ms)}
@@ -128,7 +132,7 @@ div.avix-boot{position:fixed;inset:0;z-index:2147483000;display:grid;place-items
 @keyframes avix-boot-safe{to{visibility:hidden}}
 </style>
 <script id="avix-boot-js">
-(function(d,w){var h=d.documentElement,ss=null;try{if(w.top!==w.self||(w.matchMedia&&w.matchMedia('(prefers-reduced-motion: reduce)').matches)||/bot|crawl|spider|slurp|lighthouse|pagespeed|headless|preview/i.test(navigator.userAgent))return;try{ss=w.sessionStorage;}catch(e){}if(ss&&ss.getItem('avix-boot'))return;if(ss)ss.setItem('avix-boot','1');}catch(e){return;}
+(function(d,w){var h=d.documentElement,ss=null;try{if(w.top!==w.self||(w.matchMedia&&w.matchMedia('(prefers-reduced-motion: reduce)').matches)||/bot|crawl|spider|slurp|lighthouse|pagespeed|headless|preview/i.test(navigator.userAgent))return;if(<?php echo $once ? 'true' : 'false'; ?>){try{ss=w.sessionStorage;}catch(e){}if(ss&&ss.getItem('avix-boot'))return;if(ss)ss.setItem('avix-boot','1');}}catch(e){return;}
 h.classList.add('avix-booting');var t0=Date.now(),MIN=<?php echo (int) self::MIN; ?>,MAX=<?php echo (int) self::MAX; ?>,el=null,lit=1,done=false,markup=<?php echo wp_json_encode( $markup ); ?>;
 function light(n){lit=Math.max(lit,n);if(!el)return;var b=el.querySelectorAll('.avix-boot__bar i');for(var i=0;i<b.length;i++)if(i<lit)b[i].className='is-on';}
 function mount(){if(el)return true;if(!d.body)return false;d.body.insertAdjacentHTML('afterbegin',markup);el=d.getElementById('avix-boot');var s='';for(var i=0;i<96;i++)s+='<i style="--d:'+Math.round(Math.random()*240)+'ms"></i>';el.firstChild.innerHTML=s;light(lit);setTimeout(function(){if(el)el.classList.add('is-ready');},640);return true;}
@@ -174,7 +178,7 @@ setTimeout(function(){light(2);},300);d.addEventListener('DOMContentLoaded',func
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Avix loader', 'avix-widgets' ); ?></h1>
-			<p><?php esc_html_e( 'On the first page of a visit, the pixel buddy assembles itself, waves and leaps away while the screen dissolves into squares. It ends as soon as the page has loaded (at least 0.7 s, at most 1.6 s) and never shows again in the same browser session, to search engines, in the Elementor editor or to visitors who prefer reduced motion.', 'avix-widgets' ); ?></p>
+			<p><?php esc_html_e( 'While a page loads, the pixel buddy assembles itself, waves and leaps away while the screen dissolves into squares; the page’s own animations start right after. It ends as soon as the page has loaded (at least 0.7 s, at most 1.6 s) and never shows to search engines, in the Elementor editor or to visitors who prefer reduced motion.', 'avix-widgets' ); ?></p>
 			<form method="post" action="options.php">
 				<?php settings_fields( self::GROUP ); ?>
 				<table class="form-table" role="presentation">
@@ -189,11 +193,20 @@ setTimeout(function(){light(2);},300);d.addEventListener('DOMContentLoaded',func
 						</td>
 					</tr>
 					<tr>
+						<th scope="row"><label for="avix-loader-frequency"><?php esc_html_e( 'How often', 'avix-widgets' ); ?></label></th>
+						<td>
+							<select id="avix-loader-frequency" name="<?php echo esc_attr( $name ); ?>[frequency]">
+								<option value="every" <?php selected( 'every', $o['frequency'] ); ?>><?php esc_html_e( 'Every page load', 'avix-widgets' ); ?></option>
+								<option value="session" <?php selected( 'session', $o['frequency'] ); ?>><?php esc_html_e( 'Only on the first page of a visit', 'avix-widgets' ); ?></option>
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<th scope="row"><label for="avix-loader-scope"><?php esc_html_e( 'Where', 'avix-widgets' ); ?></label></th>
 						<td>
 							<select id="avix-loader-scope" name="<?php echo esc_attr( $name ); ?>[scope]">
-								<option value="all" <?php selected( 'all', $o['scope'] ); ?>><?php esc_html_e( 'Whichever page a visit starts on', 'avix-widgets' ); ?></option>
-								<option value="home" <?php selected( 'home', $o['scope'] ); ?>><?php esc_html_e( 'Only when a visit starts on the home page', 'avix-widgets' ); ?></option>
+								<option value="all" <?php selected( 'all', $o['scope'] ); ?>><?php esc_html_e( 'Every page', 'avix-widgets' ); ?></option>
+								<option value="home" <?php selected( 'home', $o['scope'] ); ?>><?php esc_html_e( 'The home page only', 'avix-widgets' ); ?></option>
 							</select>
 						</td>
 					</tr>

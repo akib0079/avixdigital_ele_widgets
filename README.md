@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.20.3**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.20.4**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.20.3.zip](dist/avix-elementor-widgets-1.20.3.zip).
+1. Download [avix-elementor-widgets-1.20.4.zip](dist/avix-elementor-widgets-1.20.4.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,11 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.20.4
+
+- Welcome loader: shows on every page load by default (Settings › Avix loader → How often; "Only on the first page of a visit" remains). While it shows, every CSS animation on the page is held, so entrance animations (Elementor's included) play as the loader dissolves instead of finishing unseen underneath.
+- Hero Banner: the trust line defaults are back to the original items (the 1.19.0 defaults are reverted).
 
 ### 1.20.3
 
