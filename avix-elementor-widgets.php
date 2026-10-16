@@ -3,7 +3,7 @@
  * Plugin Name:       Avix Digital Elementor Widgets
  * Plugin URI:        https://avixdigital.com
  * Description:       Custom Elementor widgets for avixdigital.com: Service Benefits, About Hero, Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline, FAQ & Quote, Compare & CEO Quote, Client Logos, Intro Text, Smart Header, Team, Page Hero, Service Index, Story, Founder, Values, Journey, Careers, Post Grid, Service Tabs, Ticker, plus the Case Studies post type with Case Study Hero, Chapter, Feature Spotlight, Results, Gallery, Stack, Next and Grid.
- * Version:           1.19.0
+ * Version:           1.20.0
  * Author:            Avix Digital
  * Author URI:        https://avixdigital.com
  * Text Domain:       avix-widgets
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AVIX_EW_VERSION', '1.19.0' );
+define( 'AVIX_EW_VERSION', '1.20.0' );
 define( 'AVIX_EW_FILE', __FILE__ );
 define( 'AVIX_EW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AVIX_EW_URL', plugin_dir_url( __FILE__ ) );
@@ -95,6 +95,13 @@ final class Avix_Elementor_Widgets {
 			require_once AVIX_EW_PATH . 'includes/pixel-reveal.php';
 			if ( class_exists( '\\AvixWidgets\\Pixel_Reveal' ) ) {
 				\AvixWidgets\Pixel_Reveal::init();
+			}
+		}
+		// Welcome loader on the first page of a visit (front end only; see includes/loader.php).
+		if ( file_exists( AVIX_EW_PATH . 'includes/loader.php' ) ) {
+			require_once AVIX_EW_PATH . 'includes/loader.php';
+			if ( class_exists( '\\AvixWidgets\\Loader' ) ) {
+				\AvixWidgets\Loader::init();
 			}
 		}
 		// Blog article template: the single post design (see includes/blog/class-blog.php).

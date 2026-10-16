@@ -33,6 +33,21 @@
 		return window.performance ? window.performance.now() : Date.now();
 	}
 
+	// The welcome loader (includes/loader.php) is still on screen.
+	function booting() {
+		return document.documentElement.classList.contains('avix-boot') && !window.__avixBooted;
+	}
+
+	function afterBoot(fn) {
+		if (!booting()) {
+			fn();
+			return;
+		}
+		window.addEventListener('avix:booted', function () {
+			fn();
+		}, { once: true });
+	}
+
 	function isEditMode() {
 		return !!(window.elementorFrontend && typeof window.elementorFrontend.isEditMode === 'function' && window.elementorFrontend.isEditMode());
 	}
@@ -49,6 +64,7 @@
 		var trail = config.trail || null;
 		var rise = config.rise || null;
 		var planet = config.planet || null;
+		var soft = config.soft || null;
 
 		this.root = root;
 		this.alive = true;
@@ -64,6 +80,10 @@
 		this.rise = rise && typeof rise === 'object' ? {
 			color: typeof rise.color === 'string' && rise.color ? rise.color : '#ffffff',
 			caps: !!rise.caps
+		} : null;
+
+		this.soft = soft && typeof soft === 'object' ? {
+			edge: typeof soft.edge === 'string' && soft.edge ? soft.edge : '#ffffff'
 		} : null;
 
 		this.planet = planet && typeof planet === 'object' ? {
@@ -189,6 +209,7 @@
 		this.initBuddy();
 		this.initRise();
 		this.initPlanet();
+		this.initSoft();
 		this.update();
 	};
 
@@ -692,6 +713,20 @@
 	// Called whenever the banner is on screen and the tab visible.
 	Hero.prototype.resume = function () {
 		var self = this;
+		if (this.state === 'armed' && booting()) {
+			// Land just after the loader's buddy has leapt away.
+			if (!this.waitingBoot) {
+				this.waitingBoot = true;
+				afterBoot(function () {
+					self.waitingBoot = false;
+					self.mountedAt = now();
+					if (self.alive && self.running) {
+						self.resume();
+					}
+				});
+			}
+			return;
+		}
 		if (this.state === 'armed') {
 			this.state = 'landing';
 			this.later('land', function () {
@@ -860,11 +895,13 @@
 		};
 		// After the headline has painted and the web fonts are in, so the horizon clears the copy.
 		var start = function () {
-			if (document.fonts && document.fonts.ready) {
-				document.fonts.ready.then(draw);
-			} else {
-				draw();
-			}
+			afterBoot(function () {
+				if (document.fonts && document.fonts.ready) {
+					document.fonts.ready.then(draw);
+				} else {
+					draw();
+				}
+			});
 		};
 		if (document.readyState === 'complete') {
 			this.later('planet', start, 120);
@@ -965,6 +1002,22 @@
 			}
 		}
 
+		if (this.soft) {
+			// A fine pixel edge: the next section's colour scatters up into the banner over four rows.
+			var edgeRows = [0.06, 0.18, 0.42, 0.78];
+			var base = Math.floor(h / cell) * cell; // the last whole row ends here
+			ctx.fillStyle = this.soft.edge;
+			ctx.fillRect(0, base, w, h - base);
+			for (var k = 0; k < edgeRows.length; k++) {
+				var ey = base - (edgeRows.length - k) * cell;
+				for (var ec = 0; ec < cols; ec++) {
+					if (hash(ey * 7.3 + ec * 13.1) < edgeRows[k]) {
+						ctx.fillRect(ec * cell, ey, cell, cell);
+					}
+				}
+			}
+		}
+
 		this.drawStars(w, horizon, copyBottom, narrow);
 
 		planet.home = w * (narrow ? 0.8 : 0.68);
@@ -1043,6 +1096,52 @@
 			planet.frame = window.requestAnimationFrame(step);
 		};
 		planet.frame = window.requestAnimationFrame(step);
+	};
+
+	/* ------------------------------------------------------------------ */
+	/* Soft scroll: the copy drifts up and fades a little, the planet sinks */
+	/* ------------------------------------------------------------------ */
+
+	Hero.prototype.initSoft = function () {
+		if (!this.soft || this.editor || reduceMotion.matches) {
+			return;
+		}
+		var self = this;
+		var body = this.root.querySelector('.avix-hero__body');
+		var layers = [
+			[this.root.querySelector('[data-hero-stars]'), 0.06]
+		].filter(function (layer) {
+			return layer[0];
+		});
+		var queued = false;
+		var last = -1;
+		var apply = function () {
+			queued = false;
+			if (!self.alive) {
+				return;
+			}
+			var h = self.root.clientHeight || 1;
+			var scrolled = Math.min(h, Math.max(0, -self.root.getBoundingClientRect().top));
+			if (Math.abs(scrolled - last) < 0.5) {
+				return;
+			}
+			last = scrolled;
+			if (body) {
+				body.style.translate = scrolled ? '0 ' + (-scrolled * 0.12).toFixed(1) + 'px' : '';
+				body.style.opacity = scrolled ? (1 - (scrolled / h) * 0.55).toFixed(3) : '';
+			}
+			layers.forEach(function (layer) {
+				layer[0].style.translate = scrolled ? '0 ' + (scrolled * layer[1]).toFixed(1) + 'px' : '';
+			});
+		};
+		this.onSoftScroll = function () {
+			if (!queued) {
+				queued = true;
+				window.requestAnimationFrame(apply);
+			}
+		};
+		window.addEventListener('scroll', this.onSoftScroll, { passive: true });
+		apply();
 	};
 
 	/* ------------------------------------------------------------------ */
@@ -1197,6 +1296,9 @@
 		}
 		if (this.onRiseScroll) {
 			window.removeEventListener('scroll', this.onRiseScroll);
+		}
+		if (this.onSoftScroll) {
+			window.removeEventListener('scroll', this.onSoftScroll);
 		}
 		if (this.onPlanetMove) {
 			this.root.removeEventListener('pointermove', this.onPlanetMove);

@@ -704,12 +704,17 @@ class Hero extends Widget_Base {
 		);
 
 		$this->add_control(
-			'scroll_rise',
+			'scroll_effect',
 			array(
-				'label'       => esc_html__( 'Pixel rise on scroll', 'avix-widgets' ),
-				'description' => esc_html__( 'While the page scrolls, the colour of the next section climbs into the banner as a staircase of brand squares and covers it. Off in the editor and for visitors who prefer reduced motion.', 'avix-widgets' ),
-				'type'        => Controls_Manager::SWITCHER,
-				'default'     => 'yes',
+				'label'       => esc_html__( 'On scroll', 'avix-widgets' ),
+				'description' => esc_html__( 'Soft: the copy drifts up and fades a little, and a fine pixel edge blends the banner into the next section. Pixel rise: the next section climbs in as a staircase of squares. Both are off in the editor and for visitors who prefer reduced motion.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'soft',
+				'options'     => array(
+					'soft' => esc_html__( 'Soft drift and pixel edge', 'avix-widgets' ),
+					'rise' => esc_html__( 'Pixel rise', 'avix-widgets' ),
+					'none' => esc_html__( 'None', 'avix-widgets' ),
+				),
 				'separator'   => 'before',
 			)
 		);
@@ -717,11 +722,11 @@ class Hero extends Widget_Base {
 		$this->add_control(
 			'rise_color',
 			array(
-				'label'       => esc_html__( 'Rise colour', 'avix-widgets' ),
-				'description' => esc_html__( 'Match the background of the section below the banner.', 'avix-widgets' ),
+				'label'       => esc_html__( 'Next section colour', 'avix-widgets' ),
+				'description' => esc_html__( 'The background of the section below the banner: the pixel edge and the pixel rise use it.', 'avix-widgets' ),
 				'type'        => Controls_Manager::COLOR,
 				'default'     => '#ffffff',
-				'condition'   => array( 'scroll_rise' => 'yes' ),
+				'condition'   => array( 'scroll_effect!' => 'none' ),
 			)
 		);
 
@@ -731,7 +736,7 @@ class Hero extends Widget_Base {
 				'label'     => esc_html__( 'Orange pixels on the steps', 'avix-widgets' ),
 				'type'      => Controls_Manager::SWITCHER,
 				'default'   => 'yes',
-				'condition' => array( 'scroll_rise' => 'yes' ),
+				'condition' => array( 'scroll_effect' => 'rise' ),
 			)
 		);
 
@@ -1023,7 +1028,8 @@ class Hero extends Widget_Base {
 				'strength' => round( $this->slider( $s, 'trail_strength', 30, 5, 80 ) / 100, 2 ),
 			) : false,
 			'planet'   => $planet ? array( 'lander' => $lander ) : false,
-			'rise'     => 'yes' === $s['scroll_rise'] ? array(
+			'soft'     => 'soft' === ( $s['scroll_effect'] ?? 'soft' ) ? array( 'edge' => $this->css_color( (string) $s['rise_color'], '#ffffff' ) ) : false,
+			'rise'     => 'rise' === ( $s['scroll_effect'] ?? 'soft' ) ? array(
 				'color' => $this->css_color( (string) $s['rise_color'], '#ffffff' ),
 				'caps'  => 'yes' === $s['rise_caps'],
 			) : false,
