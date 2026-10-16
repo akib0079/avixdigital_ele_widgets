@@ -146,6 +146,23 @@ class Process_Timeline extends Widget_Base {
 				'dynamic' => array( 'active' => true ),
 			)
 		);
+		$repeater->add_control(
+			'art',
+			array(
+				'label'       => esc_html__( 'Pixel picture', 'avix-widgets' ),
+				'description' => esc_html__( 'Drawn in the empty half beside the step. Automatic: sitemap first, launch last, wireframe and code between.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'auto',
+				'options'     => array(
+					'auto'      => esc_html__( 'Automatic', 'avix-widgets' ),
+					'brief'     => esc_html__( 'Sitemap (planning)', 'avix-widgets' ),
+					'wireframe' => esc_html__( 'Wireframe (design)', 'avix-widgets' ),
+					'code'      => esc_html__( 'Code (build)', 'avix-widgets' ),
+					'launch'    => esc_html__( 'Live site (launch)', 'avix-widgets' ),
+					'none'      => esc_html__( 'None', 'avix-widgets' ),
+				),
+			)
+		);
 
 		$this->add_control(
 			'steps',
@@ -266,6 +283,16 @@ class Process_Timeline extends Widget_Base {
 				'label'   => esc_html__( 'Corner glows', 'avix-widgets' ),
 				'type'    => Controls_Manager::SWITCHER,
 				'default' => 'yes',
+			)
+		);
+
+		$this->add_control(
+			'show_art',
+			array(
+				'label'       => esc_html__( 'Pixel pictures', 'avix-widgets' ),
+				'description' => esc_html__( 'A faint pixel picture beside each step that fills in when the character reaches it. Wide layout only.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
 			)
 		);
 
@@ -586,6 +613,8 @@ class Process_Timeline extends Widget_Base {
 						<span class="avix-pt__ledge"></span>
 					</div>
 
+					<?php $this->render_art( $s, $steps, $geo ); ?>
+
 					<ol class="avix-pt__steps">
 						<?php foreach ( $steps as $i => $step ) : ?>
 							<li class="avix-pt__step avix-pt__step--<?php echo 0 === $i % 2 ? 'left' : 'right'; ?>" data-pt-step style="--pt-top: <?php echo esc_attr( round( $geo['centers'][ $i ] / $geo['h'] * 100, 3 ) ); ?>%;">
@@ -636,6 +665,33 @@ class Process_Timeline extends Widget_Base {
 			</div>
 		</section>
 		<?php
+	}
+
+	/**
+	 * Pixel pictures in the empty half of each loop (opposite the step text).
+	 * The script draws them on a canvas; until it runs they take no space.
+	 */
+	private function render_art( array $s, array $steps, array $geo ) {
+		if ( 'yes' !== ( $s['show_art'] ?? 'yes' ) ) {
+			return;
+		}
+		$count = count( $steps );
+		foreach ( $steps as $i => $step ) {
+			$art = $step['art'] ?? 'auto';
+			if ( 'auto' === $art || ! in_array( $art, array( 'brief', 'wireframe', 'code', 'launch', 'none' ), true ) ) {
+				$art = 0 === $i ? 'brief' : ( $count - 1 === $i ? 'launch' : ( 1 === $i % 2 ? 'wireframe' : 'code' ) );
+			}
+			if ( 'none' === $art ) {
+				continue;
+			}
+			printf(
+				'<div class="avix-pt__art avix-pt__art--%1$s" data-pt-art="%2$s" data-pt-art-step="%3$d" style="--pt-top: %4$s%%;" aria-hidden="true"><canvas></canvas></div>',
+				0 === $i % 2 ? 'right' : 'left',
+				esc_attr( $art ),
+				(int) $i,
+				esc_attr( round( $geo['centers'][ $i ] / $geo['h'] * 100, 3 ) )
+			);
+		}
 	}
 
 	/**

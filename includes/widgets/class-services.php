@@ -493,6 +493,16 @@ class Services extends Widget_Base {
 			)
 		);
 
+		$this->add_control(
+			'show_pixels',
+			array(
+				'label'       => esc_html__( 'Pixel corners', 'avix-widgets' ),
+				'description' => esc_html__( 'Two soft clusters of accent pixels in the top-right and bottom-left corners that twinkle slowly.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+			)
+		);
+
 		$this->add_responsive_control(
 			'padding',
 			array(
@@ -625,6 +635,10 @@ class Services extends Widget_Base {
 				<span class="avix-sv__glow avix-sv__glow--2"></span>
 				<span class="avix-sv__spot" data-sv-spot></span>
 				<span class="avix-sv__grid"></span>
+				<?php if ( 'yes' === ( $s['show_pixels'] ?? 'yes' ) ) : ?>
+					<span class="avix-sv__pixels avix-sv__pixels--tr" data-sv-pixels="tr"><canvas></canvas><canvas class="avix-sv__twinkle"></canvas></span>
+					<span class="avix-sv__pixels avix-sv__pixels--bl" data-sv-pixels="bl"><canvas></canvas><canvas class="avix-sv__twinkle"></canvas></span>
+				<?php endif; ?>
 			</div>
 
 			<div class="avix-sv__frame">

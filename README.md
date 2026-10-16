@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.20.4**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.21.0**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.20.4.zip](dist/avix-elementor-widgets-1.20.4.zip).
+1. Download [avix-elementor-widgets-1.21.0.zip](dist/avix-elementor-widgets-1.21.0.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,11 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.21.0
+
+- Process Timeline: a faint pixel picture sits in the empty half beside each step, showing the same browser window at each stage (sitemap, wireframe, code, live site with a small rocket). Only the window frame shows until the character reaches the step; then the picture fills in pixel by pixel, and it clears again when you scroll back. Mostly soft white with a touch of accent, wide layout only. New controls: Steps › Pixel picture (Automatic picks sitemap first, live site last, wireframe and code between) and Style › Pixel pictures.
+- Services Showcase: two soft clusters of dithered accent pixels in the top-right and bottom-left corners, where the glows sit, clear of the text. A few of the pixels twinkle slowly; nothing moves while the section is off screen or with reduced motion. New control: Style › Pixel corners.
 
 ### 1.20.4
 

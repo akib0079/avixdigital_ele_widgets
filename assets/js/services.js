@@ -46,6 +46,82 @@
 		return el === ancestor ? y : null;
 	}
 
+	// Pixel corners: an ordered (Bayer) dither of accent pixels fading out from
+	// the corner. About one pixel in six goes on the twinkle layer, which CSS
+	// fades in and out. Redrawn only when a corner changes size.
+	var BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+
+	function hash(x, y) {
+		var h = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+		return h - Math.floor(h);
+	}
+
+	function PixelCorners(root) {
+		var self = this;
+		this.corners = Array.prototype.slice.call(root.querySelectorAll('[data-sv-pixels]')).map(function (el) {
+			var canvases = el.querySelectorAll('canvas');
+			return { el: el, base: canvases[0], twinkle: canvases[1], size: '' };
+		}).filter(function (corner) {
+			return corner.base && corner.twinkle && corner.base.getContext;
+		});
+		this.accent = (window.getComputedStyle(root).getPropertyValue('--sv-accent') || '').trim() || '#fb6007';
+		this.draw();
+		if (window.ResizeObserver && this.corners.length) {
+			this.observer = new window.ResizeObserver(function () {
+				self.draw();
+			});
+			this.corners.forEach(function (corner) {
+				self.observer.observe(corner.el);
+			});
+		}
+	}
+
+	PixelCorners.prototype.draw = function () {
+		var accent = this.accent;
+		this.corners.forEach(function (corner) {
+			var width = corner.el.clientWidth;
+			var ratio = Math.min(2, window.devicePixelRatio || 1);
+			var size = width + '@' + ratio;
+			if (!width || size === corner.size) {
+				return;
+			}
+			corner.size = size;
+			var top = 'tr' === corner.el.getAttribute('data-sv-pixels');
+			var unit = width < 300 ? 8 : 10;
+			var cells = Math.ceil(width / unit);
+			var max = top ? 0.13 : 0.16;
+			var layers = [corner.base, corner.twinkle].map(function (canvas) {
+				canvas.width = Math.round(width * ratio);
+				canvas.height = Math.round(width * ratio);
+				var c = canvas.getContext('2d');
+				c.setTransform(ratio, 0, 0, ratio, 0, 0);
+				c.fillStyle = accent;
+				return c;
+			});
+			// Cells count from the section's corner, so the pixels line up with its edges.
+			for (var j = 0; j < cells; j++) {
+				for (var i = 0; i < cells; i++) {
+					var d = Math.hypot(i + 0.5, j + 0.5) * unit / width;
+					var density = d < 1 ? Math.pow(1 - d, 1.6) * 0.62 : 0;
+					if ((BAYER[(j & 3) * 4 + (i & 3)] + 0.5) / 16 >= density) {
+						continue;
+					}
+					var c = layers[hash(i, j) > 0.83 ? 1 : 0];
+					var x = top ? width - (i + 1) * unit : i * unit;
+					var y = top ? j * unit : width - (j + 1) * unit;
+					c.globalAlpha = max * (0.35 + 0.65 * (1 - d));
+					c.fillRect(x + 1, y + 1, unit - 2, unit - 2);
+				}
+			}
+		});
+	};
+
+	PixelCorners.prototype.stop = function () {
+		if (this.observer) {
+			this.observer.disconnect();
+		}
+	};
+
 	function Showcase(root) {
 		var config = {};
 		try {
@@ -118,6 +194,7 @@
 		var self = this;
 
 		this.root.classList.add('is-ready');
+		this.pixels = new PixelCorners(this.root);
 		this.items.forEach(function (item, i) {
 			self.setOpen(i, i === self.active);
 		});
@@ -733,6 +810,9 @@
 			this.visual.removeEventListener('pointerleave', this.onVisualLeave);
 		}
 		document.removeEventListener('visibilitychange', this.onVisibility);
+		if (this.pixels) {
+			this.pixels.stop();
+		}
 		if (this.observer) {
 			this.observer.disconnect();
 		}
