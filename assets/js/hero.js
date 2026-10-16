@@ -893,23 +893,23 @@
 				self.drawPlanet();
 			}
 		};
-		// After the headline has painted and the web fonts are in, so the horizon clears the copy.
-		var start = function () {
-			afterBoot(function () {
-				if (document.fonts && document.fonts.ready) {
-					document.fonts.ready.then(draw);
-				} else {
+		// Once the web fonts are in (the horizon measures the copy), or after 1.2 s at most:
+		// never waits for the page's images. After the welcome loader, if one is showing.
+		afterBoot(function () {
+			var drawn = false;
+			var once = function () {
+				if (!drawn) {
+					drawn = true;
 					draw();
 				}
-			});
-		};
-		if (document.readyState === 'complete') {
-			this.later('planet', start, 120);
-		} else {
-			window.addEventListener('load', function () {
-				self.later('planet', start, 120);
-			}, { once: true });
-		}
+			};
+			self.later('planet', once, 1200);
+			if (document.fonts && document.fonts.ready) {
+				document.fonts.ready.then(once);
+			} else {
+				once();
+			}
+		});
 
 		if (planet.lander) {
 			this.onPlanetMove = function (event) {
