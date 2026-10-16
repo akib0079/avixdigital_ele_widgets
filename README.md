@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.18.0**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.19.0**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.18.0.zip](dist/avix-elementor-widgets-1.18.0.zip).
+1. Download [avix-elementor-widgets-1.19.0.zip](dist/avix-elementor-widgets-1.19.0.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,11 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.19.0
+
+- Hero Banner: new "Pixel planet" background (Background & Effects → Background, the default). A calm horizon of dithered brand squares (dark ember to a deep orange) rises into view after the page loads, under a sky of pixel stars that stay faint behind the copy and twinkle softly at the edges. The pixel buddy stands on the horizon instead of sitting on the headline ("Buddy stands on the planet"): it greets visitors in its speech bubble, walks towards the mouse on desktop, strolls over to the button when it is hovered and says the button line, and stands still for reduced motion. The photo, glass pixels and cursor trail remain as the "Photo" background.
+- With the planet, the banner is calmer: a smaller headline (66px at 1440, was 95px), a narrower description, a slightly smaller button, a lighter badge, no floating cursor tags, and the trust line as a slim row without the pill. Trust line defaults are now "5.0 on Fiverr" (star) and "22+ countries" (globe).
 
 ### 1.18.0
 

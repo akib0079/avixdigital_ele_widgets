@@ -1087,6 +1087,207 @@
 	}
 }
 
+/* ================================================================== */
+/* Pixel planet: a calm dithered horizon, pixel stars, the buddy on it */
+/* ================================================================== */
+
+.avix-hero--planet {
+	background-color: #050404;
+}
+
+/* Painted before the canvas (and instead of it without JS): a faint warm horizon. */
+.avix-hero--planet .avix-hero__bg {
+	background: radial-gradient(ellipse 55% 26% at 50% 100%, rgba(251, 96, 7, 0.12), transparent 72%);
+}
+
+.avix-hero__planet {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	transform: translate3d(0, 48px, 0);
+	transition: opacity 1.2s ease, transform 1.6s var(--hero-ease);
+}
+
+.avix-hero.is-planet .avix-hero__planet {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-hero__stars {
+	position: absolute;
+	inset: 0;
+}
+
+.avix-hero__stars i {
+	position: absolute;
+	width: 6px;
+	height: 6px;
+	background: #9c928c;
+}
+
+.avix-hero__stars i.is-twinkle {
+	animation: avix-hero-twinkle 6s ease-in-out infinite alternate;
+}
+
+@keyframes avix-hero-twinkle {
+	0%,
+	60% {
+		opacity: 0.15;
+	}
+
+	100% {
+		opacity: 0.75;
+	}
+}
+
+/* Calmer type: a confident headline that leaves the planet room. */
+.avix-hero--planet .avix-hero__body {
+	justify-content: flex-start;
+	padding-top: clamp(128px, 17vh, 160px);
+	padding-bottom: clamp(120px, 20vh, 190px);
+}
+
+.avix-hero--planet .avix-hero__content {
+	flex: 0 0 auto;
+}
+
+.avix-hero--planet .avix-hero__badge {
+	margin-bottom: 26px;
+	border-color: rgba(255, 255, 255, 0.14);
+	background: rgba(255, 255, 255, 0.04);
+	font-size: 12px;
+}
+
+.avix-hero--planet .avix-hero__title {
+	margin-bottom: 22px;
+	font-size: clamp(38px, 4.6cqi, 66px);
+	letter-spacing: -0.03em;
+	line-height: 1.1;
+}
+
+.avix-hero--planet .avix-hero__subtitle {
+	max-width: 520px;
+	margin-bottom: 34px;
+	color: #c4c4c4;
+	font-size: 17px;
+	line-height: 1.6;
+}
+
+.avix-hero--planet .avix-hero__btn {
+	padding: 6px 6px 6px 24px;
+	font-size: 14px;
+	letter-spacing: 0.02em;
+}
+
+.avix-hero--planet .avix-hero__btn-icon {
+	width: 40px;
+	height: 40px;
+}
+
+/* Trust line: a slim row, no pill. */
+.avix-hero--planet .avix-hero__dock-wrap {
+	flex: 0 0 auto;
+	margin-top: 26px;
+}
+
+.avix-hero--planet .avix-hero__dock {
+	gap: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	box-shadow: none;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+}
+
+.avix-hero.avix-hero--planet .avix-hero__dock-item {
+	padding: 0 18px;
+	color: #a9a9a9;
+	font-size: 13px;
+}
+
+.avix-hero.avix-hero--planet .avix-hero__dock-item + .avix-hero__dock-item {
+	border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/* The buddy on the horizon (hero.js sets --lander-x/--lander-y to its feet). */
+.avix-hero__lander {
+	--hero-buddy-w: clamp(44px, 4.4cqi, 64px);
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 4;
+	width: 0;
+	height: 0;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate3d(var(--lander-x, 68%), var(--lander-y, 0), 0);
+	transition: opacity 400ms ease;
+}
+
+.avix-hero__lander.is-placed {
+	opacity: 1;
+}
+
+.avix-hero__lander .avix-hero__buddy {
+	top: calc(var(--hero-buddy-h) * -1 + 2px);
+	left: 0;
+	pointer-events: auto;
+	cursor: pointer;
+}
+
+.avix-hero.is-armed .avix-hero__lander .avix-hero__buddy.is-landed::before,
+.avix-hero__lander .avix-hero__buddy::before {
+	opacity: 0.07;
+	animation: none;
+}
+
+.avix-hero__lander .avix-hero__sprite {
+	filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.55));
+}
+
+/* Standing still: no dangling legs. Walking: quick steps, facing the way it goes. */
+.avix-hero__lander .avix-hero__b-leg--l,
+.avix-hero__lander .avix-hero__b-leg--r {
+	animation: none;
+}
+
+.avix-hero__lander.is-walking .avix-hero__b-leg--l {
+	animation: avix-hero-leg 0.32s steps(1) infinite;
+}
+
+.avix-hero__lander.is-walking .avix-hero__b-leg--r {
+	animation: avix-hero-leg 0.32s steps(1) -0.16s infinite;
+}
+
+.avix-hero__lander.is-walk-l .avix-hero__sprite svg {
+	transform: scaleX(-1);
+}
+
+@media (max-width: 600px) {
+	.avix-hero--planet .avix-hero__body {
+		padding-bottom: 130px;
+	}
+
+	.avix-hero.avix-hero--planet .avix-hero__dock {
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		row-gap: 10px;
+		max-width: none;
+		padding: 0;
+	}
+
+	.avix-hero.avix-hero--planet .avix-hero__dock-item {
+		padding: 0 12px;
+		font-size: 12.5px;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.avix-hero *,
 	.avix-hero *::before,

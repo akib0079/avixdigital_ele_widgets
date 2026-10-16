@@ -48,6 +48,7 @@
 		var greet = config.greet || {};
 		var trail = config.trail || null;
 		var rise = config.rise || null;
+		var planet = config.planet || null;
 
 		this.root = root;
 		this.alive = true;
@@ -63,6 +64,12 @@
 		this.rise = rise && typeof rise === 'object' ? {
 			color: typeof rise.color === 'string' && rise.color ? rise.color : '#ffffff',
 			caps: !!rise.caps
+		} : null;
+
+		this.planet = planet && typeof planet === 'object' ? {
+			canvas: root.querySelector('[data-hero-planet]'),
+			stars: root.querySelector('[data-hero-stars]'),
+			lander: planet.lander ? root.querySelector('[data-hero-lander]') : null
 		} : null;
 
 		this.canvas = root.querySelector('[data-hero-trail]');
@@ -181,6 +188,7 @@
 		this.resize();
 		this.initBuddy();
 		this.initRise();
+		this.initPlanet();
 		this.update();
 	};
 
@@ -469,6 +477,9 @@
 		this.applyTags(tags);
 		if (this.riseLayer && (w !== this.riseW || h !== this.riseH)) {
 			this.buildRise();
+		}
+		if (this.planet && this.planet.drawn && (w !== this.planet.w || h !== this.planet.h)) {
+			this.drawPlanet();
 		}
 	};
 
@@ -823,6 +834,218 @@
 	};
 
 	/* ------------------------------------------------------------------ */
+	/* Pixel planet: a dithered horizon of brand squares, the buddy on it  */
+	/* ------------------------------------------------------------------ */
+
+	var BAYER = [0, 32, 8, 40, 2, 34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26, 12, 44, 4, 36, 14, 46, 6, 38, 60, 28, 52, 20, 62, 30, 54, 22, 3, 35, 11, 43, 1, 33, 9, 41, 51, 19, 59, 27, 49, 17, 57, 25, 15, 47, 7, 39, 13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21];
+
+	// Dark ember to a deep brand orange: the planet stays quiet, the buddy is the bright touch.
+	function planetColor(t) {
+		var a = t < 0.55 ? [46, 13, 5] : [120, 36, 7];
+		var b = t < 0.55 ? [120, 36, 7] : [214, 82, 8];
+		var k = t < 0.55 ? t / 0.55 : (t - 0.55) / 0.45;
+		return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * k) + ',' + Math.round(a[1] + (b[1] - a[1]) * k) + ',' + Math.round(a[2] + (b[2] - a[2]) * k) + ')';
+	}
+
+	Hero.prototype.initPlanet = function () {
+		var planet = this.planet;
+		if (!planet || !planet.canvas || !planet.canvas.getContext) {
+			return;
+		}
+		var self = this;
+		var draw = function () {
+			if (self.alive) {
+				self.drawPlanet();
+			}
+		};
+		// After the headline has painted and the web fonts are in, so the horizon clears the copy.
+		var start = function () {
+			if (document.fonts && document.fonts.ready) {
+				document.fonts.ready.then(draw);
+			} else {
+				draw();
+			}
+		};
+		if (document.readyState === 'complete') {
+			this.later('planet', start, 120);
+		} else {
+			window.addEventListener('load', function () {
+				self.later('planet', start, 120);
+			}, { once: true });
+		}
+
+		if (planet.lander) {
+			this.onPlanetMove = function (event) {
+				if (event.pointerType === 'touch' || !finePointer.matches || reduceMotion.matches || self.editor) {
+					return;
+				}
+				var rect = self.root.getBoundingClientRect();
+				planet.target = clamp(event.clientX - rect.left, planet.w * 0.18, planet.w * 0.82);
+				self.walk();
+				self.later('planet-home', function () {
+					planet.target = planet.home;
+					self.walk();
+				}, 3200);
+			};
+			this.root.addEventListener('pointermove', this.onPlanetMove);
+			// Hovering the button: it strolls over to stand beside it (and hero.js already has it say the button line).
+			if (this.cta) {
+				this.onPlanetCta = function (event) {
+					if ((event.pointerType && event.pointerType !== 'mouse') || reduceMotion.matches || self.editor || !planet.drawn) {
+						return;
+					}
+					var rect = self.root.getBoundingClientRect();
+					var box = self.cta.getBoundingClientRect();
+					planet.target = clamp(box.right - rect.left + 70, planet.w * 0.18, planet.w * 0.82);
+					self.cancel('planet-home');
+					self.walk();
+				};
+				this.cta.addEventListener('pointerenter', this.onPlanetCta);
+			}
+		}
+	};
+
+	/** One dithered pass: stars (kept faint behind the copy), the planet's surface, rim and halo. */
+	Hero.prototype.drawPlanet = function () {
+		var planet = this.planet;
+		var canvas = planet.canvas;
+		var w = this.root.clientWidth;
+		var h = this.root.clientHeight;
+		if (!w || !h) {
+			return;
+		}
+		var narrow = w < 600;
+		var dpr = Math.min(window.devicePixelRatio || 1, 2);
+		var rootBox = this.root.getBoundingClientRect();
+		var anchor = this.root.querySelector('.avix-hero__dock-wrap') || this.root.querySelector('.avix-hero__actions') || this.title;
+		var copyBottom = anchor ? anchor.getBoundingClientRect().bottom - rootBox.top : h * 0.7;
+		var horizon = Math.min(h - 44, Math.max(h * (narrow ? 0.86 : 0.8), copyBottom + (narrow ? 56 : 70)));
+		var radius = narrow ? w * 1.6 : w * 1.15;
+		var cx = w / 2;
+		var cy = horizon + radius;
+		var cell = narrow ? 7 : 9;
+		var size = cell - 2;
+		var ctx = canvas.getContext('2d');
+
+		planet.w = w;
+		planet.h = h;
+		planet.cx = cx;
+		planet.cy = cy;
+		planet.r = radius;
+		canvas.width = Math.round(w * dpr);
+		canvas.height = Math.round(h * dpr);
+		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+		ctx.clearRect(0, 0, w, h);
+
+		var haze = ctx.createRadialGradient(cx, horizon + 40, 0, cx, horizon + 40, narrow ? w * 0.9 : w * 0.48);
+		haze.addColorStop(0, 'rgba(251, 96, 7, 0.1)');
+		haze.addColorStop(0.6, 'rgba(251, 96, 7, 0.03)');
+		haze.addColorStop(1, 'rgba(251, 96, 7, 0)');
+		ctx.fillStyle = haze;
+		ctx.fillRect(0, 0, w, h);
+
+		var rows = Math.ceil(h / cell);
+		var cols = Math.ceil(w / cell);
+		var top = Math.max(0, Math.floor((horizon - 80) / cell));
+		for (var r = top; r < rows; r++) {
+			for (var c = 0; c < cols; c++) {
+				var x = c * cell;
+				var y = r * cell;
+				var d = Math.sqrt((x + cell / 2 - cx) * (x + cell / 2 - cx) + (y + cell / 2 - cy) * (y + cell / 2 - cy));
+				var light;
+				if (d < radius) {
+					light = 0.22 + Math.min(1, (radius - d) / (narrow ? 110 : 170)) * 0.62 + Math.max(0, 1 - (radius - d) / 12) * 0.25;
+				} else {
+					light = 0.18 - (d - radius) / (narrow ? 50 : 70);
+				}
+				if (light > (BAYER[(r % 8) * 8 + (c % 8)] + 0.5) / 64) {
+					ctx.fillStyle = planetColor(Math.min(1, light));
+					ctx.fillRect(x, y, size, size);
+				}
+			}
+		}
+
+		this.drawStars(w, horizon, copyBottom, narrow);
+
+		planet.home = w * (narrow ? 0.8 : 0.68);
+		if (planet.x == null || planet.x > w) {
+			planet.x = planet.home;
+		}
+		planet.target = planet.home;
+		this.placeLander();
+
+		if (!planet.drawn) {
+			planet.drawn = true;
+			this.root.classList.add('is-planet');
+		}
+	};
+
+	/** Pixel stars: a handful twinkle (CSS opacity only); fainter over the copy column. */
+	Hero.prototype.drawStars = function (w, horizon, copyBottom, narrow) {
+		var box = this.planet.stars;
+		if (!box) {
+			return;
+		}
+		var count = narrow ? 34 : 90;
+		var left = w / 2 - Math.min(w * 0.42, 560);
+		var right = w / 2 + Math.min(w * 0.42, 560);
+		var html = '';
+		for (var i = 0; i < count; i++) {
+			var x = Math.round(hash(i) * (w - 6));
+			var y = Math.round(hash(i + 99) * (horizon - 40));
+			var quiet = x > left && x < right && y > 110 && y < copyBottom + 10;
+			var alpha = (quiet ? 0.1 : 0.22) + hash(i + 7) * (quiet ? 0.1 : 0.4);
+			var twinkle = !quiet && hash(i + 31) < 0.18;
+			html += '<i style="left:' + x + 'px;top:' + y + 'px;opacity:' + alpha.toFixed(2) + (twinkle ? ';animation-delay:-' + (hash(i + 3) * 6).toFixed(1) + 's" class="is-twinkle' : '') + '"></i>';
+		}
+		box.innerHTML = html;
+	};
+
+	/** The buddy's feet on the horizon at its current x. */
+	Hero.prototype.placeLander = function () {
+		var planet = this.planet;
+		if (!planet.lander) {
+			return;
+		}
+		var dx = planet.x - planet.cx;
+		var y = planet.cy - Math.sqrt(Math.max(0, planet.r * planet.r - dx * dx));
+		planet.lander.style.setProperty('--lander-x', planet.x.toFixed(1) + 'px');
+		planet.lander.style.setProperty('--lander-y', y.toFixed(1) + 'px');
+		planet.lander.classList.add('is-placed');
+	};
+
+	/** Walks towards planet.target at a stroll (about 140 px a second), facing the way it goes. */
+	Hero.prototype.walk = function () {
+		var planet = this.planet;
+		var self = this;
+		if (!planet || !planet.lander || planet.walking || planet.x == null) {
+			return;
+		}
+		planet.walking = true;
+		var last = now();
+		var step = function () {
+			if (!self.alive) {
+				return;
+			}
+			var t = now();
+			var dt = Math.min(64, t - last);
+			last = t;
+			var gap = planet.target - planet.x;
+			if (Math.abs(gap) < 2) {
+				planet.walking = false;
+				planet.lander.classList.remove('is-walking');
+				return;
+			}
+			planet.lander.classList.add('is-walking');
+			planet.lander.classList.toggle('is-walk-l', gap < 0);
+			planet.x += Math.sign(gap) * Math.min(Math.abs(gap), 0.14 * dt);
+			self.placeLander();
+			planet.frame = window.requestAnimationFrame(step);
+		};
+		planet.frame = window.requestAnimationFrame(step);
+	};
+
+	/* ------------------------------------------------------------------ */
 	/* Pixel rise: the next section climbs into the banner on scroll       */
 	/* ------------------------------------------------------------------ */
 
@@ -974,6 +1197,15 @@
 		}
 		if (this.onRiseScroll) {
 			window.removeEventListener('scroll', this.onRiseScroll);
+		}
+		if (this.onPlanetMove) {
+			this.root.removeEventListener('pointermove', this.onPlanetMove);
+		}
+		if (this.onPlanetCta && this.cta) {
+			this.cta.removeEventListener('pointerenter', this.onPlanetCta);
+		}
+		if (this.planet && this.planet.frame) {
+			window.cancelAnimationFrame(this.planet.frame);
 		}
 		if (this.riseLayer && this.riseLayer.parentNode) {
 			this.riseLayer.parentNode.removeChild(this.riseLayer);
