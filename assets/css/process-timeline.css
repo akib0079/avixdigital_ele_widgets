@@ -521,6 +521,38 @@
 	opacity: 1;
 }
 
+/* Pixel pictures in the empty half of each loop. Faint until the character
+   reaches the step, then the picture fills in (drawn by the script). */
+.avix-pt__art {
+	position: absolute;
+	top: var(--pt-top);
+	z-index: 2;
+	width: 35%;
+	aspect-ratio: 60 / 40;
+	opacity: 0.55;
+	pointer-events: none;
+	transform: translateY(-50%);
+	transition: opacity 700ms ease;
+}
+
+.avix-pt__art--right {
+	left: 53%;
+}
+
+.avix-pt__art--left {
+	left: 10%;
+}
+
+.avix-pt__art.is-reached {
+	opacity: 1;
+}
+
+.avix-pt__art canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
 /* Mobile rail (hidden on the wide layout) */
 .avix-pt__rail {
 	display: none;
@@ -871,7 +903,8 @@
 		padding: 4px 0 calc(var(--pt-rail-bottom) + 76px) 34px;
 	}
 
-	.avix-pt__svg {
+	.avix-pt__svg,
+	.avix-pt__art {
 		display: none;
 	}
 

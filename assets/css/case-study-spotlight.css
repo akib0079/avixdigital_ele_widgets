@@ -1,0 +1,1482 @@
+/*!
+ * Avix Digital · Case Study Feature Spotlight
+ * One feature per section: a sticky text column (index, title, the problem,
+ * what was built, a numbered legend) beside a real screenshot in a kit frame
+ * with numbered pixel pins, one shared callout and a native-dialog lightbox.
+ * Layout follows the widget width (container queries), not the viewport.
+ */
+
+/* Tokens. The theme classes below set the primary ones; the rest are mixed
+   from them, so a colour picked in the Style tab (which sets one token on
+   this same element) carries its dependants along: "What we built" follows
+   Headings and Text, the callout's detail line follows the callout text. */
+.avix-csf {
+	--csf-bg: #ffffff;
+	--csf-ink: #1a1a1a;
+	--csf-ink-2: color-mix(in srgb, var(--csf-ink) 68%, var(--csf-muted));
+	--csf-muted: #5c5f66;
+	--csf-line: rgba(26, 26, 26, 0.1);
+	--csf-accent: #fb6007;
+	--csf-accent-text: #c54804;
+	--csf-on-accent: #ffffff;
+	--csf-pin: var(--csf-accent);
+	--csf-pin-ink: #ffffff;
+	--csf-callout: #ffffff;
+	--csf-callout-ink: #1a1a1a;
+	--csf-callout-muted: color-mix(in srgb, var(--csf-callout-ink) 70%, var(--csf-callout));
+	--csf-callout-edge: rgba(11, 11, 12, 0.06);
+	--csf-callout-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+	--csf-card: #f6f4f0;
+	--csf-card-line: transparent;
+	--csf-hover: color-mix(in srgb, var(--csf-accent) 7%, transparent);
+	--csf-live: #1f9d55;
+	--csf-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--csf-font-body: "Inter", Arial, sans-serif;
+	--csf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--csf-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--csf-max: 1240px;
+
+	container: avix-csf / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(72px, 9vw, 140px) 0;
+	overflow: clip;
+	color: var(--csf-ink);
+	background: var(--csf-bg);
+	font-family: var(--csf-font-body);
+	font-style: normal;
+	font-weight: 400;
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-csf--theme-paper {
+	--csf-bg: #f5f3ef;
+	--csf-card: #ffffff;
+	--csf-line: rgba(26, 26, 26, 0.11);
+}
+
+.avix-csf--theme-dark {
+	--csf-bg: #0b0b0c;
+}
+
+/* Dark tone: the Dark theme, or a light theme whose Background colour is
+   dark (the widget adds --tone-dark). Every text, line, card and callout
+   token swaps; Style-tab colours still win. The callout turns dark too: it
+   floats over bright client screenshots, where dark reads best. */
+.avix-csf--theme-dark,
+.avix-csf--tone-dark {
+	--csf-ink: #f5f2ee;
+	--csf-muted: rgba(255, 255, 255, 0.64);
+	--csf-line: rgba(255, 255, 255, 0.12);
+	--csf-accent-text: #ff8a3d;
+	--csf-callout: #1b1c1f;
+	--csf-callout-ink: #f5f2ee;
+	--csf-callout-edge: rgba(255, 255, 255, 0.12);
+	--csf-callout-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+	--csf-card: rgba(255, 255, 255, 0.05);
+	--csf-card-line: rgba(255, 255, 255, 0.08);
+	--csf-hover: rgba(255, 255, 255, 0.05);
+	--csf-live: #43da7a;
+}
+
+/* Light tone: the Dark theme with a light Background colour picked. */
+.avix-csf--tone-light {
+	--csf-ink: #1a1a1a;
+	--csf-muted: #5c5f66;
+	--csf-line: rgba(26, 26, 26, 0.1);
+	--csf-accent-text: #c54804;
+	--csf-callout: #ffffff;
+	--csf-callout-ink: #1a1a1a;
+	--csf-callout-edge: rgba(11, 11, 12, 0.06);
+	--csf-callout-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+	--csf-card: #f6f4f0;
+	--csf-card-line: transparent;
+	--csf-hover: color-mix(in srgb, var(--csf-accent) 7%, transparent);
+	--csf-live: #1f9d55;
+}
+
+/* A callout colour picked without its text colour: the text follows it. */
+.avix-csf--callout-dark {
+	--csf-callout-ink: #f5f2ee;
+	--csf-callout-edge: rgba(255, 255, 255, 0.12);
+}
+
+.avix-csf--callout-light {
+	--csf-callout-ink: #1a1a1a;
+	--csf-callout-edge: rgba(11, 11, 12, 0.06);
+}
+
+/* A pale pin colour (or accent) picked without a numeral colour. */
+.avix-csf--pin-light {
+	--csf-pin-ink: #1a1a1a;
+}
+
+.avix-csf *,
+.avix-csf *::before,
+.avix-csf *::after {
+	box-sizing: border-box;
+}
+
+/* Spotlights that follow one another on the same background read as one
+   chapter: the follower drops its top padding and the gap between them is
+   the shorter bottom padding. :where() keeps this below the Style tab's own
+   padding, which always wins. */
+:where(.e-con:has(.avix-csf--theme-white) + .e-con:has(.avix-csf--theme-white)) .avix-csf,
+:where(.e-con:has(.avix-csf--theme-paper) + .e-con:has(.avix-csf--theme-paper)) .avix-csf,
+:where(.e-con:has(.avix-csf--theme-dark) + .e-con:has(.avix-csf--theme-dark)) .avix-csf,
+:where(.elementor-widget:has(.avix-csf--theme-white) + .elementor-widget:has(.avix-csf--theme-white)) .avix-csf,
+:where(.elementor-widget:has(.avix-csf--theme-paper) + .elementor-widget:has(.avix-csf--theme-paper)) .avix-csf,
+:where(.elementor-widget:has(.avix-csf--theme-dark) + .elementor-widget:has(.avix-csf--theme-dark)) .avix-csf {
+	padding-top: 0;
+}
+
+:where(.e-con:has(.avix-csf--theme-white):has(+ .e-con .avix-csf--theme-white)) .avix-csf,
+:where(.e-con:has(.avix-csf--theme-paper):has(+ .e-con .avix-csf--theme-paper)) .avix-csf,
+:where(.e-con:has(.avix-csf--theme-dark):has(+ .e-con .avix-csf--theme-dark)) .avix-csf,
+:where(.elementor-widget:has(.avix-csf--theme-white):has(+ .elementor-widget .avix-csf--theme-white)) .avix-csf,
+:where(.elementor-widget:has(.avix-csf--theme-paper):has(+ .elementor-widget .avix-csf--theme-paper)) .avix-csf,
+:where(.elementor-widget:has(.avix-csf--theme-dark):has(+ .elementor-widget .avix-csf--theme-dark)) .avix-csf {
+	padding-bottom: clamp(64px, 8vw, 120px);
+}
+
+/* Container queries style descendants only: tokens are reset on the inner wrapper.
+   The side gutter matches the Smart Header (5% of the width), so the text
+   starts on the header logo's line like every case-study section. */
+.avix-csf__inner {
+	--csf-gutter: max(18px, clamp(16px, 5cqi, 72px));
+	--csf-gap: clamp(32px, 4.4cqi, 72px);
+	--csf-sticky: calc(var(--avix-header-h, 0px) + 40px);
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	column-gap: var(--csf-gap);
+	align-items: start;
+	width: min(calc(100% - var(--csf-gutter) * 2), var(--csf-max));
+	margin-inline: auto;
+}
+
+/* ---------- Text column ---------- */
+
+/* Both columns are sticky: whichever is shorter stays in view while the
+   taller one scrolls past (the taller one has no room to move). */
+.avix-csf__text {
+	position: sticky;
+	top: var(--csf-sticky);
+	grid-row: 1;
+	grid-column: 1 / span 4;
+	min-width: 0;
+}
+
+.avix-csf--media-left .avix-csf__text {
+	grid-column: 9 / span 4;
+}
+
+.avix-csf.no-media .avix-csf__text {
+	position: relative;
+	top: auto;
+	grid-column: 1 / -1;
+	max-width: 760px;
+}
+
+.avix-csf .avix-csf__index {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 14px;
+	margin: 0 0 clamp(18px, 1.8cqi, 24px);
+	padding: 0;
+	color: var(--csf-muted);
+	font-family: var(--csf-font-display);
+	font-size: 14px;
+	line-height: 1;
+}
+
+.avix-csf__count {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+}
+
+/* A short hairline joins the counter to the tag. */
+.avix-csf__count:not(:last-child)::after {
+	display: block;
+	width: 26px;
+	height: 1px;
+	margin-left: 8px;
+	background: var(--csf-line);
+	content: "";
+}
+
+.avix-csf__count-now {
+	color: var(--csf-ink);
+	font-weight: 600;
+}
+
+.avix-csf__count-of {
+	color: var(--csf-muted);
+	font-weight: 500;
+}
+
+.avix-csf__tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 7px 12px 7px 10px;
+	border: 1px solid var(--csf-line);
+	border-radius: 999px;
+	color: var(--csf-ink-2);
+	font-family: var(--csf-font-body);
+	font-size: 11.5px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+/* The single orange pixel: the brand's mark on every case-study label. */
+.avix-csf__tag::before {
+	flex: none;
+	width: 6px;
+	height: 6px;
+	background: var(--csf-accent);
+	content: "";
+}
+
+.avix-csf .avix-csf__title {
+	margin: 0 0 clamp(22px, 2.2cqi, 30px);
+	padding: 0;
+	color: var(--csf-ink);
+	font-family: var(--csf-font-display);
+	font-size: clamp(24px, 2.6cqi, 38px);
+	font-weight: 600;
+	letter-spacing: -0.032em;
+	line-height: 1.1;
+	text-transform: none;
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+	hyphens: manual;
+}
+
+.avix-csf__accent {
+	color: var(--csf-accent-text);
+}
+
+.avix-csf .avix-csf__qa {
+	display: grid;
+	gap: clamp(20px, 2cqi, 26px);
+	margin: 0;
+	padding: 0;
+}
+
+.avix-csf .avix-csf__qa-row {
+	margin: 0;
+	padding: 0;
+}
+
+.avix-csf .avix-csf__qa dt {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin: 0 0 9px;
+	padding: 0;
+	color: var(--csf-muted);
+	font-family: var(--csf-font-body);
+	font-size: 11.5px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	line-height: 1.3;
+	text-transform: uppercase;
+}
+
+/* Problem: a hollow pixel. What we built: the same pixel, filled. */
+.avix-csf .avix-csf__qa dt::before {
+	flex: none;
+	width: 7px;
+	height: 7px;
+	border: 1.5px solid currentColor;
+	content: "";
+}
+
+.avix-csf .avix-csf__qa-row--built dt::before {
+	border-color: var(--csf-accent);
+	background: var(--csf-accent);
+}
+
+.avix-csf .avix-csf__qa dd {
+	max-width: 52ch;
+	margin: 0;
+	padding: 0;
+	color: var(--csf-muted);
+	font-family: var(--csf-font-body);
+	font-size: clamp(15.5px, 1.24cqi, 17px);
+	font-weight: 400;
+	line-height: 1.7;
+	text-wrap: pretty;
+	overflow-wrap: anywhere;
+}
+
+.avix-csf .avix-csf__qa-row--built dd {
+	color: var(--csf-ink-2);
+}
+
+.avix-csf .avix-csf__qa dd p {
+	margin: 0;
+	padding: 0;
+	color: inherit;
+	font: inherit;
+}
+
+.avix-csf .avix-csf__qa dd p + p {
+	margin-top: 0.7em;
+}
+
+.avix-csf .avix-csf__qa dd strong {
+	color: var(--csf-ink);
+	font-weight: 600;
+}
+
+.avix-csf .avix-csf__qa dd a,
+.avix-csf .avix-csf__qa dd a:visited {
+	color: var(--csf-accent-text);
+	font-weight: 500;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--csf-accent-text) 35%, transparent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	transition: text-decoration-color 0.25s ease;
+}
+
+@media (hover: hover) {
+	.avix-csf .avix-csf__qa dd a:hover {
+		color: var(--csf-accent-text);
+		text-decoration-color: currentColor;
+	}
+}
+
+/* ---------- Legend ---------- */
+
+.avix-csf .avix-csf__legend {
+	display: grid;
+	gap: 2px;
+	margin: clamp(26px, 2.6cqi, 34px) 0 0;
+	padding: clamp(18px, 1.8cqi, 22px) 0 0;
+	border-top: 1px solid var(--csf-line);
+	list-style: none;
+}
+
+.avix-csf .avix-csf__legend-item {
+	display: grid;
+	grid-template-columns: 24px minmax(0, 1fr);
+	gap: 14px;
+	align-items: start;
+	margin: 0 -12px;
+	padding: 10px 12px;
+	border-radius: 12px;
+	list-style: none;
+	transition: background-color 0.25s ease;
+}
+
+.avix-csf .avix-csf__legend-item::before,
+.avix-csf .avix-csf__legend-item::marker {
+	display: none;
+	content: none;
+}
+
+.avix-csf .avix-csf__num {
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	margin-top: -1px;
+	border-radius: 5px;
+	color: var(--csf-pin-ink);
+	background: var(--csf-pin);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--csf-pin) 16%, transparent);
+	font-family: var(--csf-font-display);
+	font-size: 12px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+	transition: box-shadow 0.25s ease, transform 0.3s var(--csf-ease);
+}
+
+.avix-csf .avix-csf__legend-text {
+	display: block;
+	min-width: 0;
+	font-family: var(--csf-font-body);
+	font-size: 15px;
+	line-height: 1.45;
+}
+
+.avix-csf .avix-csf__legend-label {
+	display: block;
+	color: var(--csf-ink);
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+
+.avix-csf .avix-csf__legend-detail {
+	display: block;
+	margin-top: 2px;
+	color: var(--csf-muted);
+	font-size: 0.94em;
+	line-height: 1.55;
+	overflow-wrap: anywhere;
+}
+
+/* A legend item and its pin light up together (JS sets .is-active). */
+.avix-csf .avix-csf__legend-item.is-active {
+	background: var(--csf-hover);
+}
+
+/* An outline, not a ring in the section colour: it stays clean on a card. */
+.avix-csf .avix-csf__legend-item.is-active .avix-csf__num {
+	outline: 2px solid var(--csf-pin);
+	outline-offset: 2px;
+	box-shadow: none;
+	transform: scale(1.06);
+}
+
+.avix-csf.is-ready .avix-csf__legend-item {
+	cursor: default;
+}
+
+.avix-csf .avix-csf__legend-item:focus {
+	outline: none;
+}
+
+.avix-csf .avix-csf__legend-item:focus-visible {
+	outline: 2px solid var(--csf-accent);
+	outline-offset: 2px;
+}
+
+/* ---------- Meta line ---------- */
+
+.avix-csf .avix-csf__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 22px;
+	margin: clamp(22px, 2.4cqi, 30px) 0 0;
+	padding: 0;
+	color: var(--csf-muted);
+	font-family: var(--csf-font-body);
+	font-size: 14px;
+	line-height: 1.4;
+}
+
+.avix-csf__attr {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+}
+
+.avix-csf__attr-dot {
+	flex: none;
+	width: 7px;
+	height: 7px;
+	background: var(--csf-accent);
+}
+
+/* Observed on the live site: a green "live" pixel with a soft halo. */
+.avix-csf__attr--observed .avix-csf__attr-dot {
+	background: var(--csf-live);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--csf-live) 20%, transparent);
+}
+
+.avix-csf .avix-csf__link,
+.avix-csf .avix-csf__link:visited {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+	padding: 2px 0;
+	border: 0;
+	color: var(--csf-ink);
+	background: none;
+	box-shadow: none;
+	font-weight: 600;
+	text-decoration: none;
+	text-transform: none;
+}
+
+.avix-csf .avix-csf__link-text {
+	background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px;
+	transition: background-size 0.35s var(--csf-ease);
+}
+
+.avix-csf .avix-csf__link .avix-csk-arrow {
+	width: 14px;
+	height: 14px;
+	color: var(--csf-accent-text);
+	transition: transform 0.3s var(--csf-ease);
+}
+
+@media (hover: hover) {
+	.avix-csf .avix-csf__link:hover {
+		color: var(--csf-ink);
+		text-decoration: none;
+	}
+
+	.avix-csf .avix-csf__link:hover .avix-csf__link-text {
+		background-size: 100% 1px;
+	}
+
+	.avix-csf .avix-csf__link:hover .avix-csk-arrow {
+		transform: translate(2px, -2px);
+	}
+}
+
+.avix-csf .avix-csf__link:focus-visible,
+.avix-csf .avix-csf__full:focus-visible {
+	outline: 2px solid var(--csf-accent);
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+/* ---------- Media ---------- */
+
+/* The theme clips every <figure> (overflow: hidden), which would cut the
+   frame shadow and the pins' rings. */
+.avix-csf .avix-csf__media {
+	--csk-phone-w: min(100%, var(--csf-visual-max, 340px));
+	--csk-plain-w: min(100%, var(--csf-visual-max, 460px));
+	position: sticky;
+	top: var(--csf-sticky);
+	grid-row: 1;
+	grid-column: 5 / span 8;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	overflow: visible;
+	border: 0;
+	background: none;
+}
+
+.avix-csf--media-left .avix-csf__media {
+	grid-column: 1 / span 8;
+}
+
+.avix-csf--browser .avix-csf__media .avix-csk-frame {
+	max-width: var(--csf-visual-max, 100%);
+	margin-inline: auto;
+}
+
+/* Mats follow the theme. On Paper the paper mat (and a tint of a pale
+   brand colour) would melt into the section, so both lift onto white with
+   a hairline. */
+.avix-csf--theme-paper:not(.avix-csk-on-dark) .avix-csk-mat--paper {
+	--csk-mat-bg: #ffffff;
+	--csk-cover: #ffffff;
+}
+
+.avix-csf--theme-paper:not(.avix-csk-on-dark) .avix-csk-mat--tint {
+	--csk-mat-bg: color-mix(in srgb, var(--csk-accent, #f5f3ef) 22%, #ffffff);
+	--csk-cover: color-mix(in srgb, var(--csk-accent, #f5f3ef) 22%, #ffffff);
+}
+
+.avix-csf--theme-paper:not(.avix-csk-on-dark) .avix-csk-mat--paper::before,
+.avix-csf--theme-paper:not(.avix-csk-on-dark) .avix-csk-mat--tint::before {
+	border: 1px solid rgba(26, 26, 26, 0.07);
+}
+
+/* Dark tone: every mat becomes a dark surface (the Mat setting still picks
+   its shade) and the frames switch to dark chrome. The kit's light mats set
+   light chrome on themselves, so the dark tokens are restated here. Mats
+   are mixed from the section colour, so a dark Background picked in the
+   Style tab (navy, say) gets a matching navy mat, not a black hole. */
+.avix-csf.avix-csk-on-dark .avix-csk-mat {
+	--csk-chrome: #151618;
+	--csk-chrome-line: rgba(255, 255, 255, 0.1);
+	--csk-chrome-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+	--csk-bar: #1c1d20;
+	--csk-dot: #3a3b3f;
+	--csk-pill: #26272b;
+	--csk-pill-ink: rgba(255, 255, 255, 0.66);
+	--csk-screen-bg: #121315;
+	--csk-phone-ring: 0 0 0 1px rgba(255, 255, 255, 0.12);
+	--csk-phone-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.85);
+	--csk-mat-bg: color-mix(in srgb, #ffffff 5%, var(--csf-bg));
+	--csk-cover: color-mix(in srgb, #ffffff 5%, var(--csf-bg));
+}
+
+.avix-csf.avix-csk-on-dark .avix-csk-mat::before {
+	border: 0;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.avix-csf.avix-csk-on-dark .avix-csk-mat--white {
+	--csk-mat-bg: color-mix(in srgb, #ffffff 9%, var(--csf-bg));
+	--csk-cover: color-mix(in srgb, #ffffff 9%, var(--csf-bg));
+}
+
+.avix-csf.avix-csk-on-dark .avix-csk-mat--tint {
+	--csk-mat-bg: color-mix(in srgb, var(--csk-accent, #fb6007) 15%, var(--csf-bg));
+	--csk-cover: color-mix(in srgb, var(--csk-accent, #fb6007) 15%, var(--csf-bg));
+}
+
+.avix-csf.avix-csk-on-dark .avix-csk-mat--dark {
+	--csk-mat-bg: color-mix(in srgb, #000000 35%, var(--csf-bg));
+	--csk-cover: color-mix(in srgb, #000000 35%, var(--csf-bg));
+}
+
+/* The screenshot is never cropped: full width, natural height. */
+.avix-csf .avix-csf__media .avix-csk-frame__screen img {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-width: none;
+}
+
+/* ---------- Pins ---------- */
+
+.avix-csf .avix-csf__pins {
+	position: absolute;
+	inset: 0;
+	z-index: 4;
+	margin: 0;
+	padding: 0;
+	pointer-events: none;
+}
+
+/* A 28px rounded square: the pixel motif. Positions are percentages of the
+   screenshot; the clamp only keeps a pin within the frame on tiny screens.
+   --csf-ex/--csf-ey come from the editor's sliders (instant preview) and
+   equal --x/--y on the page.
+   --csf-dx/--csf-dy are set by the script when two pins would touch, and
+   --csf-hit (half the touch target) shrinks between close pins so each
+   pin's own centre always lands on that pin. Earlier pins sit on top.
+   Heavy reset: theme and Elementor-kit button styles must not leak in. */
+.avix-csf .avix-csf__pin {
+	--csf-pin-size: 28px;
+	--csf-pin-edge: calc(var(--csf-pin-size) / 2 + 4px);
+	--csf-hit: 22px;
+	position: absolute;
+	top: clamp(var(--csf-pin-edge), var(--csf-ey, var(--y, 50%)), calc(100% - var(--csf-pin-edge)));
+	left: clamp(var(--csf-pin-edge), var(--csf-ex, var(--x, 50%)), calc(100% - var(--csf-pin-edge)));
+	z-index: calc(20 - var(--n, 0));
+	display: grid;
+	place-items: center;
+	width: var(--csf-pin-size);
+	height: var(--csf-pin-size);
+	min-width: 0;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	color: var(--csf-pin-ink);
+	background: var(--csf-pin);
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--csf-pin) 22%, transparent), 0 6px 16px -4px rgba(0, 0, 0, 0.35);
+	font-family: var(--csf-font-display);
+	font-size: 13px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0;
+	line-height: 1;
+	text-align: center;
+	text-decoration: none;
+	text-shadow: none;
+	text-transform: none;
+	cursor: pointer;
+	pointer-events: auto;
+	translate: calc(-50% + var(--csf-dx, 0px)) calc(-50% + var(--csf-dy, 0px));
+	-webkit-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+	transition: scale 0.25s var(--csf-ease), box-shadow 0.25s ease;
+}
+
+/* In the editor a slider move changes left/top: the near-instant transition
+   gives the script a transitionend to re-check close pins. */
+.avix-csf.is-editor .avix-csf__pin {
+	transition: scale 0.25s var(--csf-ease), box-shadow 0.25s ease, left 1ms linear, top 1ms linear;
+}
+
+.avix-csf .avix-csf__pin:hover,
+.avix-csf .avix-csf__pin:focus,
+.avix-csf .avix-csf__pin:active {
+	color: var(--csf-pin-ink);
+	background: var(--csf-pin);
+	text-decoration: none;
+}
+
+/* 44px touch target (smaller only between pins that sit close). */
+.avix-csf .avix-csf__pin::before {
+	position: absolute;
+	inset: calc(var(--csf-pin-size) / 2 - var(--csf-hit));
+	border-radius: 10px;
+	content: "";
+}
+
+/* Pulse: a ring that breathes. Opacity only, so it runs on the compositor. */
+.avix-csf .avix-csf__pin::after {
+	position: absolute;
+	inset: -8px;
+	border: 2px solid color-mix(in srgb, var(--csf-pin) 70%, transparent);
+	border-radius: 11px;
+	opacity: 0;
+	pointer-events: none;
+	content: "";
+}
+
+.avix-csf--pulse .avix-csf__pin::after {
+	animation: avix-csf-pulse 2.4s ease-in-out infinite;
+	animation-delay: calc(var(--n, 0) * 0.32s);
+}
+
+.avix-csf .avix-csf__pin-num {
+	display: block;
+	pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.avix-csf .avix-csf__pin:hover {
+		scale: 1.08;
+	}
+}
+
+.avix-csf .avix-csf__pin.is-active,
+.avix-csf .avix-csf__pin[aria-expanded="true"] {
+	z-index: 30;
+	scale: 1.12;
+	box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px color-mix(in srgb, var(--csf-pin) 42%, transparent), 0 10px 22px -6px rgba(0, 0, 0, 0.45);
+}
+
+.avix-csf .avix-csf__pin.is-active::after,
+.avix-csf .avix-csf__pin[aria-expanded="true"]::after {
+	animation: none;
+	opacity: 0;
+}
+
+.avix-csf .avix-csf__pin:focus {
+	outline: none;
+}
+
+.avix-csf .avix-csf__pin:focus-visible {
+	z-index: 30;
+	outline: 2px solid var(--csf-pin);
+	outline-offset: 7px;
+	scale: 1.12;
+	box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px color-mix(in srgb, var(--csf-pin) 42%, transparent), 0 10px 22px -6px rgba(0, 0, 0, 0.45);
+}
+
+/* Pixel squares: quieter markers, a white pixel in an orange one. */
+.avix-csf.avix-csf--squares .avix-csf__pin {
+	--csf-pin-size: 22px;
+	border-radius: 4px;
+}
+
+.avix-csf--squares .avix-csf__pin-num {
+	width: 8px;
+	height: 8px;
+	background: var(--csf-pin-ink);
+}
+
+/* ---------- Callout ---------- */
+
+/* One shared callout per spotlight, filled by JS from the legend, placed on
+   the side of the pin with the most room and never over it. */
+.avix-csf .avix-csf__callout {
+	--csf-tail: 50%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 30;
+	display: grid;
+	grid-template-columns: 20px minmax(0, 1fr);
+	gap: 10px;
+	align-items: start;
+	width: max-content;
+	max-width: min(280px, calc(100% - 24px));
+	margin: 0;
+	padding: 12px 14px 12px 12px;
+	border-radius: 14px;
+	color: var(--csf-callout-ink);
+	background: var(--csf-callout);
+	box-shadow: var(--csf-callout-shadow), 0 0 0 1px var(--csf-callout-edge);
+	font-family: var(--csf-font-body);
+	text-align: left;
+	pointer-events: none;
+	opacity: 0;
+	transform: translate(var(--csf-from-x, 0), var(--csf-from-y, 0)) scale(0.96);
+	transition: opacity 0.16s ease, transform 0.28s var(--csf-ease);
+}
+
+.avix-csf .avix-csf__callout[hidden] {
+	display: none;
+}
+
+.avix-csf .avix-csf__callout.is-open {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-csf__callout[data-place="top"] {
+	--csf-from-y: 6px;
+}
+
+.avix-csf__callout[data-place="bottom"] {
+	--csf-from-y: -6px;
+}
+
+.avix-csf__callout[data-place="right"] {
+	--csf-from-x: -6px;
+}
+
+.avix-csf__callout[data-place="left"] {
+	--csf-from-x: 6px;
+}
+
+/* The tail: a stepped pixel arrow (two 4px steps) pointing at the pin. */
+.avix-csf .avix-csf__callout::after {
+	position: absolute;
+	width: 12px;
+	height: 8px;
+	background: inherit;
+	content: "";
+}
+
+.avix-csf__callout[data-place="top"]::after {
+	top: 100%;
+	left: calc(var(--csf-tail) - 6px);
+	clip-path: polygon(0 0, 100% 0, 100% 50%, 66.67% 50%, 66.67% 100%, 33.33% 100%, 33.33% 50%, 0 50%);
+}
+
+.avix-csf__callout[data-place="bottom"]::after {
+	bottom: 100%;
+	left: calc(var(--csf-tail) - 6px);
+	clip-path: polygon(33.33% 0, 66.67% 0, 66.67% 50%, 100% 50%, 100% 100%, 0 100%, 0 50%, 33.33% 50%);
+}
+
+.avix-csf__callout[data-place="right"]::after {
+	top: calc(var(--csf-tail) - 6px);
+	right: 100%;
+	width: 8px;
+	height: 12px;
+	clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%, 50% 66.67%, 0 66.67%, 0 33.33%, 50% 33.33%);
+}
+
+.avix-csf__callout[data-place="left"]::after {
+	top: calc(var(--csf-tail) - 6px);
+	left: 100%;
+	width: 8px;
+	height: 12px;
+	clip-path: polygon(0 0, 50% 0, 50% 33.33%, 100% 33.33%, 100% 66.67%, 50% 66.67%, 50% 100%, 0 100%);
+}
+
+.avix-csf .avix-csf__callout-num {
+	display: grid;
+	place-items: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 4px;
+	color: var(--csf-pin-ink);
+	background: var(--csf-pin);
+	font-family: var(--csf-font-display);
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.avix-csf .avix-csf__callout-body {
+	display: block;
+	min-width: 0;
+	padding-top: 1px;
+}
+
+.avix-csf .avix-csf__callout-label {
+	display: block;
+	color: var(--csf-callout-ink);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.35;
+	overflow-wrap: anywhere;
+}
+
+.avix-csf .avix-csf__callout-detail {
+	display: block;
+	margin-top: 3px;
+	color: var(--csf-callout-muted);
+	font-size: 13.5px;
+	font-weight: 400;
+	line-height: 1.5;
+	overflow-wrap: anywhere;
+}
+
+/* ---------- Lightbox link ---------- */
+
+.avix-csf .avix-csf__full,
+.avix-csf .avix-csf__full:visited {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: fit-content;
+	margin: 16px 4px 0 auto;
+	padding: 4px 0;
+	border: 0;
+	color: var(--csf-muted);
+	background: none;
+	box-shadow: none;
+	font-family: var(--csf-font-body);
+	font-size: 13.5px;
+	font-weight: 600;
+	line-height: 1.3;
+	text-decoration: none;
+	text-transform: none;
+	transition: color 0.25s ease;
+}
+
+.avix-csf--phone .avix-csf__full,
+.avix-csf--plain .avix-csf__full {
+	margin-inline: auto;
+}
+
+.avix-csf .avix-csf__full-icon {
+	display: grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border: 1px solid var(--csf-line);
+	border-radius: 8px;
+	transition: border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+}
+
+.avix-csf .avix-csf__full-icon svg,
+.avix-csf .avix-csf__placeholder-icon svg,
+.avix-csf__dialog .avix-csf__dialog-close svg {
+	display: block;
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+@media (hover: hover) {
+	.avix-csf .avix-csf__full:hover {
+		color: var(--csf-ink);
+		text-decoration: none;
+	}
+
+	.avix-csf .avix-csf__full:hover .avix-csf__full-icon {
+		border-color: var(--csf-accent);
+		color: var(--csf-on-accent);
+		background: var(--csf-accent);
+	}
+}
+
+/* ---------- Builder placeholder ---------- */
+
+.avix-csf .avix-csf__placeholder {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	aspect-ratio: 16 / 10;
+	padding: 24px;
+	border: 2px dashed color-mix(in srgb, var(--csf-ink) 18%, transparent);
+	border-radius: 28px;
+	color: var(--csf-muted);
+	background: var(--csf-card);
+	text-align: center;
+}
+
+.avix-csf .avix-csf__placeholder--phone {
+	width: min(100%, 340px);
+	aspect-ratio: 9 / 16;
+	margin-inline: auto;
+}
+
+.avix-csf .avix-csf__placeholder-icon {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 12px;
+	color: var(--csf-on-accent);
+	background: var(--csf-accent);
+}
+
+.avix-csf .avix-csf__placeholder-icon svg {
+	width: 22px;
+	height: 22px;
+}
+
+.avix-csf .avix-csf__placeholder-text {
+	color: var(--csf-ink);
+	font-family: var(--csf-font-display);
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.avix-csf .avix-csf__placeholder-hint {
+	max-width: 36ch;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+/* ---------- Lightbox ---------- */
+
+/* Native <dialog> in the top layer: focus stays inside, Escape closes. */
+.avix-csf .avix-csf__dialog {
+	position: fixed;
+	inset: 0;
+	width: min(1600px, calc(100vw - 32px));
+	max-width: none;
+	height: calc(100vh - 32px);
+	height: calc(100dvh - 32px);
+	max-height: none;
+	margin: auto;
+	padding: 0;
+	overflow: hidden;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 22px;
+	color: #ffffff;
+	background: #111214;
+	box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
+	font-family: var(--csf-font-body);
+}
+
+.avix-csf .avix-csf__dialog[open] {
+	display: flex;
+	flex-direction: column;
+	animation: avix-csf-dialog 0.32s var(--csf-ease) both;
+}
+
+.avix-csf .avix-csf__dialog::backdrop {
+	background: rgba(8, 8, 9, 0.84);
+}
+
+.avix-csf__dialog .avix-csf__dialog-bar {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin: 0;
+	padding: 10px 10px 10px 22px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.avix-csf__dialog .avix-csf__dialog-cap {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	color: rgba(255, 255, 255, 0.72);
+	font-size: 14px;
+	line-height: 1.4;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.avix-csf__dialog .avix-csf__dialog-cap::before {
+	flex: none;
+	width: 7px;
+	height: 7px;
+	background: var(--csf-accent);
+	content: "";
+}
+
+.avix-csf__dialog .avix-csf__dialog-close {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.08);
+	box-shadow: none;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+	transition: background-color 0.2s ease, transform 0.3s var(--csf-ease);
+}
+
+.avix-csf__dialog .avix-csf__dialog-close:hover,
+.avix-csf__dialog .avix-csf__dialog-close:focus,
+.avix-csf__dialog .avix-csf__dialog-close:active {
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.avix-csf__dialog .avix-csf__dialog-close svg {
+	width: 18px;
+	height: 18px;
+}
+
+@media (hover: hover) {
+	.avix-csf__dialog .avix-csf__dialog-close:hover {
+		background: var(--csf-accent);
+		transform: rotate(90deg);
+	}
+}
+
+.avix-csf__dialog .avix-csf__dialog-close:focus-visible {
+	outline: 2px solid var(--csf-accent);
+	outline-offset: 3px;
+}
+
+.avix-csf__dialog .avix-csf__dialog-body {
+	flex: 1 1 auto;
+	min-height: 0;
+	margin: 0;
+	padding: clamp(12px, 2.4vw, 32px);
+	overflow: auto;
+	overscroll-behavior: contain;
+}
+
+.avix-csf__dialog .avix-csf__dialog-body:focus-visible {
+	outline: 2px solid var(--csf-accent);
+	outline-offset: -4px;
+}
+
+.avix-csf__dialog .avix-csf__dialog-img {
+	display: block;
+	width: 100%;
+	max-width: var(--csf-dialog-w, 100%);
+	height: auto;
+	margin: 0 auto;
+	padding: 0;
+	border: 0;
+	border-radius: 12px;
+	background: #1b1c1f;
+}
+
+/* ---------- Visually hidden (WordPress core's class, not on every theme) ---------- */
+
+.avix-csf .screen-reader-text {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	margin: -1px !important;
+	padding: 0 !important;
+	overflow: hidden !important;
+	clip: rect(0, 0, 0, 0) !important;
+	clip-path: inset(50%) !important;
+	border: 0 !important;
+	white-space: nowrap !important;
+	word-wrap: normal !important;
+}
+
+/* ---------- Reveal ---------- */
+
+/* Content is visible by default; JS arms the reveal only when motion is on. */
+.avix-csf.is-armed [data-csf-reveal] {
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 0.7s ease, transform 0.8s var(--csf-ease);
+	transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+.avix-csf.is-armed.is-in [data-csf-reveal] {
+	opacity: 1;
+	transform: none;
+}
+
+/* The mat is quick to appear so the pixel reveal on its screen reads clearly. */
+.avix-csf.is-armed [data-csf-media] {
+	opacity: 0;
+	transform: translateY(32px);
+	transition: opacity 0.45s ease 0.05s, transform 0.8s var(--csf-ease) 0.05s;
+}
+
+.avix-csf.is-armed.is-in [data-csf-media] {
+	opacity: 1;
+	transform: none;
+}
+
+/* Pins pop in sequence once the screenshot has resolved. */
+.avix-csf.is-armed .avix-csf__pin {
+	opacity: 0;
+	transform: scale(0.4);
+}
+
+.avix-csf.is-armed.is-pins .avix-csf__pin {
+	opacity: 1;
+	transform: none;
+	transition:
+		transform 0.42s var(--csf-pop) calc(var(--csf-pins-wait, 0ms) + var(--n, 0) * 90ms),
+		opacity 0.2s ease calc(var(--csf-pins-wait, 0ms) + var(--n, 0) * 90ms),
+		scale 0.25s var(--csf-ease),
+		box-shadow 0.25s ease;
+}
+
+/* Pulses start after the pop. */
+.avix-csf.is-armed:not(.is-pins) .avix-csf__pin::after {
+	animation: none;
+}
+
+.avix-csf.is-armed.is-pins.avix-csf--pulse .avix-csf__pin::after {
+	animation-delay: calc(var(--csf-pins-wait, 0ms) + 0.6s + var(--n, 0) * 0.32s);
+}
+
+/* Off screen or in a hidden tab: a state override that must beat every animation shorthand. */
+.avix-csf.is-off *,
+.avix-csf.is-off *::before,
+.avix-csf.is-off *::after {
+	animation-play-state: paused !important;
+}
+
+/* Flash the legend card a tapped pin points to (phones). */
+.avix-csf .avix-csf__legend-item.is-flash {
+	animation: avix-csf-flash 1.6s var(--csf-ease) both;
+}
+
+/* No entrance replays while editing in Elementor. */
+.elementor-editor-active .avix-csf [data-csf-reveal],
+.elementor-editor-active .avix-csf [data-csf-media],
+.elementor-editor-active .avix-csf .avix-csf__pin {
+	opacity: 1;
+	transform: none;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-csf-pulse {
+	0%,
+	100% {
+		opacity: 0;
+	}
+
+	45% {
+		opacity: 0.9;
+	}
+}
+
+@keyframes avix-csf-flash {
+	0%,
+	70% {
+		background-color: color-mix(in srgb, var(--csf-accent) 14%, var(--csf-card));
+		box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--csf-accent) 55%, transparent);
+	}
+
+	100% {
+		box-shadow: inset 0 0 0 1.5px transparent;
+	}
+}
+
+@keyframes avix-csf-dialog {
+	from {
+		opacity: 0;
+		transform: translateY(14px) scale(0.985);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* ---------- Medium: 5 / 7 ---------- */
+
+@container avix-csf (max-width: 1024px) {
+	.avix-csf__text {
+		grid-column: 1 / span 5;
+	}
+
+	.avix-csf--media-left .avix-csf__text {
+		grid-column: 8 / span 5;
+	}
+
+	.avix-csf .avix-csf__media {
+		grid-column: 6 / span 7;
+	}
+
+	.avix-csf--media-left .avix-csf__media {
+		grid-column: 1 / span 7;
+	}
+
+	.avix-csf .avix-csf__title {
+		font-size: clamp(24px, 2.9cqi, 30px);
+	}
+}
+
+/* ---------- Stacked: text, screenshot, legend ---------- */
+
+@container avix-csf (max-width: 860px) {
+	.avix-csf__inner {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	/* The text column steps aside so the screenshot can sit between the
+	   copy and the legend. */
+	.avix-csf__text,
+	.avix-csf.no-media .avix-csf__text {
+		display: contents;
+	}
+
+	.avix-csf .avix-csf__index {
+		order: 1;
+	}
+
+	.avix-csf .avix-csf__title {
+		order: 2;
+		max-width: 24ch;
+		font-size: clamp(26px, 4.6cqi, 36px);
+	}
+
+	.avix-csf .avix-csf__qa {
+		order: 3;
+	}
+
+	.avix-csf .avix-csf__qa dd {
+		max-width: 62ch;
+	}
+
+	.avix-csf .avix-csf__media {
+		position: relative;
+		top: auto;
+		order: 4;
+		width: 100%;
+		/* Padding, not margin: Elementor zeroes every figure margin in a widget. */
+		padding-top: clamp(32px, 5cqi, 44px);
+	}
+
+	.avix-csf .avix-csf__legend {
+		order: 5;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+		margin-top: 22px;
+		padding-top: 0;
+		border-top: 0;
+	}
+
+	/* An odd last card takes the full row, so the grid never ends on a gap. */
+	.avix-csf .avix-csf__legend-item:last-child:nth-child(odd) {
+		grid-column: 1 / -1;
+	}
+
+	/* Numbered cards. */
+	.avix-csf .avix-csf__legend-item {
+		margin: 0;
+		padding: 14px 16px;
+		border: 1px solid var(--csf-card-line);
+		border-radius: 14px;
+		background: var(--csf-card);
+	}
+
+	.avix-csf .avix-csf__legend-item.is-active {
+		background: color-mix(in srgb, var(--csf-accent) 8%, var(--csf-card));
+	}
+
+	.avix-csf .avix-csf__meta {
+		order: 6;
+	}
+}
+
+/* ---------- Phones: no floating callouts, cards instead ----------
+   Same order as tablets (text, screenshot, legend). Pins step down a little
+   on the narrower screenshot; the script still keeps close ones apart. */
+
+@container avix-csf (max-width: 600px) {
+	.avix-csf .avix-csf__index {
+		margin-bottom: 16px;
+	}
+
+	.avix-csf .avix-csf__title {
+		font-size: clamp(25px, 7.2cqi, 30px);
+		line-height: 1.12;
+	}
+
+	.avix-csf .avix-csf__qa dd {
+		font-size: 16px;
+		line-height: 1.68;
+	}
+
+	.avix-csf .avix-csf__media {
+		padding-top: 30px;
+	}
+
+	.avix-csf .avix-csf__media .avix-csk-mat {
+		padding: 12px;
+	}
+
+	.avix-csf .avix-csf__legend {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 8px;
+		margin-top: 18px;
+	}
+
+	.avix-csf .avix-csf__pin {
+		--csf-pin-size: 24px;
+		border-radius: 5px;
+		font-size: 12px;
+	}
+
+	.avix-csf .avix-csf__pin::after {
+		inset: -6px;
+		border-radius: 9px;
+	}
+
+	.avix-csf.avix-csf--squares .avix-csf__pin {
+		--csf-pin-size: 20px;
+	}
+
+	.avix-csf--squares .avix-csf__pin-num {
+		width: 7px;
+		height: 7px;
+	}
+
+	.avix-csf .avix-csf__legend-item:last-child:nth-child(odd) {
+		grid-column: auto;
+	}
+
+	.avix-csf .avix-csf__legend-item {
+		gap: 12px;
+		padding: 13px 14px;
+	}
+
+	.avix-csf .avix-csf__full {
+		margin-top: 12px;
+		margin-inline: auto;
+	}
+
+	.avix-csf .avix-csf__meta {
+		gap: 10px 14px;
+		font-size: 13.5px;
+	}
+
+	.avix-csf .avix-csf__placeholder {
+		border-radius: 20px;
+	}
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-csf *,
+	.avix-csf *::before,
+	.avix-csf *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-csf.is-armed [data-csf-reveal],
+	.avix-csf.is-armed [data-csf-media],
+	.avix-csf.is-armed .avix-csf__pin {
+		opacity: 1;
+		transform: none;
+	}
+
+	.avix-csf .avix-csf__pin::after {
+		opacity: 0;
+	}
+}

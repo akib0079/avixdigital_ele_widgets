@@ -560,22 +560,23 @@ class Intro_Text extends Widget_Base {
 	 */
 	private function default_keywords() {
 		$site = 'https://avixdigital.com/wp-content/uploads/';
-		$akib = 'https://akib.avixdigital.com/wp-content/uploads/2023/10/';
+		// The deck card that used to be hotlinked from the old portfolio subdomain, now on the main site.
+		$card = $site . '2026/10/avixdigital-intro-card.webp';
 		return array(
 			array(
 				'word'    => 'products',
 				'style'   => 'deck',
 				'image_1' => array( 'url' => $site . '2026/03/Untitled-design227.webp' ),
-				'image_2' => array( 'url' => $akib . 'imgi_190_Mask_group_13.webp' ),
+				'image_2' => array( 'url' => $card ),
 				'image_3' => array( 'url' => $site . '2026/03/Untitled-design227.webp' ),
 				'line'    => 'Our favourite builds 👀',
 			),
 			array(
 				'word'    => 'ecommerce',
 				'style'   => 'deck',
-				'image_1' => array( 'url' => $akib . 'imgi_42_6869c5c83b72adb273e48eb3_Mask-group-2-scaled.webp' ),
+				'image_1' => array( 'url' => $card ),
 				'image_2' => array( 'url' => $site . '2026/06/Untitled-design235.png' ),
-				'image_3' => array( 'url' => $akib . 'imgi_42_6869c5c83b72adb273e48eb3_Mask-group-2-scaled.webp' ),
+				'image_3' => array( 'url' => $card ),
 				'line'    => 'Stores that actually sell 🛒',
 			),
 			array(

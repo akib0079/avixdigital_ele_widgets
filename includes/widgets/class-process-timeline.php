@@ -146,6 +146,23 @@ class Process_Timeline extends Widget_Base {
 				'dynamic' => array( 'active' => true ),
 			)
 		);
+		$repeater->add_control(
+			'art',
+			array(
+				'label'       => esc_html__( 'Pixel picture', 'avix-widgets' ),
+				'description' => esc_html__( 'Drawn in the empty half beside the step. Automatic: sitemap first, launch last, wireframe and code between.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'auto',
+				'options'     => array(
+					'auto'      => esc_html__( 'Automatic', 'avix-widgets' ),
+					'brief'     => esc_html__( 'Sitemap (planning)', 'avix-widgets' ),
+					'wireframe' => esc_html__( 'Wireframe (design)', 'avix-widgets' ),
+					'code'      => esc_html__( 'Code (build)', 'avix-widgets' ),
+					'launch'    => esc_html__( 'Live site (launch)', 'avix-widgets' ),
+					'none'      => esc_html__( 'None', 'avix-widgets' ),
+				),
+			)
+		);
 
 		$this->add_control(
 			'steps',
@@ -266,6 +283,16 @@ class Process_Timeline extends Widget_Base {
 				'label'   => esc_html__( 'Corner glows', 'avix-widgets' ),
 				'type'    => Controls_Manager::SWITCHER,
 				'default' => 'yes',
+			)
+		);
+
+		$this->add_control(
+			'show_art',
+			array(
+				'label'       => esc_html__( 'Pixel pictures', 'avix-widgets' ),
+				'description' => esc_html__( 'A faint pixel picture beside each step that fills in when the character reaches it. Wide layout only.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
 			)
 		);
 
@@ -586,6 +613,8 @@ class Process_Timeline extends Widget_Base {
 						<span class="avix-pt__ledge"></span>
 					</div>
 
+					<?php $this->render_art( $s, $steps, $geo ); ?>
+
 					<ol class="avix-pt__steps">
 						<?php foreach ( $steps as $i => $step ) : ?>
 							<li class="avix-pt__step avix-pt__step--<?php echo 0 === $i % 2 ? 'left' : 'right'; ?>" data-pt-step style="--pt-top: <?php echo esc_attr( round( $geo['centers'][ $i ] / $geo['h'] * 100, 3 ) ); ?>%;">
@@ -636,6 +665,33 @@ class Process_Timeline extends Widget_Base {
 			</div>
 		</section>
 		<?php
+	}
+
+	/**
+	 * Pixel pictures in the empty half of each loop (opposite the step text).
+	 * The script draws them on a canvas; until it runs they take no space.
+	 */
+	private function render_art( array $s, array $steps, array $geo ) {
+		if ( 'yes' !== ( $s['show_art'] ?? 'yes' ) ) {
+			return;
+		}
+		$count = count( $steps );
+		foreach ( $steps as $i => $step ) {
+			$art = $step['art'] ?? 'auto';
+			if ( 'auto' === $art || ! in_array( $art, array( 'brief', 'wireframe', 'code', 'launch', 'none' ), true ) ) {
+				$art = 0 === $i ? 'brief' : ( $count - 1 === $i ? 'launch' : ( 1 === $i % 2 ? 'wireframe' : 'code' ) );
+			}
+			if ( 'none' === $art ) {
+				continue;
+			}
+			printf(
+				'<div class="avix-pt__art avix-pt__art--%1$s" data-pt-art="%2$s" data-pt-art-step="%3$d" style="--pt-top: %4$s%%;" aria-hidden="true"><canvas></canvas></div>',
+				0 === $i % 2 ? 'right' : 'left',
+				esc_attr( $art ),
+				(int) $i,
+				esc_attr( round( $geo['centers'][ $i ] / $geo['h'] * 100, 3 ) )
+			);
+		}
 	}
 
 	/**
@@ -815,13 +871,42 @@ class Process_Timeline extends Widget_Base {
 			}
 			$html = wp_get_attachment_image( $m['id'], 'medium', false, $attrs );
 			if ( $html ) {
-				return $html;
+				return $this->lazy_img( $html );
 			}
 		}
 		if ( '' !== $m['url'] ) {
 			return sprintf( '<img class="avix-pt__photo" src="%s" alt="%s" width="160" height="160" loading="lazy" decoding="async">', esc_url( $m['url'] ), esc_attr( $label ) );
 		}
 		return sprintf( '<span class="avix-pt__monogram" role="img" aria-label="%s">%s</span>', esc_attr( $label ), esc_html( $this->initials( $m['name'] ) ) );
+	}
+
+	/**
+	 * Keeps a team photo lazy. Some sites filter attachment images to
+	 * loading="eager" (avixdigital.com does), which made these below-the-fold
+	 * photos compete with the hero image on first load. Lazy also keeps the
+	 * sizes="auto, ..." WordPress adds valid (auto is only allowed on lazy images).
+	 *
+	 * @param string $html Image markup.
+	 */
+	private function lazy_img( $html ) {
+		$html = (string) $html;
+		if ( '' === $html ) {
+			return $html;
+		}
+		if ( class_exists( '\WP_HTML_Tag_Processor' ) ) {
+			$tags = new \WP_HTML_Tag_Processor( $html );
+			if ( ! $tags->next_tag( 'img' ) ) {
+				return $html;
+			}
+			$tags->set_attribute( 'loading', 'lazy' );
+			$tags->set_attribute( 'decoding', 'async' );
+			$tags->remove_attribute( 'fetchpriority' );
+			return $tags->get_updated_html();
+		}
+		if ( preg_match( '/\sloading=(["\'])[^"\']*\1/i', $html ) ) {
+			return (string) preg_replace( '/\sloading=(["\'])[^"\']*\1/i', ' loading="lazy"', $html, 1 );
+		}
+		return (string) preg_replace( '/^<img\b/i', '<img loading="lazy"', $html, 1 );
 	}
 
 	/**
@@ -853,65 +938,28 @@ class Process_Timeline extends Widget_Base {
 	}
 
 	/**
-	 * schema.org Person for each named member, linked to the site as employer.
+	 * schema.org Person for each named member, employed by the site's
+	 * Organization (worksFor → #organization). The founder is the site's one
+	 * founder Person (Tools > Avix SEO: entity), printed once per page and
+	 * never redefined here; with Yoast SEO it is already in the head, so the
+	 * founder's card adds nothing. Everyone else gets their own @id
+	 * (#person-<name>), printed once per page (includes/seo/class-person.php).
 	 */
 	private function team_schema( array $members ) {
-		$home   = home_url( '/' );
-		$host   = wp_parse_url( $home, PHP_URL_HOST );
-		$org    = array(
-			'@type' => 'Organization',
-			'name'  => wp_strip_all_tags( get_bloginfo( 'name' ) ),
-			'url'   => $home,
-		);
-		$people = array();
-		foreach ( $members as $m ) {
-			$name = wp_strip_all_tags( $m['name'] );
-			if ( '' === $name ) {
-				continue;
-			}
-			$person = array(
-				'@type' => 'Person',
-				'name'  => $name,
-			);
-			// Same @id as the Compare & CEO Quote widget, so one person = one entity.
-			if ( '' !== sanitize_title( $name ) ) {
-				$person['@id'] = home_url( '/#person-' . sanitize_title( $name ) );
-			}
-			if ( '' !== $m['role'] ) {
-				$person['jobTitle'] = wp_strip_all_tags( $m['role'] );
-			}
-			$image = $m['id'] ? wp_get_attachment_image_url( $m['id'], 'medium' ) : $m['url'];
-			if ( $image ) {
-				$person['image'] = esc_url_raw( $image );
-			}
-			$link = trim( (string) ( $m['link']['url'] ?? '' ) );
-			if ( '' !== $link && '/' === $link[0] && ( ! isset( $link[1] ) || '/' !== $link[1] ) ) {
-				$link = home_url( $link );
-			}
-			$link = esc_url_raw( $link, array( 'http', 'https' ) );
-			if ( '' !== $link ) {
-				if ( wp_parse_url( $link, PHP_URL_HOST ) === $host ) {
-					$person['url'] = $link;
-				} else {
-					$person['sameAs'] = array( $link );
-				}
-			}
-			$person['worksFor'] = $org;
-			$people[]           = $person;
-		}
-		if ( ! $people ) {
+		if ( ! class_exists( '\AvixWidgets\SEO\Person' ) ) {
 			return;
 		}
-		$json = wp_json_encode(
-			array(
-				'@context' => 'https://schema.org',
-				'@graph'   => $people,
-			),
-			JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP
-		);
-		if ( $json ) {
-			echo '<script type="application/ld+json">' . $json . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON with < > & hex-escaped.
+		$people = array();
+		foreach ( $members as $m ) {
+			$image    = $m['id'] ? wp_get_attachment_image_url( $m['id'], 'medium' ) : $m['url'];
+			$people[] = array(
+				'name'     => $m['name'],
+				'jobTitle' => $m['role'],
+				'image'    => $image ? (string) $image : '',
+				'link'     => (string) ( $m['link']['url'] ?? '' ),
+			);
 		}
+		\AvixWidgets\SEO\Person::print_nodes( \AvixWidgets\SEO\Person::widget_nodes( $people ) );
 	}
 
 	private function default_steps() {

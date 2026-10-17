@@ -28,7 +28,7 @@ class About_Hero extends Widget_Base {
 		$this->text( 'eyebrow', 'Eyebrow', 'About Avix Digital' );
 		$this->text( 'title', 'Headline', "We turn your biggest ideas\ninto [beautiful digital realities.]", Controls_Manager::TEXTAREA, array( 'description' => esc_html__( 'Use [brackets] for the accent colour. New lines become desktop line breaks; phones reflow automatically.', 'avix-widgets' ) ) );
 		$this->add_control( 'title_tag', array( 'label' => esc_html__( 'Headline HTML tag', 'avix-widgets' ), 'type' => Controls_Manager::SELECT, 'default' => 'h1', 'options' => array( 'h1' => 'H1', 'h2' => 'H2', 'h3' => 'H3', 'div' => 'div', 'p' => 'p' ) ) );
-		$this->text( 'description', 'Description', "From stunning UI/UX designs to powerful Shopify stores, we build\nexperiences people love and drive real growth for your brand.", Controls_Manager::TEXTAREA );
+		$this->text( 'description', 'Description', "From stunning UI/UX designs to powerful Shopify stores, we build\nexperiences people love and drive real growth for your brand.", Controls_Manager::TEXTAREA, array( 'description' => esc_html__( 'Use [brackets] for the accent colour. Simple links are allowed: <a href="/service/">our services</a>, plus <strong> and <em>.', 'avix-widgets' ) ) );
 		$this->text( 'button_text', 'Button label', 'Book a free session' );
 		$this->add_control( 'button_link', array( 'label' => esc_html__( 'Button link', 'avix-widgets' ), 'type' => Controls_Manager::URL, 'dynamic' => array( 'active' => true ), 'default' => array( 'url' => 'https://calendly.com/akibzawayed0079/meeting-for-quote' ) ) );
 		$this->toggle( 'show_arrow', 'Button arrow', 'yes' );
@@ -59,6 +59,7 @@ class About_Hero extends Widget_Base {
 
 		$this->section( 'layout_style', 'Section & layout' );
 		$this->add_control( 'layout_help', array( 'type' => Controls_Manager::RAW_HTML, 'raw' => esc_html__( 'Set the parent Elementor container to Full Width with zero padding for edge-to-edge layout. This widget contains no header.', 'avix-widgets' ), 'content_classes' => 'elementor-panel-alert elementor-panel-alert-info' ) );
+		$this->add_control( 'clear_header', array( 'label' => esc_html__( 'Clear the fixed header', 'avix-widgets' ), 'description' => esc_html__( 'Adds the Smart Header\'s height to the top spacing, so the eyebrow and headline never sit under the menu. Turn off if this hero is not at the top of the page.', 'avix-widgets' ), 'type' => Controls_Manager::SWITCHER, 'default' => 'yes' ) );
 		$this->add_group_control( Group_Control_Background::get_type(), array( 'name' => 'background', 'types' => array( 'classic', 'gradient' ), 'selector' => '{{WRAPPER}} .avix-about' ) );
 		$this->add_responsive_control( 'minimum_height', array( 'label' => esc_html__( 'Minimum section height', 'avix-widgets' ), 'type' => Controls_Manager::SLIDER, 'size_units' => array( 'vh', 'svh', 'px' ), 'range' => array( 'vh' => array( 'min' => 30, 'max' => 150 ), 'svh' => array( 'min' => 30, 'max' => 150 ), 'px' => array( 'min' => 200, 'max' => 1600 ) ), 'selectors' => array( '{{WRAPPER}} .avix-about' => 'min-height: {{SIZE}}{{UNIT}};' ) ) );
 		foreach ( array(
@@ -118,10 +119,35 @@ class About_Hero extends Widget_Base {
 	private function slider( $id, $label, $variable, $unit, $min, $max, $selector = '.avix-about' ) { $this->add_responsive_control( $id, array( 'label' => esc_html__( $label, 'avix-widgets' ), 'type' => Controls_Manager::SLIDER, 'size_units' => array( $unit ), 'range' => array( $unit => array( 'min' => $min, 'max' => $max ) ), 'selectors' => array( '{{WRAPPER}} ' . $selector => $variable . ': {{SIZE}}{{UNIT}};' ) ) ); }
 	private function typography( $id, $label, $selector ) { $this->add_group_control( Group_Control_Typography::get_type(), array( 'name' => $id . '_typography', 'label' => esc_html__( $label, 'avix-widgets' ), 'selector' => '{{WRAPPER}} ' . $selector ) ); }
 
-	/** Escape all text before adding our own accent spans and line breaks. */
-	private function formatted( $text ) {
-		$html = preg_replace( '/\[([^\[\]]+)\]/u', '<span class="avix-about__accent">$1</span>', esc_html( (string) $text ) );
+	/** Escape all text (or, with $links, keep simple links via inline_html()) before adding our own accent spans and line breaks. */
+	private function formatted( $text, $links = false ) {
+		$html = preg_replace( '/\[([^\[\]]+)\]/u', '<span class="avix-about__accent">$1</span>', $links ? $this->inline_html( (string) $text ) : esc_html( (string) $text ) );
 		return str_replace( array( "\r\n", "\r", "\n" ), ' <br class="avix-about__desktop-break">', $html );
+	}
+	/**
+	 * Inline text that may hold simple links: <a href>, <strong> and <em> are kept
+	 * (wp_kses), anything else is removed. Text without markup is escaped exactly as
+	 * before (esc_html), so existing content prints byte for byte the same.
+	 *
+	 * @param string $text Raw text.
+	 */
+	private function inline_html( $text ) {
+		$text = (string) $text;
+		if ( false === strpos( $text, '<' ) ) {
+			return esc_html( $text );
+		}
+		return wp_kses(
+			$text,
+			array(
+				'a'      => array(
+					'href'   => true,
+					'target' => true,
+					'rel'    => true,
+				),
+				'strong' => array(),
+				'em'     => array(),
+			)
+		);
 	}
 	private function image( $media, $class ) {
 		$media = (array) $media; $id = $this->media_id( $media );
@@ -149,13 +175,13 @@ class About_Hero extends Widget_Base {
 		$id = 'avix-about-title-' . $this->get_id();
 		$items = array_values( array_filter( (array) ( $s['platforms'] ?? array() ), static function ( $item ) { return is_array( $item ) && '' !== trim( (string) ( $item['name'] ?? '' ) ); } ) );
 		$config = array( 'animate' => 'yes' === ( $s['animate'] ?? '' ), 'pauseHover' => 'yes' === ( $s['pause_hover'] ?? '' ), 'pause' => (string) ( $s['pause_text'] ?? 'Pause animation' ), 'resume' => (string) ( $s['resume_text'] ?? 'Resume animation' ) );
-		$classes = 'avix-about' . ( 'yes' !== ( $s['show_labels'] ?? '' ) ? ' avix-about--no-labels' : '' ) . ( 'yes' !== ( $s['show_mobile_list'] ?? '' ) ? ' avix-about--no-mobile-list' : '' );
+		$classes = 'avix-about' . ( 'no' !== ( $s['clear_header'] ?? 'yes' ) && '' !== ( $s['clear_header'] ?? 'yes' ) ? ' avix-about--under-header' : '' ) . ( 'yes' !== ( $s['show_labels'] ?? '' ) ? ' avix-about--no-labels' : '' ) . ( 'yes' !== ( $s['show_mobile_list'] ?? '' ) ? ' avix-about--no-mobile-list' : '' );
 		?>
 		<section class="<?php echo esc_attr( $classes ); ?>" data-avix-about="<?php echo esc_attr( wp_json_encode( $config ) ); ?>" <?php echo '' !== trim( $title ) ? 'aria-labelledby="' . esc_attr( $id ) . '"' : 'aria-label="' . esc_attr__( 'About Avix Digital', 'avix-widgets' ) . '"'; ?>>
 			<div class="avix-about__intro">
 				<?php if ( ! empty( $s['eyebrow'] ) ) : ?><p class="avix-about__eyebrow"><span aria-hidden="true"></span><?php echo esc_html( $s['eyebrow'] ); ?></p><?php endif; ?>
 				<?php if ( '' !== trim( $title ) ) : ?><<?php echo $tag; ?> class="avix-about__title" id="<?php echo esc_attr( $id ); ?>"><?php echo $this->formatted( $title ); ?></<?php echo $tag; ?>><?php endif; ?>
-				<?php if ( ! empty( $s['description'] ) ) : ?><p class="avix-about__description"><?php echo $this->formatted( $s['description'] ); ?></p><?php endif; ?>
+				<?php if ( ! empty( $s['description'] ) ) : ?><p class="avix-about__description"><?php echo $this->formatted( $s['description'], true ); ?></p><?php endif; ?>
 				<?php if ( ! empty( $s['button_text'] ) && ! empty( $s['button_link']['url'] ) && esc_url( $s['button_link']['url'] ) ) :
 					$link = $s['button_link']; $link['url'] = esc_url( $link['url'] ); $this->add_link_attributes( 'cta', $link ); $this->add_render_attribute( 'cta', 'class', 'avix-about__cta' ); ?>
 					<a <?php $this->print_render_attribute_string( 'cta' ); ?>><span class="avix-about__cta-text"><?php echo esc_html( $s['button_text'] ); ?></span><?php if ( 'yes' === ( $s['show_arrow'] ?? '' ) ) : ?><span class="avix-about__cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M7 17 17 7M7 7h10v10"/></svg></span><?php endif; ?></a>

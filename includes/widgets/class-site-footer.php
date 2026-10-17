@@ -589,6 +589,35 @@ class Site_Footer extends Widget_Base {
 		$this->start_controls_section( 'section_bottom', array( 'label' => esc_html__( 'Wordmark, Badges & Bottom Bar', 'avix-widgets' ) ) );
 
 		$this->add_control(
+			'show_pixel_word',
+			array(
+				'label'       => esc_html__( 'Pixel wordmark', 'avix-widgets' ),
+				'description' => esc_html__( 'The brand name drawn as a dot-matrix of square pixels. It assembles when the footer comes into view; pixels near the pointer grow and glow, leaving a short trail.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+			)
+		);
+		$this->add_control(
+			'pixel_word',
+			array(
+				'label'     => esc_html__( 'Pixel wordmark text', 'avix-widgets' ),
+				'type'      => Controls_Manager::TEXT,
+				'default'   => 'avixdigital',
+				'condition' => array( 'show_pixel_word' => 'yes' ),
+			)
+		);
+		$this->add_control(
+			'pixel_accent',
+			array(
+				'label'       => esc_html__( 'Accent letters', 'avix-widgets' ),
+				'description' => esc_html__( 'Characters drawn in the accent colour, e.g. "x".', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => 'x',
+				'condition'   => array( 'show_pixel_word' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
 			'show_mark',
 			array(
 				'label'   => esc_html__( 'Big wordmark', 'avix-widgets' ),
@@ -693,6 +722,39 @@ class Site_Footer extends Widget_Base {
 				'default'     => '© {year} Avix Digital. All Rights Reserved.',
 				'label_block' => true,
 				'separator'   => 'before',
+			)
+		);
+
+		$legal = new Repeater();
+		$legal->add_control(
+			'text',
+			array(
+				'label'   => esc_html__( 'Text', 'avix-widgets' ),
+				'type'    => Controls_Manager::TEXT,
+				'default' => esc_html__( 'Privacy policy', 'avix-widgets' ),
+				'dynamic' => array( 'active' => true ),
+			)
+		);
+		$legal->add_control(
+			'link',
+			array(
+				'label'       => esc_html__( 'Link', 'avix-widgets' ),
+				'type'        => Controls_Manager::URL,
+				'placeholder' => 'https://avixdigital.com/privacy-policy/',
+				'dynamic'     => array( 'active' => true ),
+			)
+		);
+
+		$this->add_control(
+			'legal_links',
+			array(
+				'label'         => esc_html__( 'Legal links (optional)', 'avix-widgets' ),
+				'description'   => esc_html__( 'Small links next to the copyright, e.g. Privacy policy. A link shows once it has text and a URL.', 'avix-widgets' ),
+				'type'          => Controls_Manager::REPEATER,
+				'fields'        => $legal->get_controls(),
+				'title_field'   => '{{{ text }}}',
+				'default'       => array(),
+				'prevent_empty' => false,
 			)
 		);
 
@@ -927,6 +989,10 @@ class Site_Footer extends Widget_Base {
 						<?php $this->render_link_column( $s, 2 ); ?>
 						<?php $this->render_contact( $s ); ?>
 					</div>
+
+					<?php if ( 'yes' === ( $s['show_pixel_word'] ?? 'yes' ) && '' !== trim( (string) ( $s['pixel_word'] ?? '' ) ) ) : ?>
+						<div class="avix-ft__word" data-ft-word="<?php echo esc_attr( trim( (string) $s['pixel_word'] ) ); ?>" data-ft-accent="<?php echo esc_attr( (string) ( $s['pixel_accent'] ?? '' ) ); ?>" aria-hidden="true"><canvas></canvas></div>
+					<?php endif; ?>
 
 					<?php if ( 'yes' === $s['show_mark'] && ! empty( $s['mark']['url'] ) ) : ?>
 						<div class="avix-ft__mark" aria-hidden="true">
@@ -1226,14 +1292,17 @@ class Site_Footer extends Widget_Base {
 		$legal = trim( str_replace( '{year}', wp_date( 'Y' ), (string) $s['copyright'] ) );
 		$print = trim( (string) $s['small_print'] );
 		$top   = 'yes' === $s['show_top'];
+		$links = $this->legal_links_html( $s );
+		$line  = '' !== $legal || '' !== $links; // Copyright line, with any legal links after it.
+		$class = '' !== $links ? 'avix-ft__legal avix-ft__legal--links' : 'avix-ft__legal';
 		?>
 		<div class="avix-ft__bottom">
 			<div class="avix-ft__bottom-row">
 				<?php
 				if ( $badges ) {
 					$this->render_badge_list( $badges );
-				} elseif ( '' !== $legal ) {
-					echo '<p class="avix-ft__legal">' . esc_html( $legal ) . '</p>';
+				} elseif ( $line ) {
+					echo '<p class="' . esc_attr( $class ) . '">' . esc_html( $legal ) . $links . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $links is escaped in legal_links_html().
 				}
 				?>
 				<?php if ( $top ) : ?>
@@ -1243,10 +1312,10 @@ class Site_Footer extends Widget_Base {
 					</button>
 				<?php endif; ?>
 			</div>
-			<?php if ( ( $badges && '' !== $legal ) || '' !== $print ) : ?>
+			<?php if ( ( $badges && $line ) || '' !== $print ) : ?>
 				<div class="avix-ft__bottom-row avix-ft__bottom-row--legal">
-					<?php if ( $badges && '' !== $legal ) : ?>
-						<p class="avix-ft__legal"><?php echo esc_html( $legal ); ?></p>
+					<?php if ( $badges && $line ) : ?>
+						<p class="<?php echo esc_attr( $class ); ?>"><?php echo esc_html( $legal ); ?><?php echo $links; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in legal_links_html(). ?></p>
 					<?php endif; ?>
 					<?php if ( '' !== $print ) : ?>
 						<p class="avix-ft__print"><?php echo esc_html( $print ); ?></p>
@@ -1255,6 +1324,28 @@ class Site_Footer extends Widget_Base {
 			<?php endif; ?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Optional legal links (e.g. Privacy policy) shown after the copyright.
+	 * Returns '' when no row has both a text and a URL, which is the default.
+	 *
+	 * @param array $s Widget settings.
+	 * @return string Escaped markup.
+	 */
+	private function legal_links_html( array $s ) {
+		$out = '';
+		foreach ( array_values( (array) ( $s['legal_links'] ?? array() ) ) as $i => $row ) {
+			$text = trim( (string) ( $row['text'] ?? '' ) );
+			if ( '' === $text || empty( $row['link']['url'] ) ) {
+				continue;
+			}
+			$key = 'legal-link-' . $i;
+			$this->add_link_attributes( $key, $row['link'] );
+			$this->add_render_attribute( $key, 'class', 'avix-ft__legal-link' );
+			$out .= '<a ' . $this->get_render_attribute_string( $key ) . '>' . esc_html( $text ) . '</a>';
+		}
+		return '' === $out ? '' : '<span class="avix-ft__legal-links">' . $out . '</span>';
 	}
 
 	private function render_badge_list( array $badges ) {

@@ -1,0 +1,372 @@
+{
+	"slug": "kampeerwinkel-roermond",
+	"spec": "SPEC-CASE-STUDIES §7 + addendum A2/A5; research packs research-features, research-facts and research-funnel (8 Oct 2026)",
+	"post": {
+		"title": "Kampeerwinkel Roermond: Making 9,400+ Outdoor Products Easy to Find, Buy and Collect",
+		"excerpt": "We designed and built a Shopify camping store for an outdoor specialist in Roermond: 9,400+ products in three languages, a 14-department menu and free pickup in store.",
+		"menu_order": 3,
+		"featured": [
+			"@media:avix-cs-kampeerwinkel-roermond-render-hero.webp",
+			"@media:avix-cs-kampeerwinkel-roermond-hero-desktop.webp"
+		]
+	},
+	"terms": {
+		"service": [
+			"shopify",
+			"uiux-brand-design",
+			"web-development"
+		],
+		"industry": [
+			"Camping & outdoor retail"
+		]
+	},
+	"yoast": {
+		"focuskw": "Shopify camping store",
+		"title": "Shopify Camping Store: Kampeerwinkel Roermond | AvixDigital",
+		"metadesc": "Kampeerwinkel Roermond case study: a Shopify camping store that makes 9,400+ products easy to find, buy and collect in Dutch, English and German.",
+		"bctitle": "Kampeerwinkel Roermond",
+		"og_image": "@media:avix-cs-kampeerwinkel-roermond-og.jpg"
+	},
+	"meta": {
+		"client": "Kampeerwinkel Roermond",
+		"display_title": "Kampeerwinkel Roermond: A Shopify [Camping Store]",
+		"summary": "9,400+ outdoor products made easy to find, buy and collect, in three languages and with free pickup in Roermond.",
+		"logo": "@media:avix-cs-kampeerwinkel-roermond-logo-white.png",
+		"hero_desktop": "@media:avix-cs-kampeerwinkel-roermond-hero-desktop.webp",
+		"hero_mobile": "@media:avix-cs-kampeerwinkel-roermond-hero-mobile.webp",
+		"hero_render": "@media:avix-cs-kampeerwinkel-roermond-render-hero.webp",
+		"accent": "#6D7646",
+		"year": "2026",
+		"services": "Design, E-commerce, Shopify, Web Development",
+		"platform": "Shopify",
+		"role": "Shopify design & development",
+		"market": "Netherlands, Belgium & Germany",
+		"live_url": "https://kampeerwinkelroermond.nl/en",
+		"live_label": "kampeerwinkelroermond.nl",
+		"card_tags": "Shopify, Large catalogue, Click & collect",
+		"card_label": "Designed for",
+		"card_value": "Webshop + store",
+		"challenge_heading": "The challenge: 9,400+ products, three languages and a showroom",
+		"challenge_statement": "A range this deep only sells online when shoppers can [find the right product in a few taps].",
+		"challenge_body": [
+			"Kampeerwinkel Roermond is a camping, outdoor and winter sports specialist. Its showroom in Retailpark Roermond is open seven days a week, a few kilometres from the German border. The range is enormous: tents and caravan awnings, cool boxes, camp kitchens and hiking boots. On top of that, there is outdoor clothing for the whole family, plus barbecues and ski wear. Brands include Dometic, Thule, Meindl, Lowa, Kampa and Weber.",
+			"Online, that depth is both the opportunity and the risk. More than 9,400 products across 14 departments and over 200 collections can bury the right tent several clicks deep. Shoppers also compare camping gear before they buy it. How many people does a tent sleep, and will the awning fit the caravan? Which sizes are left, when will it ship and what does delivery cost? Every unanswered question is a reason to open another tab, or another store.",
+			"The webshop also had to serve very different customers at once. Some locals would rather collect from the shop. Dutch and Belgian shoppers expect to pay the way they always do. Meanwhile, German and English-speaking visitors need the store in their own language. All of them need to trust the shop behind the screen."
+		],
+		"constraints": "Large catalogue, 14 departments, Three languages, Showroom pickup, Local payment methods, Phone-friendly buying",
+		"approach_intro": "We designed the whole Shopify store around one idea: it should work like a good camping store. There, every aisle has a sign, staff answer hard questions on the spot, and the till is never far away.",
+		"approach_body": [
+			"First, we looked at how people actually shop for camping gear. They start with a department, such as tents, awnings or clothing. Then they narrow it down by type, and finally by brand and price. That structure became the backbone of a <a href=\"/service/shopify-plus/\">custom Shopify theme</a> on Shopify's Horizon foundation. We added our own sections for the homepage, the All Categories menu, search, product pages and footer. Each one carries the store's olive-and-orange identity.",
+			"Then we worked through the buying journey screen by screen. Product pages answer what a shop assistant would. They show today's price and the saving, the sizes that are left, the specs and when it ships. Next, the cart and checkout remove the last reasons to wait. They offer a free-shipping progress bar, express wallets and the payment methods Dutch and Belgian shoppers use. There is free pickup at the Roermond store, too. Everything runs in Dutch, English and German through <a href=\"/service/shopify-plus/\">Shopify Markets</a>. Finally, we <a href=\"/service/uiux-and-brand-design/\">designed every screen for the phone</a> as carefully as for the desktop."
+		],
+		"implementations": [
+			"Navigation for a 9,400-product range: A custom All Categories menu shows all 14 departments as icon cards with their product counts. Hovering a card opens its sub-categories. A full-height mobile menu mirrors it, and predictive search sits in the header on every device.",
+			"Product pages that work like a shop assistant: A bespoke product template shows every colour as a photo swatch and strikes through sold-out sizes. Its You save badge spells out the saving in euros. Above the button, a rotating line shows the dispatch cut-off and the free-shipping threshold. Pinned Description, Features and Shipping & Returns tabs follow, and a sticky Add to cart bar stays in reach.",
+			"A cart and checkout built to close: Add to cart opens the drawer without a page reload. Inside, a progress bar counts down to free shipping at €100, while Shop Pay and Google Pay skip the forms. The branded Shopify checkout offers free pickup in Roermond, plus iDEAL, Klarna, cards and KBC/CBC.",
+			"One store, three languages, one showroom: Dutch, English and German storefronts each have their own URLs and share a compact language switcher. A homepage block invites visitors into the Roermond showroom. Expert guides, such as the caravan awning size guide, complete the picture."
+		],
+		"solution_body": [
+			"The result is a webshop that sells the way the showroom does. Shoppers open All Categories to see every department with its product count. Or they type into a search field that suggests whole collections as well as products. Product pages show colours as photos, strike through sold-out sizes and promise same-day dispatch for orders before 15:00. Then Add to cart opens a drawer that counts down to free shipping. At checkout, shoppers pay with iDEAL, Klarna, a card or KBC/CBC. Or they skip the forms with Shop Pay or Google Pay. They can also collect their order free from the Roermond store."
+		],
+		"outcome_statement": "A Shopify store that [trades every day]: online, across the border and over the counter in Roermond.",
+		"outcome_body": [
+			"Built to sell, the store carries Kampeerwinkel Roermond's whole range on one consistent set of templates. Every new tent, jacket or barbecue goes live with the same photo swatches, savings badge, specs and delivery promise. As a result, the range can keep growing without the shopping experience falling apart.",
+			"Just as importantly, the webshop keeps the shop at the centre. The homepage invites visitors into the showroom. Guides such as the caravan awning size guide answer the questions a shopper would otherwise ask in store. And free pickup at checkout turns an online order into a visit to Roermond.",
+			"Google's Chrome UX Report covers real visitors over the 28 days to 8 Oct 2026. It puts their loading time inside Google's \"good\" range. Largest Contentful Paint is 2.2 s on mobile and 2.4 s on desktop. Layout stability (CLS 0.03) is in the \"good\" range too, and the desktop store passes Core Web Vitals."
+		],
+		"outcome_pillars": [
+			"A huge range that's easy to navigate",
+			"Fewer reasons to leave a product page",
+			"Webshop and showroom working together"
+		],
+		"proof": [
+			"Open All Categories on the homepage | https://kampeerwinkelroermond.nl/en",
+			"See the buy box on a rain jacket | https://kampeerwinkelroermond.nl/en/products/tenson-winga-womens-waterproof-rain-jacket",
+			"Read the caravan awning size guide | https://kampeerwinkelroermond.nl/en/pages/caravan-awning-size"
+		],
+		"metric_1_value": "9,400+",
+		"metric_1_label": "Products online: every one on the same set of templates",
+		"metric_1_source": "observed on kampeerwinkelroermond.nl (/en/products.json: 9,426 products; sitemap: 9,427 product URLs), 8 Oct 2026",
+		"metric_2_value": "14",
+		"metric_2_label": "Departments in the All Categories menu, each showing its product count",
+		"metric_2_source": "observed on kampeerwinkelroermond.nl/en, 8 Oct 2026",
+		"metric_3_value": "3",
+		"metric_3_label": "Storefront languages: Dutch, English and German",
+		"metric_3_source": "observed on kampeerwinkelroermond.nl (hreflang nl, en, de), 8 Oct 2026",
+		"metric_4_value": "6",
+		"metric_4_label": "Ways to pay at checkout, from iDEAL, Klarna and cards to Shop Pay and Google Pay",
+		"metric_4_source": "observed on the kampeerwinkelroermond.nl checkout page (Shop Pay, Google Pay, iDEAL | Wero, Klarna, cards, KBC/CBC), 8 Oct 2026",
+		"stack": [
+			"Shopify (Online Store 2.0): storefront, Dutch, English and German markets, checkout and local pickup",
+			"Liquid: custom theme on Shopify's Horizon base, with bespoke homepage sections, mega menu, search and footer",
+			"JavaScript web components: cart drawer, free-shipping bar, sticky Add to cart and language switcher",
+			"Shop Pay & Google Pay: express checkout in the cart drawer, cart page and checkout",
+			"Shopify Checkout Blocks: help tiles and a birthday field in the branded checkout | observed",
+			"Globo Smart Product Filters: brand and price filters with live counts | observed",
+			"Judge.me: product reviews | observed",
+			"Smile.io: Kampeerpunten loyalty points | observed",
+			"Klaviyo: newsletter sign-up | observed",
+			"CookieYes: cookie consent | observed",
+			"GSAP: interface animation | observed"
+		],
+		"header": "dark"
+	},
+	"layout": {
+		"hero": {
+			"eyebrow": "Case study · Shopify"
+		},
+		"features": {
+			"title": "Six details that keep this Shopify camping store [selling every day]"
+		},
+		"spotlights": [
+			{
+				"tag": "Navigation",
+				"title": "A 9,400-product range, [one hover away]",
+				"problem": "The menu holds 14 departments and around 190 collections, from tents and awnings to hiking boots and barbecues. A standard dropdown would bury most of that range several clicks deep.",
+				"built": "All Categories opens a full-width panel of 14 department cards, each with its own line icon and product count. That way, shoppers see the size of every aisle at a glance. Hover over a department, such as Camping gear (1,440 products), and its sub-categories appear underneath. They run from Cool boxes & cooler bags to Stoves & burners under Camp cooking. On phones, the same departments and counts open in a full-height menu.",
+				"attribution": "built",
+				"source_link": "https://kampeerwinkelroermond.nl/en",
+				"image": "@media:avix-cs-kampeerwinkel-roermond-feature-category-menu.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 19.6,
+						"y": 15.4,
+						"label": "All 14 departments behind one button"
+					},
+					{
+						"x": 17.6,
+						"y": 43.0,
+						"label": "A product count on every department"
+					},
+					{
+						"x": 31.2,
+						"y": 68.9,
+						"label": "Sub-categories one hover away"
+					}
+				]
+			},
+			{
+				"tag": "Search",
+				"title": "Search that lives [in the header], not behind an icon",
+				"problem": "Shoppers who already know what they need, a chair, a cool box, a Weber, want to type it. On a phone, a search hidden behind an icon adds a step before they even start.",
+				"built": "The phone header keeps a full search field beside the menu, account and cart. It also stays in view as the page scrolls. Typing 'chair' suggests whole collections first, such as Beach chairs & Sun loungers and Camping chairs and recliners. Then come a View all results link and product cards with prices. On desktop, the same panel opens under the header, with sale prices beside the old price.",
+				"attribution": "built",
+				"source_link": "https://kampeerwinkelroermond.nl/en",
+				"image": "@media:avix-cs-kampeerwinkel-roermond-funnel-m-ux-06-search-results-chair-clean.webp",
+				"device": "phone",
+				"mat": "paper",
+				"hotspots": [
+					{
+						"x": 60,
+						"y": 14.3,
+						"label": "Search field always in the header"
+					},
+					{
+						"x": 75,
+						"y": 30.6,
+						"label": "Suggested collections as you type"
+					},
+					{
+						"x": 30.5,
+						"y": 80.8,
+						"label": "Products and prices in the panel"
+					}
+				]
+			},
+			{
+				"tag": "Product page",
+				"title": "A buy box that answers [before you ask]",
+				"problem": "Outdoor clothing and footwear come in many colours and sizes. Shoppers leave a product page when they find a size has sold out only after choosing it. They also leave when they can't tell when an order will ship.",
+				"built": "Every colour is a real product photo. Sold-out sizes show up struck through before anyone clicks (here S and XL). Until a shopper picks a size, the button reads MAKE A SELECTION. A You save badge spells out the saving in euros. Just above the button, a rotating line cycles through the store's promises. These are free shipping from €100, same-working-day dispatch for orders before 15:00 and returns within 14 working days. Once the button scrolls out of view, a sticky Add to cart bar takes its place.",
+				"attribution": "built",
+				"source_link": "https://kampeerwinkelroermond.nl/en/products/tenson-winga-womens-waterproof-rain-jacket",
+				"image": "@media:avix-cs-kampeerwinkel-roermond-feature-buy-box.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 75.2,
+						"y": 49.6,
+						"label": "Every colour as a real photo"
+					},
+					{
+						"x": 64.8,
+						"y": 66.3,
+						"label": "Sold-out sizes struck through before you click"
+					},
+					{
+						"x": 92.4,
+						"y": 74.8,
+						"label": "Dispatch promise right above the button"
+					}
+				]
+			},
+			{
+				"tag": "Cart",
+				"title": "A cart drawer that counts down to [free shipping]",
+				"problem": "Plenty of camping essentials cost less than €100: a lantern, a gas cartridge, a set of pegs. Below the free-shipping line, shoppers either pay postage they didn't plan for or close the cart to think about it.",
+				"built": "Add to cart opens a slide-out drawer on the spot, with no page reload. An olive progress bar shows exactly how far the shopper is from free shipping. Shoppers can change the quantity in place. Below CHECK OUT sit the Shop Pay and Google Pay express buttons, the next-working-day delivery note and eight payment marks. Even an empty cart suggests a product with a one-tap + Add button.",
+				"attribution": "built",
+				"source_link": "https://kampeerwinkelroermond.nl/en/products/human-comfort-cosy-lamp-mably-grey-camping-lantern",
+				"image": "@media:avix-cs-kampeerwinkel-roermond-funnel-d-04-cart-drawer-panel.webp",
+				"device": "plain",
+				"mat": "paper",
+				"visual_max": 420,
+				"hotspots": [
+					{
+						"x": 50,
+						"y": 12.7,
+						"label": "Live progress to free shipping"
+					},
+					{
+						"x": 50,
+						"y": 86.8,
+						"label": "Express checkout in the cart"
+					},
+					{
+						"x": 4.8,
+						"y": 95.6,
+						"label": "Delivery promise and payment marks"
+					}
+				]
+			},
+			{
+				"tag": "Checkout",
+				"title": "A checkout that knows there's [a real shop] in Roermond",
+				"problem": "A store with a showroom in Retailpark Roermond shouldn't make local customers pay postage. Dutch and Belgian shoppers, meanwhile, expect to pay the way they always do.",
+				"built": "The branded one-page checkout offers Ship or Pickup. Choosing Pickup shows the Roermond store, free and usually ready in 24 hours. Shop Pay and Google Pay sit at the top for a form-free checkout. Payment then opens on iDEAL | Wero, followed by Klarna, cards and KBC/CBC. Beside the order summary, tiles let shoppers call, chat or email for help.",
+				"attribution": "built",
+				"source_link": "https://kampeerwinkelroermond.nl/en",
+				"image": "@media:avix-cs-kampeerwinkel-roermond-funnel-d-08-checkout-overview.webp",
+				"device": "browser",
+				"mat": "tint",
+				"hotspots": [
+					{
+						"x": 40,
+						"y": 56,
+						"label": "Free pickup at the Roermond store"
+					},
+					{
+						"x": 33.3,
+						"y": 69.7,
+						"label": "Dutch and Belgian ways to pay"
+					},
+					{
+						"x": 87.2,
+						"y": 13.2,
+						"label": "Help without leaving checkout"
+					}
+				]
+			},
+			{
+				"tag": "Local store",
+				"title": "A Shopify camping store that [walks you into the showroom]",
+				"problem": "Much of what sells camping gear in Roermond is the shop itself. Think of tents pitched indoors, specialist advice and doors open seven days a week. A generic webshop hides all of that behind an address in the footer.",
+				"built": "The homepage gives the physical store its own block. A looping video shows tents pitched in the showroom. Beside it, a card lists five reasons to visit. They include seven-day opening and the store's promise of \"more than 10,000 camping and outdoor items in stock\". A VISIT OUR STORE button completes the block. The same store returns at checkout as free pickup, so browsing online and visiting in person feed each other.",
+				"attribution": "built",
+				"source_link": "https://kampeerwinkelroermond.nl/en",
+				"image": "@media:avix-cs-kampeerwinkel-roermond-feature-store-welcome.webp",
+				"device": "browser",
+				"mat": "paper",
+				"hotspots": [
+					{
+						"x": 18.1,
+						"y": 55.3,
+						"label": "The real showroom, on video"
+					},
+					{
+						"x": 58.3,
+						"y": 51.2,
+						"label": "Five reasons to visit, in one card"
+					},
+					{
+						"x": 55.6,
+						"y": 84.9,
+						"label": "From browsing online to a visit in store"
+					}
+				]
+			}
+		],
+		"gallery": {
+			"layout": "mosaic",
+			"mat": "paper",
+			"items": [
+				{
+					"image": "@media:avix-cs-kampeerwinkel-roermond-render-feature.webp",
+					"device": "render",
+					"caption": "All Categories menu on desktop"
+				},
+				{
+					"image": "@media:avix-cs-kampeerwinkel-roermond-render-mobile.webp",
+					"device": "render",
+					"caption": "Mobile shopping journey"
+				},
+				{
+					"image": "@media:avix-cs-kampeerwinkel-roermond-gallery-campaign-banners.webp",
+					"device": "browser",
+					"caption": "Campaign banners and the store's promises"
+				},
+				{
+					"image": "@media:avix-cs-kampeerwinkel-roermond-gallery-mobile-menu.webp",
+					"device": "phone",
+					"caption": "Mobile menu with product counts"
+				},
+				{
+					"image": "@media:avix-cs-kampeerwinkel-roermond-alt-gallery-mobile-product-top.webp",
+					"device": "phone",
+					"caption": "Tent page with a sticky Add to cart"
+				},
+				{
+					"image": "@media:avix-cs-kampeerwinkel-roermond-funnel-m-07-checkout-pickup-clean.webp",
+					"device": "phone",
+					"caption": "Free pickup in Roermond at checkout"
+				},
+				{
+					"image": "@media:avix-cs-kampeerwinkel-roermond-funnel-m-09-empty-cart-drawer-clean.webp",
+					"device": "phone",
+					"caption": "Empty cart with a recommendation"
+				},
+				{
+					"image": "@media:avix-cs-kampeerwinkel-roermond-feature-predictive-search.webp",
+					"device": "browser",
+					"caption": "Predictive search on desktop"
+				},
+				{
+					"image": "@media:avix-cs-kampeerwinkel-roermond-feature-product-specs.webp",
+					"device": "browser",
+					"caption": "Tent specs beside the buy box"
+				},
+				{
+					"image": "@media:avix-cs-kampeerwinkel-roermond-feature-awning-size-guide.webp",
+					"device": "browser",
+					"caption": "Caravan awning size guide"
+				}
+			]
+		}
+	},
+	"alt": {
+		"avix-cs-kampeerwinkel-roermond-hero-desktop.webp": "Kampeerwinkel Roermond homepage on desktop with a split hero, the All Categories menu and category tiles",
+		"avix-cs-kampeerwinkel-roermond-hero-mobile.webp": "Kampeerwinkel Roermond homepage on a phone",
+		"avix-cs-kampeerwinkel-roermond-feature-category-menu.webp": "Kampeerwinkel Roermond All Categories menu with 14 department cards showing product counts and the Camping gear sub-categories",
+		"avix-cs-kampeerwinkel-roermond-funnel-m-ux-06-search-results-chair-clean.webp": "Kampeerwinkel Roermond mobile search for 'chair' with suggested collections and chair products with prices",
+		"avix-cs-kampeerwinkel-roermond-feature-buy-box.webp": "Tenson Winga rain jacket product page with colour photo swatches, struck-through sold-out sizes, a You save badge and the same-day dispatch line above the button",
+		"avix-cs-kampeerwinkel-roermond-funnel-d-04-cart-drawer-panel.webp": "Kampeerwinkel Roermond cart drawer with a free-shipping progress bar, the added lantern, Check out, Shop Pay and Google Pay buttons and payment marks",
+		"avix-cs-kampeerwinkel-roermond-funnel-d-08-checkout-overview.webp": "Kampeerwinkel Roermond checkout with Shop Pay and Google Pay, the Pickup option showing the Roermond store as free, and iDEAL, Klarna, card and KBC payment options",
+		"avix-cs-kampeerwinkel-roermond-feature-store-welcome.webp": "Kampeerwinkel Roermond homepage store block with a showroom video of pitched tents, five reasons to visit and a Visit our store button",
+		"avix-cs-kampeerwinkel-roermond-gallery-campaign-banners.webp": "Thule bike racks and Caravan fun campaign banners above a row of shipping, store and returns promises",
+		"avix-cs-kampeerwinkel-roermond-gallery-mobile-menu.webp": "Kampeerwinkel Roermond mobile menu listing departments with icons and product counts",
+		"avix-cs-kampeerwinkel-roermond-alt-gallery-mobile-product-top.webp": "Bardani air tent product photos on a phone with a sticky Add to cart bar",
+		"avix-cs-kampeerwinkel-roermond-funnel-m-07-checkout-pickup-clean.webp": "Kampeerwinkel Roermond checkout on a phone with the Pickup option, the free Roermond store pickup and the payment methods",
+		"avix-cs-kampeerwinkel-roermond-funnel-m-09-empty-cart-drawer-clean.webp": "Kampeerwinkel Roermond empty cart drawer on a phone with a tent illustration, a recommended lantern with an Add button and a Return to home button",
+		"avix-cs-kampeerwinkel-roermond-feature-predictive-search.webp": "Kampeerwinkel Roermond predictive search for 'chair' with suggested collections and product cards with prices",
+		"avix-cs-kampeerwinkel-roermond-feature-product-specs.webp": "Kampa Dawlish 04 Air product page with the Features table of tent specifications beside the buy box",
+		"avix-cs-kampeerwinkel-roermond-feature-awning-size-guide.webp": "Caravan awning size guide with three measuring steps, an offer to look up the size and a table of A-measurements for popular caravans",
+		"avix-cs-kampeerwinkel-roermond-logo-white.png": "Kampeerwinkel Roermond logo",
+		"avix-cs-kampeerwinkel-roermond-og.jpg": "Kampeerwinkel Roermond case study by AvixDigital: the Shopify camping store homepage on a laptop and a phone",
+		"avix-cs-kampeerwinkel-roermond-render-hero.webp": "Kampeerwinkel Roermond Shopify camping store homepage on a laptop and a phone",
+		"avix-cs-kampeerwinkel-roermond-render-feature.webp": "Kampeerwinkel Roermond All Categories menu on a laptop",
+		"avix-cs-kampeerwinkel-roermond-render-mobile.webp": "Kampeerwinkel Roermond Shopify camping store on three phones: the All Categories menu with product counts, a lantern product page and the cart with a free-shipping bar"
+	}
+}

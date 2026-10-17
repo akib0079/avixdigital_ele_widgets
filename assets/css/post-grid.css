@@ -1,0 +1,1742 @@
+/*!
+ * Avix Digital · Post Grid
+ * The Blog page: an editorial header (the pixel character reads on the search
+ * bar), a large featured story, topic chips, a 3/2/1 column grid of article
+ * cards with an orange project card in the flow, and "Load more".
+ * Layout follows the widget width (container queries), not the viewport.
+ */
+
+.avix-pg {
+	--pg-bg: #ffffff;
+	--pg-ink: #1a1a1a;
+	--pg-muted: #5c5f66;
+	--pg-line: rgba(26, 26, 26, 0.1);
+	--pg-accent: #fb6007;
+	--pg-accent-text: #c54804;
+	/* Darker still for the 12.5px category pill on its orange tint (AA). */
+	--pg-tag-ink: #b03f00;
+	--pg-chip-bg: #f6f4f0;
+	--pg-cover-bg: #111111;
+	/* Fills and the text on them are separate tokens from --pg-ink, so a dark
+	   section (white headings) never turns a button into white on white. */
+	--pg-btn-bg: #1a1a1a;
+	--pg-btn-ink: #ffffff;
+	--pg-surface: #ffffff;
+	--pg-surface-ink: #1a1a1a;
+	--pg-cta-bg: var(--pg-accent);
+	--pg-cta-ink: #ffffff;
+	/* Ink details on the orange card stay dark in either theme (5.6:1). */
+	--pg-cta-accent: #1a1a1a;
+	--pg-pal: var(--pg-accent);
+	--pg-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--pg-font-body: "Inter", Arial, sans-serif;
+	--pg-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--pg-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--pg-max: 1240px;
+	--pg-ratio: 16 / 10;
+	--pg-cols: 3;
+
+	container: avix-pg / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: var(--pg-pad-top, clamp(56px, 7vw, 104px)) 0 var(--pg-pad-bottom, clamp(88px, 9vw, 136px));
+	overflow: hidden;
+	overflow: clip;
+	color: var(--pg-ink);
+	background: var(--pg-bg);
+	font-family: var(--pg-font-body);
+	/* Defined here so a theme's light body weight never thins the copy. */
+	font-weight: 400;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	/* The script keeps the topic rail in place when the featured card comes
+	   and goes; the browser's own anchoring would add a second correction. */
+	overflow-anchor: none;
+}
+
+/* Dark theme: the whole token set for a near-black section. The Style tab's
+   colour pickers still win (they target the wrapper + root). */
+.avix-pg--dark {
+	--pg-bg: #0b0b0c;
+	--pg-ink: #ffffff;
+	--pg-muted: rgba(255, 255, 255, 0.62);
+	--pg-line: rgba(255, 255, 255, 0.1);
+	--pg-accent-text: #ff8a3d;
+	--pg-tag-ink: #ff8a3d;
+	--pg-chip-bg: rgba(255, 255, 255, 0.05);
+	--pg-cover-bg: #17181a;
+	--pg-btn-bg: #ffffff;
+	--pg-btn-ink: #1a1a1a;
+	--pg-surface: #17181a;
+	--pg-surface-ink: #ffffff;
+}
+
+.avix-pg *,
+.avix-pg *::before,
+.avix-pg *::after {
+	box-sizing: border-box;
+}
+
+/* At the top of a page with the Smart Header: start below the fixed header. */
+.avix-pg--clear {
+	padding-top: calc(var(--avix-header-h, 0px) + var(--pg-pad-top, clamp(40px, 5vw, 80px)));
+}
+
+.avix-pg--cols-2 {
+	--pg-cols: 2;
+}
+
+.avix-pg--cols-4 {
+	--pg-cols: 4;
+}
+
+/* Themes style [hidden] elements too; hidden must always win. */
+.avix-pg [hidden] {
+	display: none !important;
+}
+
+/* Container queries style descendants only: tokens that change with width
+   are declared (and reset) on the inner wrapper. */
+.avix-pg__inner {
+	--pg-gutter: 48px;
+	/* Multiples of 10px: the sprite is 10 units wide, so every part lands on
+	   whole pixels and crispEdges never rounds legs and arms differently. */
+	--pg-pal-auto: 50px;
+	--pg-gap-auto: clamp(20px, 2.4cqi, 32px);
+	--pg-row-gap: clamp(44px, 4.6cqi, 60px);
+	--pg-r-lg: 24px;
+	--pg-r: 20px;
+
+	position: relative;
+	width: min(calc(100% - var(--pg-gutter)), var(--pg-max));
+	margin: 0 auto;
+}
+
+.avix-pg .avix-pg__sr {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ---------- Header ---------- */
+
+.avix-pg__head {
+	display: grid;
+	/* Same columns and gap as the featured card, so the text column, the
+	   featured story's text and the right side of the page share one edge. */
+	grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+	gap: 28px clamp(28px, 4.4cqi, 72px);
+	/* The text starts level with the eyebrow and the search sits on the
+	   title's last line, whatever the title's length. */
+	align-items: start;
+	margin: 0 0 clamp(40px, 4.6cqi, 64px);
+}
+
+.avix-pg .avix-pg__eyebrow {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0 0 clamp(18px, 2cqi, 26px);
+	padding: 0;
+	color: var(--pg-ink);
+	font-family: var(--pg-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+/* The eyebrow's pixel ties every label to the pixel character. */
+.avix-pg .avix-pg__px {
+	flex: none;
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	margin-top: calc(0.65em - 4px);
+	background: var(--pg-accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--pg-accent) 16%, transparent);
+}
+
+.avix-pg .avix-pg__title {
+	max-width: 15ch;
+	margin: 0;
+	padding: 0;
+	color: var(--pg-ink);
+	font-family: var(--pg-font-display);
+	font-size: clamp(40px, 5.6cqi, 74px);
+	font-weight: 600;
+	line-height: 1.04;
+	letter-spacing: -0.035em;
+	text-transform: none;
+	text-wrap: balance;
+}
+
+.avix-pg .avix-pg__accent {
+	color: var(--pg-accent);
+}
+
+.avix-pg__aside {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 26px;
+	align-self: stretch;
+	padding-bottom: 6px;
+}
+
+/* The character stands to the right of the text: the text leaves it room. */
+.avix-pg .avix-pg__text {
+	max-width: min(44ch, calc(100% - var(--pg-pal-w, var(--pg-pal-auto)) - 44px));
+	/* Pulls the first line's half-leading up so its letters line up with
+	   the eyebrow's. */
+	margin: -5px 0 0;
+	padding: 0;
+	color: var(--pg-muted);
+	font-size: clamp(15.5px, 1.4cqi, 17px);
+	line-height: 1.65;
+	text-wrap: pretty;
+}
+
+/* Simple links in the intro text (it allows <a>, <strong>, <em>). */
+.avix-pg .avix-pg__text a {
+	color: var(--pg-ink);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+	transition: color 0.2s ease;
+}
+
+.avix-pg .avix-pg__text a:hover,
+.avix-pg .avix-pg__text a:focus-visible {
+	color: var(--pg-accent-text);
+}
+
+.avix-pg .avix-pg__text strong {
+	color: var(--pg-ink);
+	font-weight: 600;
+}
+
+/* ---------- Search + reading character ---------- */
+
+.avix-pg__perch {
+	position: relative;
+}
+
+.avix-pg__pal {
+	--pal-w: var(--pg-pal-w, var(--pg-pal-auto));
+	--pal-color: var(--pg-pal);
+	--pal-prop: var(--pg-ink);
+	position: absolute;
+	right: 30px;
+	bottom: calc(100% - 1px);
+	z-index: 1;
+}
+
+/* The book, seen from the front while it is read: an ink cover with a cream
+   page edge on top (whole grid units only). Fixed ink, so it reads on the
+   orange body in either theme. */
+.avix-pg .avix-pg__pal .avix-pg__book {
+	fill: #1a1a1a;
+}
+
+.avix-pg .avix-pg__pal .avix-pg__book-pages {
+	fill: #fff6ec;
+}
+
+.avix-pg__perch--ledge {
+	display: flex;
+	justify-content: flex-end;
+	min-height: calc(var(--pg-pal-w, var(--pg-pal-auto)) * 1.2);
+}
+
+.avix-pg__perch--ledge .avix-pg__pal {
+	right: 18px;
+	bottom: 4px;
+}
+
+.avix-pg .avix-pg__ledge {
+	align-self: flex-end;
+	width: calc(var(--pg-pal-w, var(--pg-pal-auto)) * 2);
+	height: 4px;
+	border-radius: 2px;
+	background: var(--pg-accent);
+	box-shadow: 0 8px 18px -8px color-mix(in srgb, var(--pg-accent) 80%, transparent);
+}
+
+.avix-pg .avix-pg__search {
+	position: relative;
+	display: flex;
+	align-items: center;
+	height: 58px;
+	margin: 0;
+	padding: 0 7px 0 0;
+	border: 1px solid var(--pg-line);
+	border-radius: 999px;
+	background: var(--pg-surface);
+	box-shadow: 0 10px 28px -18px rgba(26, 26, 26, 0.35);
+	transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.avix-pg .avix-pg__search:focus-within {
+	border-color: color-mix(in srgb, var(--pg-accent) 60%, transparent);
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--pg-accent) 14%, transparent), 0 10px 28px -18px rgba(26, 26, 26, 0.35);
+}
+
+.avix-pg .avix-pg__search-icon {
+	position: absolute;
+	top: 50%;
+	left: 20px;
+	width: 18px;
+	height: 18px;
+	fill: none;
+	stroke: var(--pg-muted);
+	stroke-width: 2;
+	stroke-linecap: round;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+.avix-pg .avix-pg__input,
+.avix-pg .avix-pg__input:focus {
+	flex: 1;
+	min-width: 0;
+	height: 100%;
+	margin: 0;
+	padding: 0 12px 0 48px;
+	border: 0;
+	border-radius: 999px;
+	outline: 0;
+	background: transparent;
+	box-shadow: none;
+	color: var(--pg-surface-ink);
+	font-family: var(--pg-font-body);
+	font-size: 16px;
+	line-height: 1.2;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.avix-pg .avix-pg__input::placeholder {
+	color: var(--pg-muted);
+	opacity: 1;
+}
+
+.avix-pg .avix-pg__input::-webkit-search-cancel-button {
+	-webkit-appearance: none;
+}
+
+.avix-pg .avix-pg__search-btn,
+.avix-pg .avix-pg__search-btn:hover,
+.avix-pg .avix-pg__search-btn:focus,
+.avix-pg .avix-pg__search-btn:active {
+	display: inline-grid;
+	flex: none;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: var(--pg-accent);
+	box-shadow: none;
+	color: #ffffff;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+	transition: background-color 0.25s ease, transform 0.35s var(--pg-ease);
+}
+
+.avix-pg .avix-pg__search-btn svg {
+	width: 18px;
+	height: 18px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.avix-pg .avix-pg__search-btn:focus-visible {
+	outline: 2px solid var(--pg-accent);
+	outline-offset: 3px;
+}
+
+@media (hover: hover) {
+	.avix-pg .avix-pg__search-btn:hover {
+		background: #e25504;
+		transform: translateX(2px);
+	}
+}
+
+/* ---------- Shared: stretched link, focus ---------- */
+
+.avix-pg .avix-pg__link,
+.avix-pg .avix-pg__link:hover,
+.avix-pg .avix-pg__link:focus {
+	color: inherit;
+	background: none;
+	box-shadow: none;
+	text-decoration: none;
+	outline: 0;
+}
+
+/* One link per card, stretched over it: no nested links, all of it clickable. */
+.avix-pg .avix-pg__link::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	border-radius: var(--pg-r);
+}
+
+.avix-pg .avix-pg__link:focus-visible::after {
+	outline: 2px solid var(--pg-accent);
+	outline-offset: 6px;
+}
+
+/* ---------- Featured ---------- */
+
+.avix-pg__feature {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+	gap: clamp(28px, 4.4cqi, 72px);
+	align-items: center;
+}
+
+.avix-pg__feature .avix-pg__link::after {
+	border-radius: var(--pg-r-lg);
+}
+
+.avix-pg__feature-media {
+	position: relative;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+	border-radius: var(--pg-r-lg);
+	background: var(--pg-chip-bg);
+	isolation: isolate;
+}
+
+.avix-pg .avix-pg__img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	object-fit: cover;
+	transition: transform 0.8s var(--pg-ease);
+}
+
+.avix-pg .avix-pg__badge {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	padding: 8px 14px 8px 12px;
+	border-radius: 999px;
+	background: var(--pg-surface);
+	box-shadow: 0 8px 22px -10px rgba(26, 26, 26, 0.35);
+	color: var(--pg-surface-ink);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.avix-pg .avix-pg__badge .avix-pg__px {
+	width: 7px;
+	height: 7px;
+	margin: 0;
+	box-shadow: none;
+}
+
+.avix-pg__feature-body {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	padding: 8px 0;
+}
+
+.avix-pg__feature-top {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 14px;
+	margin: 0 0 clamp(16px, 1.8cqi, 22px);
+}
+
+.avix-pg .avix-pg__chip-tag {
+	display: inline-flex;
+	align-items: center;
+	min-height: 28px;
+	padding: 5px 12px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--pg-accent) 10%, transparent);
+	color: var(--pg-tag-ink);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.avix-pg .avix-pg__feature-title {
+	margin: 0 0 16px;
+	padding: 0;
+	color: var(--pg-ink);
+	font-family: var(--pg-font-display);
+	font-size: clamp(28px, 3.2cqi, 42px);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+	text-transform: none;
+	text-wrap: balance;
+}
+
+.avix-pg .avix-pg__feature-excerpt {
+	display: -webkit-box;
+	max-width: 46ch;
+	margin: 0 0 clamp(24px, 2.6cqi, 32px);
+	padding: 0;
+	overflow: hidden;
+	color: var(--pg-muted);
+	font-size: clamp(15.5px, 1.35cqi, 17px);
+	line-height: 1.65;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	text-wrap: pretty;
+}
+
+.avix-pg .avix-pg__btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 14px;
+	min-height: 52px;
+	padding: 6px 6px 6px 24px;
+	border-radius: 999px;
+	background: var(--pg-btn-bg);
+	color: var(--pg-btn-ink);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1;
+	transition: transform 0.4s var(--pg-ease), box-shadow 0.4s var(--pg-ease);
+}
+
+.avix-pg .avix-pg__btn-icon,
+.avix-pg .avix-pg__cta-icon,
+.avix-pg .avix-pg__more-icon {
+	display: inline-grid;
+	flex: none;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: var(--pg-accent);
+	color: #ffffff;
+	transition: transform 0.4s var(--pg-ease), background-color 0.3s ease;
+}
+
+.avix-pg .avix-pg__btn-icon svg,
+.avix-pg .avix-pg__cta-icon svg,
+.avix-pg .avix-pg__read-icon svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.4s var(--pg-ease);
+}
+
+@media (hover: hover) {
+	.avix-pg__feature:hover .avix-pg__img {
+		transform: scale(1.04);
+	}
+
+	.avix-pg__feature:hover .avix-pg__btn {
+		transform: translateY(-2px);
+		box-shadow: 0 14px 30px -14px rgba(26, 26, 26, 0.55);
+	}
+
+	.avix-pg__feature:hover .avix-pg__btn-icon svg {
+		transform: translate(2px, -2px);
+	}
+}
+
+/* ---------- Topic chips ---------- */
+
+.avix-pg__rail {
+	display: flex;
+	align-items: center;
+	gap: 14px 24px;
+	margin: clamp(64px, 7cqi, 104px) 0 clamp(28px, 3cqi, 40px);
+	padding: 22px 0 0;
+	border-top: 1px solid var(--pg-line);
+}
+
+.avix-pg__head + .avix-pg__rail,
+.avix-pg__head + .avix-pg__feature[hidden] + .avix-pg__rail {
+	margin-top: 0;
+}
+
+.avix-pg__inner > .avix-pg__rail:first-child,
+.avix-pg__inner > .avix-pg__feature[hidden]:first-child + .avix-pg__rail {
+	margin-top: 0;
+}
+
+.avix-pg .avix-pg__rail-label {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	flex: none;
+	margin: 0;
+	padding: 0;
+	color: var(--pg-muted);
+	/* Can be a heading (h2) for the outline: theme heading styles stay out. */
+	font-family: var(--pg-font-body);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.avix-pg__topics {
+	min-width: 0;
+}
+
+.avix-pg .avix-pg__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-pg .avix-pg__chip-item {
+	margin: 0;
+	padding: 0;
+}
+
+.avix-pg .avix-pg__chip-item::before,
+.avix-pg .avix-pg__chip-item::marker {
+	display: none;
+	content: none;
+}
+
+.avix-pg .avix-pg__chip,
+.avix-pg .avix-pg__chip:hover,
+.avix-pg .avix-pg__chip:focus,
+.avix-pg .avix-pg__chip:visited {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	min-height: 44px;
+	padding: 0 18px;
+	border: 1px solid var(--pg-line);
+	border-radius: 999px;
+	background: transparent;
+	box-shadow: none;
+	color: var(--pg-ink);
+	font-family: var(--pg-font-body);
+	font-size: 14.5px;
+	font-weight: 500;
+	line-height: 1;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease, transform 0.35s var(--pg-pop);
+}
+
+.avix-pg .avix-pg__chip-n {
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+	opacity: 0.6;
+}
+
+.avix-pg .avix-pg__chip:focus-visible {
+	outline: 2px solid var(--pg-accent);
+	outline-offset: 3px;
+}
+
+@media (hover: hover) {
+	.avix-pg .avix-pg__chip:hover {
+		border-color: var(--pg-accent);
+		color: var(--pg-ink);
+	}
+}
+
+.avix-pg .avix-pg__chip.is-active,
+.avix-pg .avix-pg__chip.is-active:hover,
+.avix-pg .avix-pg__chip.is-active:focus {
+	border-color: var(--pg-accent);
+	background: var(--pg-accent);
+	color: #ffffff;
+	/* White on orange: heavier strokes keep the small label legible. */
+	font-weight: 600;
+}
+
+.avix-pg .avix-pg__chip:active {
+	transform: scale(0.96);
+}
+
+/* ---------- Grid & cards ---------- */
+
+.avix-pg__grid {
+	display: grid;
+	grid-template-columns: repeat(var(--pg-cols), minmax(0, 1fr));
+	gap: var(--pg-row-gap) var(--pg-gap, var(--pg-gap-auto));
+	align-items: stretch;
+	transition: opacity 0.3s ease;
+}
+
+.avix-pg__feature:not([hidden]) + .avix-pg__grid {
+	margin-top: clamp(56px, 6cqi, 88px);
+}
+
+.avix-pg__grid.is-busy {
+	opacity: 0.35;
+	pointer-events: none;
+}
+
+.avix-pg__card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.avix-pg__media {
+	position: relative;
+	aspect-ratio: var(--pg-ratio);
+	overflow: hidden;
+	border-radius: var(--pg-r);
+	background: var(--pg-chip-bg);
+	isolation: isolate;
+}
+
+.avix-pg__body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: flex-start;
+	padding-top: 20px;
+}
+
+.avix-pg__card.is-text {
+	padding: 26px 26px 24px;
+	border: 1px solid var(--pg-line);
+	border-radius: var(--pg-r);
+}
+
+.avix-pg__card.is-text .avix-pg__body {
+	padding-top: 0;
+}
+
+.avix-pg .avix-pg__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 9px;
+	/* Each item starts with its separator (3px + 9px gap). The line hangs
+	   12px to the left and that strip is clipped, so a separator that starts
+	   a line is never seen: no dot dangles when the meta wraps. */
+	margin: 0 0 0 -12px;
+	padding: 0;
+	-webkit-clip-path: inset(-4px -4px -4px 12px);
+	clip-path: inset(-4px -4px -4px 12px);
+	color: var(--pg-muted);
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.4;
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-pg .avix-pg__mi {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	white-space: nowrap;
+}
+
+.avix-pg .avix-pg__cat {
+	color: var(--pg-accent-text);
+	font-weight: 600;
+}
+
+/* Pixel separators instead of bullets. */
+.avix-pg .avix-pg__sep {
+	flex: none;
+	width: 3px;
+	height: 3px;
+	background: currentColor;
+	opacity: 0.5;
+}
+
+.avix-pg .avix-pg__card-title {
+	display: -webkit-box;
+	margin: 12px 0 10px;
+	padding: 0;
+	overflow: hidden;
+	color: var(--pg-ink);
+	font-family: var(--pg-font-display);
+	font-size: clamp(19px, 1.75cqi, 22px);
+	font-weight: 600;
+	line-height: 1.28;
+	letter-spacing: -0.02em;
+	text-transform: none;
+	/* Balance (not pretty) works inside the line clamp: no one-word last lines. */
+	text-wrap: balance;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+}
+
+/*
+ * The underline lives on an inline span: the line clamp turns the link itself
+ * into a block, so an underline on the link ran the full card width under the
+ * last line. On the span it draws under each line of the words, line by line.
+ */
+.avix-pg .avix-pg__card-title .avix-pg__link-text {
+	background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
+	transition: background-size 0.45s var(--pg-ease);
+}
+
+.avix-pg .avix-pg__excerpt {
+	display: -webkit-box;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	color: var(--pg-muted);
+	font-size: 15px;
+	line-height: 1.6;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	text-wrap: pretty;
+}
+
+.avix-pg .avix-pg__read {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: auto;
+	padding-top: 20px;
+	color: var(--pg-ink);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.avix-pg .avix-pg__read-icon {
+	display: inline-grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border: 1px solid var(--pg-line);
+	border-radius: 50%;
+	transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.avix-pg .avix-pg__read-icon svg {
+	width: 14px;
+	height: 14px;
+}
+
+@media (hover: hover) {
+	.avix-pg__card:hover .avix-pg__img {
+		transform: scale(1.045);
+	}
+
+	.avix-pg__card:hover .avix-pg__card-title .avix-pg__link-text {
+		background-size: 100% 1px;
+	}
+
+	.avix-pg__card:hover .avix-pg__read-icon {
+		border-color: var(--pg-accent);
+		background: var(--pg-accent);
+		color: #ffffff;
+	}
+
+	.avix-pg__card:hover .avix-pg__read-icon svg {
+		transform: translate(2px, -2px);
+	}
+}
+
+/* Keyboard focus shows the same cues as hover. */
+.avix-pg__card:focus-within .avix-pg__card-title .avix-pg__link-text {
+	background-size: 100% 1px;
+}
+
+.avix-pg__card:focus-within .avix-pg__read-icon {
+	border-color: var(--pg-accent);
+	background: var(--pg-accent);
+	color: #ffffff;
+}
+
+/* ---------- Pixel cover (no featured image) ---------- */
+
+.avix-pg .avix-pg__ph {
+	position: absolute;
+	inset: 0;
+	display: block;
+	overflow: hidden;
+	background:
+		radial-gradient(closest-side at 78% 50%, color-mix(in srgb, var(--pg-accent) 22%, transparent), transparent),
+		var(--pg-cover-bg);
+}
+
+/* A faint grid on the same scale as the pixels. */
+.avix-pg .avix-pg__ph::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-image:
+		linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+	background-size: 10% 10%;
+	background-size: calc(100% / 16) 10%;
+}
+
+.avix-pg .avix-pg__ph-px {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	fill: var(--pg-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-pg .avix-pg__ph-label {
+	position: absolute;
+	bottom: clamp(16px, 7%, 28px);
+	left: clamp(18px, 7%, 30px);
+	max-width: 55%;
+	color: #ffffff;
+	font-family: var(--pg-font-display);
+	font-size: clamp(18px, 1.9cqi, 24px);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+}
+
+.avix-pg__feature .avix-pg__ph-label {
+	font-size: clamp(24px, 3cqi, 40px);
+}
+
+/* ---------- Project card ---------- */
+
+/* The card is its own container: its layout follows its width, so the same
+   card works as one grid cell and widened over a row's empty cells. Units
+   such as cqi inside it are relative to the card. */
+.avix-pg__cta {
+	container: avix-pg-cta / inline-size;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: 100%;
+	padding: clamp(26px, 2.6cqi, 34px);
+	overflow: hidden;
+	border-radius: var(--pg-r);
+	background: var(--pg-cta-bg);
+	color: var(--pg-cta-ink);
+	isolation: isolate;
+}
+
+/* Pixel grid that fades in from the bottom-right, where the character works. */
+.avix-pg__cta::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background-image:
+		linear-gradient(rgba(255, 255, 255, 0.13) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255, 255, 255, 0.13) 1px, transparent 1px);
+	background-position: right bottom;
+	background-size: 18px 18px;
+	-webkit-mask-image: radial-gradient(circle at 100% 100%, #000 0, transparent 70%);
+	mask-image: radial-gradient(circle at 100% 100%, #000 0, transparent 70%);
+}
+
+.avix-pg__cta-in {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 32px;
+}
+
+.avix-pg__cta-top {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.avix-pg .avix-pg__cta-eyebrow {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin: 0 0 4px;
+	padding: 0;
+	/* Small type in ink, like the bracket accent: 5.6:1 on the orange. */
+	color: var(--pg-cta-accent);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.avix-pg .avix-pg__cta-eyebrow .avix-pg__px {
+	background: var(--pg-cta-accent);
+	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.22);
+}
+
+/* The one white line on the card (client rule). */
+.avix-pg .avix-pg__cta-title {
+	max-width: 15ch;
+	margin: 0;
+	padding: 0;
+	color: var(--pg-cta-ink);
+	font-family: var(--pg-font-display);
+	/* About 10 characters per line width: "Planning a project?" keeps to one
+	   line in any column count (34px in a 390px card, 24px in four columns). */
+	font-size: clamp(22px, 10.2cqi, 34px);
+	font-weight: 600;
+	line-height: 1.08;
+	letter-spacing: -0.03em;
+	text-wrap: balance;
+}
+
+.avix-pg .avix-pg__cta-accent {
+	color: var(--pg-cta-accent);
+}
+
+/* Supporting copy in the card's ink, like the eyebrow and the [accent]
+   line (5.6:1 on the orange, AA at any size), so it sits under the white
+   title instead of competing with it. */
+.avix-pg .avix-pg__cta-text {
+	max-width: 34ch;
+	margin: 0;
+	padding: 0;
+	color: var(--pg-cta-accent);
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1.55;
+	text-wrap: pretty;
+}
+
+/* When the card is narrow the character moves up, above the button. */
+.avix-pg__cta-foot {
+	display: flex;
+	flex-wrap: wrap-reverse;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.avix-pg .avix-pg__cta-btn,
+.avix-pg .avix-pg__cta-btn:hover,
+.avix-pg .avix-pg__cta-btn:focus,
+.avix-pg .avix-pg__cta-btn:visited {
+	position: static;
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	min-height: 52px;
+	padding: 6px 6px 6px 22px;
+	border: 0;
+	border-radius: 999px;
+	background: #ffffff;
+	box-shadow: 0 12px 26px -14px rgba(26, 26, 26, 0.5);
+	color: var(--pg-cta-accent);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.1;
+	white-space: nowrap;
+	text-decoration: none;
+	outline: 0;
+	transition: transform 0.4s var(--pg-ease), box-shadow 0.4s var(--pg-ease);
+}
+
+/* The whole card is the link. */
+.avix-pg .avix-pg__cta-btn::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	border-radius: var(--pg-r);
+}
+
+/* The card clips its overflow, so the focus ring is drawn inside it (and a
+   ring hugs the pill) instead of outside where it would be cut off. */
+.avix-pg .avix-pg__cta-btn:focus-visible {
+	box-shadow: 0 0 0 3px var(--pg-cta-bg), 0 0 0 5px #ffffff;
+}
+
+.avix-pg .avix-pg__cta-btn:focus-visible::after {
+	outline: 2px solid #ffffff;
+	outline-offset: -6px;
+}
+
+.avix-pg .avix-pg__cta-icon {
+	width: 40px;
+	height: 40px;
+	background: var(--pg-cta-accent);
+}
+
+.avix-pg__desk {
+	position: relative;
+	flex: none;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 0 2px 0 auto;
+}
+
+/* A little desk line under the character's feet. */
+.avix-pg__desk::after {
+	content: "";
+	display: block;
+	width: calc(var(--pg-cta-pal-w, 50px) * 1.5);
+	height: 3px;
+	border-radius: 2px;
+	background: rgba(26, 26, 26, 0.28);
+}
+
+.avix-pg__cta-pal {
+	--pal-w: var(--pg-cta-pal-w, 50px);
+	--pal-color: #ffffff;
+	--pal-prop: var(--pg-cta-accent);
+}
+
+/* The logo pixel on the laptop lid. */
+.avix-pg .avix-pg__cta-pal .avix-pg__logo {
+	fill: var(--pg-cta-bg);
+}
+
+@media (hover: hover) {
+	.avix-pg__cta:hover .avix-pg__cta-btn {
+		transform: translateY(-2px);
+		box-shadow: 0 16px 32px -14px rgba(26, 26, 26, 0.6);
+	}
+
+	.avix-pg__cta:hover .avix-pg__cta-icon svg {
+		transform: translate(2px, -2px);
+	}
+}
+
+/* When every post fits on the page the project card comes last (PHP and
+   script) and widens over the cells the posts leave empty, so the grid never
+   ends on a hole: "p1 p2 p3 / p4 + card", or "post + card" for a one-post
+   topic. Paged lists keep it at its slot, where rows are already full.
+   Narrower layouts redo this in the container queries below. */
+.avix-pg--cols-3 .avix-pg__grid > .avix-pg__cta:last-child:nth-child(3n+2),
+.avix-pg--cols-4 .avix-pg__grid > .avix-pg__cta:last-child:nth-child(4n+3) {
+	grid-column: span 2;
+}
+
+.avix-pg--cols-4 .avix-pg__grid > .avix-pg__cta:last-child:nth-child(4n+2) {
+	grid-column: span 3;
+}
+
+.avix-pg--cols-2 .avix-pg__grid > .avix-pg__cta:last-child:nth-child(2n+1),
+.avix-pg--cols-3 .avix-pg__grid > .avix-pg__cta:last-child:nth-child(3n+1),
+.avix-pg--cols-4 .avix-pg__grid > .avix-pg__cta:last-child:nth-child(4n+1) {
+	grid-column: 1 / -1;
+}
+
+/* Widened: copy on the left, button and typing character on the right. */
+@container avix-pg-cta (min-width: 600px) {
+	.avix-pg__cta-in {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: end;
+		gap: 24px clamp(32px, 6cqi, 72px);
+	}
+
+	.avix-pg__cta-top {
+		align-self: start;
+	}
+
+	.avix-pg .avix-pg__cta-title {
+		max-width: 18ch;
+		font-size: clamp(30px, 4.6cqi, 42px);
+	}
+
+	.avix-pg__cta-foot {
+		flex-wrap: nowrap;
+		gap: 28px;
+	}
+}
+
+/* ---------- Empty state ---------- */
+
+.avix-pg__empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: clamp(48px, 6cqi, 80px) 24px;
+	border: 1px dashed color-mix(in srgb, var(--pg-ink) 18%, transparent);
+	border-radius: var(--pg-r-lg);
+	background: var(--pg-chip-bg);
+	text-align: center;
+}
+
+.avix-pg__empty-stage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 22px;
+}
+
+.avix-pg__empty-stage::after {
+	content: "";
+	width: 64px;
+	height: 3px;
+	border-radius: 2px;
+	background: color-mix(in srgb, var(--pg-accent) 45%, transparent);
+}
+
+.avix-pg__empty-pal {
+	--pal-w: 40px;
+	--pal-color: var(--pg-pal);
+}
+
+/* Looking around for posts: quick glances both ways. Specific enough to beat
+   the shared idle/still rules; paused by .is-off, off under reduced motion. */
+.avix-pg .avix-pg__empty-pal.avix-pal .avix-pal__head {
+	animation: avix-pg-search 2.4s steps(1) infinite;
+}
+
+/* A small shrug. */
+.avix-pg__empty-pal .avix-pal__arm {
+	transform: translate(0, -1px);
+}
+
+.avix-pg .avix-pg__empty-title {
+	margin: 0 0 10px;
+	padding: 0;
+	color: var(--pg-ink);
+	font-family: var(--pg-font-display);
+	font-size: clamp(24px, 2.6cqi, 32px);
+	font-weight: 600;
+	line-height: 1.15;
+	letter-spacing: -0.025em;
+	text-wrap: balance;
+}
+
+.avix-pg .avix-pg__empty-text {
+	max-width: 46ch;
+	margin: 0 0 24px;
+	padding: 0;
+	color: var(--pg-muted);
+	font-size: 16px;
+	line-height: 1.6;
+	text-wrap: pretty;
+}
+
+.avix-pg .avix-pg__empty-btn,
+.avix-pg .avix-pg__empty-btn:hover,
+.avix-pg .avix-pg__empty-btn:focus,
+.avix-pg .avix-pg__empty-btn:visited {
+	display: inline-flex;
+	align-items: center;
+	min-height: 48px;
+	padding: 0 24px;
+	border: 0;
+	border-radius: 999px;
+	background: var(--pg-accent);
+	box-shadow: none;
+	color: #ffffff;
+	font-size: 15px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: background-color 0.25s ease, transform 0.35s var(--pg-ease);
+}
+
+.avix-pg .avix-pg__empty-btn:focus-visible {
+	outline: 2px solid var(--pg-accent);
+	outline-offset: 3px;
+}
+
+@media (hover: hover) {
+	.avix-pg .avix-pg__empty-btn:hover {
+		background: #e25504;
+		transform: translateY(-2px);
+	}
+}
+
+/* ---------- Load more ---------- */
+
+.avix-pg__foot {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 14px;
+	margin-top: clamp(56px, 6cqi, 80px);
+	text-align: center;
+}
+
+.avix-pg .avix-pg__status {
+	margin: 0;
+	padding: 0;
+	color: var(--pg-muted);
+	font-size: 14px;
+	line-height: 1.4;
+	font-variant-numeric: tabular-nums;
+}
+
+.avix-pg .avix-pg__status strong {
+	color: var(--pg-ink);
+	font-weight: 600;
+}
+
+.avix-pg__bar {
+	display: block;
+	width: 168px;
+	height: 2px;
+	overflow: hidden;
+	border-radius: 2px;
+	background: var(--pg-line);
+}
+
+.avix-pg__bar-fill {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background: var(--pg-accent);
+	transform: scaleX(var(--pg-progress, 0));
+	transform-origin: 0 50%;
+	transition: transform 0.7s var(--pg-ease);
+}
+
+.avix-pg__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 12px 20px;
+	margin-top: 12px;
+}
+
+.avix-pg .avix-pg__more,
+.avix-pg .avix-pg__more:hover,
+.avix-pg .avix-pg__more:focus,
+.avix-pg .avix-pg__more:visited {
+	display: inline-flex;
+	align-items: center;
+	gap: 16px;
+	min-height: 56px;
+	padding: 7px 7px 7px 28px;
+	border: 0;
+	border-radius: 999px;
+	background: var(--pg-btn-bg);
+	box-shadow: none;
+	color: var(--pg-btn-ink);
+	font-family: var(--pg-font-body);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	cursor: pointer;
+	transition: transform 0.4s var(--pg-ease), box-shadow 0.4s var(--pg-ease);
+}
+
+.avix-pg .avix-pg__more:focus-visible {
+	outline: 2px solid var(--pg-accent);
+	outline-offset: 4px;
+}
+
+.avix-pg .avix-pg__more-icon {
+	width: 42px;
+	height: 42px;
+}
+
+.avix-pg .avix-pg__plus {
+	width: 18px;
+	height: 18px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	transition: transform 0.45s var(--pg-ease);
+}
+
+/* Loading: three pixels blinking in turn instead of a spinner. */
+.avix-pg .avix-pg__dots {
+	display: none;
+	width: 18px;
+	height: 8px;
+	fill: currentColor;
+	shape-rendering: crispEdges;
+}
+
+.avix-pg .avix-pg__dots rect {
+	animation: avix-pg-blink 0.9s steps(1) infinite;
+}
+
+.avix-pg .avix-pg__dots rect:nth-child(2) {
+	animation-delay: 0.3s;
+}
+
+.avix-pg .avix-pg__dots rect:nth-child(3) {
+	animation-delay: 0.6s;
+}
+
+.avix-pg .avix-pg__more.is-loading .avix-pg__plus {
+	display: none;
+}
+
+.avix-pg .avix-pg__more.is-loading .avix-pg__dots {
+	display: block;
+}
+
+.avix-pg .avix-pg__more.is-loading {
+	cursor: progress;
+}
+
+@media (hover: hover) {
+	.avix-pg .avix-pg__more:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 16px 32px -16px rgba(26, 26, 26, 0.6);
+	}
+
+	.avix-pg .avix-pg__more:hover .avix-pg__plus {
+		transform: rotate(90deg);
+	}
+}
+
+.avix-pg .avix-pg__newer,
+.avix-pg .avix-pg__newer:visited {
+	color: var(--pg-ink);
+	font-size: 15px;
+	font-weight: 600;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--pg-accent) 60%, transparent);
+	text-underline-offset: 4px;
+}
+
+/* ---------- Character states ---------- */
+
+/* Reading: the head bows one whole unit, tucked behind the book. */
+.avix-pg .avix-pg__pal.is-read .avix-pal__head {
+	transform: translate(0, 1px);
+}
+
+/* Looked up: the book drops one unit and the head stays on the body (the
+   shared look/hi rules move it sideways by whole units). */
+.avix-pg .avix-pg__pal.is-up .avix-pg__book,
+.avix-pg .avix-pg__pal.is-up .avix-pg__book-pages {
+	transform: translate(0, 1px);
+}
+
+/* The topic label's pixel blinks when a topic is picked. */
+.avix-pg .avix-pg__px.is-blink {
+	animation: avix-pg-blink 0.3s steps(1) 3;
+}
+
+/* Paused off screen and in hidden tabs; the project card's typing also
+   pauses on its own while the card is out of view (the widget is the whole
+   Blog page, so the root alone is almost always on screen). A state
+   override that must beat every animation shorthand. */
+.avix-pg.is-off .avix-pal,
+.avix-pg.is-off .avix-pal *,
+.avix-pg.is-off .avix-pg__dots rect,
+.avix-pg .avix-pg__cta.is-off .avix-pal,
+.avix-pg .avix-pg__cta.is-off .avix-pal * {
+	animation-play-state: paused !important;
+}
+
+/* ---------- Reveal ---------- */
+
+/* Content is visible by default; the script arms the reveal. */
+.avix-pg.is-armed :is([data-pg-rv], [data-pg-card], [data-pg-cta]) {
+	opacity: 0;
+	transform: translateY(26px);
+	transition: opacity 0.7s ease, transform 0.8s var(--pg-ease);
+	transition-delay: var(--pg-d, 0ms);
+}
+
+.avix-pg.is-armed :is([data-pg-rv], [data-pg-card], [data-pg-cta]).is-in {
+	opacity: 1;
+	transform: none;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes avix-pg-blink {
+	0% { opacity: 1; }
+	33% { opacity: 0.25; }
+}
+
+@keyframes avix-pg-search {
+	0% { transform: translate(0, 0); }
+	25% { transform: translate(-1px, 0); }
+	50% { transform: translate(0, 0); }
+	75% { transform: translate(1px, 0); }
+}
+
+/* ---------- Four columns ---------- */
+
+/* Reading time gets its own meta line on purpose, so every card's title in
+   a row starts at the same height. */
+.avix-pg--cols-4 .avix-pg__card .avix-pg__mi--time {
+	flex-basis: 100%;
+}
+
+/* A smaller character in a quarter-width card. */
+.avix-pg--cols-4 .avix-pg__cta {
+	--pg-cta-pal-w: 40px;
+}
+
+/* ---------- Layout by width ---------- */
+
+@container avix-pg (max-width: 1100px) {
+	.avix-pg--cols-4 .avix-pg__grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.avix-pg--cols-4 .avix-pg__card .avix-pg__mi--time {
+		flex-basis: auto;
+	}
+
+	.avix-pg--cols-4 .avix-pg__cta {
+		--pg-cta-pal-w: 50px;
+	}
+
+	/* Four columns became three: the project card fills a row as in three. */
+	.avix-pg--cols-4 .avix-pg__grid > .avix-pg__cta:last-child:nth-child(n) {
+		grid-column: auto;
+	}
+
+	.avix-pg--cols-4 .avix-pg__grid > .avix-pg__cta:last-child:nth-child(3n+2) {
+		grid-column: span 2;
+	}
+
+	.avix-pg--cols-4 .avix-pg__grid > .avix-pg__cta:last-child:nth-child(3n+1) {
+		grid-column: 1 / -1;
+	}
+
+	/* The header stacks before its text column gets cramped. */
+	.avix-pg__head {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 28px;
+	}
+
+	.avix-pg .avix-pg__text {
+		margin-top: 0;
+	}
+
+	.avix-pg .avix-pg__title {
+		max-width: 16ch;
+	}
+
+	.avix-pg__aside {
+		max-width: 620px;
+	}
+}
+
+@container avix-pg (max-width: 900px) {
+	.avix-pg__inner {
+		--pg-pal-auto: 40px;
+		--pg-r-lg: 22px;
+	}
+
+	.avix-pg__feature {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 26px;
+	}
+
+	.avix-pg .avix-pg__feature-excerpt {
+		max-width: 60ch;
+	}
+
+	.avix-pg__grid,
+	.avix-pg--cols-4 .avix-pg__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	/* Two columns: a project card that starts a row takes the whole row. */
+	.avix-pg .avix-pg__grid > .avix-pg__cta:last-child:nth-child(n) {
+		grid-column: auto;
+	}
+
+	.avix-pg .avix-pg__grid > .avix-pg__cta:last-child:nth-child(2n+1) {
+		grid-column: 1 / -1;
+	}
+
+	.avix-pg__rail {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	/* One swipeable row of chips that runs to the screen edge, with a fade at
+	   the edges (the left one once scrolled), never a wall of boxes. A
+	   scroller clips on both axes, so 6px of padding (cancelled by the
+	   margin) keeps the chips' focus ring inside it. */
+	.avix-pg__topics {
+		width: calc(100% + var(--pg-gutter) / 2 + 6px);
+		margin: -6px calc(var(--pg-gutter) / -2) -6px -6px;
+		padding: 6px 0 6px 6px;
+		scroll-padding-inline: 6px;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		scrollbar-width: none;
+		-webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+		mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
+	}
+
+	.avix-pg__topics.is-scrolled {
+		-webkit-mask-image: linear-gradient(90deg, transparent 6px, #000 38px, #000 calc(100% - 40px), transparent);
+		mask-image: linear-gradient(90deg, transparent 6px, #000 38px, #000 calc(100% - 40px), transparent);
+	}
+
+	.avix-pg__topics.is-scrolled.is-end {
+		-webkit-mask-image: linear-gradient(90deg, transparent 6px, #000 38px);
+		mask-image: linear-gradient(90deg, transparent 6px, #000 38px);
+	}
+
+	.avix-pg__topics::-webkit-scrollbar {
+		display: none;
+	}
+
+	.avix-pg .avix-pg__chips {
+		flex-wrap: nowrap;
+		width: max-content;
+		padding-right: 40px;
+	}
+}
+
+@container avix-pg (max-width: 640px) {
+	.avix-pg__inner {
+		--pg-gutter: 32px;
+		--pg-r-lg: 20px;
+		--pg-r: 18px;
+		--pg-row-gap: 40px;
+	}
+
+	/* 40px floor, matching Page Hero's phone H1. */
+	.avix-pg .avix-pg__title {
+		font-size: clamp(40px, 10.5cqi, 48px);
+		line-height: 1.06;
+	}
+
+	/* The character no longer fits beside the copy: the text takes the full
+	   width and the character stands below it, on the search bar. */
+	.avix-pg .avix-pg__text {
+		max-width: none;
+	}
+
+	.avix-pg__perch:not(.avix-pg__perch--ledge):has(.avix-pg__pal) {
+		margin-top: calc(var(--pg-pal-w, var(--pg-pal-auto)) * 1.2 - 14px);
+	}
+
+	/* 54px leaves 5px around the 44px button. */
+	.avix-pg .avix-pg__search {
+		height: 54px;
+		padding-right: 5px;
+	}
+
+	.avix-pg .avix-pg__badge {
+		top: 12px;
+		left: 12px;
+		padding: 7px 12px 7px 10px;
+		font-size: 11px;
+	}
+
+	.avix-pg .avix-pg__feature-title {
+		font-size: clamp(25px, 7cqi, 30px);
+	}
+
+	.avix-pg__rail {
+		margin-top: 56px;
+		padding-top: 18px;
+	}
+
+	.avix-pg__grid,
+	.avix-pg--cols-4 .avix-pg__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-pg .avix-pg__card-title {
+		font-size: 21px;
+	}
+
+	.avix-pg__cta {
+		min-height: 0;
+	}
+
+	.avix-pg__actions,
+	.avix-pg .avix-pg__more {
+		width: 100%;
+	}
+
+	.avix-pg .avix-pg__more,
+	.avix-pg .avix-pg__more:hover,
+	.avix-pg .avix-pg__more:focus,
+	.avix-pg .avix-pg__more:visited {
+		justify-content: space-between;
+	}
+}
+
+@container avix-pg (max-width: 380px) {
+	.avix-pg .avix-pg__btn {
+		padding-left: 20px;
+		font-size: 14.5px;
+	}
+
+	.avix-pg .avix-pg__cta-btn,
+	.avix-pg .avix-pg__cta-btn:hover,
+	.avix-pg .avix-pg__cta-btn:focus,
+	.avix-pg .avix-pg__cta-btn:visited {
+		padding-left: 18px;
+		font-size: 14.5px;
+	}
+}
+
+/* ---------- Editor ---------- */
+
+/* No entrance replays while editing in Elementor. */
+.elementor-editor-active .avix-pg.is-armed :is([data-pg-rv], [data-pg-card], [data-pg-cta]) {
+	opacity: 1;
+	transform: none;
+	transition: none;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-pg *,
+	.avix-pg *::before,
+	.avix-pg *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	.avix-pg.is-armed :is([data-pg-rv], [data-pg-card], [data-pg-cta]) {
+		opacity: 1;
+		transform: none;
+	}
+
+	.avix-pg .avix-pg__more.is-loading .avix-pg__dots rect {
+		opacity: 1;
+	}
+}

@@ -34,3 +34,14 @@
 	display: none;
 	content: none;
 }
+
+/*
+ * Algenix sets hyphens: auto on headings, so on phones display type broke
+ * mid-word ("de-velopment"). Headlines read better whole; every widget keeps
+ * overflow-wrap so a genuinely long word still wraps instead of overflowing.
+ * The home page is left exactly as it was approved (body.home is excluded).
+ */
+body:not(.home) .elementor-widget[class*="elementor-widget-avix-"] * {
+	-webkit-hyphens: manual;
+	hyphens: manual;
+}

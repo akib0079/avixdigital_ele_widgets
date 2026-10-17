@@ -663,7 +663,8 @@ class Impact_Numbers extends Widget_Base {
 				<span class="avix-impact__index" aria-hidden="true"><?php echo esc_html( sprintf( '%02d', $index + 1 ) ); ?></span>
 			<?php endif; ?>
 			<?php $this->render_icon( $settings, $metric, $index, $label ); ?>
-			<p class="avix-impact__value" aria-label="<?php echo esc_attr( $spoken ); ?>">
+			<p class="avix-impact__value">
+				<span class="elementor-screen-only"><?php echo esc_html( $spoken ); ?></span>
 				<?php if ( '' !== $prefix ) : ?>
 					<span class="avix-impact__affix avix-impact__affix--prefix" aria-hidden="true"><?php echo esc_html( $prefix ); ?></span>
 				<?php endif; ?>

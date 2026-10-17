@@ -1,0 +1,1430 @@
+/*!
+ * Avix Digital · Journey
+ * Milestone cards on one track. The pixel character walks the track as the
+ * visitor scrolls, lights each milestone it reaches and plants a flag at the
+ * last one. Layout follows the widget width (container queries): a vertical
+ * track by default, a horizontal one on wide widgets (1180px+) with up to 4
+ * milestones. An optional call-to-action pill closes the track, and the dark
+ * theme doubles as the service pages' "How we build" process band.
+ */
+
+.avix-jr {
+	--jr-bg: #ffffff;
+	--jr-ink: #1a1a1a;
+	--jr-muted: #5c5f66;
+	--jr-soft: #8a857e;
+	--jr-line: rgba(26, 26, 26, 0.1);
+	--jr-rail: rgba(26, 26, 26, 0.14);
+	--jr-card: #f7f5f2;
+	--jr-card-on: #ffffff;
+	--jr-accent: #fb6007;
+	--jr-accent-text: #c54804;
+	--jr-prop: #1a1a1a;
+	--jr-shadow: 0 26px 48px -30px rgba(26, 26, 26, 0.38);
+	--jr-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--jr-font-body: "Inter", Arial, sans-serif;
+	--jr-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--jr-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--jr-max: 1240px;
+
+	container: avix-jr / inline-size;
+	position: relative;
+	display: block;
+	width: 100%;
+	padding: clamp(80px, 9vw, 140px) 0;
+	overflow: hidden;
+	overflow: clip;
+	color: var(--jr-ink);
+	background: var(--jr-bg);
+	font-family: var(--jr-font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-jr *,
+.avix-jr *::before,
+.avix-jr *::after {
+	box-sizing: border-box;
+}
+
+.avix-jr--warm {
+	--jr-bg: #f5f3ef;
+	--jr-card: #fbfaf8;
+	--jr-card-on: #ffffff;
+	--jr-line: rgba(26, 26, 26, 0.09);
+	/* One step darker keeps small orange text at AA on the paper tone. */
+	--jr-accent-text: #b84203;
+}
+
+.avix-jr--dark {
+	--jr-bg: #050608;
+	--jr-ink: #f5f2ee;
+	--jr-muted: rgba(255, 255, 255, 0.64);
+	--jr-soft: rgba(255, 255, 255, 0.46);
+	--jr-line: rgba(255, 255, 255, 0.09);
+	--jr-rail: rgba(255, 255, 255, 0.16);
+	--jr-card: rgba(255, 255, 255, 0.03);
+	--jr-card-on: rgba(255, 255, 255, 0.065);
+	--jr-accent-text: #ff8a3d;
+	--jr-prop: #ffffff;
+	--jr-shadow: 0 26px 50px -28px rgba(0, 0, 0, 0.7);
+	--jr-cta-bg: rgba(255, 255, 255, 0.04);
+	--jr-cta-line: rgba(255, 255, 255, 0.14);
+	--jr-grid: rgba(255, 255, 255, 0.022);
+}
+
+/*
+ * The faint 80px grid of the other dark process sections, for the centred
+ * process band only: dark journeys without the new options stay as they were.
+ */
+.avix-jr--dark:is(.avix-jr--center, .has-cta) {
+	background-image:
+		linear-gradient(var(--jr-grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--jr-grid) 1px, transparent 1px);
+	background-position: center top;
+	background-size: 80px 80px;
+}
+
+/* A soft orange glow in a corner keeps the dark band from feeling flat. */
+.avix-jr--dark::before {
+	position: absolute;
+	top: -260px;
+	right: -220px;
+	width: 760px;
+	height: 760px;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--jr-accent) 14%, transparent), transparent);
+	content: "";
+	pointer-events: none;
+}
+
+/* A second, fainter glow low on the left warms the call to action. */
+.avix-jr--dark.has-cta::after {
+	position: absolute;
+	bottom: -320px;
+	left: -260px;
+	width: 720px;
+	height: 720px;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--jr-accent) 8%, transparent), transparent);
+	content: "";
+	pointer-events: none;
+}
+
+/*
+ * Container queries style descendants only: width-dependent tokens are
+ * declared (and reset) on the inner wrapper.
+ */
+.avix-jr__inner {
+	/* Multiples of 10 give the 10-unit sprite whole-pixel units. */
+	--jr-pal: var(--jr-pal-w, 40px);
+	--jr-palh: calc(var(--jr-pal) * 1.2);
+	--jr-node: 14px;
+	--jr-pad: clamp(20px, 2.2cqi, 28px);
+	--jr-gap: clamp(14px, 1.6cqi, 22px);
+	--jr-label-fs: clamp(26px, 2.6cqi, 36px);
+	--jr-lane-x: calc(var(--jr-pal) + 22px);
+	--jr-top: calc(var(--jr-pal) * 1.2);
+	--jr-r: var(--jr-radius, 22px);
+	--jr-r-img: max(6px, calc(var(--jr-r) - 8px));
+	/* Picture shape per layout, unless the Image shape control sets --jr-ratio. */
+	--jr-ratio-auto: 16 / 10;
+
+	position: relative;
+	width: min(calc(100% - var(--jr-gutters, 48px)), var(--jr-max));
+	margin-inline: auto;
+}
+
+/* Side margins "Line up with the header": 5% of the width (16px at least)
+   on each side, the Smart Header's own side padding, at every width. */
+.avix-jr--edge-header .avix-jr__inner {
+	--jr-gutters: calc(2 * clamp(16px, 5cqi, 72px));
+}
+
+.avix-jr.avix-jr--edge-header .avix-jr__inner {
+	width: min(calc(100% - var(--jr-gutters)), var(--jr-max));
+}
+
+/* ---------- Header ---------- */
+
+.avix-jr__head {
+	display: grid;
+	grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+	align-items: end;
+	gap: 20px clamp(32px, 6cqi, 96px);
+}
+
+.avix-jr .avix-jr__eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 20px;
+	padding: 0;
+	color: var(--jr-ink);
+	font-family: var(--jr-font-body);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	line-height: 1.3;
+	text-transform: uppercase;
+}
+
+/* A tiny solid square: the same pixel the character is made of. */
+.avix-jr .avix-jr__eyebrow::before {
+	flex: none;
+	width: 8px;
+	height: 8px;
+	background: var(--jr-accent);
+	content: "";
+}
+
+.avix-jr .avix-jr__title {
+	max-width: 17ch;
+	margin: 0;
+	padding: 0;
+	color: var(--jr-ink);
+	font-family: var(--jr-font-display);
+	font-size: clamp(34px, 4.6cqi, 60px);
+	font-weight: 600;
+	letter-spacing: -0.035em;
+	line-height: 1.06;
+	text-transform: none;
+	text-wrap: balance;
+}
+
+.avix-jr__accent {
+	color: var(--jr-accent-text);
+}
+
+/* Centred header: eyebrow, title and text stack in the middle. */
+.avix-jr--center .avix-jr__head {
+	grid-template-columns: minmax(0, 1fr);
+	justify-items: center;
+	text-align: center;
+}
+
+.avix-jr--center .avix-jr__head-main {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.avix-jr.avix-jr--center .avix-jr__title {
+	max-width: 20ch;
+}
+
+.avix-jr.avix-jr--center .avix-jr__intro {
+	margin-inline: auto;
+}
+
+.avix-jr .avix-jr__intro {
+	max-width: 46ch;
+	margin: 0;
+	padding: 0;
+	color: var(--jr-muted);
+	font-size: clamp(15px, 1.4cqi, 17px);
+	font-weight: 400;
+	line-height: 1.7;
+	text-wrap: pretty;
+}
+
+/* ---------- Track (vertical by default) ---------- */
+
+.avix-jr__track {
+	--jr-axis: y;
+	position: relative;
+	margin-top: clamp(40px, 5cqi, 64px);
+	padding-top: var(--jr-top);
+}
+
+.avix-jr__head + .avix-jr__track {
+	margin-top: clamp(28px, 3.6cqi, 44px);
+}
+
+/*
+ * Centred layout: the vertical track is a centred column under the header,
+ * so stories keep a readable line length (about 70 characters) instead of
+ * stretching across a tablet or a wide widget. The track (rail and cards as
+ * one block) sits on the centre line, like the centred header and the
+ * closing pill, so it never looks pushed to one side. The row resets it.
+ */
+.avix-jr--center .avix-jr__track {
+	max-width: var(--jr-col, 640px);
+	margin-inline: auto;
+}
+
+.avix-jr__rail {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.avix-jr__line,
+.avix-jr__tail,
+.avix-jr__fill {
+	position: absolute;
+	left: calc(var(--jr-pal) / 2 - 1px);
+	width: 2px;
+}
+
+.avix-jr__line {
+	top: var(--jr-a, calc(var(--jr-top) + var(--jr-pad) + var(--jr-label-fs) / 2));
+	height: calc(var(--jr-b, 100%) - var(--jr-a, 0px));
+	background: var(--jr-rail);
+	transform-origin: 50% 0;
+}
+
+/* Where the journey continues: a dashed line that fades out. */
+.avix-jr__tail {
+	top: var(--jr-b, 100%);
+	bottom: 0;
+	background: repeating-linear-gradient(180deg, var(--jr-rail) 0 6px, transparent 6px 12px);
+	-webkit-mask-image: linear-gradient(180deg, #000, transparent);
+	mask-image: linear-gradient(180deg, #000, transparent);
+}
+
+.has-end .avix-jr__tail {
+	bottom: auto;
+	height: calc(var(--jr-c, 100%) - var(--jr-b, 100%));
+	-webkit-mask-image: none;
+	mask-image: none;
+}
+
+.avix-jr__fill {
+	top: var(--jr-a, 0px);
+	height: calc(var(--jr-b, 100%) - var(--jr-a, 0px));
+	background: var(--jr-accent);
+	box-shadow: 0 0 10px color-mix(in srgb, var(--jr-accent) 45%, transparent);
+	transform: scaleY(0);
+	transform-origin: 50% 0;
+}
+
+.avix-jr:not(.is-live) .avix-jr__fill {
+	display: none;
+}
+
+.avix-jr .avix-jr__list {
+	position: static;
+	display: grid;
+	gap: var(--jr-gap);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-jr .avix-jr__item {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	min-width: 0;
+	margin: 0;
+	padding: 0 0 0 var(--jr-lane-x);
+	list-style: none;
+}
+
+.avix-jr .avix-jr__item::before,
+.avix-jr .avix-jr__item::marker {
+	display: none;
+	content: none;
+}
+
+/* A pixel on the track; it turns orange once the character reaches it. */
+.avix-jr__node {
+	position: absolute;
+	top: calc(var(--jr-pad) + var(--jr-label-fs) / 2 - var(--jr-node) / 2);
+	left: calc(var(--jr-pal) / 2 - var(--jr-node) / 2);
+	z-index: 2;
+	width: var(--jr-node);
+	height: var(--jr-node);
+	border: 2px solid color-mix(in srgb, var(--jr-ink) 14%, var(--jr-rail));
+	border-radius: 1px;
+	background: var(--jr-bg);
+	transition: border-color 0.35s ease, background-color 0.35s ease, box-shadow 0.35s ease, transform 0.6s var(--jr-pop);
+}
+
+/* The connector from the pixel to its card. */
+.avix-jr__node::after {
+	position: absolute;
+	top: 50%;
+	left: 100%;
+	width: calc(var(--jr-lane-x) - var(--jr-pal) / 2 - var(--jr-node) / 2 - 2px);
+	height: 1px;
+	margin-left: 2px;
+	background: var(--jr-rail);
+	content: "";
+	transition: background-color 0.35s ease;
+}
+
+.avix-jr__item.is-reached .avix-jr__node {
+	border-color: var(--jr-accent);
+	background: var(--jr-accent);
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--jr-accent) 16%, transparent);
+	animation: avix-jr-node 0.5s var(--jr-pop);
+}
+
+.avix-jr__item.is-reached .avix-jr__node::after {
+	background: color-mix(in srgb, var(--jr-accent) 55%, transparent);
+}
+
+/* ---------- Cards ---------- */
+
+.avix-jr__card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	min-width: 0;
+	padding: var(--jr-pad);
+	overflow: hidden;
+	border: 1px solid var(--jr-line);
+	border-radius: var(--jr-r);
+	background: var(--jr-card);
+	transition: border-color 0.5s ease, background-color 0.5s ease, box-shadow 0.5s ease, transform 0.55s var(--jr-ease);
+}
+
+/* The accent bar marks the card the character stands at, one at a time. */
+.avix-jr__card::before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 3px;
+	background: var(--jr-accent);
+	content: "";
+	transform: scaleX(0);
+	transform-origin: 0 50%;
+	transition: transform 0.7s var(--jr-ease);
+}
+
+.avix-jr__item.is-reached .avix-jr__card {
+	background: var(--jr-card-on);
+}
+
+.avix-jr__item.is-current .avix-jr__card::before {
+	transform: none;
+}
+
+.avix-jr__item.is-current .avix-jr__card {
+	box-shadow: var(--jr-shadow);
+}
+
+.avix-jr__body {
+	min-width: 0;
+}
+
+.avix-jr .avix-jr__label {
+	margin: 0 0 16px;
+	padding: 0;
+	color: var(--jr-soft);
+	font-family: var(--jr-font-display);
+	font-size: var(--jr-label-fs);
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: -0.035em;
+	line-height: 1;
+	text-transform: none;
+	overflow-wrap: anywhere;
+	-webkit-hyphens: manual;
+	hyphens: manual;
+	transition: color 0.45s ease;
+}
+
+.avix-jr__item.is-reached .avix-jr__label {
+	color: var(--jr-ink);
+}
+
+.avix-jr__item.is-current .avix-jr__label {
+	color: var(--jr-accent-text);
+}
+
+.avix-jr .avix-jr__name {
+	margin: 0 0 10px;
+	padding: 0;
+	color: var(--jr-ink);
+	font-family: var(--jr-font-display);
+	font-size: clamp(18px, 1.6cqi, 21px);
+	font-weight: 600;
+	letter-spacing: -0.015em;
+	line-height: 1.25;
+	text-transform: none;
+	/* No auto hyphens here: with balance they pick the worse break. */
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+}
+
+.avix-jr .avix-jr__text {
+	margin: 0;
+	padding: 0;
+	color: var(--jr-muted);
+	font-size: clamp(14.5px, 1.25cqi, 15.5px);
+	font-weight: 400;
+	line-height: 1.65;
+	text-wrap: pretty;
+	overflow-wrap: break-word;
+}
+
+.avix-jr .avix-jr__link {
+	display: inline-flex;
+	align-self: start;
+	justify-self: start;
+	align-items: center;
+	gap: 8px;
+	max-width: 100%;
+	min-height: 44px;
+	margin: 6px 0 -10px;
+	padding: 0;
+	border: 0;
+	color: var(--jr-ink);
+	background: linear-gradient(currentColor, currentColor) 0 calc(50% + 0.75em) / 0 1px no-repeat;
+	box-shadow: none;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	transition: background-size 0.35s var(--jr-ease), color 0.2s ease;
+}
+
+.avix-jr .avix-jr__link:hover,
+.avix-jr .avix-jr__link:focus,
+.avix-jr .avix-jr__link:active {
+	color: var(--jr-ink);
+	text-decoration: none;
+}
+
+.avix-jr__link svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: var(--jr-accent);
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.35s var(--jr-ease);
+}
+
+/* Keyboard focus never lands under the fixed Smart Header. */
+.avix-jr a {
+	scroll-margin-top: calc(var(--avix-header-h, 0px) + 24px);
+	scroll-margin-bottom: 24px;
+}
+
+/* The theme swaps focus rings for a 1px dotted one once a key is pressed
+   (`body.show_outline :focus { … !important }`): the rings are restated with
+   !important, and a click keeps no ring. */
+.avix-jr :focus:not(:focus-visible) {
+	outline: none !important;
+}
+
+.avix-jr .avix-jr__link:focus-visible,
+.avix-jr .avix-jr__end-label:focus-visible {
+	outline: 2px solid var(--jr-accent) !important;
+	outline-offset: 4px !important;
+	border-radius: 4px;
+}
+
+.avix-jr .avix-jr__media {
+	flex: none;
+	margin: auto 0 0;
+	padding: 0;
+	overflow: hidden;
+	border: 0;
+	border-radius: var(--jr-r-img);
+	background: linear-gradient(160deg, #ffe7d4, #f6efe8);
+}
+
+/* Space between the story and its picture (the picture sits at the bottom). */
+.avix-jr .avix-jr__item.has-image .avix-jr__body {
+	padding-bottom: 22px;
+}
+
+.avix-jr .avix-jr__img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: auto;
+	aspect-ratio: var(--jr-ratio, var(--jr-ratio-auto));
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	object-fit: cover;
+	object-position: 50% 50%;
+	transition: transform 0.8s var(--jr-ease);
+}
+
+.avix-jr__media--top .avix-jr__img {
+	object-position: 50% 18%;
+}
+
+.avix-jr__media--bottom .avix-jr__img {
+	object-position: 50% 82%;
+}
+
+.avix-jr--dark .avix-jr__media {
+	background: #15171b;
+}
+
+/* ---------- End label ---------- */
+
+.avix-jr__end {
+	position: relative;
+	padding: 18px 0 0 var(--jr-lane-x);
+}
+
+.avix-jr__end-node {
+	position: absolute;
+	top: calc(18px + 15px - 5px);
+	left: calc(var(--jr-pal) / 2 - 5px);
+	width: 10px;
+	height: 10px;
+	border: 2px dashed var(--jr-rail);
+	background: var(--jr-bg);
+}
+
+.avix-jr .avix-jr__end-label {
+	display: inline-flex;
+	align-items: center;
+	min-height: 30px;
+	padding: 6px 14px;
+	border: 1px solid var(--jr-line);
+	/* A full pill on one line, a soft box if a long label wraps. */
+	border-radius: 15px;
+	color: var(--jr-muted);
+	background: var(--jr-bg);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	line-height: 1.2;
+	text-decoration: none;
+	text-transform: uppercase;
+	text-wrap: balance;
+	transition: color 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+/* A linked label keeps its slim pill but gets a 44px tap area. */
+.avix-jr a.avix-jr__end-label {
+	position: relative;
+}
+
+.avix-jr a.avix-jr__end-label::after {
+	position: absolute;
+	inset: -8px -4px;
+	content: "";
+}
+
+.avix-jr.is-done .avix-jr__end-label {
+	border-color: color-mix(in srgb, var(--jr-accent) 35%, transparent);
+	color: var(--jr-accent-text);
+}
+
+.avix-jr a.avix-jr__end-label:hover,
+.avix-jr a.avix-jr__end-label:focus,
+.avix-jr a.avix-jr__end-label:active {
+	color: var(--jr-accent-text);
+	text-decoration: none;
+}
+
+/* ---------- Call to action ---------- */
+
+.avix-jr__cta {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	justify-content: center;
+	margin-top: clamp(44px, 5.4cqi, 72px);
+}
+
+/*
+ * One link: the prompt in the pill, the orange action at its end. Theme and
+ * Elementor-kit link styles are restated so they cannot leak in.
+ */
+.avix-jr .avix-jr__cta-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px 20px;
+	max-width: 100%;
+	min-height: 58px;
+	margin: 0;
+	padding: 6px 6px 6px 26px;
+	border: 1px solid var(--jr-cta-line, var(--jr-line));
+	border-radius: 999px;
+	color: var(--jr-ink);
+	background: var(--jr-cta-bg, var(--jr-card-on));
+	box-shadow: none;
+	font-family: var(--jr-font-body);
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.35;
+	text-align: left;
+	text-decoration: none;
+	transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.45s var(--jr-ease);
+}
+
+.avix-jr .avix-jr__cta-pill:hover,
+.avix-jr .avix-jr__cta-pill:focus,
+.avix-jr .avix-jr__cta-pill:active {
+	color: var(--jr-ink);
+	text-decoration: none;
+}
+
+.avix-jr .avix-jr__cta-pill:focus-visible {
+	outline: 2px solid var(--jr-accent) !important;
+	outline-offset: 4px !important;
+}
+
+.avix-jr .avix-jr__cta-text {
+	/* A long prompt wraps to two lines instead of stretching the pill across the page. */
+	max-width: 46ch;
+	min-width: 0;
+	color: inherit;
+	text-wrap: balance;
+	overflow-wrap: anywhere;
+}
+
+/* Button only: the outline hugs the action evenly. */
+.avix-jr .avix-jr__cta-pill--solo {
+	padding: 6px;
+}
+
+/* The action: a tinted orange pill that fills solid on hover. */
+.avix-jr .avix-jr__cta-action {
+	position: relative;
+	z-index: 0;
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 46px;
+	padding: 0 20px 0 22px;
+	overflow: hidden;
+	border-radius: 999px;
+	color: var(--jr-accent-text);
+	background: color-mix(in srgb, var(--jr-accent) 12%, transparent);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	line-height: 1.2;
+	text-transform: uppercase;
+	white-space: nowrap;
+	transition: color 0.3s ease;
+}
+
+.avix-jr .avix-jr__cta-action::before {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	background: var(--jr-accent);
+	content: "";
+	transform: translateX(-101%);
+	transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.avix-jr__cta-action svg {
+	flex: none;
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.35s var(--jr-ease);
+}
+
+/* The light theme needs one step darker orange for AA on the tint. */
+.avix-jr--light .avix-jr__cta-action {
+	color: #b84203;
+}
+
+/* The walk ends at the call to action: its outline lights up. */
+.avix-jr.is-done .avix-jr__cta-pill {
+	border-color: color-mix(in srgb, var(--jr-accent) 38%, transparent);
+	box-shadow: 0 18px 44px -26px color-mix(in srgb, var(--jr-accent) 60%, transparent);
+}
+
+/* ---------- Pixel character ---------- */
+
+.avix-jr__rider {
+	position: absolute;
+	top: calc(var(--jr-top) + var(--jr-pad) + var(--jr-label-fs) / 2 - var(--jr-node) / 2 - var(--jr-palh));
+	left: 0;
+	z-index: 3;
+	display: block;
+	width: var(--jr-pal);
+	height: var(--jr-palh);
+	pointer-events: none;
+	will-change: transform;
+}
+
+.avix-jr.is-live .avix-jr__rider {
+	top: 0;
+	left: 0;
+}
+
+.avix-jr__lift {
+	display: block;
+	transition: transform 0.16s steps(2, end);
+}
+
+.avix-jr .avix-jr__pal {
+	--pal-w: var(--jr-pal);
+	--pal-color: var(--jr-accent);
+	--pal-prop: var(--jr-prop);
+	display: block;
+}
+
+/*
+ * A static outline in the section colour lets the track pass visibly behind
+ * the character instead of merging with its orange silhouette.
+ */
+.avix-jr .avix-jr__pal .avix-pal__sprite {
+	filter: drop-shadow(1.5px 0 0 var(--jr-bg)) drop-shadow(-1.5px 0 0 var(--jr-bg)) drop-shadow(0 -1.5px 0 var(--jr-bg));
+}
+
+.avix-jr--dark .avix-jr__pal .avix-pal__sprite {
+	filter: drop-shadow(1.5px 0 0 var(--jr-bg)) drop-shadow(-1.5px 0 0 var(--jr-bg)) drop-shadow(0 -1.5px 0 var(--jr-bg)) drop-shadow(0 0 8px color-mix(in srgb, var(--jr-accent) 55%, transparent));
+}
+
+/* The flag only appears once the last milestone is reached. */
+.avix-jr .avix-jr__pal .avix-pal__prop {
+	opacity: 0;
+	transition: opacity 0.24s steps(2, end);
+}
+
+.avix-jr.is-done .avix-jr__pal .avix-pal__prop {
+	opacity: 1;
+}
+
+/* Climbing down the vertical track: arms reach, legs step. */
+.avix-jr .avix-jr__pal.is-climb .avix-pal__arm--l {
+	animation: avix-jr-reach 0.36s steps(1) infinite;
+}
+
+.avix-jr .avix-jr__pal.is-climb .avix-pal__arm--r {
+	animation: avix-jr-reach 0.36s steps(1) -0.18s infinite;
+}
+
+.avix-jr .avix-jr__pal.is-climb .avix-pal__leg--l {
+	animation: avix-pal-step 0.36s steps(1) -0.18s infinite;
+}
+
+.avix-jr .avix-jr__pal.is-climb .avix-pal__leg--r {
+	animation: avix-pal-step 0.36s steps(1) infinite;
+}
+
+/* Off screen or in a hidden tab: the character's loops stop. */
+.avix-jr.is-off .avix-pal,
+.avix-jr.is-off .avix-pal * {
+	animation-play-state: paused !important;
+}
+
+/* ---------- Hover ---------- */
+
+@media (hover: hover) {
+	.avix-jr .avix-jr__item:hover .avix-jr__card {
+		border-color: color-mix(in srgb, var(--jr-accent) 34%, var(--jr-line));
+		transform: translateY(-4px);
+	}
+
+	.avix-jr__item:hover .avix-jr__img {
+		transform: scale(1.04);
+	}
+
+	.avix-jr .avix-jr__link:hover {
+		background-size: calc(100% - 24px) 1px;
+	}
+
+	.avix-jr .avix-jr__link:hover svg {
+		transform: translateX(4px);
+	}
+
+	.avix-jr .avix-jr__cta-pill:hover {
+		border-color: color-mix(in srgb, var(--jr-accent) 45%, transparent);
+		transform: translateY(-3px);
+	}
+
+	.avix-jr .avix-jr__cta-pill:hover .avix-jr__cta-action {
+		color: #ffffff;
+	}
+
+	.avix-jr .avix-jr__cta-pill:hover .avix-jr__cta-action::before {
+		transform: none;
+	}
+
+	.avix-jr .avix-jr__cta-pill:hover .avix-jr__cta-action svg {
+		transform: translateX(3px);
+	}
+}
+
+/* Keyboard users get the same filled action as a hover. */
+.avix-jr .avix-jr__cta-pill:focus-visible .avix-jr__cta-action {
+	color: #ffffff;
+}
+
+.avix-jr .avix-jr__cta-pill:focus-visible .avix-jr__cta-action::before {
+	transform: none;
+}
+
+/* ---------- Reveal ---------- */
+
+.avix-jr.is-armed .avix-jr__head-main,
+.avix-jr.is-armed .avix-jr__intro {
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 0.7s ease, transform 0.8s var(--jr-ease);
+}
+
+.avix-jr.is-armed .avix-jr__intro {
+	transition-delay: 0.1s;
+}
+
+/* Only the hidden state is armed, so the hover lift still applies after the entrance. */
+.avix-jr.is-armed .avix-jr__card {
+	transition: opacity 0.7s ease calc(0.2s + var(--i, 0) * 90ms), transform 0.8s var(--jr-ease) calc(0.2s + var(--i, 0) * 90ms), border-color 0.5s ease, background-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.avix-jr.is-armed:not(.is-in) .avix-jr__card {
+	opacity: 0;
+	transform: translateY(26px);
+}
+
+.avix-jr.is-armed .avix-jr__node {
+	transform: scale(0);
+	transition: border-color 0.35s ease, background-color 0.35s ease, box-shadow 0.35s ease, transform 0.6s var(--jr-pop) calc(0.3s + var(--i, 0) * 90ms);
+}
+
+.avix-jr.is-armed .avix-jr__line {
+	transform: scaleY(0);
+	transition: transform 1.1s var(--jr-ease) 0.15s;
+}
+
+.avix-jr.is-armed .avix-jr__rider,
+.avix-jr.is-armed .avix-jr__tail,
+.avix-jr.is-armed .avix-jr__end {
+	opacity: 0;
+	transition: opacity 0.6s ease 0.45s;
+}
+
+/* The call to action rises in on its own, once it reaches the screen. */
+.avix-jr.is-armed .avix-jr__cta {
+	opacity: 0;
+	transform: translateY(20px);
+	transition: opacity 0.7s ease, transform 0.8s var(--jr-ease);
+}
+
+.avix-jr.is-armed .avix-jr__cta.is-in,
+.avix-jr.is-armed .avix-jr__cta:focus-within {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-jr.is-armed.is-in .avix-jr__head-main,
+.avix-jr.is-armed.is-in .avix-jr__intro,
+.avix-jr.is-armed.is-in .avix-jr__node,
+.avix-jr.is-armed.is-in .avix-jr__line {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-jr.is-armed.is-in .avix-jr__rider,
+.avix-jr.is-armed.is-in .avix-jr__tail,
+.avix-jr.is-armed.is-in .avix-jr__end {
+	opacity: 1;
+}
+
+/* After the entrance, hover and state changes must not wait for the stagger. */
+.avix-jr.is-settled .avix-jr__card,
+.avix-jr.is-settled .avix-jr__node {
+	transition-delay: 0s;
+}
+
+/* No entrance replays while editing in Elementor. */
+.elementor-editor-active .avix-jr .avix-jr__card,
+.elementor-editor-active .avix-jr .avix-jr__node,
+.elementor-editor-active .avix-jr .avix-jr__line {
+	animation: none;
+}
+
+@keyframes avix-jr-node {
+	0% { transform: scale(0.6); }
+	55% { transform: scale(1.35); }
+	100% { transform: scale(1); }
+}
+
+@keyframes avix-jr-reach {
+	0% { transform: translate(0, -2px); }
+	50% { transform: translate(0, 0); }
+}
+
+/* ---------- Layouts by widget width ---------- */
+
+/* Vertical track, cards wide enough for text and picture side by side. */
+@container avix-jr (min-width: 700px) {
+	/* Top-aligned, so every label sits level with its pixel on the track. */
+	.avix-jr .avix-jr__item.has-image .avix-jr__card {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 0.78fr);
+		align-items: start;
+		gap: 0 clamp(24px, 3cqi, 40px);
+	}
+
+	.avix-jr .avix-jr__item.has-image .avix-jr__body {
+		padding-bottom: 0;
+	}
+
+	.avix-jr .avix-jr__item.has-image .avix-jr__media {
+		margin: 0;
+	}
+}
+
+/*
+ * Long journeys on wide widgets read like a log: label, story, picture. A
+ * narrow, flatter picture keeps cards with and without one close in height.
+ */
+@container avix-jr (min-width: 1000px) {
+	.avix-jr__inner {
+		--jr-ratio-auto: 16 / 9;
+	}
+
+	.avix-jr .avix-jr__body {
+		display: grid;
+		grid-template-columns: clamp(120px, 12cqi, 180px) minmax(0, 1fr);
+		align-content: start;
+		column-gap: clamp(24px, 3cqi, 40px);
+	}
+
+	/* Start-aligned: a stretched label would hide where its line sits. */
+	.avix-jr .avix-jr__label {
+		grid-row: 1 / span 3;
+		align-self: start;
+		margin: 0;
+	}
+
+	/* The label is optional: everything else always reads in the story column. */
+	.avix-jr .avix-jr__body > :not(.avix-jr__label) {
+		grid-column: 2;
+	}
+
+	/* The story sits centred against its picture (JS keeps the pixel level with the label). */
+	.avix-jr .avix-jr__item.has-image .avix-jr__card {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 0.3fr);
+		align-items: center;
+	}
+
+	/*
+	 * When most cards have a picture, text-only cards are as tall as a picture
+	 * card, so the log keeps one rhythm: the picture column is 0.3 / 1.3 of
+	 * the card's content width, at the current picture shape.
+	 */
+	.avix-jr.has-pictures .avix-jr__item:not(.has-image) .avix-jr__card {
+		justify-content: center;
+		min-height: calc((min(100cqi - var(--jr-gutters, 48px), var(--jr-max)) - var(--jr-lane-x) - 2 * var(--jr-pad) - 2px - clamp(24px, 3cqi, 40px)) * 0.3 / 1.3 / (var(--jr-ratio, var(--jr-ratio-auto))) + 2 * var(--jr-pad) + 2px);
+	}
+
+	/*
+	 * The centred column makes room for the label column, which stays narrow:
+	 * a wide gutter after a short "01" would split the card in two.
+	 */
+	.avix-jr--center .avix-jr__inner {
+		--jr-col: 780px;
+	}
+
+	.avix-jr.avix-jr--center .avix-jr__body {
+		grid-template-columns: clamp(72px, 8cqi, 112px) minmax(0, 1fr);
+	}
+
+	.avix-jr--center.has-pictures .avix-jr__item:not(.has-image) .avix-jr__card {
+		min-height: calc((min(100cqi - var(--jr-gutters, 48px), var(--jr-max), var(--jr-col)) - var(--jr-lane-x) - 2 * var(--jr-pad) - 2px - clamp(24px, 3cqi, 40px)) * 0.3 / 1.3 / (var(--jr-ratio, var(--jr-ratio-auto))) + 2 * var(--jr-pad) + 2px);
+	}
+}
+
+/*
+ * Horizontal track: up to 4 milestones side by side. It waits for 1180px so
+ * four cards still get a comfortable line length; narrower widgets use the log.
+ */
+@container avix-jr (min-width: 1180px) {
+	.avix-jr--row .avix-jr__inner {
+		--jr-top: calc(var(--jr-palh) + var(--jr-pal) * 0.75 + 16px);
+		--jr-drop: 30px;
+		--jr-pad: clamp(18px, 1.6cqi, 24px);
+		--jr-ratio-auto: 16 / 10;
+	}
+
+	.avix-jr--row .avix-jr__track {
+		--jr-axis: x;
+	}
+
+	.avix-jr--row.avix-jr--center .avix-jr__track {
+		max-width: none;
+		margin-left: 0;
+	}
+
+	/*
+	 * Centred header with 1 or 2 milestones: the cards keep their third of the
+	 * row and the track shrinks around them, centred under the title.
+	 */
+	.avix-jr--row.avix-jr--center:is(.avix-jr--n1, .avix-jr--n2) .avix-jr__track {
+		--jr-cols: var(--jr-count);
+		--jr-row-w: calc((min(100cqi - var(--jr-gutters, 48px), var(--jr-max)) - 2 * var(--jr-gap)) / 3 * var(--jr-count) + (var(--jr-count) - 1) * var(--jr-gap));
+
+		max-width: var(--jr-row-w);
+		margin-inline: auto;
+	}
+
+	/* The character's lane above the line doubles as the header spacing. */
+	.avix-jr--row .avix-jr__head + .avix-jr__track {
+		margin-top: clamp(12px, 1.6cqi, 24px);
+	}
+
+	.avix-jr--row .avix-jr__line,
+	.avix-jr--row .avix-jr__tail,
+	.avix-jr--row .avix-jr__fill {
+		top: calc(var(--jr-top) - 1px);
+		bottom: auto;
+		width: auto;
+		height: 2px;
+	}
+
+	.avix-jr--row .avix-jr__line,
+	.avix-jr--row .avix-jr__fill {
+		left: var(--jr-a, calc(var(--jr-pad) + var(--jr-node) / 2));
+		width: calc(var(--jr-b, 100%) - var(--jr-a, 0px));
+		transform-origin: 0 50%;
+	}
+
+	.avix-jr--row .avix-jr__fill {
+		transform: scaleX(0);
+	}
+
+	.avix-jr--row .avix-jr__tail {
+		left: var(--jr-b, 100%);
+		right: 0;
+		background: repeating-linear-gradient(90deg, var(--jr-rail) 0 6px, transparent 6px 12px);
+		-webkit-mask-image: linear-gradient(90deg, #000, transparent);
+		mask-image: linear-gradient(90deg, #000, transparent);
+	}
+
+	.avix-jr--row.has-end .avix-jr__tail {
+		right: 5px;
+		height: 2px;
+		-webkit-mask-image: none;
+		mask-image: none;
+	}
+
+	.avix-jr--row.is-armed .avix-jr__line {
+		transform: scaleX(0);
+	}
+
+	.avix-jr--row.is-armed.is-in .avix-jr__line {
+		transform: none;
+	}
+
+	.avix-jr--row .avix-jr__list {
+		grid-template-columns: repeat(var(--jr-cols, 4), minmax(0, 1fr));
+		align-items: stretch;
+	}
+
+	.avix-jr--row .avix-jr__item {
+		padding: var(--jr-drop) 0 0;
+	}
+
+	.avix-jr--row .avix-jr__node {
+		top: calc(var(--jr-node) / -2);
+		left: var(--jr-pad);
+	}
+
+	.avix-jr--row .avix-jr__node::after {
+		top: 100%;
+		left: 50%;
+		width: 1px;
+		height: calc(var(--jr-drop) - var(--jr-node) / 2 - 2px);
+		margin: 2px 0 0 -0.5px;
+	}
+
+	.avix-jr--row .avix-jr__label {
+		margin: 0 0 16px;
+	}
+
+	.avix-jr--row .avix-jr__item.has-image .avix-jr__card {
+		display: flex;
+		align-items: stretch;
+	}
+
+	/*
+	 * Picture first, right under the connector: pictures and stories line up
+	 * across the row, and uneven copy leaves its slack at the card bottom.
+	 */
+	.avix-jr--row .avix-jr__item.has-image .avix-jr__body {
+		padding-bottom: 0;
+	}
+
+	.avix-jr--row .avix-jr__item.has-image .avix-jr__media {
+		order: -1;
+		margin: 0 0 22px;
+	}
+
+	/*
+	 * Every milestone title reserves the tallest title's height (measured by
+	 * the script; two lines without it), so the stories start level.
+	 */
+	.avix-jr--row .avix-jr__name {
+		min-height: calc(2em * 1.25);
+		min-height: var(--jr-name-h, 2lh);
+	}
+
+	/* Optional links sit on one line at the foot of the cards. */
+	.avix-jr--row .avix-jr__body {
+		display: flex;
+		flex: 1 0 auto;
+		flex-direction: column;
+	}
+
+	.avix-jr--row .avix-jr__text:not(:last-child) {
+		padding-bottom: 6px;
+	}
+
+	.avix-jr--row .avix-jr__body > .avix-jr__link {
+		margin-top: auto;
+	}
+
+	.avix-jr--row.has-pictures .avix-jr__item:not(.has-image) .avix-jr__card {
+		justify-content: flex-start;
+		min-height: 0;
+	}
+
+	/* The row always runs left to right; the cards keep the page's direction. */
+	.avix-jr--row .avix-jr__track {
+		direction: ltr;
+	}
+
+	.avix-jr--row .avix-jr__rider {
+		top: calc(var(--jr-top) - var(--jr-node) / 2 - var(--jr-palh));
+		left: calc(var(--jr-pad) + var(--jr-node) / 2 - var(--jr-pal) / 2);
+	}
+
+	.avix-jr--row.is-live .avix-jr__rider {
+		top: 0;
+		left: 0;
+	}
+
+	/* Standing on a node lifts the character onto the pixel. */
+	.avix-jr--row .avix-jr__rider.is-up .avix-jr__lift {
+		transform: translateY(calc(1px - var(--jr-node) / 2));
+	}
+
+	/* Above the cards, so the label and its tap area are never covered. */
+	.avix-jr--row .avix-jr__end {
+		position: absolute;
+		top: calc(var(--jr-top) - 5px);
+		right: 0;
+		z-index: 3;
+		padding: 0;
+	}
+
+	.avix-jr--row .avix-jr__end-node {
+		top: 0;
+		right: 0;
+		left: auto;
+	}
+
+	/*
+	 * Floats above the end of the line, inside the grid, and never reaches the
+	 * character at the last milestone: a long label wraps instead. Restated
+	 * for both tags, since a linked label is positioned for its tap area.
+	 */
+	.avix-jr--row .avix-jr__end .avix-jr__end-label {
+		position: absolute;
+		right: 0;
+		bottom: 22px;
+		width: max-content;
+		max-width: calc((var(--jr-row-w, min(100cqi - var(--jr-gutters, 48px), var(--jr-max))) - (var(--jr-cols, 4) - 1) * var(--jr-gap)) / var(--jr-cols, 4) - var(--jr-pad) - var(--jr-node) / 2 - var(--jr-pal) * 1.4 - 16px);
+		text-align: right;
+	}
+}
+
+@container avix-jr (min-width: 1180px) {
+	.avix-jr--row:dir(rtl) .avix-jr__card,
+	.avix-jr--row:dir(rtl) .avix-jr__end-label {
+		direction: rtl;
+	}
+}
+
+/* Without the character the lane above the track is not needed. */
+.avix-jr:not(.has-pal) .avix-jr__inner {
+	--jr-top: 0px;
+}
+
+@container avix-jr (min-width: 1180px) {
+	.avix-jr--row:not(.has-pal) .avix-jr__inner {
+		--jr-top: 8px;
+	}
+}
+
+@container avix-jr (max-width: 860px) {
+	.avix-jr__head {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-jr .avix-jr__title {
+		max-width: 18ch;
+	}
+}
+
+@container avix-jr (max-width: 600px) {
+	.avix-jr__inner {
+		--jr-pal: var(--jr-pal-w, 30px);
+		--jr-node: 12px;
+		--jr-pad: 20px;
+		--jr-gap: 14px;
+		--jr-label-fs: 26px;
+		--jr-lane-x: calc(var(--jr-pal) + 16px);
+		--jr-r: var(--jr-radius, 20px);
+		/* A flatter picture keeps the stacked journey short on phones. */
+		--jr-ratio-auto: 2 / 1;
+
+		width: calc(100% - 32px);
+	}
+
+	.avix-jr .avix-jr__eyebrow {
+		margin-bottom: 16px;
+	}
+
+	.avix-jr .avix-jr__title {
+		font-size: clamp(30px, 8.6cqi, 40px);
+		line-height: 1.08;
+	}
+
+	.avix-jr .avix-jr__label {
+		margin-bottom: 12px;
+	}
+
+	.avix-jr .avix-jr__item.has-image .avix-jr__body {
+		padding-bottom: 18px;
+	}
+
+}
+
+/* Narrow widgets: the pill becomes a small card, prompt above a full-width action. */
+@container avix-jr (max-width: 560px) {
+	.avix-jr .avix-jr__cta-pill {
+		flex-direction: column;
+		align-items: stretch;
+		width: 100%;
+		padding: 18px 8px 8px;
+		border-radius: 24px;
+		text-align: center;
+	}
+
+	.avix-jr .avix-jr__cta-text {
+		max-width: none;
+		padding: 0 12px;
+	}
+
+	.avix-jr .avix-jr__cta-pill--solo {
+		padding: 8px;
+	}
+
+	/*
+	 * Touch screens have no hover fill: the action is solid from the start.
+	 * A long label wraps inside it instead of being clipped.
+	 */
+	.avix-jr .avix-jr__cta-action {
+		min-height: 50px;
+		padding: 12px 18px;
+		color: #ffffff;
+		font-size: 14px;
+		text-align: center;
+		white-space: normal;
+	}
+
+	.avix-jr .avix-jr__cta-action > span {
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	.avix-jr .avix-jr__cta-action::before {
+		transform: none;
+	}
+}
+
+/*
+ * Without the script the journey shows its walked-through end state: the
+ * track lit and bounded by the content, every milestone reached and the last
+ * one current. (With the script, walk off reaches the same state.)
+ */
+.avix-jr:not(.is-live) .avix-jr__line {
+	bottom: 0;
+	height: auto;
+	background: var(--jr-accent);
+}
+
+.avix-jr:not(.is-live) .avix-jr__tail {
+	display: none;
+}
+
+.avix-jr:not(.is-live) .avix-jr__node {
+	border-color: var(--jr-accent);
+	background: var(--jr-accent);
+}
+
+.avix-jr:not(.is-live) .avix-jr__node::after {
+	background: color-mix(in srgb, var(--jr-accent) 55%, transparent);
+}
+
+.avix-jr:not(.is-live) .avix-jr__card {
+	background: var(--jr-card-on);
+}
+
+.avix-jr:not(.is-live) .avix-jr__label {
+	color: var(--jr-ink);
+}
+
+.avix-jr:not(.is-live) .avix-jr__item:last-child .avix-jr__label {
+	color: var(--jr-accent-text);
+}
+
+.avix-jr:not(.is-live) .avix-jr__item:last-child .avix-jr__card::before {
+	transform: none;
+}
+
+@container avix-jr (min-width: 1180px) {
+	.avix-jr--row:not(.is-live) .avix-jr__line {
+		right: 0;
+		bottom: auto;
+		width: auto;
+		height: 2px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-jr *,
+	.avix-jr *::before,
+	.avix-jr *::after {
+		animation: none !important;
+		transition-duration: 0.01ms !important;
+		transition-delay: 0ms !important;
+	}
+
+	/*
+	 * Every property otherwise transitions for 0.01ms, so the script's title
+	 * levelling (set min-height, read height) would read the old height.
+	 */
+	.avix-jr .avix-jr__name {
+		transition: none !important;
+	}
+
+	.avix-jr.is-armed .avix-jr__head-main,
+	.avix-jr.is-armed .avix-jr__intro,
+	.avix-jr.is-armed .avix-jr__card,
+	.avix-jr.is-armed:not(.is-in) .avix-jr__card,
+	.avix-jr.is-armed .avix-jr__node,
+	.avix-jr.is-armed .avix-jr__line,
+	.avix-jr.is-armed .avix-jr__rider,
+	.avix-jr.is-armed .avix-jr__tail,
+	.avix-jr.is-armed .avix-jr__end,
+	.avix-jr.is-armed .avix-jr__cta {
+		opacity: 1;
+		transform: none;
+	}
+}

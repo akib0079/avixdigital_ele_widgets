@@ -549,12 +549,38 @@ class Hero extends Widget_Base {
 		$this->start_controls_section( 'section_background', array( 'label' => esc_html__( 'Background & Effects', 'avix-widgets' ) ) );
 
 		$this->add_control(
+			'bg_style',
+			array(
+				'label'       => esc_html__( 'Background', 'avix-widgets' ),
+				'description' => esc_html__( 'Pixel planet: a calm horizon of dithered brand squares under a pixel starfield, with the buddy standing on it. Photo: the image, glass pixels and cursor trail.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'planet',
+				'options'     => array(
+					'planet' => esc_html__( 'Pixel planet', 'avix-widgets' ),
+					'photo'  => esc_html__( 'Photo, glass and trail', 'avix-widgets' ),
+				),
+			)
+		);
+
+		$this->add_control(
+			'planet_buddy',
+			array(
+				'label'       => esc_html__( 'Buddy stands on the planet', 'avix-widgets' ),
+				'description' => esc_html__( 'Instead of sitting on the headline. It walks towards the mouse on desktop.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+				'condition'   => array( 'bg_style' => 'planet' ),
+			)
+		);
+
+		$this->add_control(
 			'bg_image',
 			array(
-				'label'   => esc_html__( 'Background image', 'avix-widgets' ),
-				'type'    => Controls_Manager::MEDIA,
-				'default' => array( 'url' => self::BG_IMAGE ),
-				'dynamic' => array( 'active' => true ),
+				'label'     => esc_html__( 'Background image', 'avix-widgets' ),
+				'type'      => Controls_Manager::MEDIA,
+				'default'   => array( 'url' => self::BG_IMAGE ),
+				'dynamic'   => array( 'active' => true ),
+				'condition' => array( 'bg_style' => 'photo' ),
 			)
 		);
 
@@ -566,6 +592,7 @@ class Hero extends Widget_Base {
 				'size_units' => array( '%' ),
 				'range'      => array( '%' => array( 'min' => 0, 'max' => 100 ) ),
 				'default'    => array( 'unit' => '%', 'size' => 50 ),
+				'condition'  => array( 'bg_style' => 'photo' ),
 			)
 		);
 
@@ -577,6 +604,7 @@ class Hero extends Widget_Base {
 				'size_units' => array( '%' ),
 				'range'      => array( '%' => array( 'min' => 0, 'max' => 100 ) ),
 				'default'    => array( 'unit' => '%', 'size' => 50 ),
+				'condition'  => array( 'bg_style' => 'photo' ),
 			)
 		);
 
@@ -587,15 +615,17 @@ class Hero extends Widget_Base {
 				'description' => esc_html__( 'Speeds up the first screen. Turn off if this banner isn’t at the top of the page.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
+				'condition'   => array( 'bg_style' => 'photo' ),
 			)
 		);
 
 		$this->add_control(
 			'ken_burns',
 			array(
-				'label'   => esc_html__( 'Slow zoom', 'avix-widgets' ),
-				'type'    => Controls_Manager::SWITCHER,
-				'default' => 'yes',
+				'label'     => esc_html__( 'Slow zoom', 'avix-widgets' ),
+				'type'      => Controls_Manager::SWITCHER,
+				'default'   => 'yes',
+				'condition' => array( 'bg_style' => 'photo' ),
 			)
 		);
 
@@ -606,6 +636,7 @@ class Hero extends Widget_Base {
 				'type'      => Controls_Manager::SWITCHER,
 				'default'   => 'yes',
 				'separator' => 'before',
+				'condition' => array( 'bg_style' => 'photo' ),
 			)
 		);
 
@@ -616,6 +647,7 @@ class Hero extends Widget_Base {
 				'description' => esc_html__( 'Squares light up where the mouse moves; a tap on phones sends a small ripple.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
+				'condition'   => array( 'bg_style' => 'photo' ),
 			)
 		);
 
@@ -672,6 +704,43 @@ class Hero extends Widget_Base {
 				'range'     => array( 'px' => array( 'min' => 20, 'max' => 200, 'step' => 10 ) ),
 				'default'   => array( 'size' => 100 ),
 				'condition' => array( 'parallax' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
+			'scroll_effect',
+			array(
+				'label'       => esc_html__( 'On scroll', 'avix-widgets' ),
+				'description' => esc_html__( 'Soft: the copy drifts up and fades a little, and a fine pixel edge blends the banner into the next section. Pixel rise: the next section climbs in as a staircase of squares. Both are off in the editor and for visitors who prefer reduced motion.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SELECT,
+				'default'     => 'soft',
+				'options'     => array(
+					'soft' => esc_html__( 'Soft drift and pixel edge', 'avix-widgets' ),
+					'rise' => esc_html__( 'Pixel rise', 'avix-widgets' ),
+					'none' => esc_html__( 'None', 'avix-widgets' ),
+				),
+				'separator'   => 'before',
+			)
+		);
+
+		$this->add_control(
+			'rise_color',
+			array(
+				'label'       => esc_html__( 'Next section colour', 'avix-widgets' ),
+				'description' => esc_html__( 'The background of the section below the banner: the pixel edge and the pixel rise use it.', 'avix-widgets' ),
+				'type'        => Controls_Manager::COLOR,
+				'default'     => '#ffffff',
+				'condition'   => array( 'scroll_effect!' => 'none' ),
+			)
+		);
+
+		$this->add_control(
+			'rise_caps',
+			array(
+				'label'     => esc_html__( 'Orange pixels on the steps', 'avix-widgets' ),
+				'type'      => Controls_Manager::SWITCHER,
+				'default'   => 'yes',
+				'condition' => array( 'scroll_effect' => 'rise' ),
 			)
 		);
 
@@ -931,14 +1000,17 @@ class Hero extends Widget_Base {
 		$buddy    = 'yes' === $s['show_buddy'];
 		$bubble   = $buddy && 'yes' === $s['show_bubble'];
 		$trail    = 'yes' === $s['show_trail'];
+		$planet   = 'photo' !== ( $s['bg_style'] ?? 'planet' );
+		$lander   = $planet && $buddy && 'yes' === ( $s['planet_buddy'] ?? 'yes' );
+		$trail    = $trail && ! $planet;
 		$title    = $this->title_html(
 			(string) $s['title'],
-			$buddy ? (string) $s['buddy_word'] : null,
+			$buddy && ! $lander ? (string) $s['buddy_word'] : null,
 			$this->headline_icon( $s ),
-			$this->buddy_html( $bubble )
+			$lander ? '' : $this->buddy_html( $bubble )
 		);
 
-		$classes = array( 'avix-hero' );
+		$classes = array( 'avix-hero', $planet ? 'avix-hero--planet' : 'avix-hero--photo' );
 		if ( 'yes' === $s['entrance'] ) {
 			$classes[] = 'avix-hero--enter';
 		}
@@ -958,6 +1030,12 @@ class Hero extends Widget_Base {
 				'size'     => (int) $this->slider( $s, 'trail_size', 40, 16, 96 ),
 				'radius'   => (int) $this->slider( $s, 'trail_radius', 2, 1, 5 ),
 				'strength' => round( $this->slider( $s, 'trail_strength', 30, 5, 80 ) / 100, 2 ),
+			) : false,
+			'planet'   => $planet ? array( 'lander' => $lander ) : false,
+			'soft'     => 'soft' === ( $s['scroll_effect'] ?? 'soft' ) ? array( 'edge' => $this->css_color( (string) $s['rise_color'], '#ffffff' ) ) : false,
+			'rise'     => 'rise' === ( $s['scroll_effect'] ?? 'soft' ) ? array(
+				'color' => $this->css_color( (string) $s['rise_color'], '#ffffff' ),
+				'caps'  => 'yes' === $s['rise_caps'],
 			) : false,
 		);
 		if ( $bubble && '' !== $title ) {
@@ -983,11 +1061,16 @@ class Hero extends Widget_Base {
 		?>
 		<section <?php $this->print_render_attribute_string( 'root' ); ?>>
 			<div class="avix-hero__bg" aria-hidden="true">
+				<?php if ( $planet ) : ?>
+					<canvas class="avix-hero__planet" data-hero-planet></canvas>
+					<div class="avix-hero__stars" data-hero-stars></div>
+				<?php else : ?>
 				<div class="avix-hero__media" data-hero-depth="-1.7 -1.7">
 					<?php echo $this->image_html( $s ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in image_html(). ?>
 				</div>
 				<div class="avix-hero__overlay"></div>
-				<?php if ( 'yes' === $s['show_glass'] ) : ?>
+				<?php endif; ?>
+				<?php if ( ! $planet && 'yes' === $s['show_glass'] ) : ?>
 					<span class="avix-hero__glass avix-hero__glass--1" data-hero-depth="3 3"></span>
 					<span class="avix-hero__glass avix-hero__glass--2" data-hero-depth="-4 -4"></span>
 					<span class="avix-hero__glass avix-hero__glass--3" data-hero-depth="2 -2"></span>
@@ -1004,7 +1087,11 @@ class Hero extends Widget_Base {
 
 					<?php if ( '' !== $title ) : ?>
 						<div class="avix-hero__head">
-							<?php $this->render_tags( $s ); ?>
+							<?php
+							if ( ! $planet ) {
+								$this->render_tags( $s );
+							}
+							?>
 							<<?php echo esc_attr( $tag ); ?> class="avix-hero__title" id="<?php echo esc_attr( $title_id ); ?>"><?php echo $title; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in title_html(). ?></<?php echo esc_attr( $tag ); ?>>
 						</div>
 					<?php endif; ?>
@@ -1018,6 +1105,11 @@ class Hero extends Widget_Base {
 
 				<?php $this->render_dock( $s ); ?>
 			</div>
+
+			<?php if ( $lander ) : ?>
+				<?php // The buddy on the planet's horizon; hero.js places it once the planet is drawn. ?>
+				<div class="avix-hero__lander" data-hero-lander><?php echo $this->buddy_html( $bubble ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup. ?></div>
+			<?php endif; ?>
 		</section>
 		<?php
 	}
@@ -1353,5 +1445,14 @@ class Hero extends Widget_Base {
 	private function slider( array $s, $key, $fallback, $min, $max ) {
 		$value = isset( $s[ $key ]['size'] ) && '' !== $s[ $key ]['size'] ? (float) $s[ $key ]['size'] : $fallback;
 		return max( $min, min( $max, $value ) );
+	}
+
+	/**
+	 * A hex or rgb(a) colour from a colour control, or the fallback (the value
+	 * goes into an inline style through the script).
+	 */
+	private function css_color( $value, $fallback ) {
+		$value = trim( $value );
+		return preg_match( '/^(#[0-9a-f]{3,8}|rgba?\(\s*[0-9.]+%?\s*,\s*[0-9.]+%?\s*,\s*[0-9.]+%?\s*(,\s*[0-9.]+%?\s*)?\))$/i', $value ) ? $value : $fallback;
 	}
 }

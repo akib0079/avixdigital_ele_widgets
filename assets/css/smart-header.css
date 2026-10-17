@@ -60,21 +60,18 @@
 	--sh-panel-hover: rgba(0, 0, 0, 0.035);
 }
 
-/* After scrolling: a frosted bar. */
+/* After scrolling: a near-solid bar. No live blur: re-blurring the page
+   behind a full-width bar on every scroll frame is what made pages lag. */
 .avix-sh.is-scrolled.avix-sh--on-dark {
 	border-bottom-color: rgba(255, 255, 255, 0.08);
-	background-color: rgba(10, 11, 13, 0.9);
+	background-color: rgba(10, 11, 13, 0.96);
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-	-webkit-backdrop-filter: blur(14px) saturate(140%);
-	backdrop-filter: blur(14px) saturate(140%);
 }
 
 .avix-sh.is-scrolled.avix-sh--on-light {
 	border-bottom-color: rgba(0, 0, 0, 0.07);
-	background-color: rgba(255, 255, 255, 0.88);
+	background-color: rgba(255, 255, 255, 0.96);
 	box-shadow: 0 10px 30px rgba(20, 16, 12, 0.07);
-	-webkit-backdrop-filter: blur(14px) saturate(160%);
-	backdrop-filter: blur(14px) saturate(160%);
 }
 
 .avix-sh.is-hidden {
@@ -86,9 +83,25 @@
 	border-bottom-color: transparent;
 	background-color: transparent;
 	box-shadow: none;
-	-webkit-backdrop-filter: none;
-	backdrop-filter: none;
 	transform: none;
+}
+
+/* Height of the header at the top of the page, for sections that sit under it
+   (the JS keeps it exact). */
+:root {
+	--avix-header-h: 106px;
+}
+
+@media (max-width: 900px) {
+	:root {
+		--avix-header-h: 91px;
+	}
+}
+
+@media (max-width: 480px) {
+	:root {
+		--avix-header-h: 84px;
+	}
 }
 
 body.admin-bar .avix-sh {
@@ -433,6 +446,38 @@ body.admin-bar .avix-sh {
 	transform: translateY(-2px) rotate(-5deg);
 }
 
+/* Optional "View all services" text link under a hairline at the end of the panel. */
+.avix-sh .avix-sh__item--all {
+	position: relative;
+	grid-template-columns: minmax(0, 1fr) auto;
+	margin-top: 9px;
+	padding: 13px 12px;
+}
+
+.avix-sh .avix-sh__item--all::before {
+	position: absolute;
+	top: -6px;
+	right: 12px;
+	left: 12px;
+	height: 1px;
+	background: var(--sh-panel-line);
+	content: "";
+}
+
+.avix-sh__item--all .avix-sh__item-title {
+	font-size: 14px;
+}
+
+.avix-sh__item--all .avix-sh__item-arrow {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-sh__item--all:hover .avix-sh__item-arrow,
+.avix-sh__item--all:focus-visible .avix-sh__item-arrow {
+	transform: translateX(3px);
+}
+
 /* ---------- Button + toggle ---------- */
 
 .avix-sh__actions {
@@ -569,28 +614,36 @@ body.admin-bar .avix-sh {
 /* ---------- The notch ---------- */
 
 .avix-sh .avix-sh__notch {
-	--sh-corner: 20px;
+	/* One fixed height, so the shape is predictable. The flare (where the notch
+	   meets the top edge) plus the lower rounding must fit inside it; otherwise
+	   the page shows through as a hairline at the joins. */
+	--sh-notch-h: 34px;
+	--sh-corner: 14px;
+	--sh-round: 18px;
 	--pal-w: 20px;
 	position: absolute;
 	top: 0;
-	left: 50%;
+	right: 0;
+	left: 0;
 	z-index: 3;
 	display: flex;
+	width: max-content;
+	height: var(--sh-notch-h);
 	align-items: center;
 	gap: 10px;
-	margin: 0;
-	padding: 8px 30px 12px;
-	border-radius: 0 0 20px 20px;
+	margin: 0 auto;
+	padding: 0 28px 3px;
+	border: 0;
+	border-radius: 0 0 var(--sh-round) var(--sh-round);
 	color: var(--sh-notch-ink);
 	background: var(--sh-notch-bg);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+	box-shadow: none;
 	font-family: var(--sh-font-body);
 	font-size: 14px;
 	font-weight: 600;
 	line-height: 1;
 	text-decoration: none;
 	white-space: nowrap;
-	transform: translateX(-50%);
 	transition: transform 0.45s var(--sh-ease), opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -603,12 +656,13 @@ a.avix-sh__notch:focus {
 	color: var(--sh-notch-ink);
 }
 
-/* Inverted corners, so the notch flows out of the top edge. */
+/* The flared top corners. Each overlaps the pill by 2px, so the two shapes
+   never meet edge to edge (no seam at any zoom or screen density). */
 .avix-sh__notch::before,
 .avix-sh__notch::after {
 	position: absolute;
 	top: 0;
-	width: var(--sh-corner);
+	width: calc(var(--sh-corner) + 2px);
 	height: var(--sh-corner);
 	pointer-events: none;
 	content: "";
@@ -616,28 +670,37 @@ a.avix-sh__notch:focus {
 
 .avix-sh__notch::before {
 	left: calc(var(--sh-corner) * -1);
-	background: radial-gradient(circle at 0 100%, transparent calc(var(--sh-corner) - 0.5px), var(--sh-notch-bg) var(--sh-corner));
+	background: radial-gradient(circle at 0 100%, transparent calc(var(--sh-corner) - 0.6px), var(--sh-notch-bg) var(--sh-corner));
 }
 
 .avix-sh__notch::after {
 	right: calc(var(--sh-corner) * -1);
-	background: radial-gradient(circle at 100% 100%, transparent calc(var(--sh-corner) - 0.5px), var(--sh-notch-bg) var(--sh-corner));
+	background: radial-gradient(circle at 100% 100%, transparent calc(var(--sh-corner) - 0.6px), var(--sh-notch-bg) var(--sh-corner));
 }
 
 .avix-sh.is-scrolled .avix-sh__notch,
 .avix-sh.is-menu-open .avix-sh__notch {
 	opacity: 0;
 	pointer-events: none;
-	transform: translate(-50%, -115%);
+	transform: translateY(-115%);
 }
 
 .avix-sh__dot {
+	position: relative;
 	width: 8px;
 	height: 8px;
 	flex: none;
 	border-radius: 50%;
 	background: #51ca58;
-	animation: avix-sh-dot 1.5s ease-in infinite;
+}
+
+.avix-sh__dot::after {
+	position: absolute;
+	inset: -4px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(81, 202, 88, 0.55), rgba(81, 202, 88, 0) 70%);
+	animation: avix-sh-dot 1.5s ease-in-out infinite;
+	content: "";
 }
 
 .avix-sh__notch-short {
@@ -935,6 +998,34 @@ body.admin-bar .avix-sh-menu {
 	color: var(--m-ink);
 }
 
+/* Optional "View all services" link at the end of the list. */
+.avix-sh-menu .avix-sh-menu__sublink--all {
+	min-height: 36px;
+	gap: 8px;
+	color: var(--m-ink);
+}
+
+.avix-sh-menu__all-arrow {
+	display: flex;
+	color: var(--sh-accent);
+	transition: transform 0.3s var(--sh-ease);
+}
+
+.avix-sh-menu__all-arrow svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 2.4;
+}
+
+.avix-sh-menu__sublink--all:hover .avix-sh-menu__all-arrow,
+.avix-sh-menu__sublink--all:focus-visible .avix-sh-menu__all-arrow {
+	transform: translateX(3px);
+}
+
 .avix-sh-menu .avix-sh__tile {
 	width: 36px;
 	height: 36px;
@@ -1051,11 +1142,12 @@ html.avix-sh-lock body {
 	}
 
 	.avix-sh .avix-sh__notch {
-		--sh-corner: 16px;
+		--sh-notch-h: 27px;
+		--sh-corner: 11px;
+		--sh-round: 14px;
 		--pal-w: 16px;
 		gap: 8px;
-		padding: 6px 20px 8px;
-		border-radius: 0 0 16px 16px;
+		padding: 0 18px 2px;
 		font-size: 12px;
 	}
 }
@@ -1080,11 +1172,12 @@ html.avix-sh-lock body {
 	}
 
 	.avix-sh .avix-sh__notch {
-		--sh-corner: 12px;
+		--sh-notch-h: 24px;
+		--sh-corner: 10px;
+		--sh-round: 12px;
 		--pal-w: 14px;
 		gap: 6px;
-		padding: 5px 15px 7px;
-		border-radius: 0 0 12px 12px;
+		padding: 0 14px 2px;
 		font-size: 11px;
 	}
 
@@ -1104,12 +1197,12 @@ html.avix-sh-lock body {
 	0%,
 	100% {
 		opacity: 1;
-		box-shadow: 0 0 8px rgba(81, 202, 88, 0.6);
+		transform: scale(1);
 	}
 
 	50% {
-		opacity: 0.35;
-		box-shadow: 0 0 2px rgba(81, 202, 88, 0.1);
+		opacity: 0.2;
+		transform: scale(0.6);
 	}
 }
 
@@ -1157,4 +1250,537 @@ html.avix-sh-lock body {
 	.avix-sh__pal.is-hi .avix-sh__hi g {
 		opacity: 1;
 	}
+}
+
+/* Language switch beside the button (and in the mobile menu). */
+.avix-sh .avix-sh__lang,
+.avix-sh-menu .avix-sh-menu__lang {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 38px;
+	height: 34px;
+	padding: 0 10px;
+	border: 1px solid color-mix(in srgb, var(--sh-ink, #1a1a1a) 22%, transparent);
+	border-radius: 999px;
+	color: var(--sh-ink, #1a1a1a);
+	font-family: var(--sh-font-body);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	line-height: 1;
+	text-decoration: none;
+	transition: border-color 0.25s ease, color 0.25s ease;
+}
+
+.avix-sh-menu .avix-sh-menu__lang {
+	align-self: flex-start;
+	border-color: var(--m-line, rgba(0, 0, 0, 0.15));
+	color: var(--m-ink, #1a1a1a);
+}
+
+.avix-sh .avix-sh__lang:hover,
+.avix-sh .avix-sh__lang:focus-visible,
+.avix-sh-menu .avix-sh-menu__lang:hover {
+	border-color: var(--sh-accent);
+	color: var(--sh-accent);
+}
+
+.avix-sh .elementor-screen-only,
+.avix-sh-menu .elementor-screen-only {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* ---------- Services mega menu ---------- */
+
+.avix-sh--on-dark {
+	--sh-spot-bg: rgba(255, 255, 255, 0.04);
+	--sh-spot-media: #1d1e22;
+	--sh-foot-bg: rgba(255, 255, 255, 0.025);
+	--sh-panel-solid: #141518;
+}
+
+.avix-sh--on-light {
+	--sh-spot-bg: #f7f4ef;
+	--sh-spot-media: #efe9e1;
+	--sh-foot-bg: #faf8f5;
+	--sh-panel-solid: #ffffff;
+}
+
+/* The wide panel hangs from the bar, centred on the page, not from the menu item. */
+.avix-sh__bar {
+	position: relative;
+}
+
+.avix-sh .avix-sh__drop--mega {
+	position: static;
+}
+
+.avix-sh__panel.avix-sh__mega {
+	top: 100%;
+	width: min(1120px, calc(100vw - 2 * var(--sh-side, 32px)));
+	max-height: calc(100vh - var(--avix-header-h, 106px) - 24px);
+	flex-direction: column;
+	gap: 0;
+	margin-top: 0;
+	padding: 0;
+	overflow: auto;
+	overscroll-behavior: contain;
+	border-radius: 22px;
+}
+
+/* A taller bridge: the panel starts below the bar, further from the menu item. */
+.avix-sh__panel.avix-sh__mega::before {
+	height: 34px;
+}
+
+.avix-sh__mega-main {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+	gap: 10px;
+	padding: 14px;
+}
+
+.avix-sh__mega:not(.has-spot) .avix-sh__mega-main {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+/* Groups flow into two balanced columns; a group never splits. */
+.avix-sh__mega-groups {
+	columns: 2;
+	column-gap: 6px;
+	padding: 4px 2px;
+}
+
+.avix-sh__mega-group {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding-bottom: 12px;
+	break-inside: avoid;
+}
+
+.avix-sh .avix-sh__mega-label {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	margin: 8px 12px 6px;
+	padding: 0;
+	color: var(--sh-panel-muted);
+	font-family: var(--sh-font-body);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+/* The brand's pixel square marks each group. */
+.avix-sh .avix-sh__mega-label::before {
+	width: 6px;
+	height: 6px;
+	flex: none;
+	background: var(--sh-accent);
+	content: "";
+}
+
+.avix-sh__mega .avix-sh__item {
+	padding: 10px 12px;
+	gap: 13px;
+}
+
+.avix-sh__mega .avix-sh__tile {
+	width: 40px;
+	height: 40px;
+	border-radius: 11px;
+}
+
+.avix-sh__mega .avix-sh__tile svg {
+	width: 20px;
+	height: 20px;
+}
+
+.avix-sh__mega .avix-sh__item-desc {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.avix-sh .avix-sh__mega .avix-sh__item.is-spot {
+	background: var(--sh-panel-hover);
+}
+
+.avix-sh__mega .avix-sh__item.is-spot .avix-sh__item-arrow {
+	opacity: 1;
+	transform: none;
+}
+
+/* Spotlight: the hovered service's real project. */
+.avix-sh__spot {
+	position: relative;
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	overflow: hidden;
+	border: 1px solid var(--sh-panel-line);
+	border-radius: 16px;
+	background: var(--sh-spot-bg);
+}
+
+.avix-sh__spot-media {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: 3 / 2;
+	background: var(--sh-spot-media);
+}
+
+.avix-sh .avix-sh__spot-img {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	margin: 0;
+	object-fit: cover;
+	opacity: 0;
+	transform: scale(1.045);
+	transition: opacity 0.35s ease, transform 0.7s var(--sh-ease);
+}
+
+.avix-sh .avix-sh__spot-img.is-active {
+	opacity: 1;
+	transform: none;
+}
+
+.avix-sh__spot-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 7px;
+	padding: 16px 18px 18px;
+}
+
+.avix-sh__spot-body.is-active {
+	animation: avix-sh-spot-in 0.4s var(--sh-ease);
+}
+
+.avix-sh__spot-body[hidden] {
+	display: none;
+}
+
+.avix-sh .avix-sh__spot-label {
+	margin: 0;
+	color: var(--sh-accent);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	line-height: 1.3;
+	text-transform: uppercase;
+}
+
+.avix-sh .avix-sh__spot-title {
+	margin: 0;
+	color: var(--sh-panel-ink);
+	font-family: var(--sh-font-display);
+	font-size: 17px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.32;
+	text-wrap: pretty;
+}
+
+.avix-sh .avix-sh__spot-link,
+.avix-sh .avix-sh__mega-cta,
+.avix-sh .avix-sh__mega-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	font-family: var(--sh-font-body);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.3;
+	text-decoration: none;
+	transition: color 0.2s ease, gap 0.3s var(--sh-ease);
+}
+
+.avix-sh .avix-sh__spot-link {
+	align-self: flex-start;
+	margin-top: auto;
+	padding-top: 6px;
+	color: var(--sh-panel-ink);
+}
+
+.avix-sh .avix-sh__spot-link span,
+.avix-sh .avix-sh__mega-cta span,
+.avix-sh .avix-sh__mega-link span {
+	display: flex;
+}
+
+.avix-sh .avix-sh__spot-link svg,
+.avix-sh .avix-sh__mega-cta svg,
+.avix-sh .avix-sh__mega-link svg {
+	width: 15px;
+	height: 15px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 2.4;
+}
+
+.avix-sh .avix-sh__spot-link:hover,
+.avix-sh .avix-sh__spot-link:focus-visible,
+.avix-sh .avix-sh__mega-link:hover,
+.avix-sh .avix-sh__mega-link:focus-visible {
+	gap: 9px;
+	color: var(--sh-accent);
+}
+
+/* Footer: one clear next step. */
+.avix-sh__mega-foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px 24px;
+	padding: 15px 26px;
+	border-top: 1px solid var(--sh-panel-line);
+	background: var(--sh-foot-bg);
+}
+
+.avix-sh .avix-sh__mega-note {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 10px;
+	margin: 0;
+	color: var(--sh-panel-muted);
+	font-size: 14px;
+	line-height: 1.4;
+}
+
+.avix-sh__mega-buddy {
+	display: block;
+	width: 15px;
+	height: auto;
+	fill: var(--sh-accent);
+	shape-rendering: crispEdges;
+}
+
+.avix-sh__mega-buddy .e {
+	fill: var(--sh-panel-solid);
+}
+
+.avix-sh .avix-sh__mega-cta {
+	color: var(--sh-accent);
+}
+
+.avix-sh .avix-sh__mega-cta:hover,
+.avix-sh .avix-sh__mega-cta:focus-visible {
+	gap: 9px;
+	color: var(--sh-accent);
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+
+.avix-sh .avix-sh__mega-aside {
+	display: flex;
+	align-items: center;
+	gap: 22px;
+	margin: 0;
+}
+
+.avix-sh .avix-sh__mega-link {
+	color: var(--sh-panel-ink);
+	font-weight: 500;
+}
+
+.avix-sh .avix-sh__spot-link:focus-visible,
+.avix-sh .avix-sh__mega-cta:focus-visible,
+.avix-sh .avix-sh__mega-link:focus-visible {
+	outline: 2px solid var(--sh-accent);
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+/* Entrance: the columns settle in just after the panel. */
+.avix-sh__drop--mega .avix-sh__mega-group,
+.avix-sh__drop--mega .avix-sh__spot {
+	opacity: 0;
+	transform: translateY(8px);
+	transition: opacity 0.3s ease, transform 0.5s var(--sh-ease);
+	transition-delay: calc(var(--g, 0) * 45ms + 40ms);
+}
+
+.avix-sh__drop--mega .avix-sh__spot {
+	--g: 3;
+}
+
+.avix-sh__drop--mega.is-open .avix-sh__mega-group,
+.avix-sh__drop--mega.is-open .avix-sh__spot {
+	opacity: 1;
+	transform: none;
+}
+
+@keyframes avix-sh-spot-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+}
+
+/*
+ * The mega menu is always a light sheet, whatever the header tone, with a warm
+ * glow along its top edge and a halftone of square pixels fading out of it.
+ */
+.avix-sh .avix-sh__panel.avix-sh__mega {
+	--sh-panel-bg: #f6f4f0;
+	--sh-panel-ink: #141414;
+	--sh-panel-muted: #6b665f;
+	--sh-panel-line: rgba(20, 16, 12, 0.08);
+	--sh-panel-hover: rgba(255, 255, 255, 0.82);
+	--sh-panel-solid: #ffffff;
+	--sh-spot-bg: #ffffff;
+	--sh-spot-media: #efe9e1;
+	--sh-foot-bg: rgba(255, 255, 255, 0.6);
+
+	border-color: rgba(20, 16, 12, 0.06);
+	background:
+		radial-gradient(46% 78% at 60% 0%, color-mix(in srgb, var(--sh-accent) 17%, transparent), transparent 100%),
+		radial-gradient(34% 60% at 0% 100%, color-mix(in srgb, var(--sh-accent) 8%, transparent), transparent 100%),
+		var(--sh-panel-bg);
+	box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
+	isolation: isolate;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+}
+
+.avix-sh .avix-sh__panel.avix-sh__mega::after {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	background: conic-gradient(from 270deg at 2px 2px, color-mix(in srgb, var(--sh-accent) 55%, transparent) 0 90deg, transparent 0) 0 0 / 9px 9px;
+	-webkit-mask-image: radial-gradient(38% 44% at 60% 0%, #000 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+	mask-image: radial-gradient(38% 44% at 60% 0%, #000 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+	content: "";
+	pointer-events: none;
+}
+
+.avix-sh__mega .avix-sh__item:hover,
+.avix-sh__mega .avix-sh__item:focus-visible,
+.avix-sh .avix-sh__mega .avix-sh__item.is-spot {
+	background: var(--sh-panel-hover);
+	box-shadow: 0 0 0 1px rgba(20, 16, 12, 0.05), 0 10px 24px -18px rgba(40, 24, 10, 0.35);
+}
+
+.avix-sh__mega .avix-sh__spot {
+	border-color: rgba(20, 16, 12, 0.07);
+	box-shadow: 0 18px 40px -28px rgba(40, 24, 10, 0.45);
+}
+
+.avix-sh__mega .avix-sh__mega-foot {
+	border-top-color: rgba(20, 16, 12, 0.07);
+}
+
+@media (max-width: 1180px) {
+	.avix-sh__mega-main {
+		grid-template-columns: minmax(0, 1fr) minmax(250px, 290px);
+	}
+
+	.avix-sh__mega .avix-sh__item-desc {
+		-webkit-line-clamp: 1;
+	}
+}
+
+@media (max-width: 1040px) {
+	.avix-sh__mega .avix-sh__item-desc {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-sh__drop--mega .avix-sh__mega-group,
+	.avix-sh__drop--mega .avix-sh__spot,
+	.avix-sh .avix-sh__spot-img {
+		transition: none;
+		transform: none;
+	}
+
+	.avix-sh__spot-body.is-active {
+		animation: none;
+	}
+}
+
+/* Mobile menu: group headings in the services list. */
+.avix-sh-menu .avix-sh-menu__group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 6px 0 -4px;
+	color: var(--m-muted);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	line-height: 1;
+	text-transform: uppercase;
+	opacity: 0.8;
+}
+
+.avix-sh-menu .avix-sh-menu__group::before {
+	width: 5px;
+	height: 5px;
+	background: var(--sh-accent);
+	content: "";
+}
+
+/* The language switch stays off on phones and tablets for now. */
+.avix-sh-menu .avix-sh-menu__lang {
+	display: none;
+}
+
+@media (max-width: 900px) {
+	.avix-sh .avix-sh__lang {
+		display: none;
+	}
+}
+
+.avix-sh .avix-sh__spot-facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 6px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-sh .avix-sh__spot-facts li {
+	margin: 0;
+	padding: 5px 10px;
+	border: 1px solid var(--sh-panel-line);
+	border-radius: 999px;
+	color: var(--sh-panel-muted);
+	background: var(--sh-panel-solid);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.2;
+	list-style: none;
+}
+
+.avix-sh .avix-sh__spot-facts li::before,
+.avix-sh .avix-sh__spot-facts li::marker {
+	display: none;
+	content: none;
 }

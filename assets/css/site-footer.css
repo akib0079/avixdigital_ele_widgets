@@ -704,6 +704,38 @@
 	line-height: 1.5;
 }
 
+/* Optional legal links after the copyright (e.g. Privacy policy). */
+.avix-ft .avix-ft__legal--links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 6px 22px;
+}
+
+.avix-ft__legal-links {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 6px 18px;
+}
+
+.avix-ft .avix-ft__legal-link {
+	color: var(--ft-soft);
+	font-weight: 500;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--ft-soft) 28%, transparent);
+	text-underline-offset: 4px;
+	transition: color 220ms ease, text-decoration-color 220ms ease;
+}
+
+.avix-ft .avix-ft__legal-link:hover {
+	color: var(--ft-ink);
+	text-decoration-color: currentColor;
+}
+
+.avix-ft .avix-ft__legal-link[aria-current="page"] {
+	color: var(--ft-accent-soft);
+}
+
 .avix-ft .avix-ft__top {
 	display: inline-flex;
 	align-items: center;
@@ -826,6 +858,7 @@
 .avix-ft .avix-ft__pill:focus-visible,
 .avix-ft .avix-ft__alt a:focus-visible,
 .avix-ft .avix-ft__link:focus-visible,
+.avix-ft .avix-ft__legal-link:focus-visible,
 .avix-ft .avix-ft__social a:focus-visible,
 .avix-ft .avix-ft__copy:focus-visible,
 .avix-ft .avix-ft__top:focus-visible {
@@ -952,4 +985,29 @@
 	.avix-ft__buddy::before {
 		opacity: 0.25;
 	}
+}
+
+/* ---------- Pixel wordmark ---------- */
+
+.avix-ft__word {
+	position: relative;
+	height: clamp(84px, 15cqi, 240px);
+	margin-top: clamp(64px, 8cqi, 112px);
+	padding: 0 var(--ft-col-pad);
+	color: var(--ft-ink);
+	cursor: crosshair;
+}
+
+.avix-ft__word canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.avix-ft__word ~ .avix-ft__mark {
+	margin-top: clamp(32px, 4cqi, 56px);
+}
+
+.avix-ft__word ~ .avix-ft__bottom {
+	margin-top: clamp(36px, 4.5cqi, 64px);
 }

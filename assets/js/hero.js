@@ -33,6 +33,21 @@
 		return window.performance ? window.performance.now() : Date.now();
 	}
 
+	// The welcome loader (includes/loader.php) is still on screen.
+	function booting() {
+		return document.documentElement.classList.contains('avix-booting') && !window.__avixBooted;
+	}
+
+	function afterBoot(fn) {
+		if (!booting()) {
+			fn();
+			return;
+		}
+		window.addEventListener('avix:booted', function () {
+			fn();
+		}, { once: true });
+	}
+
 	function isEditMode() {
 		return !!(window.elementorFrontend && typeof window.elementorFrontend.isEditMode === 'function' && window.elementorFrontend.isEditMode());
 	}
@@ -47,6 +62,9 @@
 
 		var greet = config.greet || {};
 		var trail = config.trail || null;
+		var rise = config.rise || null;
+		var planet = config.planet || null;
+		var soft = config.soft || null;
 
 		this.root = root;
 		this.alive = true;
@@ -57,6 +75,21 @@
 			size: clamp(parseInt(trail.size, 10) || 40, 16, 96),
 			radius: clamp(parseInt(trail.radius, 10) || 2, 1, 5),
 			strength: clamp(parseFloat(trail.strength) || 0.3, 0.05, 0.8)
+		} : null;
+
+		this.rise = rise && typeof rise === 'object' ? {
+			color: typeof rise.color === 'string' && rise.color ? rise.color : '#ffffff',
+			caps: !!rise.caps
+		} : null;
+
+		this.soft = soft && typeof soft === 'object' ? {
+			edge: typeof soft.edge === 'string' && soft.edge ? soft.edge : '#ffffff'
+		} : null;
+
+		this.planet = planet && typeof planet === 'object' ? {
+			canvas: root.querySelector('[data-hero-planet]'),
+			stars: root.querySelector('[data-hero-stars]'),
+			lander: planet.lander ? root.querySelector('[data-hero-lander]') : null
 		} : null;
 
 		this.canvas = root.querySelector('[data-hero-trail]');
@@ -165,14 +198,18 @@
 		if (document.fonts && document.fonts.ready) {
 			document.fonts.ready.then(function () {
 				if (self.alive) {
-					self.seat();
-					self.placeTags();
+					self.layoutText();
 				}
 			});
 		}
 
-		this.initBuddy();
+		// Measured before initBuddy() adds its classes, so the first
+		// measurement does not have to recalculate styles it just changed.
 		this.resize();
+		this.initBuddy();
+		this.initRise();
+		this.initPlanet();
+		this.initSoft();
 		this.update();
 	};
 
@@ -430,12 +467,17 @@
 		return any;
 	};
 
+	// Reads first (sizes, the seat, the tag positions), writes after: one
+	// layout per resize instead of one per step.
 	Hero.prototype.resize = function () {
 		if (!this.alive) {
 			return;
 		}
 		var w = this.root.clientWidth;
 		var h = this.root.clientHeight;
+		var color = this.ctx ? window.getComputedStyle(this.root).getPropertyValue('--hero-trail').trim() || '#fb6007' : '';
+		var seat = this.measureSeat();
+		var tags = this.measureTags();
 
 		if (this.ctx && w && h && (w !== this.w || h !== this.h)) {
 			this.w = w;
@@ -450,10 +492,24 @@
 			this.local = null;
 		}
 		if (this.ctx) {
-			this.color = window.getComputedStyle(this.root).getPropertyValue('--hero-trail').trim() || '#fb6007';
+			this.color = color;
 		}
-		this.seat();
-		this.placeTags();
+		this.applySeat(seat);
+		this.applyTags(tags);
+		if (this.riseLayer && (w !== this.riseW || h !== this.riseH)) {
+			this.buildRise();
+		}
+		if (this.planet && this.planet.drawn && (w !== this.planet.w || h !== this.planet.h)) {
+			this.drawPlanet();
+		}
+	};
+
+	/** The seat and the tags again (the web fonts arrived): reads, then writes. */
+	Hero.prototype.layoutText = function () {
+		var seat = this.measureSeat();
+		var tags = this.measureTags();
+		this.applySeat(seat);
+		this.applyTags(tags);
 	};
 
 	/* ------------------------------------------------------------------ */
@@ -461,8 +517,13 @@
 	/* ------------------------------------------------------------------ */
 
 	Hero.prototype.seat = function () {
+		this.applySeat(this.measureSeat());
+	};
+
+	/** Reads only: how far the avatar drops (over a lowercase letter) and its head height. */
+	Hero.prototype.measureSeat = function () {
 		if (!this.buddy) {
-			return;
+			return null;
 		}
 		var perch = this.buddy.parentNode;
 		var box = this.buddy.getBoundingClientRect();
@@ -496,14 +557,24 @@
 				drop = ruler.measureText('H').actualBoundingBoxAscent - ruler.measureText('x').actualBoundingBoxAscent;
 			}
 		}
-		if (drop > 0.5) {
-			this.buddy.style.setProperty('--hero-seat-drop', drop.toFixed(1) + 'px');
-		} else {
+		if (!(drop > 0.5)) {
 			drop = 0;
-			this.buddy.style.removeProperty('--hero-seat-drop');
 		}
 		// Head centre (row 1.5 of 11) measured up from the bubble's bottom edge.
-		this.buddy.style.setProperty('--hero-say-tail', (box.height * 0.364 - drop).toFixed(1) + 'px');
+		return { drop: drop, tail: box.height * 0.364 - drop };
+	};
+
+	/** Writes only: the measured seat. */
+	Hero.prototype.applySeat = function (seat) {
+		if (!seat || !this.buddy) {
+			return;
+		}
+		if (seat.drop > 0.5) {
+			this.buddy.style.setProperty('--hero-seat-drop', seat.drop.toFixed(1) + 'px');
+		} else {
+			this.buddy.style.removeProperty('--hero-seat-drop');
+		}
+		this.buddy.style.setProperty('--hero-say-tail', seat.tail.toFixed(1) + 'px');
 	};
 
 	/* ------------------------------------------------------------------ */
@@ -511,25 +582,40 @@
 	/* ------------------------------------------------------------------ */
 
 	Hero.prototype.placeTags = function () {
+		this.applyTags(this.measureTags());
+	};
+
+	/** Reads only: where each tag goes (every width is read before any tag moves). */
+	Hero.prototype.measureTags = function () {
 		if (!this.tags.length || !this.title || window.getComputedStyle(this.tags[0]).display === 'none') {
-			return;
+			return null;
 		}
 		var lines = this.lineBoxes();
 		if (!lines.length) {
-			return;
+			return null;
 		}
 		var head = this.title.parentNode.getBoundingClientRect();
 		var bounds = this.root.getBoundingClientRect();
 		var gap = 28;
 
-		this.tags.forEach(function (tag) {
+		return this.tags.map(function (tag) {
 			var first = tag.classList.contains('avix-hero__tag--1');
 			var width = tag.offsetWidth;
 			var x = first ? lines[0].left - gap - width : lines[lines.length - 1].right + gap;
 			var fits = first ? x >= bounds.left + EDGE : x + width <= bounds.right - EDGE;
-			tag.style.setProperty('--hero-tag-x', (x - head.left).toFixed(1) + 'px');
-			tag.classList.add('is-placed');
-			tag.classList.toggle('is-cramped', !fits);
+			return { tag: tag, x: x - head.left, fits: fits };
+		});
+	};
+
+	/** Writes only: the measured tag positions. */
+	Hero.prototype.applyTags = function (places) {
+		if (!places) {
+			return;
+		}
+		places.forEach(function (place) {
+			place.tag.style.setProperty('--hero-tag-x', place.x.toFixed(1) + 'px');
+			place.tag.classList.add('is-placed');
+			place.tag.classList.toggle('is-cramped', !place.fits);
 		});
 	};
 
@@ -627,6 +713,20 @@
 	// Called whenever the banner is on screen and the tab visible.
 	Hero.prototype.resume = function () {
 		var self = this;
+		if (this.state === 'armed' && booting()) {
+			// Land just after the loader's buddy has leapt away.
+			if (!this.waitingBoot) {
+				this.waitingBoot = true;
+				afterBoot(function () {
+					self.waitingBoot = false;
+					self.mountedAt = now();
+					if (self.alive && self.running) {
+						self.resume();
+					}
+				});
+			}
+			return;
+		}
 		if (this.state === 'armed') {
 			this.state = 'landing';
 			this.later('land', function () {
@@ -769,6 +869,412 @@
 	};
 
 	/* ------------------------------------------------------------------ */
+	/* Pixel planet: a dithered horizon of brand squares, the buddy on it  */
+	/* ------------------------------------------------------------------ */
+
+	var BAYER = [0, 32, 8, 40, 2, 34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26, 12, 44, 4, 36, 14, 46, 6, 38, 60, 28, 52, 20, 62, 30, 54, 22, 3, 35, 11, 43, 1, 33, 9, 41, 51, 19, 59, 27, 49, 17, 57, 25, 15, 47, 7, 39, 13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21];
+
+	// Dark ember to a deep brand orange: the planet stays quiet, the buddy is the bright touch.
+	function planetColor(t) {
+		var a = t < 0.55 ? [46, 13, 5] : [120, 36, 7];
+		var b = t < 0.55 ? [120, 36, 7] : [214, 82, 8];
+		var k = t < 0.55 ? t / 0.55 : (t - 0.55) / 0.45;
+		return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * k) + ',' + Math.round(a[1] + (b[1] - a[1]) * k) + ',' + Math.round(a[2] + (b[2] - a[2]) * k) + ')';
+	}
+
+	Hero.prototype.initPlanet = function () {
+		var planet = this.planet;
+		if (!planet || !planet.canvas || !planet.canvas.getContext) {
+			return;
+		}
+		var self = this;
+		var draw = function () {
+			if (self.alive) {
+				self.drawPlanet();
+			}
+		};
+		// Once the web fonts are in (the horizon measures the copy), or after 1.2 s at most:
+		// never waits for the page's images. After the welcome loader, if one is showing.
+		afterBoot(function () {
+			var drawn = false;
+			var once = function () {
+				if (!drawn) {
+					drawn = true;
+					draw();
+				}
+			};
+			self.later('planet', once, 1200);
+			if (document.fonts && document.fonts.ready) {
+				document.fonts.ready.then(once);
+			} else {
+				once();
+			}
+		});
+
+		if (planet.lander) {
+			this.onPlanetMove = function (event) {
+				if (event.pointerType === 'touch' || !finePointer.matches || reduceMotion.matches || self.editor) {
+					return;
+				}
+				var rect = self.root.getBoundingClientRect();
+				planet.target = clamp(event.clientX - rect.left, planet.w * 0.18, planet.w * 0.82);
+				self.walk();
+				self.later('planet-home', function () {
+					planet.target = planet.home;
+					self.walk();
+				}, 3200);
+			};
+			this.root.addEventListener('pointermove', this.onPlanetMove);
+			// Hovering the button: it strolls over to stand beside it (and hero.js already has it say the button line).
+			if (this.cta) {
+				this.onPlanetCta = function (event) {
+					if ((event.pointerType && event.pointerType !== 'mouse') || reduceMotion.matches || self.editor || !planet.drawn) {
+						return;
+					}
+					var rect = self.root.getBoundingClientRect();
+					var box = self.cta.getBoundingClientRect();
+					planet.target = clamp(box.right - rect.left + 70, planet.w * 0.18, planet.w * 0.82);
+					self.cancel('planet-home');
+					self.walk();
+				};
+				this.cta.addEventListener('pointerenter', this.onPlanetCta);
+			}
+		}
+	};
+
+	/** One dithered pass: stars (kept faint behind the copy), the planet's surface, rim and halo. */
+	Hero.prototype.drawPlanet = function () {
+		var planet = this.planet;
+		var canvas = planet.canvas;
+		var w = this.root.clientWidth;
+		var h = this.root.clientHeight;
+		if (!w || !h) {
+			return;
+		}
+		var narrow = w < 600;
+		var dpr = Math.min(window.devicePixelRatio || 1, 2);
+		var rootBox = this.root.getBoundingClientRect();
+		var anchor = this.root.querySelector('.avix-hero__dock-wrap') || this.root.querySelector('.avix-hero__actions') || this.title;
+		var copyBottom = anchor ? anchor.getBoundingClientRect().bottom - rootBox.top : h * 0.7;
+		var horizon = Math.min(h - 44, Math.max(h * (narrow ? 0.86 : 0.8), copyBottom + (narrow ? 56 : 70)));
+		var radius = narrow ? w * 1.6 : w * 1.15;
+		var cx = w / 2;
+		var cy = horizon + radius;
+		var cell = narrow ? 7 : 9;
+		var size = cell - 2;
+		var ctx = canvas.getContext('2d');
+
+		planet.w = w;
+		planet.h = h;
+		planet.cx = cx;
+		planet.cy = cy;
+		planet.r = radius;
+		canvas.width = Math.round(w * dpr);
+		canvas.height = Math.round(h * dpr);
+		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+		ctx.clearRect(0, 0, w, h);
+
+		var haze = ctx.createRadialGradient(cx, horizon + 40, 0, cx, horizon + 40, narrow ? w * 0.9 : w * 0.48);
+		haze.addColorStop(0, 'rgba(251, 96, 7, 0.1)');
+		haze.addColorStop(0.6, 'rgba(251, 96, 7, 0.03)');
+		haze.addColorStop(1, 'rgba(251, 96, 7, 0)');
+		ctx.fillStyle = haze;
+		ctx.fillRect(0, 0, w, h);
+
+		var rows = Math.ceil(h / cell);
+		var cols = Math.ceil(w / cell);
+		var top = Math.max(0, Math.floor((horizon - 80) / cell));
+		for (var r = top; r < rows; r++) {
+			for (var c = 0; c < cols; c++) {
+				var x = c * cell;
+				var y = r * cell;
+				var d = Math.sqrt((x + cell / 2 - cx) * (x + cell / 2 - cx) + (y + cell / 2 - cy) * (y + cell / 2 - cy));
+				var light;
+				if (d < radius) {
+					light = 0.22 + Math.min(1, (radius - d) / (narrow ? 110 : 170)) * 0.62 + Math.max(0, 1 - (radius - d) / 12) * 0.25;
+				} else {
+					light = 0.18 - (d - radius) / (narrow ? 50 : 70);
+				}
+				if (light > (BAYER[(r % 8) * 8 + (c % 8)] + 0.5) / 64) {
+					ctx.fillStyle = planetColor(Math.min(1, light));
+					ctx.fillRect(x, y, size, size);
+				}
+			}
+		}
+
+		if (this.soft) {
+			// A fine pixel edge: the next section's colour scatters up into the banner over four rows.
+			var edgeRows = [0.06, 0.18, 0.42, 0.78];
+			var base = Math.floor(h / cell) * cell; // the last whole row ends here
+			ctx.fillStyle = this.soft.edge;
+			ctx.fillRect(0, base, w, h - base);
+			for (var k = 0; k < edgeRows.length; k++) {
+				var ey = base - (edgeRows.length - k) * cell;
+				for (var ec = 0; ec < cols; ec++) {
+					if (hash(ey * 7.3 + ec * 13.1) < edgeRows[k]) {
+						ctx.fillRect(ec * cell, ey, cell, cell);
+					}
+				}
+			}
+		}
+
+		this.drawStars(w, horizon, copyBottom, narrow);
+
+		planet.home = w * (narrow ? 0.8 : 0.68);
+		if (planet.x == null || planet.x > w) {
+			planet.x = planet.home;
+		}
+		planet.target = planet.home;
+		this.placeLander();
+
+		if (!planet.drawn) {
+			planet.drawn = true;
+			this.root.classList.add('is-planet');
+		}
+	};
+
+	/** Pixel stars: a handful twinkle (CSS opacity only); fainter over the copy column. */
+	Hero.prototype.drawStars = function (w, horizon, copyBottom, narrow) {
+		var box = this.planet.stars;
+		if (!box) {
+			return;
+		}
+		var count = narrow ? 34 : 90;
+		var left = w / 2 - Math.min(w * 0.42, 560);
+		var right = w / 2 + Math.min(w * 0.42, 560);
+		var html = '';
+		for (var i = 0; i < count; i++) {
+			var x = Math.round(hash(i) * (w - 6));
+			var y = Math.round(hash(i + 99) * (horizon - 40));
+			var quiet = x > left && x < right && y > 110 && y < copyBottom + 10;
+			var alpha = (quiet ? 0.1 : 0.22) + hash(i + 7) * (quiet ? 0.1 : 0.4);
+			var twinkle = !quiet && hash(i + 31) < 0.18;
+			html += '<i style="left:' + x + 'px;top:' + y + 'px;opacity:' + alpha.toFixed(2) + (twinkle ? ';animation-delay:-' + (hash(i + 3) * 6).toFixed(1) + 's" class="is-twinkle' : '') + '"></i>';
+		}
+		box.innerHTML = html;
+	};
+
+	/** The buddy's feet on the horizon at its current x. */
+	Hero.prototype.placeLander = function () {
+		var planet = this.planet;
+		if (!planet.lander) {
+			return;
+		}
+		var dx = planet.x - planet.cx;
+		var y = planet.cy - Math.sqrt(Math.max(0, planet.r * planet.r - dx * dx));
+		planet.lander.style.setProperty('--lander-x', planet.x.toFixed(1) + 'px');
+		planet.lander.style.setProperty('--lander-y', y.toFixed(1) + 'px');
+		planet.lander.classList.add('is-placed');
+	};
+
+	/** Walks towards planet.target at a stroll (about 140 px a second), facing the way it goes. */
+	Hero.prototype.walk = function () {
+		var planet = this.planet;
+		var self = this;
+		if (!planet || !planet.lander || planet.walking || planet.x == null) {
+			return;
+		}
+		planet.walking = true;
+		var last = now();
+		var step = function () {
+			if (!self.alive) {
+				return;
+			}
+			var t = now();
+			var dt = Math.min(64, t - last);
+			last = t;
+			var gap = planet.target - planet.x;
+			if (Math.abs(gap) < 2) {
+				planet.walking = false;
+				planet.lander.classList.remove('is-walking');
+				return;
+			}
+			planet.lander.classList.add('is-walking');
+			planet.lander.classList.toggle('is-walk-l', gap < 0);
+			planet.x += Math.sign(gap) * Math.min(Math.abs(gap), 0.14 * dt);
+			self.placeLander();
+			planet.frame = window.requestAnimationFrame(step);
+		};
+		planet.frame = window.requestAnimationFrame(step);
+	};
+
+	/* ------------------------------------------------------------------ */
+	/* Soft scroll: the copy drifts up and fades a little, the planet sinks */
+	/* ------------------------------------------------------------------ */
+
+	Hero.prototype.initSoft = function () {
+		if (!this.soft || this.editor || reduceMotion.matches) {
+			return;
+		}
+		var self = this;
+		var body = this.root.querySelector('.avix-hero__body');
+		var layers = [
+			[this.root.querySelector('[data-hero-stars]'), 0.06]
+		].filter(function (layer) {
+			return layer[0];
+		});
+		var queued = false;
+		var last = -1;
+		var apply = function () {
+			queued = false;
+			if (!self.alive) {
+				return;
+			}
+			var h = self.root.clientHeight || 1;
+			var scrolled = Math.min(h, Math.max(0, -self.root.getBoundingClientRect().top));
+			if (Math.abs(scrolled - last) < 0.5) {
+				return;
+			}
+			last = scrolled;
+			if (body) {
+				body.style.translate = scrolled ? '0 ' + (-scrolled * 0.12).toFixed(1) + 'px' : '';
+				body.style.opacity = scrolled ? (1 - (scrolled / h) * 0.55).toFixed(3) : '';
+			}
+			layers.forEach(function (layer) {
+				layer[0].style.translate = scrolled ? '0 ' + (scrolled * layer[1]).toFixed(1) + 'px' : '';
+			});
+		};
+		this.onSoftScroll = function () {
+			if (!queued) {
+				queued = true;
+				window.requestAnimationFrame(apply);
+			}
+		};
+		window.addEventListener('scroll', this.onSoftScroll, { passive: true });
+		// Measure again once the welcome loader has gone and on resize: the page may have moved without a scroll event.
+		window.addEventListener('avix:booted', this.onSoftScroll);
+		window.addEventListener('resize', this.onSoftScroll);
+		apply();
+	};
+
+	/* ------------------------------------------------------------------ */
+	/* Pixel rise: the next section climbs into the banner on scroll       */
+	/* ------------------------------------------------------------------ */
+
+	// A fixed pseudo-random value per index, so terraces never reshuffle.
+	function hash(i) {
+		var x = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+		return x - Math.floor(x);
+	}
+
+	Hero.prototype.initRise = function () {
+		if (!this.rise || this.editor || reduceMotion.matches) {
+			return;
+		}
+		var self = this;
+		this.riseLayer = document.createElement('div');
+		this.riseLayer.className = 'avix-hero__rise';
+		this.riseLayer.setAttribute('aria-hidden', 'true');
+		this.riseLayer.style.setProperty('--hero-rise', this.rise.color);
+		this.root.appendChild(this.riseLayer);
+		this.riseBody = this.root.querySelector('.avix-hero__body');
+		this.riseBg = this.root.querySelector('.avix-hero__bg');
+		this.riseQueued = false;
+		this.onRiseScroll = function () {
+			if (!self.riseQueued) {
+				self.riseQueued = true;
+				window.requestAnimationFrame(function () {
+					self.riseQueued = false;
+					self.updateRise();
+				});
+			}
+		};
+		window.addEventListener('scroll', this.onRiseScroll, { passive: true });
+		this.buildRise();
+	};
+
+	/**
+	 * One column per brand square. Neighbouring columns start together in runs
+	 * of 2 to 5 (the terraces); a wide summit a little right of centre (under
+	 * the button) leads, and the further a terrace is from it, the later it
+	 * starts. Every few terraces carry an orange pixel on their first step.
+	 */
+	Hero.prototype.buildRise = function () {
+		var w = this.root.clientWidth;
+		var h = this.root.clientHeight;
+		var narrow = w < 600;
+		var step = narrow ? 24 : 40;
+		var count = Math.ceil(w / step);
+		var center = 0.56;
+		var peak = narrow ? 4 : 6;
+		var peakAt = Math.round(center * count - peak / 2);
+		var runLeft = 0;
+		var delay = 0;
+		var capped = false;
+		var html = '';
+
+		this.riseW = w;
+		this.riseH = h;
+		this.riseStep = step;
+		this.riseCols = [];
+		for (var i = 0; i < count; i++) {
+			if (i === peakAt) {
+				runLeft = peak;
+				delay = 0;
+				capped = false;
+			} else if (runLeft <= 0) {
+				runLeft = 2 + Math.floor(hash(i * 3.1) * 4);
+				if (i < peakAt && i + runLeft > peakAt) {
+					runLeft = peakAt - i;
+				}
+				var distance = Math.min(1, Math.abs((i + runLeft / 2) / count - center) / 0.56);
+				delay = 0.08 + Math.pow(distance, 1.05) * 0.9 + hash(i * 7.7) * 0.07;
+				capped = this.rise.caps && hash(i * 13.3) < 0.55;
+			}
+			html += '<i style="left:' + i * step + 'px;width:' + (step + 1) + 'px">' + (capped ? '<b></b>' : '') + '</i>';
+			this.riseCols.push({ delay: delay, cap: capped });
+			capped = false;
+			runLeft--;
+		}
+		this.riseLayer.innerHTML = html;
+		var nodes = this.riseLayer.children;
+		for (var j = 0; j < nodes.length; j++) {
+			this.riseCols[j].el = nodes[j];
+			this.riseCols[j].capEl = nodes[j].firstChild;
+		}
+		// Phones: the terraces start sooner, so the rise stays a broad staircase.
+		this.riseDelay = Math.min(h * 0.55, w * 0.5);
+		this.riseLast = -1;
+		this.updateRise();
+	};
+
+	Hero.prototype.updateRise = function () {
+		if (!this.alive || !this.riseCols) {
+			return;
+		}
+		var h = this.riseH;
+		var step = this.riseStep;
+		var speed = 1.5; // squares climb half again as fast as the page scrolls
+		var full = this.riseDelay + h / speed + step; // past this, everything is covered
+		var scrolled = Math.min(full, Math.max(0, -this.root.getBoundingClientRect().top));
+		if (Math.abs(scrolled - this.riseLast) < 0.5) {
+			return;
+		}
+		this.riseLast = scrolled;
+		for (var i = 0; i < this.riseCols.length; i++) {
+			var col = this.riseCols[i];
+			var lift = Math.max(0, scrolled - col.delay * this.riseDelay) * speed;
+			var height = Math.min(h, Math.floor(lift / step) * step);
+			if (height !== col.height) {
+				col.height = height;
+				col.el.style.transform = 'translate3d(0,' + (h - height) + 'px,0)';
+				if (col.capEl) {
+					col.capEl.style.opacity = height > 0 && height < h ? '1' : '0';
+				}
+			}
+		}
+		// The content drifts up and fades as it is covered; the photo sinks a little.
+		var fade = Math.max(0, Math.min(1, (scrolled - 40) / (h * 0.5)));
+		if (this.riseBody) {
+			this.riseBody.style.translate = scrolled ? '0 ' + (-scrolled * 0.18).toFixed(1) + 'px' : '';
+			this.riseBody.style.opacity = fade ? (1 - fade * 0.85).toFixed(3) : '';
+		}
+		if (this.riseBg) {
+			this.riseBg.style.translate = scrolled ? '0 ' + (scrolled * 0.12).toFixed(1) + 'px' : '';
+		}
+	};
+
+	/* ------------------------------------------------------------------ */
 	/* Teardown                                                            */
 	/* ------------------------------------------------------------------ */
 
@@ -790,6 +1296,26 @@
 		}
 		if (this.resizeObserver) {
 			this.resizeObserver.disconnect();
+		}
+		if (this.onRiseScroll) {
+			window.removeEventListener('scroll', this.onRiseScroll);
+		}
+		if (this.onSoftScroll) {
+			window.removeEventListener('scroll', this.onSoftScroll);
+			window.removeEventListener('avix:booted', this.onSoftScroll);
+			window.removeEventListener('resize', this.onSoftScroll);
+		}
+		if (this.onPlanetMove) {
+			this.root.removeEventListener('pointermove', this.onPlanetMove);
+		}
+		if (this.onPlanetCta && this.cta) {
+			this.cta.removeEventListener('pointerenter', this.onPlanetCta);
+		}
+		if (this.planet && this.planet.frame) {
+			window.cancelAnimationFrame(this.planet.frame);
+		}
+		if (this.riseLayer && this.riseLayer.parentNode) {
+			this.riseLayer.parentNode.removeChild(this.riseLayer);
 		}
 		if (this.buddy) {
 			this.buddy.removeEventListener('pointerenter', this.onBuddyEnter);

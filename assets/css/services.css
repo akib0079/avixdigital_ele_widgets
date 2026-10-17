@@ -123,6 +123,53 @@
 	display: none;
 }
 
+/* Pixel corners: dithered accent pixels where the glows sit, drawn by the
+   script. A few of them sit on a second layer that slowly fades in and out. */
+.avix-sv__pixels {
+	position: absolute;
+	display: block;
+	aspect-ratio: 1;
+}
+
+.avix-sv__pixels--tr {
+	top: 0;
+	right: 0;
+	width: min(360px, 40cqi);
+}
+
+.avix-sv__pixels--bl {
+	bottom: 0;
+	left: 0;
+	width: min(420px, 46cqi);
+}
+
+.avix-sv__pixels canvas {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.avix-sv__pixels .avix-sv__twinkle {
+	opacity: 0.5;
+	animation: avix-sv-twinkle 4.6s ease-in-out infinite alternate;
+}
+
+.avix-sv__pixels--bl .avix-sv__twinkle {
+	animation-delay: -2.3s;
+}
+
+@keyframes avix-sv-twinkle {
+	from {
+		opacity: 0.1;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
 /* ---------- Header ---------- */
 
 .avix-sv__frame {
@@ -192,6 +239,25 @@
 	font-family: var(--sv-font-body);
 	font-size: clamp(15px, 1.2cqi, 17px);
 	line-height: 1.65;
+}
+
+/* Simple links in the intro (the intro allows <a>, <strong>, <em>). */
+.avix-sv .avix-sv__intro a {
+	color: var(--sv-ink);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+	transition: color 0.2s ease;
+}
+
+.avix-sv .avix-sv__intro a:hover,
+.avix-sv .avix-sv__intro a:focus-visible {
+	color: var(--sv-accent);
+}
+
+.avix-sv .avix-sv__intro strong {
+	color: var(--sv-ink);
+	font-weight: 600;
 }
 
 /* ---------- Layout ---------- */

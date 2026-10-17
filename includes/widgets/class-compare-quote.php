@@ -295,7 +295,7 @@ class Compare_Quote extends Widget_Base {
 			'schema',
 			array(
 				'label'       => esc_html__( 'Person structured data', 'avix-widgets' ),
-				'description' => esc_html__( 'JSON-LD for the CEO: name, role, photo, profile, employer. Shares its id with the Process Timeline team row, so search engines see one person.', 'avix-widgets' ),
+				'description' => esc_html__( 'JSON-LD for the quote\'s author: name, role, photo, profile, employer. For the founder set in Tools > Avix SEO: entity, the site\'s one founder Person is used instead, so search engines see one person.', 'avix-widgets' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'default'     => 'yes',
 				'separator'   => 'before',
@@ -762,48 +762,32 @@ class Compare_Quote extends Widget_Base {
 	}
 
 	/**
-	 * schema.org Person for the CEO. The @id matches the Process Timeline
-	 * team row, so both describe one entity.
+	 * schema.org Person for the quote's author. The founder (Tools > Avix SEO:
+	 * entity) is the site's one founder Person: printed once per page from the
+	 * entity data, never redefined with this card's role or photo, and with
+	 * Yoast SEO already in the head, so nothing is added here. Anyone else gets
+	 * #person-<name> and worksFor → #organization (includes/seo/class-person.php).
+	 *
+	 * @param array $s Settings.
 	 */
 	private function print_schema( array $s ) {
 		$name = wp_strip_all_tags( trim( (string) $s['name'] ) );
-		if ( '' === $name ) {
+		if ( '' === $name || ! class_exists( '\AvixWidgets\SEO\Person' ) ) {
 			return;
-		}
-		$slug   = sanitize_title( $name );
-		$person = array(
-			'@context' => 'https://schema.org',
-			'@type'    => 'Person',
-			'name'     => $name,
-			'worksFor' => array(
-				'@type' => 'Organization',
-				'name'  => wp_strip_all_tags( get_bloginfo( 'name' ) ),
-				'url'   => home_url( '/' ),
-			),
-		);
-		if ( '' !== $slug ) {
-			$person['@id'] = home_url( '/#person-' . $slug );
-		}
-		$role = wp_strip_all_tags( trim( (string) $s['role'] ) );
-		if ( '' !== $role ) {
-			$person['jobTitle'] = $role;
 		}
 		$photo = (array) $s['photo'];
 		$image = ! empty( $photo['url'] ) ? $photo['url'] : ( $this->media_id( $photo ) ? wp_get_attachment_image_url( $this->media_id( $photo ), 'medium_large' ) : '' );
-		if ( $image ) {
-			$person['image'] = esc_url_raw( $image );
-		}
-		$link = trim( (string) ( $s['profile']['url'] ?? '' ) );
-		if ( '' !== $link && '/' === $link[0] && ( ! isset( $link[1] ) || '/' !== $link[1] ) ) {
-			$link = home_url( $link );
-		}
-		$link = esc_url_raw( $link, array( 'http', 'https' ) );
-		if ( '' !== $link ) {
-			$person[ wp_parse_url( $link, PHP_URL_HOST ) === wp_parse_url( home_url( '/' ), PHP_URL_HOST ) ? 'url' : 'sameAs' ] = $link;
-		}
-		$json = wp_json_encode( $person, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP );
-		if ( $json ) {
-			echo '<script type="application/ld+json">' . $json . '</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON with < > & hex-escaped.
-		}
+		\AvixWidgets\SEO\Person::print_nodes(
+			\AvixWidgets\SEO\Person::widget_nodes(
+				array(
+					array(
+						'name'     => $name,
+						'jobTitle' => wp_strip_all_tags( trim( (string) $s['role'] ) ),
+						'image'    => $image ? (string) $image : '',
+						'link'     => (string) ( $s['profile']['url'] ?? '' ),
+					),
+				)
+			)
+		);
 	}
 }

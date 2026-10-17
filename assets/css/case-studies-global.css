@@ -1,0 +1,391 @@
+/*!
+ * Avix Digital · Case Studies (global)
+ * Loaded only on case-study singles and the /case-studies/ index. Keeps one
+ * pixel character on these pages (SPEC-CASE-STUDIES §2.10) and styles the
+ * plain fallback page that shows when a case study has no Elementor layout.
+ */
+
+/* ---------- The avatar rule ---------- */
+
+/* Case-study pages keep one pixel character, not five: the header notch
+   and footer buddies are hidden here only (see SPEC-CASE-STUDIES §2.10).
+   The owner setting "site" (body class avix-cs-chars-site) turns this off. */
+.avix-is-case-study:not(.avix-cs-chars-site) .avix-sh__pal,
+.avix-is-case-index:not(.avix-cs-chars-site) .avix-sh__pal,
+.avix-is-case-study:not(.avix-cs-chars-site) .avix-ft__buddy {
+	display: none !important;
+}
+
+/* Any other widget's character dropped on these pages by an editor. */
+.avix-is-case-study:not(.avix-cs-chars-site) .avix-pal:not(.avix-csn__pal) {
+	display: none !important;
+}
+
+/* "None": no character anywhere on these pages, the Next card's included. */
+.avix-cs-chars-none .avix-csn__pal,
+.avix-cs-chars-none .avix-ft__buddy,
+.avix-cs-chars-none .avix-pal {
+	display: none !important;
+}
+
+/* The notch reserves room for its character (.has-pal → pal-w × 2.5).
+   With the character hidden it gets its plain padding back, per breakpoint,
+   so the notch text stays centred (values from smart-header.css). */
+.avix-is-case-study:not(.avix-cs-chars-site) .avix-sh .avix-sh__notch.has-pal,
+.avix-is-case-index:not(.avix-cs-chars-site) .avix-sh .avix-sh__notch.has-pal {
+	padding-right: 28px;
+}
+
+@media (max-width: 900px) {
+	.avix-is-case-study:not(.avix-cs-chars-site) .avix-sh .avix-sh__notch.has-pal,
+	.avix-is-case-index:not(.avix-cs-chars-site) .avix-sh .avix-sh__notch.has-pal {
+		padding-right: 18px;
+	}
+}
+
+@media (max-width: 480px) {
+	.avix-is-case-study:not(.avix-cs-chars-site) .avix-sh .avix-sh__notch.has-pal,
+	.avix-is-case-index:not(.avix-cs-chars-site) .avix-sh .avix-sh__notch.has-pal {
+		padding-right: 14px;
+	}
+}
+
+/* ---------- Fallback page (no Elementor layout) ---------- */
+
+.avix-cs-fallback {
+	--csfb-ink: #1a1a1a;
+	--csfb-muted: #5c5f66;
+	--csfb-line: rgba(26, 26, 26, 0.1);
+	--csfb-paper: #f5f3ef;
+	--csfb-accent: #fb6007;
+	--csfb-accent-text: #c54804;
+	--csfb-font-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--csfb-font-body: "Inter", Arial, sans-serif;
+	box-sizing: border-box;
+	width: min(calc(100% - 2 * max(18px, 5vw)), 920px);
+	margin: 0 auto;
+	padding: clamp(48px, 8vw, 120px) 0 clamp(64px, 9vw, 140px);
+	color: var(--csfb-ink);
+	font-family: var(--csfb-font-body);
+	font-size: clamp(16px, 1.15vw, 17px);
+	line-height: 1.7;
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-cs-fallback *,
+.avix-cs-fallback *::before,
+.avix-cs-fallback *::after {
+	box-sizing: border-box;
+}
+
+.avix-cs-fallback .avix-cs-fallback__crumbs {
+	margin: 0 0 20px;
+	font-size: 12.5px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.avix-cs-fallback .avix-cs-fallback__crumbs a {
+	color: var(--csfb-muted);
+	text-decoration: none;
+}
+
+.avix-cs-fallback .avix-cs-fallback__crumbs a::before {
+	content: "";
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	margin-right: 10px;
+	vertical-align: 2px;
+	background: var(--csfb-accent);
+}
+
+.avix-cs-fallback .avix-cs-fallback__title {
+	max-width: 22ch;
+	margin: 0;
+	padding: 0;
+	color: var(--csfb-ink);
+	font-family: var(--csfb-font-display);
+	font-size: clamp(34px, 5.4vw, 64px);
+	font-weight: 700;
+	letter-spacing: -0.035em;
+	line-height: 1.06;
+	text-transform: none;
+	text-wrap: balance;
+}
+
+.avix-cs-fallback .avix-cs-fallback__accent {
+	color: var(--csfb-accent);
+}
+
+.avix-cs-fallback .avix-cs-fallback__lead {
+	max-width: 58ch;
+	margin: 20px 0 0;
+	color: var(--csfb-muted);
+	font-size: clamp(17px, 1.4vw, 19px);
+	line-height: 1.6;
+	text-wrap: pretty;
+}
+
+.avix-cs-fallback .avix-cs-fallback__cta {
+	margin: 28px 0 0;
+}
+
+.avix-cs-fallback .avix-cs-fallback__button {
+	display: inline-flex;
+	min-height: 48px;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 24px;
+	border-radius: 999px;
+	color: #fff;
+	background: var(--csfb-accent);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.avix-cs-fallback .avix-cs-fallback__figure {
+	margin: clamp(36px, 5vw, 64px) 0 0;
+	padding: 0;
+	overflow: hidden;
+	border: 1px solid var(--csfb-line);
+	border-radius: 24px;
+	background: #0b0b0c;
+	box-shadow: 0 40px 80px -40px rgba(11, 11, 12, 0.45), 0 2px 6px rgba(11, 11, 12, 0.06);
+}
+
+.avix-cs-fallback .avix-cs-fallback__img {
+	display: block;
+	width: 100%;
+	max-width: none;
+	height: auto;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+}
+
+.avix-cs-fallback .avix-cs-fallback__facts {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 0;
+	margin: clamp(32px, 4vw, 48px) 0 0;
+	padding: 0;
+	border-top: 1px solid var(--csfb-line);
+	border-bottom: 1px solid var(--csfb-line);
+}
+
+.avix-cs-fallback .avix-cs-fallback__fact {
+	padding: 20px 20px 20px 0;
+}
+
+.avix-cs-fallback .avix-cs-fallback__fact dt {
+	margin: 0 0 6px;
+	color: var(--csfb-muted);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.avix-cs-fallback .avix-cs-fallback__fact dd {
+	margin: 0;
+	color: var(--csfb-ink);
+	font-family: var(--csfb-font-display);
+	font-size: 18px;
+	font-weight: 500;
+	line-height: 1.35;
+}
+
+.avix-cs-fallback .avix-cs-fallback__fact a,
+.avix-cs-fallback .avix-cs-fallback__section a {
+	color: var(--csfb-accent-text);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+
+.avix-cs-fallback .avix-cs-fallback__section {
+	margin: clamp(48px, 7vw, 96px) 0 0;
+}
+
+.avix-cs-fallback .avix-cs-fallback__section h2 {
+	margin: 0 0 18px;
+	padding: 0;
+	color: var(--csfb-ink);
+	font-family: var(--csfb-font-display);
+	font-size: clamp(28px, 3.4vw, 44px);
+	font-weight: 600;
+	letter-spacing: -0.03em;
+	line-height: 1.1;
+	text-transform: none;
+}
+
+.avix-cs-fallback .avix-cs-fallback__section p {
+	max-width: 66ch;
+	margin: 0 0 16px;
+	color: var(--csfb-muted);
+}
+
+.avix-cs-fallback .avix-cs-fallback__section .avix-cs-fallback__statement {
+	max-width: 30ch;
+	margin-bottom: 24px;
+	color: var(--csfb-ink);
+	font-family: var(--csfb-font-display);
+	font-size: clamp(22px, 2.4vw, 32px);
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	line-height: 1.25;
+}
+
+.avix-cs-fallback .avix-cs-fallback__list {
+	display: grid;
+	gap: 12px;
+	margin: 24px 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-cs-fallback .avix-cs-fallback__list li {
+	position: relative;
+	margin: 0;
+	padding: 16px 20px 16px 40px;
+	border-radius: 16px;
+	color: var(--csfb-muted);
+	background: var(--csfb-paper);
+}
+
+.avix-cs-fallback .avix-cs-fallback__list li::marker {
+	content: none;
+}
+
+.avix-cs-fallback .avix-cs-fallback__list li::before {
+	content: "";
+	position: absolute;
+	top: 27px;
+	left: 20px;
+	width: 6px;
+	height: 6px;
+	background: var(--csfb-accent);
+}
+
+.avix-cs-fallback .avix-cs-fallback__list strong {
+	display: block;
+	margin-bottom: 2px;
+	color: var(--csfb-ink);
+	font-family: var(--csfb-font-display);
+	font-size: 17px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+.avix-cs-fallback .avix-cs-fallback__metrics {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 16px;
+	margin: 24px 0 0;
+}
+
+.avix-cs-fallback .avix-cs-fallback__metrics div {
+	padding: 20px;
+	border: 1px solid var(--csfb-line);
+	border-radius: 16px;
+}
+
+.avix-cs-fallback .avix-cs-fallback__metrics dt {
+	color: var(--csfb-muted);
+	font-size: 14px;
+}
+
+.avix-cs-fallback .avix-cs-fallback__metrics dd {
+	margin: 6px 0 0;
+	font-family: var(--csfb-font-display);
+	font-size: 32px;
+	font-weight: 600;
+	letter-spacing: -0.03em;
+	line-height: 1.1;
+}
+
+.avix-cs-fallback .avix-cs-fallback__metrics small {
+	display: block;
+	margin-top: 8px;
+	color: var(--csfb-muted);
+	font-family: var(--csfb-font-body);
+	font-size: 12.5px;
+	font-weight: 400;
+	letter-spacing: 0;
+	line-height: 1.5;
+}
+
+.avix-cs-fallback .avix-cs-fallback__foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 16px 28px;
+	margin: clamp(48px, 7vw, 96px) 0 0;
+	padding-top: 32px;
+	border-top: 1px solid var(--csfb-line);
+}
+
+.avix-cs-fallback .avix-cs-fallback__back {
+	display: inline-flex;
+	min-height: 44px;
+	align-items: center;
+	color: var(--csfb-ink);
+	font-size: 15px;
+	font-weight: 600;
+	text-decoration: none;
+	background: linear-gradient(currentColor, currentColor) 0 calc(100% - 10px) / 0 1px no-repeat;
+	transition: background-size 0.3s ease;
+}
+
+.avix-cs-fallback .avix-cs-fallback__more {
+	margin-top: clamp(48px, 7vw, 96px);
+}
+
+.avix-cs-fallback a:focus-visible {
+	outline: 2px solid var(--csfb-accent);
+	outline-offset: 3px;
+}
+
+@media (hover: hover) {
+	.avix-cs-fallback .avix-cs-fallback__button:hover {
+		color: #fff;
+		background: #e25504;
+		transform: translateY(-2px);
+	}
+
+	.avix-cs-fallback .avix-cs-fallback__back:hover {
+		color: var(--csfb-ink);
+		background-size: 100% 1px;
+	}
+}
+
+@media (max-width: 600px) {
+	.avix-cs-fallback .avix-cs-fallback__figure {
+		border-radius: 16px;
+	}
+
+	.avix-cs-fallback .avix-cs-fallback__facts {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.avix-cs-fallback .avix-cs-fallback__button {
+		width: 100%;
+		justify-content: center;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-cs-fallback *,
+	.avix-cs-fallback *::before,
+	.avix-cs-fallback *::after {
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* Body copy weight comes from the case-study widgets, not the theme (some themes set body text to 300). */
+.avix-csh, .avix-csc, .avix-csf, .avix-csr, .avix-csg, .avix-cst, .avix-csn, .avix-csi { font-weight: 400; }
