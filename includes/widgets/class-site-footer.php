@@ -589,6 +589,35 @@ class Site_Footer extends Widget_Base {
 		$this->start_controls_section( 'section_bottom', array( 'label' => esc_html__( 'Wordmark, Badges & Bottom Bar', 'avix-widgets' ) ) );
 
 		$this->add_control(
+			'show_pixel_word',
+			array(
+				'label'       => esc_html__( 'Pixel wordmark', 'avix-widgets' ),
+				'description' => esc_html__( 'The brand name drawn as a dot-matrix of square pixels. It assembles when the footer comes into view; pixels near the pointer grow and glow, leaving a short trail.', 'avix-widgets' ),
+				'type'        => Controls_Manager::SWITCHER,
+				'default'     => 'yes',
+			)
+		);
+		$this->add_control(
+			'pixel_word',
+			array(
+				'label'     => esc_html__( 'Pixel wordmark text', 'avix-widgets' ),
+				'type'      => Controls_Manager::TEXT,
+				'default'   => 'avixdigital',
+				'condition' => array( 'show_pixel_word' => 'yes' ),
+			)
+		);
+		$this->add_control(
+			'pixel_accent',
+			array(
+				'label'       => esc_html__( 'Accent letters', 'avix-widgets' ),
+				'description' => esc_html__( 'Characters drawn in the accent colour, e.g. "x".', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => 'x',
+				'condition'   => array( 'show_pixel_word' => 'yes' ),
+			)
+		);
+
+		$this->add_control(
 			'show_mark',
 			array(
 				'label'   => esc_html__( 'Big wordmark', 'avix-widgets' ),
@@ -960,6 +989,10 @@ class Site_Footer extends Widget_Base {
 						<?php $this->render_link_column( $s, 2 ); ?>
 						<?php $this->render_contact( $s ); ?>
 					</div>
+
+					<?php if ( 'yes' === ( $s['show_pixel_word'] ?? 'yes' ) && '' !== trim( (string) ( $s['pixel_word'] ?? '' ) ) ) : ?>
+						<div class="avix-ft__word" data-ft-word="<?php echo esc_attr( trim( (string) $s['pixel_word'] ) ); ?>" data-ft-accent="<?php echo esc_attr( (string) ( $s['pixel_accent'] ?? '' ) ); ?>" aria-hidden="true"><canvas></canvas></div>
+					<?php endif; ?>
 
 					<?php if ( 'yes' === $s['show_mark'] && ! empty( $s['mark']['url'] ) ) : ?>
 						<div class="avix-ft__mark" aria-hidden="true">

@@ -1,10 +1,10 @@
 # Avix Digital Elementor Widgets
 
-Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.21.0**.
+Custom Elementor widgets for [avixdigital.com](https://avixdigital.com). Current release: **1.24.1**.
 
 ## Install
 
-1. Download [avix-elementor-widgets-1.21.0.zip](dist/avix-elementor-widgets-1.21.0.zip).
+1. Download [avix-elementor-widgets-1.24.1.zip](dist/avix-elementor-widgets-1.24.1.zip).
 2. In WordPress, use **Plugins → Add New → Upload Plugin**. Replace the existing Avix Digital plugin if it is already installed, then activate it.
 3. In Elementor, open the **Avix Digital** category and add a widget to a full-width container with zero padding.
 
@@ -51,6 +51,64 @@ Requires WordPress 6.2+, PHP 7.4+, and Elementor 3.20+. The About Hero and Servi
 See [About Hero](ABOUT-HERO.md) and [Service Benefits](SERVICE-BENEFITS.md) for content, dynamic tags, styling controls and interaction details. Available dynamic tag sources depend on the Elementor edition and installed integrations.
 
 ## Changelog
+
+### 1.26.2
+
+- Contact Studio: the speech bubble is anchored by its bottom edge, so a message that wraps to two lines grows upward and its tail stays at the buddy's eye; the buddy stands a little further left to give the bubble more room on phones.
+
+### 1.26.1
+
+- Contact Studio: the buddy's speech bubble is a smaller chat message on its right, beside the head, with a two-pixel tail pointing back at it; the buddy stands a little left of centre to make room (the bubble moves above the head on very narrow stages).
+
+### 1.26.0
+
+- Contact Studio, reworked so the form shows on the first screen: a short banner (one-line title, a short line, the booking button and the copy-email chip), then the form beside a smaller pixel buddy with the status lines, email, WhatsApp, an optional phone number and the studio address under it, and a slim "What happens next" row below.
+- Contact Studio form details taken from the portfolio: pixel chevrons on the selects (Avix Forms' second fallback chevron is hidden), answers typed in orange, a rounded orange checkbox with a dark tick, a pinging live square, buttons with a fill that rises on hover, website and budget side by side with the consent beside the submit button, and every sentence blank sized to its text (Avix Forms capped blanks at 420px, which cut long placeholders).
+- The buddy's dither and floor shadow follow the section tone, so it sits well on the light sheet.
+- Smart Header: the services mega menu is always light, whatever the header tone, with a warm glow along its top edge and a halftone of square pixels fading out of it.
+- Loader: new "How often" option, the full intro on every load with no curtain between pages, and "home page only" now covers the home page's translations. These are the new defaults, so only the home page plays the intro and every other page opens straight away.
+
+### 1.25.0
+
+- Contact Studio: the form section is now a light cream sheet that rises over the dark hero with rounded top corners and a faint pixel grid in its corner. A new Style control (Form section: Light or Dark) switches it back, and the light background colour is editable.
+
+### 1.24.2
+
+- Contact Studio: on phones the email blank in the form sentence shows its full placeholder instead of stopping at about 130px.
+
+### 1.24.1
+
+- Contact Studio: the blanks in the form sentence scale with the large type, so placeholders such as the email are no longer cut off, and on phones the blanks match the sentence size.
+
+### 1.24.0
+
+- New widget: Contact Studio. A dark hero with a giant two-line title, the booking button and a copy-email chip, beside the pixel buddy rebuilt from voxels: it gathers from a cloud of pixels when the hero comes into view, floats, waves now and then, follows the pointer with its eye, ripples and glows where the pointer passes, and hops when clicked, with a speech bubble cycling short lines. Below it, the enquiry form as a big dark mad-lib sentence (Avix Forms is re-themed through its colour tokens) and an aside with the next steps and direct contact details.
+- Site Footer: a pixel wordmark (on by default, Wordmark, Badges & Bottom Bar › Pixel wordmark). The brand name is drawn as a dot-matrix of square pixels that assembles when the footer comes into view; the accent letters ("x") are orange, and pixels near the pointer grow, lift and glow orange, fading slowly so the pointer leaves a trail.
+
+### 1.23.1
+
+- Welcome loader (Avix mark): it now works like akib.avixdigital.com. The full intro (pixels, logo, the page through the logo) plays on the first page of a visit. Every later page gets a minimal loader: a dark curtain with the orange Avix mark that lifts away with a curved edge once the page is ready. Clicking an internal link first draws the curtain up from below, then opens the next page, so pages hand over without a flash. New-tab, external, email, phone, same-page anchor and download links are left alone, and so are links with `data-no-transition`. With "How often: only on the first page of a visit", later pages show nothing.
+
+### 1.23.0
+
+- Welcome loader, new default style "Avix mark" (as on akib.avixdigital.com): the Avix mark gathers from a grid of pixels while a counter runs from 000 to 100, sharpens to the vector logo, then becomes a window: the page appears through the logo as it zooms past. Later page loads in the same visit get a short version (the whole logo, then the zoom). Plain JavaScript inline in the head, no library; the page renders underneath, its animations start as the logo opens, and the hero still waits for `avix:booted`. Settings › Avix loader › Style keeps the pixel buddy as an option.
+- Smart Header: the services dropdown is now a mega menu. Services sit in groups (new repeater field "Group"), and a spotlight card shows the hovered or focused service's real project: image, label, text, fact chips and a link (new fields Spotlight image, label, text, facts, link). A footer row carries a note with the booking link, a side link (e.g. prices) and "All services". Spotlight images load only when the menu is first opened; arrow keys, Home and End move between services. The mobile menu shows the group headings. Content › Services Dropdown › Dropdown layout switches back to the compact list.
+- Smart Header: the language switch is hidden on phones and tablets (and in the mobile menu) for now.
+- Brand icons: WooCommerce (cart), speed, migration and care marks for service menus.
+- Accessibility: logo images in the ThemeREX background-text marquee get `alt=""` as the theme builds them.
+
+### 1.22.1
+
+- Smart Header: a small language switch beside the button (and in the mobile menu) shows the other language, e.g. "NL", when the page has a translation; on other pages it links to the home page in that language. New control: Button & Mobile Menu › Language switch (on by default; nothing shows while the site has one language).
+- Services Showcase: the pixel corners no longer read the section width while the page loads. They take their size from the resize observer instead, which removes a forced full-page layout that cost seconds of main-thread time on slow phones.
+
+### 1.22.0
+
+- SEO groundwork for the Dutch-market overhaul. REST bridge: logged-in editors can read and write the Yoast SEO fields (title, description, focus keyphrase, breadcrumb title, Open Graph title, description and image, schema page type, noindex), the new language fields and the Elementor data of ThemeREX headers and footers through the WordPress REST API. A REST write to Elementor data or page settings now leaves the page as an Elementor save would: the Algenix Theme Options copy is rebuilt from the page settings, and Elementor's CSS and element cache plus the LiteSpeed page cache are cleared.
+- Language versions: a page with `_avix_lang` (e.g. `nl`) and `_avix_translation_of` (the English page ID) gets reciprocal hreflang links with x-default, `lang="nl-NL"` on `<html>`, `og:locale` nl_NL and schema inLanguage. Pages without translations print nothing new.
+- GA4 lead events from the Google tag: `book_site_review` (Calendly links), `whatsapp_click`, `email_click`, `phone_click`, and `generate_lead` when an Avix Forms enquiry is sent. Not sent for logged-in editors.
+- SEO data importer: rows can also set the Open Graph title and description (`og_title`, `og_desc`), so og:title matches the title tag.
+- Accessibility: images in Elementor content without an alt attribute get `alt=""`, Impact Numbers speak their value through hidden text instead of an `aria-label` on a paragraph, and review cards are no longer `article` elements with a group role.
 
 ### 1.21.0
 

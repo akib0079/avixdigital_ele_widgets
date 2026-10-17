@@ -1,0 +1,1152 @@
+/*!
+ * Avix Digital · Contact Studio
+ * A short dark banner with the title and the booking button; below it a light
+ * sheet with the enquiry form as a big mad-lib sentence beside a small voxel
+ * pixel buddy and the direct details, then a row with the next steps. The form
+ * section can be dark.
+ */
+
+.avix-cn {
+	--cn-bg: #0a0908;
+	--cn-raise: #141210;
+	--cn-ink: #f1ede8;
+	--cn-muted: #9a928a;
+	--cn-line: rgba(255, 255, 255, 0.1);
+	--cn-accent: #fb6007;
+	--cn-live: #3ad17a;
+	--cn-display: "Space Grotesk", "Inter", Arial, sans-serif;
+	--cn-body: "DM Sans", "Inter", Arial, sans-serif;
+	--cn-side: max(20px, min(65px, 4.5vw));
+	--cn-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	/* A pixel chevron (5 × 3 pixels), orange. */
+	--cn-caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h2v2H0zM8 0h2v2H8zM2 2h2v2H2zM6 2h2v2H6zM4 4h2v2H4z' fill='%23fb6007'/%3E%3C/svg%3E");
+
+	position: relative;
+	overflow: hidden;
+	color: var(--cn-ink);
+	background: var(--cn-bg);
+	font-family: var(--cn-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+.avix-cn *,
+.avix-cn *::before,
+.avix-cn *::after {
+	box-sizing: border-box;
+}
+
+/* ---------- Hero ---------- */
+
+.avix-cn__hero {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 540px);
+	align-items: end;
+	gap: clamp(24px, 4vw, 72px);
+	padding: calc(var(--avix-header-h, 106px) + clamp(24px, 3vw, 44px)) var(--cn-side) clamp(36px, 3.6vw, 56px);
+	isolation: isolate;
+}
+
+/* A warm glow in the top corner with a halftone of pixels inside it. */
+.avix-cn__hero::before {
+	position: absolute;
+	top: -120%;
+	right: -8%;
+	z-index: -1;
+	width: min(760px, 56vw);
+	aspect-ratio: 1;
+	background: radial-gradient(closest-side, color-mix(in srgb, var(--cn-accent) 24%, transparent), transparent 72%);
+	content: "";
+	pointer-events: none;
+}
+
+.avix-cn__hero::after {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background-image: radial-gradient(circle, rgba(255, 170, 120, 0.3) 1.1px, transparent 1.6px);
+	background-size: 14px 14px;
+	-webkit-mask-image: radial-gradient(ellipse 34% 90% at 86% 10%, #000 0%, transparent 100%);
+	mask-image: radial-gradient(ellipse 34% 90% at 86% 10%, #000 0%, transparent 100%);
+	content: "";
+	pointer-events: none;
+}
+
+.avix-cn__head,
+.avix-cn__intro {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+}
+
+.avix-cn__head {
+	gap: clamp(14px, 1.6vw, 22px);
+}
+
+.avix-cn__intro {
+	justify-self: end;
+	width: 100%;
+	gap: clamp(16px, 1.6vw, 22px);
+	padding-bottom: 0.3em;
+}
+
+.avix-cn .avix-cn__eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0;
+	color: var(--cn-muted);
+	font: 600 12px/1 var(--cn-body);
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+.avix-cn__eyebrow i {
+	position: relative;
+	width: 8px;
+	height: 8px;
+	flex-shrink: 0;
+	background: var(--cn-accent);
+}
+
+.avix-cn .avix-cn__title {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	column-gap: 0.22em;
+	margin: 0;
+	color: var(--cn-ink);
+	font-family: var(--cn-display);
+	font-size: clamp(48px, 6.6vw, 118px);
+	font-weight: 600;
+	letter-spacing: -0.055em;
+	line-height: 0.92;
+}
+
+.avix-cn__line {
+	display: block;
+}
+
+.avix-cn__line--light {
+	font-weight: 300;
+	letter-spacing: -0.06em;
+}
+
+.avix-cn .avix-cn__lede {
+	max-width: 46ch;
+	margin: 0;
+	color: rgba(241, 237, 232, 0.74);
+	font-size: clamp(15px, 1.15vw, 17px);
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	line-height: 1.5;
+}
+
+.avix-cn__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+/* Buttons: a fill rises from below on hover and leaves through the top. */
+.avix-cn .avix-cn__btn,
+.avix-cn .avf-submit {
+	--cn-fill: #f1ede8;
+	--cn-fill-ink: #111111;
+
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	overflow: hidden;
+	border: 0;
+	border-radius: 999px;
+	color: #ffffff;
+	background: var(--cn-accent);
+	box-shadow: 0 18px 40px -20px color-mix(in srgb, var(--cn-accent) 75%, transparent);
+	text-decoration: none;
+	isolation: isolate;
+	transform: translateZ(0);
+	transition: color 0.45s var(--cn-ease), box-shadow 0.45s var(--cn-ease);
+}
+
+.avix-cn .avix-cn__btn {
+	padding: 18px 28px;
+	font: 600 16px/1 var(--cn-body);
+}
+
+.avix-cn .avix-cn__btn::before,
+.avix-cn .avf-submit::before {
+	position: absolute;
+	inset: -1px;
+	z-index: -1;
+	border-radius: inherit;
+	background: var(--cn-fill);
+	content: "";
+	transform: scaleY(0);
+	transform-origin: 50% 0%;
+	transition: transform 0.55s var(--cn-ease);
+}
+
+@media (hover: hover) {
+	.avix-cn .avix-cn__btn:hover::before,
+	.avix-cn .avf-submit:hover::before {
+		transform: scaleY(1);
+		transform-origin: 50% 100%;
+	}
+
+	.avix-cn .avix-cn__btn:hover,
+	.avix-cn .avf-submit:hover {
+		color: var(--cn-fill-ink);
+		background: var(--cn-accent);
+		transform: translateZ(0);
+	}
+
+	.avix-cn .avix-cn__btn:hover svg {
+		transform: translate(2px, -2px);
+	}
+}
+
+.avix-cn .avix-cn__btn:focus-visible::before,
+.avix-cn .avf-submit:focus-visible::before {
+	transform: scaleY(1);
+}
+
+.avix-cn .avix-cn__btn:focus-visible,
+.avix-cn .avf-submit:focus-visible {
+	color: var(--cn-fill-ink);
+	background: var(--cn-accent);
+}
+
+.avix-cn__btn svg,
+.avix-cn__chip svg {
+	width: 18px;
+	height: 18px;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 2;
+	transition: transform 0.55s var(--cn-ease);
+}
+
+.avix-cn .avix-cn__chip {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	padding: 17px 22px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 999px;
+	color: var(--cn-ink);
+	background: transparent;
+	box-shadow: none;
+	font: 500 16px/1 var(--cn-body);
+	letter-spacing: 0;
+	text-transform: none;
+	cursor: pointer;
+	transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.avix-cn .avix-cn__chip:hover,
+.avix-cn .avix-cn__chip:focus-visible {
+	border-color: var(--cn-accent);
+	color: var(--cn-ink);
+	background: rgba(251, 96, 7, 0.08);
+}
+
+.avix-cn__chip svg {
+	width: 15px;
+	height: 15px;
+}
+
+.avix-cn__tip {
+	position: absolute;
+	bottom: calc(100% + 10px);
+	left: 50%;
+	padding: 6px 10px;
+	border-radius: 8px;
+	color: #111;
+	background: var(--cn-ink);
+	font-size: 12px;
+	font-weight: 600;
+	white-space: nowrap;
+	opacity: 0;
+	transform: translate(-50%, 4px);
+	transition: opacity 0.2s ease, transform 0.3s var(--cn-ease);
+	pointer-events: none;
+}
+
+.avix-cn__chip:hover .avix-cn__tip,
+.avix-cn__chip:focus-visible .avix-cn__tip,
+.avix-cn__chip.is-copied .avix-cn__tip {
+	opacity: 1;
+	transform: translate(-50%, 0);
+}
+
+.avix-cn .avix-cn__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 18px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	color: var(--cn-muted);
+	font-size: 13px;
+}
+
+.avix-cn .avix-cn__meta li {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-cn .avix-cn__meta li::before {
+	width: 5px;
+	height: 5px;
+	background: var(--cnb-rule, rgba(241, 237, 232, 0.35));
+	content: "";
+}
+
+.avix-cn .avix-cn__meta li.is-live::before {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--cn-live);
+	box-shadow: 0 0 0 4px rgba(58, 209, 122, 0.16);
+}
+
+/* ---------- Form section ---------- */
+
+/* Body colours are tokens: dark by default, a light cream sheet with .avix-cn--light. */
+.avix-cn__body {
+	--cnb-bg: transparent;
+	--cnb-ink: #f1ede8;
+	--cnb-strong: #ffffff;
+	--cnb-answer: #ff7a2e;
+	--cnb-text: #d8d2cb;
+	--cnb-muted: #9a928a;
+	--cnb-body: #a59d95;
+	--cnb-subtle: #8a827a;
+	--cnb-soft: rgba(241, 237, 232, 0.3);
+	--cnb-rule: rgba(241, 237, 232, 0.2);
+	--cnb-line: rgba(255, 255, 255, 0.1);
+	--cnb-rgb: 241, 237, 232;
+	--cnb-field: #141210;
+	--cnb-field-line: rgba(255, 255, 255, 0.12);
+	--cnb-field-hover: rgba(255, 255, 255, 0.22);
+	--cnb-mist: #1b1815;
+	--cnb-pop: #1b1815;
+	--cnb-pop-ink: #e6e0d9;
+	--cnb-pop-shadow: 0 24px 50px -16px rgba(0, 0, 0, 0.7);
+	--cnb-consent: #b4ada5;
+	--cnb-fill: #f1ede8;
+	--cnb-fill-ink: #111111;
+	--cnb-bubble: #f1ede8;
+	--cnb-bubble-ink: #111111;
+	--cnb-dot: #f1ede8;
+	--cnb-floor: 0.5;
+	--cn-ink: var(--cnb-ink);
+	--cn-muted: var(--cnb-muted);
+	--cn-line: var(--cnb-line);
+
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+	grid-template-areas:
+		"form side"
+		"next next";
+	column-gap: clamp(32px, 6vw, 112px);
+	row-gap: clamp(44px, 5vw, 72px);
+	padding: clamp(48px, 5vw, 80px) var(--cn-side) clamp(56px, 6vw, 96px);
+	border-top: 1px solid var(--cn-line);
+	color: var(--cnb-ink);
+	background: var(--cnb-bg);
+	isolation: isolate;
+}
+
+.avix-cn--light .avix-cn__body {
+	--cnb-bg: var(--cn-body-bg, #f5f3ef);
+	--cnb-ink: #1a1a1a;
+	--cnb-strong: #111111;
+	--cnb-answer: #e25504;
+	--cnb-text: #3a3632;
+	--cnb-muted: #6b665f;
+	--cnb-body: #6b665f;
+	--cnb-subtle: #8a847c;
+	--cnb-soft: rgba(26, 26, 26, 0.28);
+	--cnb-rule: rgba(26, 26, 26, 0.18);
+	--cnb-line: rgba(26, 26, 26, 0.09);
+	--cnb-rgb: 26, 26, 26;
+	--cnb-field: #ffffff;
+	--cnb-field-line: rgba(26, 26, 26, 0.1);
+	--cnb-field-hover: rgba(26, 26, 26, 0.24);
+	--cnb-mist: #efebe5;
+	--cnb-pop: #ffffff;
+	--cnb-pop-ink: #2a2724;
+	--cnb-pop-shadow: 0 24px 50px -20px rgba(40, 28, 16, 0.28);
+	--cnb-consent: #57524b;
+	--cnb-fill: #1a1a1a;
+	--cnb-fill-ink: #ffffff;
+	--cnb-bubble: #1a1a1a;
+	--cnb-bubble-ink: #ffffff;
+	--cnb-dot: #1a1a1a;
+	--cnb-floor: 0.16;
+
+	/* The cream sheet rises over the dark hero with rounded shoulders. */
+	border-top: 0;
+	border-radius: clamp(24px, 3vw, 44px) clamp(24px, 3vw, 44px) 0 0;
+}
+
+/* A faint pixel grid behind the buddy echoes the hero. */
+.avix-cn--light .avix-cn__body::before {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	background-image:
+		linear-gradient(to right, rgba(26, 26, 26, 0.045) 1px, transparent 1px),
+		linear-gradient(to bottom, rgba(26, 26, 26, 0.045) 1px, transparent 1px);
+	background-size: 48px 48px;
+	-webkit-mask-image: radial-gradient(ellipse 30% 36% at 84% 22%, #000 0%, transparent 100%);
+	mask-image: radial-gradient(ellipse 30% 36% at 84% 22%, #000 0%, transparent 100%);
+	content: "";
+	pointer-events: none;
+}
+
+.avix-cn__form {
+	display: flex;
+	grid-area: form;
+	min-width: 0;
+	flex-direction: column;
+	gap: clamp(18px, 2vw, 28px);
+}
+
+/* The live square pings like the portfolio's. */
+.avix-cn__eyebrow--live i::after {
+	position: absolute;
+	inset: -4px;
+	border: 1px solid var(--cn-accent);
+	content: "";
+	animation: avix-cn-ping 2s var(--cn-ease) infinite;
+}
+
+@keyframes avix-cn-ping {
+	0% {
+		opacity: 1;
+		transform: scale(0.6);
+	}
+
+	100% {
+		opacity: 0;
+		transform: scale(1.8);
+	}
+}
+
+.avix-cn .avix-cn__note {
+	max-width: 60ch;
+	margin: 0;
+	color: var(--cn-muted);
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+.avix-cn .avix-cn__note a {
+	color: var(--cn-ink);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* ---------- Avix Forms inside the sheet ---------- */
+
+/* Its colour tokens are re-pointed at the body tokens. */
+.avix-cn .avf-form {
+	--avf-ink-700: var(--cnb-ink);
+	--avf-ink-500: var(--cnb-text);
+	--avf-ink-400: var(--cnb-muted);
+	--avf-ink-300: var(--cnb-muted);
+	--avf-paper: var(--cnb-field);
+	--avf-canvas: var(--cnb-field);
+	--avf-mist: var(--cnb-mist);
+	--avf-line: var(--cnb-field-line);
+	--avf-muted: var(--cnb-soft);
+	--avf-subtle: var(--cnb-subtle);
+	--avf-body: var(--cnb-body);
+	--avf-orange-50: rgba(251, 96, 7, 0.1);
+	--avf-orange-300: rgba(251, 96, 7, 0.65);
+	--avf-orange-500: #fb6007;
+	--avf-orange-600: #ff7a2e;
+	--avf-on-primary: #111111;
+	--avf-text-rgb: var(--cnb-rgb);
+	--avf-font-heading: "Space Grotesk", "Inter", Arial, sans-serif;
+	--avf-font-body: "DM Sans", "Inter", Arial, sans-serif;
+	color: var(--cnb-ink);
+	background: transparent;
+}
+
+/* Layout: the sentence, then website + budget side by side, then consent beside the button. */
+.avix-cn .avf-form__el {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+	align-items: start;
+}
+
+.avix-cn .avf-sentence {
+	grid-column: 1 / -1;
+	order: 0;
+	margin: 0 0 clamp(14px, 1.6vw, 24px);
+	color: var(--cnb-ink);
+	font-family: var(--cn-display);
+	font-size: clamp(26px, 2.9vw, 46px);
+	font-weight: 500;
+	letter-spacing: -0.035em;
+	line-height: 1.6;
+}
+
+.avix-cn .avf-fields--secondary {
+	display: contents;
+}
+
+.avix-cn .avf-fields--secondary > .avf-field {
+	grid-column: 1 / -1;
+	order: 3;
+	margin: 0;
+}
+
+.avix-cn .avf-fields--secondary > .avf-field--type-url {
+	grid-column: 1;
+	order: 1;
+}
+
+.avix-cn .avf-fields--secondary > .avf-field--type-select {
+	grid-column: 2;
+	order: 2;
+}
+
+.avix-cn .avf-fields--secondary > .avf-field--type-consent {
+	grid-column: 1;
+	order: 4;
+	align-self: center;
+}
+
+.avix-cn .avf-actions {
+	grid-column: 2;
+	order: 5;
+	justify-self: end;
+	margin: 0;
+}
+
+.avix-cn .avf-message {
+	grid-column: 1 / -1;
+	order: 6;
+}
+
+.avix-cn .avf-message:empty {
+	display: none;
+}
+
+/* The sentence's blanks: answers turn orange, as on the portfolio. */
+.avix-cn .avf-form--conversational .avf-sentence .avf-input {
+	min-width: 4em;
+	max-width: 100%;
+	padding: 0 0.08em 2px;
+	color: var(--cnb-answer);
+	font-family: inherit;
+	font-weight: 500;
+	letter-spacing: inherit;
+	border-bottom: 2px solid var(--cnb-rule);
+}
+
+/* contact.js measures each blank and writes --cn-w; it wins over Avix Forms' own sizing. */
+.avix-cn .avf-form--conversational .avf-sentence .avf-input.is-cn-fit {
+	width: var(--cn-w) !important;
+}
+
+.avix-cn .avf-form--conversational .avf-sentence .avf-input::placeholder {
+	color: var(--cnb-soft);
+	font-weight: 400;
+}
+
+.avix-cn .avf-form--conversational .avf-sentence .avf-input:hover {
+	border-bottom-color: var(--cnb-field-hover);
+}
+
+.avix-cn .avf-form--conversational .avf-sentence .avf-input:focus {
+	border-bottom-color: var(--cn-accent);
+	background: transparent;
+	box-shadow: none;
+}
+
+.avix-cn .avf-form--conversational .avf-sentence .avf-input:not(:placeholder-shown) {
+	border-bottom-color: var(--cn-accent);
+}
+
+/* The inline select: Avix Forms also draws a fallback chevron on the wrapper; one is enough. */
+.avix-cn .avf-inline--select::after {
+	display: none;
+	content: none;
+}
+
+.avix-cn .avf-inline .avf-select__trigger {
+	gap: 0.32em;
+	padding: 0 0.08em 2px;
+	color: var(--cnb-answer);
+	font-family: inherit;
+	font-weight: 500;
+	letter-spacing: inherit;
+	border-bottom: 2px solid var(--cnb-rule);
+	background: transparent;
+	box-shadow: none;
+}
+
+.avix-cn .avf-inline .avf-select.is-empty .avf-select__value {
+	color: var(--cnb-soft);
+	font-weight: 400;
+}
+
+.avix-cn .avf-inline .avf-select:not(.is-empty) .avf-select__trigger,
+.avix-cn .avf-inline .avf-select.is-open .avf-select__trigger {
+	border-bottom-color: var(--cn-accent);
+	background: transparent;
+	box-shadow: none;
+}
+
+/* Pixel chevrons for every select. */
+.avix-cn .avf-select__caret,
+.avix-cn .avf-inline .avf-select__caret {
+	width: 11px;
+	height: 7px;
+	margin: 0;
+	border: 0;
+	background: var(--cn-caret) center / contain no-repeat;
+	image-rendering: pixelated;
+	transform: none;
+	transition: transform 0.35s var(--cn-ease);
+}
+
+.avix-cn .avf-inline .avf-select__caret {
+	width: 0.42em;
+	height: 0.26em;
+	margin-left: 0.1em;
+	align-self: center;
+}
+
+.avix-cn .avf-select.is-open .avf-select__caret {
+	margin: 0;
+	border: 0;
+	transform: rotate(180deg);
+}
+
+.avix-cn .avf-inline .avf-select.is-open .avf-select__caret {
+	margin-left: 0.1em;
+}
+
+.avix-cn .avf-select__list {
+	border: 1px solid var(--cnb-field-line);
+	border-radius: 16px;
+	background: var(--cnb-pop);
+	box-shadow: var(--cnb-pop-shadow);
+}
+
+.avix-cn .avf-select__option {
+	color: var(--cnb-pop-ink);
+}
+
+.avix-cn .avf-select__option.is-active,
+.avix-cn .avf-select__option:hover {
+	color: var(--cnb-strong);
+	background: rgba(251, 96, 7, 0.12);
+}
+
+/* Website + budget: quiet cards with floating labels. */
+.avix-cn .avf-field--type-select .avf-select__trigger,
+.avix-cn .avf-field--type-select .avf-select__trigger:hover,
+.avix-cn .avf-field--type-select .avf-select__trigger:focus,
+.avix-cn .avf-input--textarea,
+.avix-cn .avf-input--url {
+	border: 1px solid var(--cnb-field-line);
+	border-radius: 16px;
+	color: var(--cnb-ink);
+	background: var(--cnb-field);
+	transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avix-cn .avf-field--type-select .avf-select__trigger:hover,
+.avix-cn .avf-input--textarea:hover,
+.avix-cn .avf-input--url:hover {
+	border-color: var(--cnb-field-hover);
+}
+
+.avix-cn .avf-input--textarea:focus,
+.avix-cn .avf-input--url:focus,
+.avix-cn .avf-field--type-select .avf-select__trigger:focus-visible,
+.avix-cn .avf-field--type-select .avf-select.is-open .avf-select__trigger {
+	border-color: var(--cn-accent);
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(251, 96, 7, 0.14);
+}
+
+.avix-cn .avf-field--type-select .avf-select.is-empty .avf-select__value {
+	color: var(--cnb-soft);
+}
+
+.avix-cn .avf-label {
+	color: var(--cnb-muted);
+}
+
+/* Consent: a rounded square that fills orange with a dark tick. */
+.avix-cn .avf-consent {
+	position: relative;
+	align-items: center;
+	padding-left: 34px;
+	color: var(--cnb-consent);
+	font-size: 14px;
+}
+
+.avix-cn .avf-consent input {
+	top: 50%;
+	left: 0;
+	width: 22px;
+	height: 22px;
+	transform: translateY(-50%);
+	accent-color: var(--cn-accent);
+}
+
+.avix-cn .avf-consent > span::before {
+	top: 50%;
+	left: -34px;
+	width: 22px;
+	height: 22px;
+	border: 0;
+	border-radius: 6px;
+	background: var(--cnb-field);
+	box-shadow: inset 0 0 0 1.5px var(--cnb-rule);
+	transform: translateY(-50%);
+	transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.avix-cn .avf-consent > span::after {
+	top: 50%;
+	left: -26px;
+	margin-top: -7px;
+	border-color: #111111;
+}
+
+.avix-cn .avf-consent:hover > span::before {
+	box-shadow: inset 0 0 0 1.5px var(--cn-accent);
+}
+
+.avix-cn .avf-consent input:checked + span::before {
+	background: var(--cn-accent);
+	box-shadow: none;
+}
+
+.avix-cn .avf-consent input:focus-visible + span::before {
+	outline: 2px solid var(--cn-accent);
+	outline-offset: 3px;
+}
+
+/* Submit: same rising fill as the hero button, in ink on the light sheet. */
+.avix-cn .avf-submit {
+	--cn-fill: var(--cnb-fill);
+	--cn-fill-ink: var(--cnb-fill-ink);
+
+	min-height: 0;
+	padding: 18px 28px;
+	font-family: var(--cn-body);
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.avix-cn .avf-submit:hover {
+	transform: translateZ(0);
+}
+
+.avix-cn .avf-submit .avf-submit__arrow {
+	transition: transform 0.55s var(--cn-ease);
+}
+
+.avix-cn .avf-submit:hover .avf-submit__arrow {
+	transform: translateX(4px);
+}
+
+.avix-cn .avf-submit[aria-busy="true"] {
+	color: #ffffff;
+	opacity: 0.7;
+}
+
+.avix-cn .avf-message--success {
+	border-color: rgba(58, 209, 122, 0.35);
+	color: #c7f2d8;
+	background: rgba(58, 209, 122, 0.1);
+}
+
+.avix-cn .avf-message--error {
+	border-color: rgba(224, 72, 59, 0.4);
+	color: #ffd3cf;
+	background: rgba(224, 72, 59, 0.12);
+}
+
+.avix-cn--light .avf-message--success {
+	border-color: rgba(30, 158, 106, 0.3);
+	color: #146c48;
+	background: rgba(30, 158, 106, 0.08);
+}
+
+.avix-cn--light .avf-message--error {
+	border-color: rgba(224, 72, 59, 0.35);
+	color: #a3271c;
+	background: rgba(224, 72, 59, 0.07);
+}
+
+/* ---------- Beside the form: the buddy and the direct details ---------- */
+
+/* Under the buddy the status lines read like his status, one per line. */
+.avix-cn__side .avix-cn__meta {
+	flex-direction: column;
+	gap: 7px;
+}
+
+.avix-cn__side {
+	display: flex;
+	grid-area: side;
+	min-width: 0;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.avix-cn__stage {
+	position: relative;
+	z-index: 1;
+	height: clamp(210px, 17vw, 250px);
+	margin-bottom: -4px;
+	cursor: pointer;
+	isolation: isolate;
+	touch-action: pan-y;
+}
+
+.avix-cn__stage::before {
+	position: absolute;
+	inset: 0 -6%;
+	z-index: -1;
+	background: radial-gradient(42% 50% at var(--buddy-x, 50%) 52%, color-mix(in srgb, var(--cn-accent) 16%, transparent), transparent 100%);
+	content: "";
+	pointer-events: none;
+}
+
+.avix-cn__canvas {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.avix-cn .avix-cn__bubble {
+	position: absolute;
+	bottom: var(--bubble-b, 66%);
+	left: var(--bubble-x, 62%);
+	z-index: 2;
+	width: max-content;
+	max-width: var(--bubble-max, 190px);
+	margin: 0;
+	padding: 7px 11px;
+	border-radius: 12px 12px 12px 3px;
+	color: var(--cnb-bubble-ink);
+	background: var(--cnb-bubble);
+	box-shadow: 0 12px 26px -14px rgba(0, 0, 0, 0.5);
+	font: 600 12.5px/1.35 var(--cn-body);
+	opacity: 0;
+	transform: translateY(6px) scale(0.96);
+	transform-origin: 0 100%;
+	transition: opacity 0.3s ease, transform 0.4s var(--cn-ease);
+	pointer-events: none;
+}
+
+.avix-cn .avix-cn__bubble.is-on {
+	opacity: 1;
+	transform: none;
+}
+
+/* A two-pixel tail, stepping down toward the buddy's head. */
+.avix-cn .avix-cn__bubble::before,
+.avix-cn .avix-cn__bubble::after {
+	position: absolute;
+	background: inherit;
+	content: "";
+}
+
+.avix-cn .avix-cn__bubble::before {
+	bottom: 3px;
+	left: -6px;
+	width: 6px;
+	height: 6px;
+}
+
+.avix-cn .avix-cn__bubble::after {
+	bottom: -1px;
+	left: -10px;
+	width: 4px;
+	height: 4px;
+}
+
+/* ---------- Details and next steps ---------- */
+
+.avix-cn__block {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding-top: 18px;
+	border-top: 1px solid var(--cn-line);
+}
+
+.avix-cn .avix-cn__label {
+	margin: 0 0 4px;
+	color: var(--cn-muted);
+	font: 600 11px/1 var(--cn-body);
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+.avix-cn__next {
+	display: grid;
+	grid-area: next;
+	grid-template-columns: minmax(150px, 0.55fr) minmax(0, 3fr);
+	gap: 16px clamp(24px, 3vw, 48px);
+	padding-top: 24px;
+	border-top: 1px solid var(--cn-line);
+}
+
+.avix-cn__next .avix-cn__label {
+	padding-top: 12px;
+}
+
+.avix-cn .avix-cn__steps {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 20px clamp(20px, 3vw, 48px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: none;
+}
+
+.avix-cn .avix-cn__steps li {
+	display: grid;
+	grid-template-columns: 34px minmax(0, 1fr);
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.avix-cn .avix-cn__steps li::before,
+.avix-cn .avix-cn__steps li::marker {
+	display: none;
+	content: none;
+}
+
+.avix-cn__step-n {
+	display: grid;
+	width: 34px;
+	height: 34px;
+	place-items: center;
+	border: 1px solid color-mix(in srgb, var(--cn-accent) 45%, transparent);
+	color: var(--cn-accent);
+	font: 600 12px/1 var(--cn-display);
+	letter-spacing: 0.02em;
+}
+
+.avix-cn__step-text {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	padding-top: 1px;
+}
+
+.avix-cn__step-text strong {
+	color: var(--cn-ink);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.avix-cn__step-text span {
+	color: var(--cn-muted);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.avix-cn .avix-cn__link {
+	align-self: flex-start;
+	color: var(--cn-ink);
+	font-size: 16px;
+	font-weight: 500;
+	text-decoration: none;
+	background-image: linear-gradient(currentColor, currentColor);
+	background-position: 0 100%;
+	background-repeat: no-repeat;
+	background-size: 0 1px;
+	transition: background-size 0.35s var(--cn-ease), color 0.2s ease;
+}
+
+.avix-cn .avix-cn__link:hover,
+.avix-cn .avix-cn__link:focus-visible {
+	color: var(--cn-accent);
+	background-size: 100% 1px;
+}
+
+.avix-cn .avix-cn__address {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	color: var(--cnb-text);
+	font-size: 14px;
+	font-style: normal;
+	line-height: 1.5;
+}
+
+.avix-cn__muted {
+	margin-top: 6px;
+	color: var(--cn-muted);
+	font-size: 13px;
+}
+
+.avix-cn a:focus-visible,
+.avix-cn button:focus-visible {
+	outline: 2px solid var(--cn-accent);
+	outline-offset: 3px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1024px) {
+	.avix-cn__hero {
+		grid-template-columns: minmax(0, 1fr);
+		align-items: start;
+	}
+
+	.avix-cn__intro {
+		justify-self: start;
+		max-width: 560px;
+		padding-bottom: 0;
+	}
+
+	.avix-cn__body {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			"form"
+			"side"
+			"next";
+		row-gap: clamp(36px, 6vw, 56px);
+	}
+
+	.avix-cn__side {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		column-gap: clamp(24px, 4vw, 48px);
+	}
+
+	.avix-cn__side > .avix-cn__stage,
+	.avix-cn__side > .avix-cn__meta {
+		grid-column: 1 / -1;
+	}
+
+	.avix-cn--light .avix-cn__body::before {
+		-webkit-mask-image: radial-gradient(ellipse 60% 18% at 50% 58%, #000 0%, transparent 100%);
+		mask-image: radial-gradient(ellipse 60% 18% at 50% 58%, #000 0%, transparent 100%);
+	}
+
+	.avix-cn__next {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-cn__next .avix-cn__label {
+		padding-top: 0;
+	}
+}
+
+@media (max-width: 760px) {
+	.avix-cn .avix-cn__steps {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 600px) {
+	.avix-cn__hero {
+		gap: 20px;
+		padding-top: calc(var(--avix-header-h, 76px) + 20px);
+		padding-bottom: 40px;
+	}
+
+	.avix-cn .avix-cn__btn {
+		width: 100%;
+		justify-content: center;
+	}
+
+	/* The email sits under the buddy on phones; the banner stays short. */
+	.avix-cn .avix-cn__chip {
+		display: none;
+	}
+
+	.avix-cn .avf-form__el {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-cn .avf-fields--secondary > .avf-field--type-url,
+	.avix-cn .avf-fields--secondary > .avf-field--type-select,
+	.avix-cn .avf-fields--secondary > .avf-field--type-consent,
+	.avix-cn .avf-actions {
+		grid-column: 1;
+	}
+
+	.avix-cn .avf-actions {
+		justify-self: stretch;
+	}
+
+	.avix-cn .avf-submit {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.avix-cn .avf-sentence {
+		font-size: 24px;
+		line-height: 1.75;
+	}
+
+	.avix-cn .avf-form--conversational .avf-sentence .avf-input,
+	.avix-cn .avf-inline .avf-select__trigger {
+		font-size: 22px;
+	}
+
+	.avix-cn__side {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.avix-cn__stage {
+		height: 210px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.avix-cn__eyebrow--live i::after {
+		animation: none;
+		opacity: 0;
+	}
+
+	.avix-cn .avix-cn__btn,
+	.avix-cn .avix-cn__btn::before,
+	.avix-cn .avf-submit,
+	.avix-cn .avf-submit::before,
+	.avix-cn .avix-cn__bubble {
+		transition: none;
+	}
+}

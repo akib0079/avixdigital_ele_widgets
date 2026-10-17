@@ -64,22 +64,45 @@
 		}).filter(function (corner) {
 			return corner.base && corner.twinkle && corner.base.getContext;
 		});
-		this.accent = (window.getComputedStyle(root).getPropertyValue('--sv-accent') || '').trim() || '#fb6007';
-		this.draw();
-		if (window.ResizeObserver && this.corners.length) {
-			this.observer = new window.ResizeObserver(function () {
+		this.accent = '';
+		if (!this.corners.length) {
+			return;
+		}
+		// Sizes come from the observer's entries, never from clientWidth: reading
+		// layout while the page is still loading forces a full reflow (seconds on
+		// a slow phone).
+		if (window.ResizeObserver) {
+			this.observer = new window.ResizeObserver(function (entries) {
+				entries.forEach(function (entry) {
+					self.corners.forEach(function (corner) {
+						if (corner.el === entry.target) {
+							corner.width = Math.round(entry.contentRect.width);
+						}
+					});
+				});
 				self.draw();
 			});
 			this.corners.forEach(function (corner) {
 				self.observer.observe(corner.el);
 			});
+		} else {
+			window.addEventListener('load', function () {
+				self.corners.forEach(function (corner) {
+					corner.width = corner.el.clientWidth;
+				});
+				self.draw();
+			});
 		}
+		this.root = root;
 	}
 
 	PixelCorners.prototype.draw = function () {
+		if (!this.accent) {
+			this.accent = (window.getComputedStyle(this.root || document.documentElement).getPropertyValue('--sv-accent') || '').trim() || '#fb6007';
+		}
 		var accent = this.accent;
 		this.corners.forEach(function (corner) {
-			var width = corner.el.clientWidth;
+			var width = corner.width || 0;
 			var ratio = Math.min(2, window.devicePixelRatio || 1);
 			var size = width + '@' + ratio;
 			if (!width || size === corner.size) {

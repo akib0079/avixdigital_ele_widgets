@@ -60,6 +60,7 @@
 		}, { passive: true });
 
 		this.bindDrops();
+		this.bindMega();
 		this.bindMenu();
 		this.bindPal();
 		if (this.config.current !== false) {
@@ -217,6 +218,83 @@
 				}
 			});
 		}, { passive: true });
+	};
+
+	/* ---------- Mega menu: spotlight card and arrow keys ---------- */
+
+	Header.prototype.bindMega = function () {
+		Array.prototype.forEach.call(this.root.querySelectorAll('[data-sh-mega]'), function (panel) {
+			var drop = panel.closest('[data-sh-drop]');
+			var items = Array.prototype.slice.call(panel.querySelectorAll('.avix-sh__item'));
+			var imgs = Array.prototype.slice.call(panel.querySelectorAll('[data-sh-spot-img]'));
+			var texts = Array.prototype.slice.call(panel.querySelectorAll('[data-sh-spot-text]'));
+			var loaded = false;
+
+			// Spotlight images load the first time the menu is about to open, never with the page.
+			function load() {
+				if (loaded) {
+					return;
+				}
+				loaded = true;
+				imgs.forEach(function (img) {
+					var src = img.getAttribute('data-src');
+					if (src) {
+						img.setAttribute('src', src);
+						img.removeAttribute('data-src');
+					}
+				});
+			}
+
+			function show(index, item) {
+				items.forEach(function (it) {
+					it.classList.toggle('is-spot', it === item);
+				});
+				if (index === null || index === undefined) {
+					return;
+				}
+				imgs.forEach(function (img) {
+					img.classList.toggle('is-active', img.getAttribute('data-sh-spot-img') === index);
+				});
+				texts.forEach(function (text) {
+					var on = text.getAttribute('data-sh-spot-text') === index;
+					text.classList.toggle('is-active', on);
+					text.hidden = !on;
+				});
+			}
+
+			items.forEach(function (item, n) {
+				var index = item.getAttribute('data-sh-spot');
+				item.addEventListener('pointerenter', function () {
+					show(index, item);
+				});
+				item.addEventListener('focus', function () {
+					load();
+					show(index, item);
+				});
+				item.addEventListener('keydown', function (event) {
+					var next = null;
+					if (event.key === 'ArrowDown') {
+						next = items[n + 1] || items[0];
+					} else if (event.key === 'ArrowUp') {
+						next = items[n - 1] || items[items.length - 1];
+					} else if (event.key === 'Home') {
+						next = items[0];
+					} else if (event.key === 'End') {
+						next = items[items.length - 1];
+					}
+					if (next) {
+						event.preventDefault();
+						next.focus();
+					}
+				});
+			});
+
+			if (drop) {
+				drop.addEventListener('pointerenter', load);
+				drop.addEventListener('focusin', load);
+				drop.addEventListener('touchstart', load, { passive: true });
+			}
+		});
 	};
 
 	Header.prototype.openDrop = function (drop) {

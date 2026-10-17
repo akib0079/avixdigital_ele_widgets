@@ -52,6 +52,27 @@ final class Brand_Icons {
 	 * Extra single-colour marks for service menus.
 	 */
 	const EXTRA = array(
+		'woocommerce' => array(
+			'label' => 'WooCommerce',
+			'color' => '#7F54B3',
+			'path'  => 'M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM1 2v2h2.1l3.5 7.6-1.4 2.5A2 2 0 0 0 7 17h12.5v-2H7.4l1.1-2h7.6a2 2 0 0 0 1.8-1.1l3.6-6.5A1 1 0 0 0 20.6 4H5.3l-.9-2H1Z',
+		),
+		'speed'       => array(
+			'label' => 'Speed (bolt)',
+			'color' => '#F75D0C',
+			'path'  => 'M13.6 1.5 3.9 13.6h6.6l-1.1 8.9 9.7-12.1h-6.6l1.1-8.9Z',
+		),
+		'migrate'     => array(
+			'label' => 'Migration (arrows)',
+			'color' => '#F75D0C',
+			'path'  => 'M7.5 2.5 2 8l5.5 5.5V9.6h10V6.4h-10V2.5Zm9 8v3.9h-10v3.2h10v3.9L22 16l-5.5-5.5Z',
+		),
+		'care'        => array(
+			'label' => 'Care (shield)',
+			'color' => '#F75D0C',
+			'rule'  => 'evenodd',
+			'path'  => 'M12 1.5 3.5 4.8v6.1c0 5.3 3.6 10 8.5 11.6 4.9-1.6 8.5-6.3 8.5-11.6V4.8L12 1.5Zm-1.3 14.8-3.9-3.9 1.6-1.6 2.3 2.3 5.4-5.4 1.6 1.6-7 7Z',
+		),
 		'elementor' => array(
 			'label' => 'Elementor',
 			'color' => '#92003B',
@@ -94,6 +115,7 @@ final class Brand_Icons {
 		if ( ! $mark ) {
 			return '';
 		}
-		return sprintf( $open, '0 0 24 24' ) . '<path fill="' . esc_attr( $mark['color'] ) . '" d="' . esc_attr( $mark['path'] ) . '"/></svg>';
+		$rule = isset( $mark['rule'] ) ? ' fill-rule="' . esc_attr( $mark['rule'] ) . '"' : '';
+		return sprintf( $open, '0 0 24 24' ) . '<path fill="' . esc_attr( $mark['color'] ) . '"' . $rule . ' d="' . esc_attr( $mark['path'] ) . '"/></svg>';
 	}
 }

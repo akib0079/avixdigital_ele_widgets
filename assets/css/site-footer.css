@@ -986,3 +986,28 @@
 		opacity: 0.25;
 	}
 }
+
+/* ---------- Pixel wordmark ---------- */
+
+.avix-ft__word {
+	position: relative;
+	height: clamp(84px, 15cqi, 240px);
+	margin-top: clamp(64px, 8cqi, 112px);
+	padding: 0 var(--ft-col-pad);
+	color: var(--ft-ink);
+	cursor: crosshair;
+}
+
+.avix-ft__word canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.avix-ft__word ~ .avix-ft__mark {
+	margin-top: clamp(32px, 4cqi, 56px);
+}
+
+.avix-ft__word ~ .avix-ft__bottom {
+	margin-top: clamp(36px, 4.5cqi, 64px);
+}

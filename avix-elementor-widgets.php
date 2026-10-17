@@ -3,7 +3,7 @@
  * Plugin Name:       Avix Digital Elementor Widgets
  * Plugin URI:        https://avixdigital.com
  * Description:       Custom Elementor widgets for avixdigital.com: Service Benefits, About Hero, Hero Banner, Services Showcase, Selected Work (scroll stack), Impact Numbers, Testimonial Stack, Site Footer, Process Timeline, FAQ & Quote, Compare & CEO Quote, Client Logos, Intro Text, Smart Header, Team, Page Hero, Service Index, Story, Founder, Values, Journey, Careers, Post Grid, Service Tabs, Ticker, plus the Case Studies post type with Case Study Hero, Chapter, Feature Spotlight, Results, Gallery, Stack, Next and Grid.
- * Version:           1.21.0
+ * Version:           1.26.2
  * Author:            Avix Digital
  * Author URI:        https://avixdigital.com
  * Text Domain:       avix-widgets
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AVIX_EW_VERSION', '1.21.0' );
+define( 'AVIX_EW_VERSION', '1.26.2' );
 define( 'AVIX_EW_FILE', __FILE__ );
 define( 'AVIX_EW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AVIX_EW_URL', plugin_dir_url( __FILE__ ) );
@@ -63,6 +63,7 @@ final class Avix_Elementor_Widgets {
 		'post-grid'         => array( 'includes/widgets/class-post-grid.php', '\AvixWidgets\Widgets\Post_Grid', array( 'pixel-pal' ) ),
 		'service-tabs'      => array( 'includes/widgets/class-service-tabs.php', '\AvixWidgets\Widgets\Service_Tabs', array( 'pixel-pal' ) ),
 		'ticker'            => array( 'includes/widgets/class-ticker.php', '\AvixWidgets\Widgets\Ticker', array( 'pixel-pal' ) ),
+		'contact'           => array( 'includes/widgets/class-contact.php', '\AvixWidgets\Widgets\Contact' ),
 		'case-study-hero'      => array( 'includes/widgets/class-case-study-hero.php', '\AvixWidgets\Widgets\Case_Study_Hero', array( 'case-study-kit' ) ),
 		'case-study-chapter'   => array( 'includes/widgets/class-case-study-chapter.php', '\AvixWidgets\Widgets\Case_Study_Chapter', array( 'case-study-kit' ) ),
 		'case-study-spotlight' => array( 'includes/widgets/class-case-study-spotlight.php', '\AvixWidgets\Widgets\Case_Study_Spotlight', array( 'case-study-kit' ) ),

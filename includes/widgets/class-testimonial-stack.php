@@ -688,7 +688,7 @@ class Testimonial_Stack extends Widget_Base {
 			$this->add_render_attribute( $key, 'aria-hidden', 'true' );
 		}
 		?>
-		<article <?php $this->print_render_attribute_string( $key ); ?>>
+		<div <?php $this->print_render_attribute_string( $key ); ?>>
 			<div class="avix-rv-card__shell">
 				<div class="avix-rv-card__visual<?php echo $photo ? ' avix-rv-card__visual--photo' : ''; ?>" aria-hidden="true">
 					<?php if ( $photo ) : ?>
@@ -739,7 +739,7 @@ class Testimonial_Stack extends Widget_Base {
 					<?php endif; ?>
 				</div>
 			</div>
-		</article>
+		</div>
 		<?php
 	}
 

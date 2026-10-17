@@ -68,12 +68,14 @@ final class SEO_Importer {
 		'focuskw'          => '_yoast_wpseo_focuskw',
 		'bctitle'          => '_yoast_wpseo_bctitle',
 		'schema_page_type' => '_yoast_wpseo_schema_page_type',
+		'og_title'         => '_yoast_wpseo_opengraph-title',
+		'og_desc'          => '_yoast_wpseo_opengraph-description',
 		'og_image'         => '_yoast_wpseo_opengraph-image',
 		'og_image_id'      => '_yoast_wpseo_opengraph-image-id',
 	);
 
 	/** Text fields a data row may set (og_image is resolved separately). */
-	const TEXT_FIELDS = array( 'title', 'metadesc', 'focuskw', 'bctitle', 'schema_page_type' );
+	const TEXT_FIELDS = array( 'title', 'metadesc', 'focuskw', 'bctitle', 'schema_page_type', 'og_title', 'og_desc' );
 
 	/** Yoast's schema page types (Search Appearance > Schema > Page type). */
 	const PAGE_TYPES = array( 'WebPage', 'ItemPage', 'AboutPage', 'FAQPage', 'QAPage', 'ProfilePage', 'ContactPage', 'MedicalWebPage', 'CollectionPage', 'CheckoutPage', 'RealEstateListing', 'SearchResultsPage' );
@@ -1126,6 +1128,8 @@ final class SEO_Importer {
 			'focuskw'          => __( 'Focus keyphrase', 'avix-widgets' ),
 			'bctitle'          => __( 'Breadcrumb title', 'avix-widgets' ),
 			'schema_page_type' => __( 'Schema page type', 'avix-widgets' ),
+			'og_title'         => __( 'Open Graph title', 'avix-widgets' ),
+			'og_desc'          => __( 'Open Graph description', 'avix-widgets' ),
 			'og_image'         => __( 'Open Graph image', 'avix-widgets' ),
 			'og_image_id'      => __( 'Open Graph image ID', 'avix-widgets' ),
 		);

@@ -341,6 +341,75 @@ class Smart_Header extends Widget_Base {
 				'type'  => Controls_Manager::URL,
 			)
 		);
+		$repeater->add_control(
+			'group',
+			array(
+				'label'       => esc_html__( 'Group (mega menu)', 'avix-widgets' ),
+				'description' => esc_html__( 'Services in a row with the same group sit together under this heading, e.g. "Ecommerce".', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'separator'   => 'before',
+			)
+		);
+		$repeater->add_control(
+			'spot_image',
+			array(
+				'label'       => esc_html__( 'Spotlight image', 'avix-widgets' ),
+				'description' => esc_html__( 'Shown in the mega menu\'s spotlight card while this service is hovered or focused. A real project works best (3:2).', 'avix-widgets' ),
+				'type'        => Controls_Manager::MEDIA,
+			)
+		);
+		$repeater->add_control(
+			'spot_label',
+			array(
+				'label'       => esc_html__( 'Spotlight label', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'placeholder' => esc_html__( 'Case study · Rehall', 'avix-widgets' ),
+			)
+		);
+		$repeater->add_control(
+			'spot_title',
+			array(
+				'label' => esc_html__( 'Spotlight text', 'avix-widgets' ),
+				'type'  => Controls_Manager::TEXTAREA,
+				'rows'  => 2,
+			)
+		);
+		$repeater->add_control(
+			'spot_facts',
+			array(
+				'label'       => esc_html__( 'Spotlight facts', 'avix-widgets' ),
+				'description' => esc_html__( 'Short facts shown as chips, separated by commas, e.g. "3 languages, 9 apps".', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+			)
+		);
+		$repeater->add_control(
+			'spot_link',
+			array(
+				'label' => esc_html__( 'Spotlight link', 'avix-widgets' ),
+				'type'  => Controls_Manager::URL,
+			)
+		);
+		$repeater->add_control(
+			'spot_link_text',
+			array(
+				'label'   => esc_html__( 'Spotlight link text', 'avix-widgets' ),
+				'type'    => Controls_Manager::TEXT,
+				'default' => esc_html__( 'View case study', 'avix-widgets' ),
+			)
+		);
+
+		$this->add_control(
+			'services_layout',
+			array(
+				'label'   => esc_html__( 'Dropdown layout', 'avix-widgets' ),
+				'type'    => Controls_Manager::SELECT,
+				'default' => 'mega',
+				'options' => array(
+					'mega' => esc_html__( 'Mega menu: groups and a spotlight card', 'avix-widgets' ),
+					'list' => esc_html__( 'Compact list', 'avix-widgets' ),
+				),
+			)
+		);
 
 		$this->add_control(
 			'services',
@@ -397,6 +466,59 @@ class Smart_Header extends Widget_Base {
 				'default'     => esc_html__( 'View all services', 'avix-widgets' ),
 				'label_block' => true,
 				'condition'   => array( 'all_services_link[url]!' => '' ),
+			)
+		);
+
+		$this->add_control(
+			'mega_note',
+			array(
+				'label'       => esc_html__( 'Mega menu footer: note', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => esc_html__( 'Not sure which service fits?', 'avix-widgets' ),
+				'label_block' => true,
+				'separator'   => 'before',
+				'condition'   => array( 'services_layout' => 'mega' ),
+			)
+		);
+		$this->add_control(
+			'mega_cta_text',
+			array(
+				'label'       => esc_html__( 'Mega menu footer: link text', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => esc_html__( 'Book a free site review', 'avix-widgets' ),
+				'label_block' => true,
+				'condition'   => array( 'services_layout' => 'mega' ),
+			)
+		);
+		$this->add_control(
+			'mega_cta_link',
+			array(
+				'label'     => esc_html__( 'Mega menu footer: link', 'avix-widgets' ),
+				'type'      => Controls_Manager::URL,
+				'default'   => array(
+					'url'         => 'https://calendly.com/akibzawayed0079/meeting-for-quote',
+					'is_external' => 'on',
+				),
+				'condition' => array( 'services_layout' => 'mega' ),
+			)
+		);
+		$this->add_control(
+			'mega_aside_text',
+			array(
+				'label'       => esc_html__( 'Mega menu footer: side link text', 'avix-widgets' ),
+				'type'        => Controls_Manager::TEXT,
+				'default'     => esc_html__( 'Prices from €2,500', 'avix-widgets' ),
+				'label_block' => true,
+				'condition'   => array( 'services_layout' => 'mega' ),
+			)
+		);
+		$this->add_control(
+			'mega_aside_link',
+			array(
+				'label'     => esc_html__( 'Mega menu footer: side link', 'avix-widgets' ),
+				'type'      => Controls_Manager::URL,
+				'default'   => array( 'url' => self::SITE . 'pricing/' ),
+				'condition' => array( 'services_layout' => 'mega' ),
 			)
 		);
 
@@ -474,6 +596,18 @@ class Smart_Header extends Widget_Base {
 					'is_external' => 'on',
 					'nofollow'    => 'on',
 				),
+			)
+		);
+
+		$this->add_control(
+			'show_lang',
+			array(
+				'label'        => esc_html__( 'Language switch', 'avix-widgets' ),
+				'description'  => esc_html__( 'Shows the other language (e.g. "NL") beside the button when the page has a translation (Avix SEO language fields). On pages without one it links to the home page in that language.', 'avix-widgets' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'default'      => 'yes',
+				'return_value' => 'yes',
+				'separator'    => 'before',
 			)
 		);
 
@@ -597,11 +731,12 @@ class Smart_Header extends Widget_Base {
 				<nav class="avix-sh__nav" aria-label="<?php esc_attr_e( 'Main', 'avix-widgets' ); ?>">
 					<ul class="avix-sh__menu">
 						<?php foreach ( (array) $s['menu'] as $i => $item ) : ?>
-							<?php $this->render_menu_item( $item, $i, $services, $id, $all ); ?>
+							<?php $this->render_menu_item( $item, $i, $services, $id, $all, $s ); ?>
 						<?php endforeach; ?>
 					</ul>
 				</nav>
 				<div class="avix-sh__actions">
+					<?php echo $this->lang_link( $s, 'avix-sh__lang' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lang_link(). ?>
 					<?php if ( '' !== trim( (string) $s['cta_text'] ) ) : ?>
 						<?php
 						$this->add_link_attributes( 'cta', (array) $s['cta_link'] );
@@ -743,7 +878,7 @@ class Smart_Header extends Widget_Base {
 		return $src ? $src : (string) ( $media['url'] ?? '' );
 	}
 
-	private function render_menu_item( array $item, $index, array $services, $id, $all = null ) {
+	private function render_menu_item( array $item, $index, array $services, $id, $all = null, array $s = array() ) {
 		$label = trim( (string) ( $item['label'] ?? '' ) );
 		if ( '' === $label ) {
 			return;
@@ -753,8 +888,9 @@ class Smart_Header extends Widget_Base {
 
 		if ( 'services' === ( $item['type'] ?? 'link' ) && $services ) {
 			$panel = 'avix-sh-panel-' . $id;
+			$mega  = 'list' !== ( $s['services_layout'] ?? 'mega' );
 			?>
-			<li class="avix-sh__drop" data-sh-drop>
+			<li class="avix-sh__drop<?php echo $mega ? ' avix-sh__drop--mega' : ''; ?>" data-sh-drop>
 				<?php if ( ! empty( $link['url'] ) ) : ?>
 					<?php
 					$this->add_link_attributes( $key, $link );
@@ -764,11 +900,15 @@ class Smart_Header extends Widget_Base {
 				<?php else : ?>
 					<button class="avix-sh__link avix-sh__drop-btn" type="button" aria-expanded="false" aria-controls="<?php echo esc_attr( $panel ); ?>" data-sh-drop-btn><?php echo esc_html( $label ); ?><?php echo $this->chevron_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup. ?></button>
 				<?php endif; ?>
+				<?php if ( $mega ) : ?>
+					<?php $this->render_mega( $services, $panel, $all, $s ); ?>
+				<?php else : ?>
 				<div class="avix-sh__panel" id="<?php echo esc_attr( $panel ); ?>">
 					<?php foreach ( $services as $i => $service ) : ?>
 						<?php $this->render_service( $service, 'svc-' . $i, 'avix-sh__item' ); ?>
 					<?php endforeach; ?><?php $this->render_all_services( $all, 'all-svc-' . $index, false ); ?>
 				</div>
+				<?php endif; ?>
 			</li>
 			<?php
 			return;
@@ -784,10 +924,13 @@ class Smart_Header extends Widget_Base {
 	/**
 	 * One service: brand tile + title (+ description on desktop).
 	 */
-	private function render_service( array $service, $key, $class ) {
+	private function render_service( array $service, $key, $class, $spot = null ) {
 		$link = (array) ( $service['link'] ?? array() );
 		$tag  = empty( $link['url'] ) ? 'span' : 'a';
 		$this->add_render_attribute( $key, 'class', $class );
+		if ( null !== $spot ) {
+			$this->add_render_attribute( $key, 'data-sh-spot', (string) (int) $spot );
+		}
 		if ( 'a' === $tag ) {
 			$this->add_link_attributes( $key, $link );
 		}
@@ -805,6 +948,168 @@ class Smart_Header extends Widget_Base {
 				<span class="avix-sh__item-arrow" aria-hidden="true"><?php echo $this->arrow_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup. ?></span>
 			<?php endif; ?>
 		</<?php echo esc_attr( $tag ); ?>>
+		<?php
+	}
+
+	/**
+	 * Services in consecutive groups: array of array( 'label' => string, 'items' => array( index => service ) ).
+	 *
+	 * @param array $services Services with a title.
+	 */
+	private function service_groups( array $services ) {
+		$groups = array();
+		foreach ( $services as $i => $service ) {
+			$label = trim( (string) ( $service['group'] ?? '' ) );
+			$last  = count( $groups ) - 1;
+			if ( $last < 0 || $groups[ $last ]['label'] !== $label ) {
+				$groups[] = array(
+					'label' => $label,
+					'items' => array(),
+				);
+				++$last;
+			}
+			$groups[ $last ]['items'][ $i ] = $service;
+		}
+		return $groups;
+	}
+
+	/**
+	 * Spotlight data of a service, or null when it has no image and no text.
+	 *
+	 * @param array $service Service row.
+	 */
+	private function spot( array $service ) {
+		$image = (array) ( $service['spot_image'] ?? array() );
+		$title = trim( (string) ( $service['spot_title'] ?? '' ) );
+		if ( empty( $image['url'] ) && '' === $title ) {
+			return null;
+		}
+		$src = (string) ( $image['url'] ?? '' );
+		if ( ! empty( $image['id'] ) ) {
+			$sized = wp_get_attachment_image_src( (int) $image['id'], 'medium_large' );
+			if ( $sized ) {
+				$src = $sized[0];
+			}
+		}
+		return array(
+			'src'       => $src,
+			'label'     => trim( (string) ( $service['spot_label'] ?? '' ) ),
+			'title'     => $title,
+			'link'      => (array) ( $service['spot_link'] ?? array() ),
+			'link_text' => trim( (string) ( $service['spot_link_text'] ?? '' ) ),
+			'facts'     => array_values( array_filter( array_map( 'trim', explode( ',', (string) ( $service['spot_facts'] ?? '' ) ) ), 'strlen' ) ),
+		);
+	}
+
+	/**
+	 * The services mega menu: grouped services, a spotlight card that follows the
+	 * hovered or focused service, and a footer with the booking link.
+	 *
+	 * @param array      $services Services with a title.
+	 * @param string     $panel    Panel element ID.
+	 * @param array|null $all      Result of all_services().
+	 * @param array      $s        Widget settings.
+	 */
+	private function render_mega( array $services, $panel, $all, array $s ) {
+		$spots = array();
+		foreach ( $services as $i => $service ) {
+			$spot = $this->spot( $service );
+			if ( $spot ) {
+				$spots[ $i ] = $spot;
+			}
+		}
+		$first = $spots ? array_key_first( $spots ) : null;
+		?>
+		<div class="avix-sh__panel avix-sh__mega<?php echo $spots ? ' has-spot' : ''; ?>" id="<?php echo esc_attr( $panel ); ?>" data-sh-mega>
+			<div class="avix-sh__mega-main">
+				<div class="avix-sh__mega-groups">
+					<?php foreach ( $this->service_groups( $services ) as $g => $group ) : ?>
+						<div class="avix-sh__mega-group" style="--g:<?php echo (int) $g; ?>">
+							<?php if ( '' !== $group['label'] ) : ?>
+								<p class="avix-sh__mega-label"><?php echo esc_html( $group['label'] ); ?></p>
+							<?php endif; ?>
+							<?php foreach ( $group['items'] as $i => $service ) : ?>
+								<?php $this->render_service( $service, 'msv-' . $i, 'avix-sh__item', isset( $spots[ $i ] ) ? $i : $first ); ?>
+							<?php endforeach; ?>
+						</div>
+					<?php endforeach; ?>
+				</div>
+				<?php if ( $spots ) : ?>
+					<div class="avix-sh__spot" data-sh-spotlight>
+						<div class="avix-sh__spot-media" aria-hidden="true">
+							<?php foreach ( $spots as $i => $spot ) : ?>
+								<?php if ( '' !== $spot['src'] ) : ?>
+									<img class="avix-sh__spot-img no-pixel-reveal<?php echo $i === $first ? ' is-active' : ''; ?>" data-sh-spot-img="<?php echo (int) $i; ?>" data-src="<?php echo esc_url( $spot['src'] ); ?>" alt="" width="768" height="512" decoding="async">
+								<?php endif; ?>
+							<?php endforeach; ?>
+						</div>
+						<?php foreach ( $spots as $i => $spot ) : ?>
+							<div class="avix-sh__spot-body<?php echo $i === $first ? ' is-active' : ''; ?>" data-sh-spot-text="<?php echo (int) $i; ?>"<?php echo $i === $first ? '' : ' hidden'; ?>>
+								<?php if ( '' !== $spot['label'] ) : ?>
+									<p class="avix-sh__spot-label"><?php echo esc_html( $spot['label'] ); ?></p>
+								<?php endif; ?>
+								<?php if ( '' !== $spot['title'] ) : ?>
+									<p class="avix-sh__spot-title"><?php echo esc_html( $spot['title'] ); ?></p>
+								<?php endif; ?>
+								<?php if ( $spot['facts'] ) : ?>
+									<ul class="avix-sh__spot-facts">
+										<?php foreach ( $spot['facts'] as $fact ) : ?>
+											<li><?php echo esc_html( $fact ); ?></li>
+										<?php endforeach; ?>
+									</ul>
+								<?php endif; ?>
+								<?php if ( ! empty( $spot['link']['url'] ) && '' !== $spot['link_text'] ) : ?>
+									<?php
+									$key = 'spot-link-' . $i;
+									$this->add_link_attributes( $key, $spot['link'] );
+									$this->add_render_attribute( $key, 'class', 'avix-sh__spot-link' );
+									?>
+									<a <?php $this->print_render_attribute_string( $key ); ?>><?php echo esc_html( $spot['link_text'] ); ?><span aria-hidden="true"><?php echo $this->arrow_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup. ?></span></a>
+								<?php endif; ?>
+							</div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+			</div>
+			<?php
+			$note  = trim( (string) ( $s['mega_note'] ?? '' ) );
+			$cta   = trim( (string) ( $s['mega_cta_text'] ?? '' ) );
+			$aside = trim( (string) ( $s['mega_aside_text'] ?? '' ) );
+			if ( '' !== $note || '' !== $cta || '' !== $aside || $all ) :
+				?>
+				<div class="avix-sh__mega-foot">
+					<p class="avix-sh__mega-note">
+						<svg class="avix-sh__mega-buddy" viewBox="0 0 10 11" aria-hidden="true" focusable="false"><rect x="2" y="7" width="2" height="4"/><rect x="6" y="7" width="2" height="4"/><rect x="2" y="3" width="6" height="4"/><rect x="0" y="4" width="2" height="3"/><rect x="8" y="4" width="2" height="3"/><rect x="3" y="0" width="4" height="3"/><rect class="e" x="4" y="1" width="1" height="1"/></svg>
+						<?php if ( '' !== $note ) : ?>
+							<span><?php echo esc_html( $note ); ?></span>
+						<?php endif; ?>
+						<?php if ( '' !== $cta && ! empty( $s['mega_cta_link']['url'] ) ) : ?>
+							<?php
+							$this->add_link_attributes( 'mega-cta', (array) $s['mega_cta_link'] );
+							$this->add_render_attribute( 'mega-cta', 'class', 'avix-sh__mega-cta' );
+							?>
+							<a <?php $this->print_render_attribute_string( 'mega-cta' ); ?>><?php echo esc_html( $cta ); ?><span aria-hidden="true"><?php echo $this->arrow_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup. ?></span></a>
+						<?php endif; ?>
+					</p>
+					<p class="avix-sh__mega-aside">
+						<?php if ( '' !== $aside && ! empty( $s['mega_aside_link']['url'] ) ) : ?>
+							<?php
+							$this->add_link_attributes( 'mega-aside', (array) $s['mega_aside_link'] );
+							$this->add_render_attribute( 'mega-aside', 'class', 'avix-sh__mega-link' );
+							?>
+							<a <?php $this->print_render_attribute_string( 'mega-aside' ); ?>><?php echo esc_html( $aside ); ?></a>
+						<?php endif; ?>
+						<?php if ( $all ) : ?>
+							<?php
+							$this->add_link_attributes( 'mega-all', $all['link'] );
+							$this->add_render_attribute( 'mega-all', 'class', 'avix-sh__mega-link avix-sh__mega-link--all' );
+							?>
+							<a <?php $this->print_render_attribute_string( 'mega-all' ); ?>><?php echo esc_html( $all['label'] ); ?><span aria-hidden="true"><?php echo $this->arrow_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup. ?></span></a>
+						<?php endif; ?>
+					</p>
+				</div>
+			<?php endif; ?>
+		</div>
 		<?php
 	}
 
@@ -844,8 +1149,14 @@ class Smart_Header extends Widget_Base {
 								</button>
 								<div class="avix-sh-menu__sub" id="avix-sh-sub-<?php echo esc_attr( $id ); ?>">
 									<div class="avix-sh-menu__sub-inner">
-										<?php foreach ( $services as $j => $service ) : ?>
-											<?php $this->render_service( $service, 'msvc-' . $j, 'avix-sh-menu__sublink' ); ?>
+										<?php $grouped = 'list' !== ( $s['services_layout'] ?? 'mega' ); ?>
+										<?php foreach ( $this->service_groups( $services ) as $group ) : ?>
+											<?php if ( $grouped && '' !== $group['label'] ) : ?>
+												<p class="avix-sh-menu__group"><?php echo esc_html( $group['label'] ); ?></p>
+											<?php endif; ?>
+											<?php foreach ( $group['items'] as $j => $service ) : ?>
+												<?php $this->render_service( $service, 'msvc-' . $j, 'avix-sh-menu__sublink' ); ?>
+											<?php endforeach; ?>
 										<?php endforeach; ?><?php $this->render_all_services( $all, 'mall-svc-' . $i, true ); ?>
 									</div>
 								</div>
@@ -862,6 +1173,7 @@ class Smart_Header extends Widget_Base {
 				</ul>
 
 				<div class="avix-sh-menu__actions" style="--i:<?php echo (int) $index; ?>">
+					<?php echo $this->lang_link( $s, 'avix-sh-menu__lang' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in lang_link(). ?>
 					<?php if ( '' !== trim( (string) $s['whatsapp_text'] ) && ! empty( $s['whatsapp_link']['url'] ) ) : ?>
 						<?php
 						$this->add_link_attributes( 'whatsapp', (array) $s['whatsapp_link'] );
@@ -883,6 +1195,64 @@ class Smart_Header extends Widget_Base {
 			</nav>
 		</div>
 		<?php
+	}
+
+	/**
+	 * The language switch: a link to this page in the other language, from the
+	 * hreflang group (includes/seo/class-hreflang.php). Pages without a
+	 * translation link to the home page of the other language. '' when the
+	 * switch is off, the module is missing or the site has one language.
+	 *
+	 * @param array  $s     Settings.
+	 * @param string $class CSS class.
+	 */
+	private function lang_link( array $s, $class ) {
+		if ( 'yes' !== ( $s['show_lang'] ?? 'yes' ) || ! class_exists( '\AvixWidgets\SEO\Hreflang' ) ) {
+			return '';
+		}
+		$hl      = '\AvixWidgets\SEO\Hreflang';
+		$post_id = is_singular() ? (int) get_queried_object_id() : 0;
+		$site    = $hl::site_lang();
+		$current = $post_id ? $hl::lang_of( $post_id ) : $site;
+		$group   = $post_id ? $hl::group( $post_id ) : array();
+		$target  = '';
+		$url     = '';
+		foreach ( $group as $lang => $href ) {
+			if ( $lang !== $current ) {
+				$target = $lang;
+				$url    = $href;
+				break;
+			}
+		}
+		if ( '' === $url ) {
+			// No translation of this page: the home page of the other language.
+			$front = (int) get_option( 'page_on_front' );
+			$home  = $front ? $hl::group( $front ) : array();
+			foreach ( $home as $lang => $href ) {
+				if ( $lang !== $current ) {
+					$target = $lang;
+					$url    = $href;
+					break;
+				}
+			}
+		}
+		if ( '' === $url ) {
+			return '';
+		}
+		$names = array(
+			'nl' => 'Nederlands',
+			'en' => 'English',
+			'de' => 'Deutsch',
+		);
+		$label = isset( $names[ $target ] ) ? $names[ $target ] : strtoupper( $target );
+		return sprintf(
+			'<a class="%1$s" href="%2$s" hreflang="%3$s" lang="%3$s" title="%4$s"><span aria-hidden="true">%5$s</span><span class="elementor-screen-only">%4$s</span></a>',
+			esc_attr( $class ),
+			esc_url( $url ),
+			esc_attr( $target ),
+			esc_attr( $label ),
+			esc_html( strtoupper( $target ) )
+		);
 	}
 
 	private function chevron_svg() {
